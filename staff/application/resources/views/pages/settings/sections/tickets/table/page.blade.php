@@ -1,0 +1,16 @@
+@extends('pages.settings.ajaxwrapper')
+@section('settings-page')
+<!-- action buttons -->
+@include('pages.settings.sections.tickets.misc.list-page-actions')
+<!-- action buttons -->
+
+<!--heading-->
+@include('pages.settings.sections.tickets.table.table')
+<div>
+    <!--settings documentation help-->
+    <a href="https://growcrm.io/documentation" target="_blank" class="btn btn-sm btn-info help-documentation"><i
+            class="ti-info-alt"></i>
+        {{ cleanLang(__('lang.help_documentation')) }}</a>
+</div>
+
+@endsection
