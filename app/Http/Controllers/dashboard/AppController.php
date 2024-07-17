@@ -5,13 +5,15 @@ use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Calender; // Import Event model
+use App\Models\EventStatus;
 
 class AppController extends Controller
 {
     public function calendar()
     {
         $events = Calender::all(); // Assuming Event is the correct model name
-        return view('admin.events', compact('events')); // Ensure the view path is correct
+        $eventStatus = EventStatus::orderBy('status_type')->get();
+        return view('admin.events', compact('events', 'eventStatus')); // Ensure the view path is correct
     }
 
 
@@ -34,6 +36,13 @@ class AppController extends Controller
         ]);
 
         // Redirect back with success message
+        return redirect()->back()->with('success', 'Event added successfully.');
+    }
+    public function update(Request $request, $id){
+        $eventStatus = Calender::find($id);
+        $eventStatus->update([
+            'status' => $request->input('status'),
+        ]);
         return redirect()->back()->with('success', 'Event added successfully.');
     }
 }

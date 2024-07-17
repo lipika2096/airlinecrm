@@ -373,6 +373,11 @@ class ClientRepository {
         $client->client_billing_zip = request('client_billing_zip');
         $client->client_billing_country = request('client_billing_country');
 
+        $client->client_custom_field_4 = request('client_custom_field_4'); //owner name
+            $client->client_custom_field_2 =request('client_custom_field_2'); //gst no
+            $client->client_custom_field_3 = request('client_custom_field_3'); //pancard
+            $client->client_custom_field_3 = 'Active'; //pancard
+
         //shipping address
         if (config('system.settings_clients_shipping_address') == 'enabled') {
             $client->client_shipping_street = request('client_shipping_street');

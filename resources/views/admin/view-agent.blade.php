@@ -51,7 +51,7 @@ use Carbon\Carbon;
                      <div class="profile-img-wrap">
                      @if ($agent)
                         <div class="profile-img">
-                           <a href="#" ><img alt="" style="margin-top:20px;" src="{{ asset('storage/app/public/agent_images/' . $agent->avatar_filename) }}"  class="avatar"></a>
+                           <a href="#" ><img alt="" style="margin-top:20px;" src="{{  asset('staff/storage/avatars/'.$agent->avatar_directory.'/'. $agent->avatar_filename) }}"  class="avatar"></a>
                         </div>
                         @else
                         <a href="{{route('admin.admin-profile')}}" ><img class="avatar" src="{{asset('public/assets/img/user.jpg/')}}" alt=""></a>
@@ -109,6 +109,93 @@ use Carbon\Carbon;
             </div>
          </div>
       </div>
+
+      <div id="profile_info{{$agent->id}}" class="modal custom-modal fade" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Agent</h5>
+                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('admin.agent.edit', ['id' => $agent->id]) }}" method="POST" enctype="multipart/form-data">
+
+                                @method('patch')
+                                @csrf
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">First Name <span class="text-danger">*</span></label>
+                                                <input class="form-control"name="first_name"  value="{{$agent->first_name}}" type="text">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Last Name</label>
+                                                <input class="form-control" name="last_name" value="{{$agent->last_name}}" type="text">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Email <span class="text-danger">*</span></label>
+                                                <input class="form-control" name="email"  value="{{$agent->email}}" type="email">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Employee ID <span class="text-danger">*</span></label>
+                                                <input type="text" name="employee_id" value="{{$agent->unique_id}}" readonly class="form-control floating">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Phone </label>
+                                                <input class="form-control" name="phone"  value="{{$agent->phone}}" type="text">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Designation <span class="text-danger">*</span></label>
+                                                <select class="form-control"  name="designation">
+                                                    <option>Select Designation</option>
+                                                    @foreach($designation as $designation_data)
+                                                        <option value="{{$designation_data->designation}}" @if ($agent->position == $designation_data->designation) selected @endif>{{$designation_data->designation}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        {{-- <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Profile Image</label>
+                                                <input type="file" class="form-control" name="avatar_filename">
+                                            </div>
+                                        </div> --}}
+
+                                        <!-- Add image display -->
+                                        {{-- <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Profile Image:</label>
+                                                @if ($agent->avatar_filename)
+                                                    <img src="{{ asset('staff/storage/avatars/'.$agent->avatar_directory.'/'. $agent->avatar_filename) }}" style="height:100px;" class="img-fluid" alt="Agent Image">
+                                                @else
+                                                    <p>No image uploaded</p>
+                                                @endif
+                                            </div>
+                                        </div> --}}
+
+                                    </div>
+                                    <div class="submit-section">
+                                        <button class="btn btn-primary" type="submit">Update</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
       <div class="card tab-box">
          <div class="row user-tabs">
             <div class="col-lg-12 col-md-12 col-sm-12 line-tabs">
@@ -118,7 +205,7 @@ use Carbon\Carbon;
                   <li class="nav-item"><a href="#request" data-bs-toggle="tab" class="nav-link">Wallet Request</a></li>
                   <li class="nav-item"><a href="#airtickets" data-bs-toggle="tab" class="nav-link">Air Tickets </a></li>
                   <li class="nav-item"><a href="#comments" data-bs-toggle="tab" class="nav-link">Comments </a></li>
-                  <li class="nav-item"><a href="#salesreports" data-bs-toggle="tab" class="nav-link">Sales Reports </a></li>
+                  {{-- <li class="nav-item"><a href="#salesreports" data-bs-toggle="tab" class="nav-link">Sales Reports </a></li> --}}
                </ul>
             </div>
          </div>
@@ -499,7 +586,7 @@ use Carbon\Carbon;
     </div>
 </div>
 
-<div class="tab-pane fade" id="salesreports">
+{{-- <div class="tab-pane fade" id="salesreports">
                 <div class="page-header">
                     <div class="row align-items-center">
                         <div class="col">
@@ -643,7 +730,7 @@ use Carbon\Carbon;
                 </div>
             </div>
 
-</div>
+</div> --}}
 <div id="add_wallet" class="modal custom-modal fade" role="dialog">
    <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -685,6 +772,44 @@ use Carbon\Carbon;
       </div>
    </div>
 </div>
+
+
+<div id="add_group" class="modal custom-modal fade" role="dialog">
+   <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title">Add Agent</h5>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body">
+            <form action="{{ route('admin.agentgroups.store') }}" method="POST" enctype="multipart/form-data">
+               @csrf
+
+               <input type="hidden" name="agent_id" value="{{ $agent->id }}">
+               <div class="form-group">
+                  <label>Select Airline <span class="text-danger">*</span></label>
+                  <select class="form-control" name="airline_id">
+                     <option>Select Airline</option>
+                     @foreach($airlines as $airline_data)
+                     <option value="{{ $airline_data->id }}">{{ $airline_data->airline_name }}</option>
+                     @endforeach
+                  </select>
+               </div>
+               <div class="form-group">
+                  <label>Group Name<span class="text-danger">*</span></label>
+                  <input class="form-control" name="name" type="text" required>
+               </div>
+               <div class="submit-section">
+                  <button class="btn btn-primary" type="submit">Submit</button>
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
+</div>
+
 <div id="add_commission_modal" class="modal custom-modal fade" role="dialog">
    <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">

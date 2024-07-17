@@ -148,7 +148,7 @@
 
 
                 <!-- event notifications -->
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link waves-effect waves-dark font-22 p-t-10 p-r-10 js-toggle-notifications-panel"
                         href="javascript:void(0);" data-url="{{ url('events/topnav?eventtracking_status=unread') }}"
                         data-loading-target="sidepanel-notifications-body" data-target="sidepanel-notifications"
@@ -160,7 +160,7 @@
                             <span class="point"></span>
                         </div>
                     </a>
-                </li>
+                </li> --}}
 
                 <!--notifications -->
 
@@ -178,7 +178,7 @@
                 </li>
                 @endif
 
-                
+
                 <!-- messages notification -->
                 @if(config('visibility.modules.messages'))
                 <li class="nav-item">
@@ -306,7 +306,7 @@
                             <i class="ti-bookmark-alt"></i> {{ cleanLang(__('lang.proposal')) }}</a>
                         @endif
 
-                        
+
                         <!-- contract -->
                         @if(config('visibility.modules.contracts') && auth()->user()->role->role_contracts >= 2)
                         <a href="javascript:void(0)"
@@ -483,7 +483,7 @@
                                     <i class="ti-pencil-alt p-r-4"></i>
                                     {{ cleanLang(__('lang.company_details')) }}</a>
                             </li>
-                            <li>
+                            {{-- <li>
                                 <a href="javascript:void(0)"
                                     class="edit-add-modal-button js-ajax-ux-request reset-target-modal-form"
                                     data-toggle="modal" data-target="#commonModal" data-url="{{ url('/clients/logo') }}"
@@ -493,11 +493,11 @@
                                     data-action-url="{{ url('/clients/logo') }}" data-action-method="PUT">
                                     <i class="ti-pencil-alt p-r-4"></i>
                                     {{ cleanLang(__('lang.company_logo')) }}</a>
-                            </li>
+                            </li> --}}
                             @endif
 
                             <!--update notifcations-->
-                            <li>
+                            {{-- <li>
                                 <a href="javascript:void(0)" id="topnavUpdateNotificationsButton"
                                     class="edit-add-modal-button js-ajax-ux-request reset-target-modal-form"
                                     data-toggle="modal" data-target="#commonModal"
@@ -511,10 +511,10 @@
                                     data-action-ajax-loading-target="commonModalBody">
                                     <i class="sl-icon-bell p-r-4"></i>
                                     {{ cleanLang(__('lang.notification_settings')) }}</a>
-                            </li>
+                            </li> --}}
 
                             <!--update theme-->
-                            <li>
+                            {{-- <li>
                                 <a href="javascript:void(0)" id="topnavUpdatePasswordButton"
                                     class="edit-add-modal-button js-ajax-ux-request reset-target-modal-form"
                                     data-toggle="modal" data-target="#commonModal"
@@ -527,7 +527,7 @@
                                     data-action-ajax-loading-target="commonModalBody">
                                     <i class="ti-image p-r-4"></i>
                                     {{ cleanLang(__('lang.change_theme')) }}</a>
-                            </li>
+                            </li> --}}
 
                             <!--update password-->
                             <li>

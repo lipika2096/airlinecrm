@@ -10,5 +10,10 @@ class Calender extends Model
     use HasFactory;
 
 
-    protected $fillable = ['event_name', 'event_date', 'category'];
+    protected $guarded = ['id'];
+    protected $fillable = ['event_name', 'event_date', 'category','status'];
+
+    public function statusId(){
+        return $this->belongsTo(EventStatus::class, 'status', 'id');
+    }
 }

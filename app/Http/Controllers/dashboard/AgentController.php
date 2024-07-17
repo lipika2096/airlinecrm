@@ -57,22 +57,23 @@ class AgentController extends Controller
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
             $user->email = $request->email;
-            $user->password = Hash::make($request->password);
+            $user->password = bcrypt($request->password);
             $user->unique_id = $request->employee_id;
             $user->phone = $request->phone;
-            $user->joining_date = $request->joining_date;
-            $user->position = $request->designation;
+
+
             $user->account_owner = 'yes';
             $user->primary_admin = 'no';
             $user->type = 'client';
 
-            // Handle image upload
-            if ($request->hasFile('avatar_filename')) {
-                $image = $request->file('avatar_filename');
-                $imageName = Str::random(20) . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('public/agent_images', $imageName);
-                $user->avatar_filename = $imageName;
-            }
+            // // Handle image uploadsrc="{{ asset('staff/storage/avatars/'.$agent->avatar_directory."/" . $agent->avatar_filename) }}"
+            // if ($request->hasFile('avatar_filename')) {
+            //     $image = $request->file('avatar_filename');
+            //     $imageName = Str::random(20) . '.' . $image->getClientOriginalExtension();
+            //     $directory = "NJj0UmpChhzd3BkXrQlWlACfoeecqzlerZgdR5rs";
+            //     $imagePath = $image->move('staff/storage/avatars/NJj0UmpChhzd3BkXrQlWlACfoeecqzlerZgdR5rs/', $imageName);
+            //     $user->avatar_filename = $imageName;
+            // }
 
             $user->save();
 
@@ -85,45 +86,57 @@ class AgentController extends Controller
     }
 
     public function edit(Request $request, $id)
-    {
-        try {
-            // Find the user record
-            $user = User::findOrFail($id);
+{
+    try {
+        // Find the client and user records to update
+        $client = Client::findOrFail($id);
+        $user = User::where('clientid', $client->client_id)->firstOrFail();
 
-            // Handle image upload
-            if ($request->hasFile('avatar_filename')) {
-                // Delete old image if exists
-                if ($user->avatar_filename) {
-                    Storage::delete('public/agent_images/' . $user->avatar_filename);
-                }
+        // Update client fields
+        $client->client_billing_street = $request->input('client_billing_street');
+        $client->client_phone = $request->input('client_phone');
+        $client->client_billing_city = $request->input('client_billing_city');
+        $client->client_billing_state = $request->input('client_billing_state');
+        $client->client_billing_country = $request->input('client_billing_country');
+        $client->client_billing_zip = $request->input('client_billing_zip');
+        $client->client_custom_field_4 = $request->input('client_custom_field_4');
+        $client->client_custom_field_2 = $request->input('client_custom_field_2');
+        $client->client_custom_field_3 = $request->input('client_custom_field_3');
+        $client->client_custom_field_1 = $request->input('client_custom_field_1');
+        $client->save();
 
-                // Upload new image
-                $image = $request->file('avatar_filename');
-                $imageName = Str::random(20) . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('public/agent_images', $imageName);
+        // Update user fields
+        $user->first_name = $request->input('first_name');
+        $user->last_name = $request->input('last_name');
+        $user->email = $request->input('email');
+        $user->unique_id = $request->input('employee_id');
+        $user->phone = $request->input('phone');
+        $user->joining_date = $request->input('joining_date');
+        $user->position = $request->input('designation');
+        $user->password = $request->input('password');
+        // Handle image update
+        // if ($request->hasFile('avatar_filename')) {
+        //     // Delete old avatar if exists
+        //     if ($user->avatar_filename) {
+        //         unlink('staff/storage/avatars/NJj0UmpChhzd3BkXrQlWlACfoeecqzlerZgdR5rs/'. $user->avatar_filename);
+        //     }
 
-                // Save image path to database
-                $user->avatar_filename = $imageName;
-            }
+        //     // Upload new avatar
+        //     $image = $request->file('avatar_filename');
+        //     $imageName = Str::random(20). '.'. $image->getClientOriginalExtension();
+        //     $imagePath = $image->move('staff/storage/avatars/NJj0UmpChhzd3BkXrQlWlACfoeecqzlerZgdR5rs/', $imageName);
+        //     $user->avatar_filename = $imageName;
+        // }
 
-            // Update other fields
-            $user->update([
-                'first_name' => $request->input('first_name'),
-                'last_name' => $request->input('last_name'),
-                'email' => $request->input('email'),
-                'unique_id' => $request->input('employee_id'),
-                'phone' => $request->input('phone'),
-                'position' => $request->input('designation'),
-            ]);
+        $user->save();
 
-            return redirect()->route('admin.agents')->with('success', 'Agent updated successfully');
-        } catch (\Exception $e) {
-            // Log the error message
-            Log::error('Error updating agent: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'There was an error updating the agent. Please try again.');
-        }
+        return redirect()->route('admin.agents')->with('success', 'Agent updated successfully');
+    } catch (\Exception $e) {
+        // Log the error message
+        Log::error('Error updating agent: '. $e->getMessage());
+        return redirect()->back()->with('error', 'There was an error updating the agent. Please try again.');
     }
-
+}
 
     public function view($id)
     {

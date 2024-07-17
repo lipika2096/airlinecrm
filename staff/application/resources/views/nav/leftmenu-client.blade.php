@@ -38,24 +38,24 @@
 
 
                 @if (auth()->user()->is_client_owner)
-                    <li data-modular-id="main_menu_client_projects"
+                    {{-- <li data-modular-id="main_menu_client_projects"
                         class="sidenav-menu-item {{ $page['mainmenu_projects'] ?? '' }} menu-tooltip menu-with-tooltip"
-                        title="{{ cleanLang(__('lang.attendance')) }}">
+                        title="{{ cleanLang(__('lang.group_request')) }}">
                         <a class="waves-effect waves-dark" href="{{ route('attendance') }}" aria-expanded="false"
                             target="_self">
                             <i class="ti-user"></i>
-                            <span class="hide-menu">{{ cleanLang(__('lang.attendance')) }}
+                            <span class="hide-menu">{{ cleanLang(__('lang.group_request')) }}
                             </span>
                         </a>
 
-                    </li>
+                    </li> --}}
                     <li data-modular-id="main_menu_client_projects"
                         class="sidenav-menu-item {{ $page['mainmenu_projects'] ?? '' }} menu-tooltip menu-with-tooltip"
-                        title="{{ cleanLang(__('lang.leaves')) }}">
-                        <a class="waves-effect waves-dark" href="{{ route('leaves-employee') }}" aria-expanded="false"
+                        title="{{ cleanLang(__('lang.bank')) }}">
+                        <a class="waves-effect waves-dark" href="{{ route('bank') }}" aria-expanded="false"
                             target="_self">
-                            <i class="ti-user"></i>
-                            <span class="hide-menu">{{ cleanLang(__('lang.leaves')) }}
+                            <i class="ti-wallet"></i>
+                            <span class="hide-menu">{{ cleanLang(__('lang.bank')) }}
                             </span>
                         </a>
 

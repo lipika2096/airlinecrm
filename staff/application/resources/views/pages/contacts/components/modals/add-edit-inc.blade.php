@@ -50,7 +50,6 @@
             </div>
         </div>
 
-
         <!--[UPCOMING] change account owner-->
         @if(config('visibility.contacts_modal_account_owner'))
         <div class="form-group form-group-checkbox row hidden">

@@ -219,13 +219,13 @@
             </div>
             <div class="form-group row">
                 <label
-                    class="col-sm-12 col-lg-3 text-left control-label col-form-label">{{ cleanLang(__('lang.telephone')) }}</label>
+                    class="col-sm-12 col-lg-3 text-left control-label col-form-label">{{ cleanLang(__('lang.emergency_number')) }}</label>
                 <div class="col-sm-12 col-lg-9">
                     <input type="text" class="form-control form-control-sm" id="client_phone" name="client_phone"
                         value="{{ $client->client_phone ?? '' }}">
                 </div>
             </div>
-            <div class="form-group row">
+            {{-- <div class="form-group row">
                 <label
                     class="col-sm-12 col-lg-3 text-left control-label col-form-label">{{ cleanLang(__('lang.website')) }}</label>
                 <div class="col-sm-12 col-lg-9">
@@ -240,6 +240,30 @@
                     <input type="text" class="form-control form-control-sm" id="client_vat" name="client_vat"
                         value="{{ $client->client_vat ?? '' }}">
                 </div>
+            </div> --}}
+            <div class="form-group row">
+                <label
+                    class="col-sm-12 col-lg-3 text-left control-label col-form-label">{{ cleanLang(__('lang.owner_name')) }}</label>
+                <div class="col-sm-12 col-lg-9">
+                    <input type="text" class="form-control form-control-sm" id="client_custom_field_4" name="client_custom_field_4"
+                        value="{{ $client->client_custom_field_4 ?? '' }}">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label
+                    class="col-sm-12 col-lg-3 text-left control-label col-form-label">{{ cleanLang(__('lang.pan_card')) }}</label>
+                <div class="col-sm-12 col-lg-9">
+                    <input type="text" class="form-control form-control-sm" id="client_custom_field_3" name="client_custom_field_3"
+                        value="{{ $client->client_custom_field_3 ?? '' }}">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label
+                    class="col-sm-12 col-lg-3 text-left control-label col-form-label">{{ cleanLang(__('lang.gst')) }}</label>
+                <div class="col-sm-12 col-lg-9">
+                    <input type="text" class="form-control form-control-sm" id="client_custom_field_2" name="client_custom_field_2"
+                        value="{{ $client->client_custom_field_2 ?? '' }}">
+                </div>
             </div>
             <div class="line"></div>
         </div>
@@ -247,7 +271,7 @@
 
 
         <!--shipping address section-->
-        @if(config('system.settings_clients_shipping_address') == 'enabled')
+        {{-- @if(config('system.settings_clients_shipping_address') == 'enabled')
         <div class="spacer row">
             <div class="col-sm-12 col-lg-8">
                 <span class="title">{{ cleanLang(__('lang.shipping_address')) }}</span class="title">
@@ -263,7 +287,7 @@
                 </div>
             </div>
         </div>
-        @endif
+        @endif --}}
         <!--shipping address section-->
 
 
@@ -496,11 +520,11 @@
             @if(config('app.application_demo_mode'))
             <!--DEMO INFO-->
             <div class="alert alert-info">
-                <h5 class="text-info"><i class="sl-icon-info"></i> Demo Info</h5> 
+                <h5 class="text-info"><i class="sl-icon-info"></i> Demo Info</h5>
                 These are custom fields. You can change them or <a href="{{ url('app/settings/customfields/projects') }}">create your own.</a>
             </div>
             @endif
-            
+
             @include('misc.customfields')
         </div>
         @endif

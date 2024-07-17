@@ -1,0 +1,402 @@
+.page-wrapper .content {
+  padding: 0px;
+}
+
+.row {
+  --bs-gutter-x: 1.5rem;
+  --bs-gutter-y: 0;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: calc(-1* var(--bs-gutter-y));
+  margin-right: calc(-.5* var(--bs-gutter-x));
+  margin-left: calc(-.5* var(--bs-gutter-x));
+}
+
+@media (min-width: 768px) {
+  .col-md-12 {
+      flex: 0 0 auto;
+      width: 100%;
+  }
+}
+
+.welcome-box {
+  background-color: #ffffff;
+  border-bottom: 1px solid #ededed;
+  position: relative;
+  margin: -30px -30px 30px;
+  padding: 20px;
+}
+
+.welcome-box .welcome-img {
+  margin-right: 15px;
+}
+
+.welcome-box .welcome-img img {
+  width: 60px;
+  border-radius: 8px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+}
+
+.welcome-box .welcome-det h3 {
+  margin-bottom: 10px;
+  color: #000000;
+}
+
+h3 {
+  font-weight: 600;
+  font-size: 24px;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-box .welcome-det p {
+  color: #777;
+  font-size: 18px;
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+p {
+  color: #575757;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+@media (min-width: 992px) {
+  .col-lg-8 {
+      flex: 0 0 auto;
+      width: 66.66666667%;
+  }
+}
+
+@media (min-width: 768px) {
+  .col-md-8 {
+      flex: 0 0 auto;
+      width: 66.66666667%;
+  }
+}
+
+.dash-section {
+  margin-bottom: 30px;
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+.dash-section .dash-sec-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  color: #000000;
+}
+
+h1 {
+  font-weight: 500;
+  font-size: 40px;
+  margin-bottom: 0.5rem;
+}
+
+.dash-section .dash-info-list .dash-card {
+    background-color: #ffffff;
+    border: 1px solid #eaeaea;
+    color: #575757;
+    flex-grow: 1;
+    height: auto;
+    border-radius: 8px;
+}
+
+.dash-section .dash-info-list .dash-card, .dash-widget .card-body .dash-widget-info, .voice-call-avatar, .chat-contents .chat-content-wrap .chats .chat-bubble .chat-img-attach .chat-placeholder {
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+.job-list .job-list-det, .rating-list, .avatar-dropdown .avatar-group .avatar, .task-assign .task-complete-btn, .chat-footer .message-bar .message-area .input-group, .chat-footer .task-followers, .chat-content-wrap .chat-wrap-inner .task-desc .task-textarea, .chat-content-wrap .chat-wrap-inner .task-desc, .chat-content-wrap .chat-wrap-inner .task-header .task-due-date .remove-icon, .chat-content-wrap .chat-wrap-inner .task-header .task-due-date a, .chat-content-wrap .chat-wrap-inner .task-header .task-due-date .due-icon, .chat-content-wrap .chat-wrap-inner .task-header .task-due-date, .chat-content-wrap .chat-wrap-inner .task-header .assignee-info .remove-icon, .chat-content-wrap .chat-wrap-inner .task-header .assignee-info a, .chat-content-wrap .chat-wrap-inner .task-header, .kanban-cont .kanban-list .kanban-header, .kanban-cont .kanban-list .kanban-wrap .task-board-body .kanban-footer, .kanban-cont .kanban-list .kanban-wrap .task-board-body .kanban-info, .kanban-cont .kanban-list .kanban-wrap .task-board-header, .kanban-cont, .board-view-header .pro-progress-bar, .board-view-header .pro-teams .pro-team-members, .board-view-header .pro-teams .pro-team-lead, .leave-header, .leave-item .leave-right, .leave-item .leave-row, .account-page .main-wrapper, .account-page, .file-content .file-body .file-scroll .file-content-inner .card-file .card-file-thumb, .file-content .file-search .input-group-prepend, .file-cont-wrap .file-cont-inner .file-cont-header .file-options, .file-cont-wrap .file-cont-inner .file-cont-header, .file-cont-wrap, .file-wrap .file-sidebar .file-search .input-group .input-group-prepend, .file-wrap .file-sidebar .file-header, .file-wrap, .time-list .dash-stats-list, .time-list, .dash-section .dash-info-list .dash-card-container .dash-card-avatars, .dash-section .dash-info-list .dash-card-container .dash-card-content, .dash-section .dash-info-list .dash-card-container .dash-card-icon, .dash-section .dash-info-list .dash-card-container, .dash-section .dash-info-list .dash-card, .welcome-box, .dash-statistics .stats-info p, .dash-widget .card-body .dash-widget-info, .dash-widget .card-body .dash-widget-icon, .dash-widget .card-body, .error-page .main-wrapper, .error-page, .call-box .call-wrapper .call-items, .call-box .call-wrapper, .voice-call-avatar, .chat-sidebar .chat-contents .chats .chat-left .chat-body .chat-bubble .chat-content .call-details, .chat-contents .chat-content-wrap .chats .chat-bubble .chat-img-attach .chat-placeholder, .att-statistics .stats-info p, .punch-info .punch-hours, [data-sidebar=dark] .two-col-bar .sidebar .sidebar-left .nav-link, [data-layout=horizontal] body nav.greedy, .task-board-color .board-color-list, .task-follower-list, .sidebar-twocol.sidebar .sub-menu a, .sidebar-twocol.sidebar .nav-link, .sidebar-twocol.sidebar, .sidebar .sidebar-menu ul li a, .two-col-bar .sidebar-menu ul li a, .sidebar .sidebar-menu ul li.menu-title, .two-col-bar .sidebar-menu ul li.menu-title, .header .user-menu.nav > li.flag-nav a, .card .card-title.with-switch, .card .leave-inline-form, .avatar .avatar-title {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.dash-section .dash-info-list .dash-card-container {
+  flex-direction: row;
+  flex-grow: 1;
+}
+
+.dash-section .dash-info-list .dash-card-container .dash-card-icon {
+  flex-direction: row;
+  font-size: 26px;
+  padding-right: 15px;
+}
+
+.dash-section .dash-info-list .dash-card-container .dash-card-icon i {
+  width: 30px;
+}
+
+.fa {
+  display: inline-block;
+  font: normal normal normal 14px / 1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.fa, .fas {
+  font-weight: 900;
+}
+
+.fa, .fab, .fad, .fal, .far, .fas {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  line-height: 1;
+}
+
+.fa-hourglass-o:before {
+    content: "\f250";
+}
+
+*, ::after, ::before {
+  box-sizing: border-box;
+}
+
+.dash-section .dash-info-list .dash-card-container .dash-card-content {
+  flex-direction: row;
+}
+
+.dash-section .dash-info-list .dash-card-container .dash-card-content p {
+  font-size: 22px;
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+.dash-section .dash-info-list .dash-card-container .dash-card-avatars {
+  flex-grow: 1;
+  padding: 0 15px;
+}
+
+.dash-section .dash-info-list .dash-card-container .dash-card-avatars, .dash-widget .card-body .dash-widget-info, .chat-contents .chat-content-wrap .chats .chat-bubble .chat-img-attach .chat-placeholder {
+  justify-content: flex-end;
+  -webkit-justify-content: flex-end;
+  -ms-flex-pack: flex-end;
+}
+
+.dash-section .dash-info-list .dash-card-container .dash-card-avatars .e-avatar:first-of-type {
+  margin-left: 0 !important;
+}
+
+.dash-section .dash-info-list .dash-card-container .dash-card-avatars .e-avatar {
+    background-color: #ffffff;
+    border: 3px solid #e2e5e8;
+    height: 45px;
+    position: relative;
+    width: 45px;
+    margin-left: -20px;
+    border-radius: 50%;
+}
+
+.dash-section .dash-info-list .dash-card-container .dash-card-avatars .e-avatar img {
+  border-radius: 50%;
+  width: 100%;
+}
+
+.dash-section .dash-info-list + .dash-info-list {
+  margin-top: 15px;
+}
+
+.fa-suitcase:before {
+  content: "\f0f2";
+}
+
+.fa-building-o:before {
+  content: "\f0f7";
+}
+
+.fa-user-plus:before {
+  content: "\f234";
+}
+
+.fa-calendar:before {
+  content: "\f073";
+}
+
+@media (min-width: 992px) {
+  .col-lg-4 {
+      flex: 0 0 auto;
+      width: 33.33333333%;
+  }
+}
+
+.dash-sidebar h5 {
+  color: #000000;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+h5 {
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 0.5rem;
+}
+
+.card {
+    border: 1px solid #ededed;
+    margin-bottom: 30px;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.card {
+  border: 1px solid #f0f0f0;
+  margin-bottom: 1.875rem;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  word-wrap: break-word;
+  background-color: #fff;
+  background-clip: border-box;
+  border: 1px solid rgba(0, 0, 0, .125);
+  border-radius: .25rem;
+}
+
+.card-body {
+  flex: 1 1 auto;
+  padding: 1rem 1rem;
+}
+
+.time-list {
+  flex-grow: 1;
+  margin-bottom: 20px;
+}
+
+.time-list .dash-stats-list {
+  flex-flow: column wrap;
+  flex-grow: 1;
+  padding: 0 15px;
+} 
+
+.job-list .job-list-det, .rating-list span a, .task-assign .task-complete-btn, .chat-content-wrap .chat-wrap-inner .task-header .task-due-date .remove-icon, .chat-content-wrap .chat-wrap-inner .task-header .task-due-date a, .chat-content-wrap .chat-wrap-inner .task-header .task-due-date .due-icon, .chat-content-wrap .chat-wrap-inner .task-header .task-due-date, .chat-content-wrap .chat-wrap-inner .task-header .assignee-info .remove-icon, .chat-content-wrap .chat-wrap-inner .task-header .assignee-info a, .chat-content-wrap .chat-wrap-inner .task-header .assignee-info, .kanban-cont .kanban-list .kanban-header .kanban-action > a, .kanban-cont .kanban-list .kanban-header, .kanban-cont .kanban-list .kanban-wrap .task-board-body .kanban-info, .board-view-header .pro-progress-bar, .board-view-header .pro-teams .pro-team-members, .board-view-header .pro-teams .pro-team-lead, .leave-header, .leave-item .leave-right, .account-page, .file-content .file-body .file-scroll .file-content-inner .card-file .card-file-thumb, .file-content .file-body .file-scroll .file-content-inner .card-file .dropdown-file .dropdown-link, .file-content .file-search .input-group-prepend, .file-cont-wrap .file-cont-inner .file-cont-header, .file-wrap .file-sidebar .file-search .input-group .input-group-prepend, .file-wrap .file-sidebar .file-header, .time-list .dash-stats-list, .dash-section .dash-info-list .dash-card-container .dash-card-avatars, .dash-section .dash-info-list .dash-card-container .dash-card-content, .dash-section .dash-info-list .dash-card-container .dash-card-icon, .dash-widget .card-body .dash-widget-icon, .error-page .main-wrapper, .error-page, .call-box .call-wrapper .call-items, .call-box .call-wrapper, .voice-call-avatar, .punch-info .punch-hours, [data-sidebar=dark] .two-col-bar .sidebar .sidebar-left .nav-link, [data-layout=horizontal] body nav.greedy, .sidebar-twocol.sidebar .sub-menu a, .sidebar-twocol.sidebar .nav-link, .sidebar .sidebar-menu ul li a, .two-col-bar .sidebar-menu ul li a, .header .user-menu.nav > li.flag-nav a, .card .leave-inline-form, .avatar .avatar-title {
+    align-items: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+}
+
+.time-list .dash-stats-list h4 {
+  color: #1f1f1f;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+h4 {
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 0.5rem;
+  color: #000000;
+}
+
+.time-list .dash-stats-list p {
+    color: #777;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 0;
+    text-transform: uppercase;
+}
+
+.time-list .dash-stats-list + .dash-stats-list {
+  border-left: 1px solid #eaeaea;
+}
+
+.request-btn {
+  text-align: center;
+}
+
+.btn-primary {
+  background-color: #ff9b44;
+  border: 1px solid #ff9b44;
+  color: #ffffff !important;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.btn {
+  display: inline-block;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #212529;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  background-color: transparent;
+  border: 1px solid transparent;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  border-radius: .25rem;
+  transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+a {
+  text-decoration: none;
+  outline: none;
+  color: #0d6efd;
+  cursor: pointer;
+  -webkit-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  transition: all 0.2s ease;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.card-no-border .card {
+  border: 0px;
+  border-radius: 8px;
+  border: 0px solid #eaeaea;
+}
+
+.col, .col-1, .col-10, .col-11, .col-12, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-auto, .col-lg, .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-auto, .col-md, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-auto, .col-sm, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-auto, .col-xl, .col-xl-1, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-auto {
+  position: relative;
+  width: 100%;
+  padding-right: 18px;
+  padding-left: 4px; 
+}

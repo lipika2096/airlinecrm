@@ -54,9 +54,9 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost/crm'),
+    'url' => env('APP_URL', 'https://hrcrm.testpentas.in'),
 
-    'asset_url' => env('ASSET_URL', 'http://localhost/crm'),
+    'asset_url' => env('ASSET_URL', 'https://hrcrm.testpentas.in'),
 
     /*
     |--------------------------------------------------------------------------

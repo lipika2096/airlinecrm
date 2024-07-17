@@ -40,9 +40,8 @@
                     <div class="col-md-4 col-sm-6 col-12 col-lg-4 col-xl-3">
                         <div class="profile-widget">
                             <div class="profile-img">
-
                             @if ($agent->avatar_filename)
-                            <a href="#"><img alt="" class="avatar" style="margin-top:20px;" src="{{ asset('storage/app/public/agent_images/' . $agent->avatar_filename) }}"></a>
+                            <a href="#"><img alt="" class="avatar" style="margin-top:20px;" src="{{ asset('staff/storage/avatars/'.$agent->avatar_directory."/" . $agent->avatar_filename) }}"></a>
                         @else
                             <a href="#"><img alt="" style="margin-top:20px;" class="avatar" src="{{ asset('public/assets/img/user.jpg') }}"></a>
                         @endif
@@ -61,7 +60,7 @@
                                 </div>
                             </div>
                             <h4 class="user-name m-t-10 mb-0 text-ellipsis"><a
-                                    href="javascript:void(0)">{{$agent->first_name}}
+                                    href="{{ route('admin.agent.view', ['id' => $agent->id]) }}">{{$agent->first_name}}
                                     {{$agent->last_name}}</a></h4>
                             <div class="small text-muted">
                                 <td>{{ $agent->client_company_name }}</td>
@@ -128,14 +127,14 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-sm-6">
+                                        {{-- <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Profile Image</label>
                                                 <input type="file" class="form-control" name="avatar_filename">
                                             </div>
-                                        </div>
+                                        </div> --}}
 
-                                        <!-- Add image display -->
+                                        {{-- <!-- Add image display -->
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>Profile Image:</label>
@@ -145,7 +144,7 @@
                                                     <p>No image uploaded</p>
                                                 @endif
                                             </div>
-                                        </div>
+                                        </div> --}}
 
                                     </div>
                                     <div class="submit-section">
@@ -291,13 +290,13 @@
 
 
 
-                                        <div class="col-sm-6">
+                                        {{-- <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Joining Date <span class="text-danger">*</span></label>
                                                 <div class="cal-icon"><input class="form-control" type="date" name="joining_date"></div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-6">
+                                        </div> --}}
+                                        {{-- <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>Designation <span class="text-danger">*</span></label>
                                                 <select class="form-control"  name="designation">
@@ -307,14 +306,14 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                        </div>
+                                        </div> --}}
 
-                                        <div class="col-md-6">
+                                        {{-- <div class="col-md-6">
                             <div class="form-group">
                                 <label>Profile Image</label>
                                 <input type="file" class="form-control" name="avatar_filename">
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="col-md-6">
                                             <div class="form-group">

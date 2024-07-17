@@ -301,10 +301,10 @@
                         @if (auth()->user()->hasRole('admin'))
                             <li><a class="" href="{{ route('admin.departments') }}">Departments</a></li>
                             <li><a class="" href="{{ route('admin.designations') }}">Designations</a></li>
-                            <li><a class="" href="{{ route('admin.timesheet') }}">Timesheet</a></li>
+                            {{-- <li><a class="" href="{{ route('admin.timesheet') }}">Timesheet</a></li>
                             <li><a class="" href="{{ route('admin.shift-scheduling') }}">Shift & Schedule</a>
                             </li>
-                            <li><a class="" href="{{ route('admin.overtime') }}">Overtime</a></li>
+                            <li><a class="" href="{{ route('admin.overtime') }}">Overtime</a></li> --}}
                             <li><a class="" href="{{ route('admin.salary') }}"> Employee Salary </a></li>
                             <li class="">
                                 <a href="{{ route('admin.policies') }}"><i class="la la-file-pdf-o"></i>

@@ -9,6 +9,7 @@ use App\Http\Controllers\FareConditionController;
 use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\BankController;
 
 //TESTING [DEV]
 Route::get("test", "Test@index");
@@ -1150,6 +1151,11 @@ Route::delete('commissions/{commission}', [CommissionController::class, 'destroy
 Route::get('leaves-employee', [EmployeeController::class, 'leavesEmployee'])->name('leaves-employee');
 Route::get('/leave/create', [EmployeeController::class, 'create'])->name('leave.create');
 Route::post('/leave/store', [EmployeeController::class, 'store'])->name('leave.store');
+
+Route::get('bank', [BankController::class, 'index'])->name('bank');
+Route::get('/bank/create', [BankController::class, 'create'])->name('bank.create');
+Route::post('/bank/store', [BankController::class, 'store'])->name('bank.store');
+Route::get('/bank/show/{id}', [BankController::class, 'show'])->name('bank.show');
 
 Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance');
 Route::post('/punch-in', [AttendanceController::class, 'punchIn']);

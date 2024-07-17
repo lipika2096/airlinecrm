@@ -147,19 +147,7 @@
 
 
                 <!-- event notifications -->
-                <li class="nav-item">
-                    <a class="nav-link waves-effect waves-dark font-22 p-t-10 p-r-10 js-toggle-notifications-panel"
-                        href="javascript:void(0);" data-url="<?php echo e(url('events/topnav?eventtracking_status=unread')); ?>"
-                        data-loading-target="sidepanel-notifications-body" data-target="sidepanel-notifications"
-                        data-progress-bar='hidden' aria-expanded="false">
-                        <i class="sl-icon-bell"></i>
-                        <div class="notify <?php echo e(runtimeVisibilityNotificationIcon(auth()->user()->count_unread_notifications)); ?>"
-                            id="topnav-notification-icon">
-                            <span class="heartbit"></span>
-                            <span class="point"></span>
-                        </div>
-                    </a>
-                </li>
+                
 
                 <!--notifications -->
 
@@ -177,7 +165,7 @@
                 </li>
                 <?php endif; ?>
 
-                
+
                 <!-- messages notification -->
                 <?php if(config('visibility.modules.messages')): ?>
                 <li class="nav-item">
@@ -305,7 +293,7 @@
                             <i class="ti-bookmark-alt"></i> <?php echo e(cleanLang(__('lang.proposal'))); ?></a>
                         <?php endif; ?>
 
-                        
+
                         <!-- contract -->
                         <?php if(config('visibility.modules.contracts') && auth()->user()->role->role_contracts >= 2): ?>
                         <a href="javascript:void(0)"
@@ -485,51 +473,14 @@
                                     <i class="ti-pencil-alt p-r-4"></i>
                                     <?php echo e(cleanLang(__('lang.company_details'))); ?></a>
                             </li>
-                            <li>
-                                <a href="javascript:void(0)"
-                                    class="edit-add-modal-button js-ajax-ux-request reset-target-modal-form"
-                                    data-toggle="modal" data-target="#commonModal" data-url="<?php echo e(url('/clients/logo')); ?>"
-                                    data-loading-target="commonModalBody" data-modal-size="modal-sm"
-                                    data-modal-title="<?php echo e(cleanLang(__('lang.update_avatar'))); ?>"
-                                    data-header-visibility="hidden" data-header-extra-close-icon="visible"
-                                    data-action-url="<?php echo e(url('/clients/logo')); ?>" data-action-method="PUT">
-                                    <i class="ti-pencil-alt p-r-4"></i>
-                                    <?php echo e(cleanLang(__('lang.company_logo'))); ?></a>
-                            </li>
+                            
                             <?php endif; ?>
 
                             <!--update notifcations-->
-                            <li>
-                                <a href="javascript:void(0)" id="topnavUpdateNotificationsButton"
-                                    class="edit-add-modal-button js-ajax-ux-request reset-target-modal-form"
-                                    data-toggle="modal" data-target="#commonModal"
-                                    data-url="<?php echo e(url('user/updatenotifications')); ?>"
-                                    data-loading-target="commonModalBody"
-                                    data-modal-title="<?php echo e(cleanLang(__('lang.notification_settings'))); ?>"
-                                    data-action-url="<?php echo e(url('user/updatenotifications')); ?>" data-action-method="PUT"
-                                    data-modal-size="modal-lg" data-form-design="form-material"
-                                    data-header-visibility="hidden" data-header-extra-close-icon="visible"
-                                    data-action-ajax-class="js-ajax-ux-request"
-                                    data-action-ajax-loading-target="commonModalBody">
-                                    <i class="sl-icon-bell p-r-4"></i>
-                                    <?php echo e(cleanLang(__('lang.notification_settings'))); ?></a>
-                            </li>
+                            
 
                             <!--update theme-->
-                            <li>
-                                <a href="javascript:void(0)" id="topnavUpdatePasswordButton"
-                                    class="edit-add-modal-button js-ajax-ux-request reset-target-modal-form"
-                                    data-toggle="modal" data-target="#commonModal"
-                                    data-url="<?php echo e(url('user/updatetheme')); ?>" data-loading-target="commonModalBody"
-                                    data-modal-title="<?php echo e(cleanLang(__('lang.change_theme'))); ?>"
-                                    data-action-url="<?php echo e(url('user/updatetheme')); ?>" data-action-method="PUT"
-                                    data-action-ajax-class="" data-modal-size="modal-sm"
-                                    data-form-design="form-material" data-header-visibility="hidden"
-                                    data-header-extra-close-icon="visible"
-                                    data-action-ajax-loading-target="commonModalBody">
-                                    <i class="ti-image p-r-4"></i>
-                                    <?php echo e(cleanLang(__('lang.change_theme'))); ?></a>
-                            </li>
+                            
 
                             <!--update password-->
                             <li>
@@ -561,4 +512,5 @@
     </nav>
 
 
-</header><?php /**PATH C:\xampp\htdocs\hrcrm\staff\application\resources\views/nav/topnav.blade.php ENDPATH**/ ?>
+</header>
+<?php /**PATH C:\xampp\htdocs\hrcrm\staff\application\resources\views/nav/topnav.blade.php ENDPATH**/ ?>

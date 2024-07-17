@@ -40,25 +40,14 @@
 
 
                 <?php if(auth()->user()->is_client_owner): ?>
+                    
                     <li data-modular-id="main_menu_client_projects"
                         class="sidenav-menu-item <?php echo e($page['mainmenu_projects'] ?? ''); ?> menu-tooltip menu-with-tooltip"
-                        title="<?php echo e(cleanLang(__('lang.attendance'))); ?>">
-                        <a class="waves-effect waves-dark" href="<?php echo e(route('attendance')); ?>" aria-expanded="false"
+                        title="<?php echo e(cleanLang(__('lang.bank'))); ?>">
+                        <a class="waves-effect waves-dark" href="<?php echo e(route('bank')); ?>" aria-expanded="false"
                             target="_self">
-                            <i class="ti-user"></i>
-                            <span class="hide-menu"><?php echo e(cleanLang(__('lang.attendance'))); ?>
-
-                            </span>
-                        </a>
-
-                    </li>
-                    <li data-modular-id="main_menu_client_projects"
-                        class="sidenav-menu-item <?php echo e($page['mainmenu_projects'] ?? ''); ?> menu-tooltip menu-with-tooltip"
-                        title="<?php echo e(cleanLang(__('lang.leaves'))); ?>">
-                        <a class="waves-effect waves-dark" href="<?php echo e(route('leaves-employee')); ?>" aria-expanded="false"
-                            target="_self">
-                            <i class="ti-user"></i>
-                            <span class="hide-menu"><?php echo e(cleanLang(__('lang.leaves'))); ?>
+                            <i class="ti-wallet"></i>
+                            <span class="hide-menu"><?php echo e(cleanLang(__('lang.bank'))); ?>
 
                             </span>
                         </a>

@@ -33,7 +33,9 @@ use App\Http\Controllers\dashboard\{
     AirTicketController,
     FareConditionController,
     CommissionController,
-    EventStatusController
+    EventStatusController,
+    SectorController,
+    HoldController,
 };
 
 /*
@@ -67,7 +69,20 @@ Route::get('project-view', function(){
 
 // App routes
 
+//Sectors
 
+Route::get('sectors', [SectorController::class, 'index'])->name('sectors');
+Route::post('store-sector', [SectorController::class, 'store'])->name('sector.store');
+Route::put('update-sector/{id}', [SectorController::class, 'update'])->name('sector.update');
+Route::delete('delete-sector/{id}', [SectorController::class, 'destroy'])->name('sector.delete');
+
+
+
+Route::get('holds', [HoldController::class, 'index'])->name('holds');
+Route::get('/view-holds/{id}', [HoldController::class, 'view'])->name('view-holds');
+Route::get('/edit-hold/{id}', [HoldController::class, 'edit'])->name('edit-hold');
+Route::post('/edit-hold/{id}', [HoldController::class, 'update'])->name('edit-hold');
+Route::get('holds-confirm/', [HoldController::class, 'confirmHold'])->name('holdsconfirm');
 
 Route::delete('wallet/delete', [AgentController::class, 'deleteWallet'])->name('wallet.delete');
 
@@ -88,6 +103,7 @@ Route::patch('agent/edit/{id}', [AgentController::class, 'edit'])->name('agent.e
 Route::get('agent/view/{id}', [AgentController::class, 'view'])->name('agent.view');
     Route::get('events', [AppController::class, 'calendar'])->name('events');
     Route::post('events/store', [AppController::class, 'store'])->name('events.store');
+    Route::patch('events/update/{id}', [AppController::class, 'update'])->name('events.update');
     Route::get('airlines', [AirlineController::class, 'index'])->name('airlines');
     Route::post('airlines/store', [AirlineController::class, 'store'])->name('airlines.store');
     Route::patch('airlines/edit/{id}', [AirlineController::class, 'update'])->name('airlines.update');
@@ -135,6 +151,7 @@ Route::get('agent/view/{id}', [AgentController::class, 'view'])->name('agent.vie
 //Status Routes
     Route::get('events/status', [EventStatusController:: class, 'index'])->name('events.status');
     Route::post('events/status/store', [EventStatusController::class, 'store'])->name('events.status.store');
+    Route::patch('events/status/update/{id}', [EventStatusController::class, 'update'])->name('events.status.update');
 
 // Ticket routes
     Route::get('tickets', [TicketController::class, 'index'])->name('tickets');

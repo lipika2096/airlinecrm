@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" >
 <style>
-    
+
 .table-responsive {
     overflow-x: hidden !important;
 
@@ -42,7 +42,7 @@
 
     <div class="row">
     <div class="col-md-6">
-    <h1>Leads Add </h1><br>
+    <h1>Book Ticket </h1><br>
     </div>
     <div class="col-md-6" style="text-align: right;">
 
@@ -56,15 +56,15 @@
     <form action="{{ route('airtickets.store') }}" method="POST">
         @csrf
         <div class="form-group">
-    <label for="airline_id">Airline</label>
-    <select class="form-control" id="airline_id" name="airline_id" required>
-        @foreach ($airlines as $id => $airline_code)
-            <option value="{{ $id }}">{{  $airline_code }}</option>
-        @endforeach
-    </select>
-</div>
+            <label for="airline_id">Airline</label>
+            <select class="form-control" id="airline_id" name="airline_id" required>
+                @foreach ($airlines as $id => $airline_code)
+                    <option value="{{ $id }}">{{  $airline_code }}</option>
+                @endforeach
+            </select>
+        </div>
         <div class="form-group">
-            <label for="ticket_number">Ticket Number</label>
+            <label for="ticket_number">Flight Number</label>
             <input type="text" class="form-control" id="ticket_number" name="ticket_number" required>
         </div>
 
@@ -78,15 +78,15 @@
             <input type="text" class="form-control" id="mco" name="mco">
         </div>
 
-        <div class="form-group">
+        {{-- <div class="form-group">
             <label for="date_change">Date Change</label>
-            <input type="text" class="form-control" id="date_change" name="date_change" >
-        </div>
+            <input type="date" class="form-control" id="date_change" name="date_change" >
+        </div> --}}
 
-        <div class="form-group">
+        {{-- <div class="form-group">
             <label for="refund">Refund</label>
             <input type="text" class="form-control" id="refund" name="refund" >
-        </div>
+        </div> --}}
 <div class="row">
 <div class="col-md-3">
         <div class="form-group">
