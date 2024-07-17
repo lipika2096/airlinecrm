@@ -15,9 +15,68 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Calender;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeController extends Controller
 {
+    public function punchIn(Request $request)
+    {
+        $email = session('email');
+        $employee = Employee::where('email', $email)->first();
+        $attendance = new EmployeeAttendance();
+        $attendance->employee_id = $employee->id;
+        $attendance->punch_in = $request->time;
+        $attendance->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function punchOut(Request $request)
+    {
+        $email = session('email');
+        $employee = Employee::where('email', $email)->first();
+        $attendance = EmployeeAttendance::where('employee_id',  $employee->id)
+                                        ->whereNull('punch_out')
+                                        ->orderBy('created_at', 'desc')
+                                        ->first();
+        if ($attendance) {
+            $attendance->punch_out = $request->time;
+            $attendance->save();
+        }
+
+        return response()->json(['success' => true]);
+    }
+    public function login(Request $request){
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+          ]);
+          $credentials = $request->only('email', 'password');
+          // Attempt to log the user in
+          if (Auth::guard('employee')->attempt($request->only('email', 'password'), $request->filled('remember'))) {
+            $admin = Auth::guard('employee')->user();
+            $name = $admin->first_name ." ". $admin->last_name;
+          $request->session()->put('employee_name', $name );
+          $request->session()->put('email', $admin->email );
+          $request->session()->put('role', 'Employee');
+
+            return redirect()->route('employee.dashboard');
+          }
+
+          // If unsuccessful, then redirect back to the login with the form data
+          // If unsuccessful, then redirect back to the login with the form data
+          return redirect()
+            ->back()
+            ->with('error', 'These credentials do not match our records.');
+    }
+    public function logout(Request $request)
+    {
+        Auth::guard('employee')->logout(); // Log the admin out
+        $request->session()->invalidate(); // Invalidate the session
+        $request->session()->regenerateToken(); // Regenerate the CSRF token
+
+        return redirect()->route('employee.login'); // Redirect to the login page
+    }
     public function allEmployees()
     {
         $employees = Employee::latest()->get();
@@ -34,35 +93,35 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the request
-        $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'nullable|string|max:255',
-            'username' => 'required|string|max:255|unique:employees,username',
-            'email' => 'required|string|email|max:255|unique:employees,email',
-            'password' => 'required|string|min:8|',
-            'employee_id' => 'required|string|max:255|unique:employees,employee_id',
-            'phone' => 'nullable|string|max:255',
-            'department' => 'required|string|max:255',
-            'designation' => 'required|string|max:255',
-            // Add validation for permissions if needed
-        ]);
+        // // Validate the request
+        // $request->validate([
+        //     'first_name' => 'required|string|max:255',
+        //     'last_name' => 'nullable|string|max:255',
+        //     'username' => 'required|string|max:255|unique:employees,username',
+        //     'email' => 'required|string|email|max:255|unique:employees,email',
+        //     'password' => 'required|string|min:8|',
+        //     'employee_id' => 'required|string|max:255|unique:employees,employee_id',
+        //     'phone' => 'nullable|string|max:255',
+        //     'department' => 'required|string|max:255',
+        //     'designation' => 'required|string|max:255',
+        //     // Add validation for permissions if needed
+        // ]);
         // Create a new employee
         $employee = new Employee();
         $employee->first_name = $request->first_name;
         $employee->last_name = $request->last_name;
-        $employee->username = $request->username;
         $employee->email = $request->email;
         $employee->password = Hash::make($request->password);
         $employee->employee_id = $request->employee_id;
         $employee->joining_date = $request->joining_date;
         $employee->phone = $request->phone;
-        $employee->department = $request->department;
-        $employee->designation = $request->designation;
+        $employee->department_id = $request->department;
+        $employee->designation_id = $request->designation;
+        $employee->leave_count = $request->input('leave_count');
 
         $employee->save();
 
-        return redirect()->route('admin.employees-list')->with('success', 'Employee added successfully');
+        return redirect()->route('admin.employees')->with('success', 'Employee added successfully');
     }
     public function edit(Request $request, $id)
     {
@@ -188,7 +247,33 @@ class EmployeeController extends Controller
     public function leavesEmployee()
     {
         // Add your logic for leaves employee view
-        return view('admin.leaves-employee'); // Example view path, adjust as per your structure
+        $email = session('email');
+        $employee = Employee::where('email', $email)->first();
+        $total_leaves = Employee::where('id',$employee->id)->pluck('leave_count')->first();
+        $medical_leave = EmployeeLeave::where('employee_id',$employee->id)->where('leave_type','Medical Leave')->count();
+        $other_leave = EmployeeLeave::where('employee_id', $employee->id)
+        ->where('leave_type', '!=', 'Medical Leave')
+        ->count();
+        $total_taken = EmployeeLeave::where('employee_id',$employee->id)->count();
+        $remaining_leave = $total_leaves - $total_taken;
+        $leaves = EmployeeLeave::where('employee_id',$employee->id)->get();
+        return view('admin.leaves-employee', compact('total_leaves', 'medical_leave', 'other_leave', 'remaining_leave','leaves')); // Example view path, adjust as per your structure
+    }
+    public function leavesEmployeeStore(Request $request)
+    {
+        $email = session('email');
+        $employee = Employee::where('email', $email)->first();
+        EmployeeLeave::create([
+            'employee_id' => $employee->id,
+            'leave_type' => $request->input('leave_type'),
+            'from' => $request->input('from'),
+            'to' => $request->input('to'),
+            'no_of_days' => $request->input('no_of_days'),
+            'reason' => $request->input('reason'),
+            'status' => 1
+            ]);
+        // Add your logic for leaves admin view
+        return redirect()->route('employee.leaves')->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
     }
 
     public function leaveSettings()

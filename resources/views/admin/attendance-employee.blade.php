@@ -25,23 +25,22 @@
                 <!-- /Page Header -->
 
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-12">
                         <div class="card punch-status">
                             <div class="card-body">
-                                <h5 class="card-title">Timesheet <small class="text-muted">11 Mar 2019</small></h5>
+                                <h5 class="card-title">Timesheet <small class="text-muted"  id="current-date"></small></h5>
                                 <div class="punch-det">
                                     <h6>Punch In at</h6>
-                                    <p>Wed, 11th Mar 2019 10.00 AM</p>
+                                    <p id="punch-in-time">--:--</p>
                                 </div>
-                                <div class="punch-info">
-                                    <div class="punch-hours">
-                                        <span>3.45 hrs</span>
-                                    </div>
+                                <div class="punch-det">
+                                    <h6>Punch Out at</h6>
+                                    <p id="punch-out-time">--:--</p>
                                 </div>
                                 <div class="punch-btn-section">
-                                    <button type="button" class="btn btn-primary punch-btn">Punch Out</button>
+                                    <button type="button" class="btn btn-primary punch-btn" id="punch-button" onclick="handlePunch()">Punch In</button>
                                 </div>
-                                <div class="statistics">
+                                {{-- <div class="statistics">
                                     <div class="row">
                                         <div class="col-md-6 col-6 text-center">
                                             <div class="stats-box">
@@ -56,11 +55,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    {{-- <div class="col-md-4">
                         <div class="card att-statistics">
                             <div class="card-body">
                                 <h5 class="card-title">Statistics</h5>
@@ -149,11 +148,11 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
 
                 <!-- Search Filter -->
-                <div class="row filter-row">
+                {{-- <div class="row filter-row">
                     <div class="col-sm-3">
                         <div class="form-group form-focus">
                             <div class="cal-icon">
@@ -200,10 +199,10 @@
                             <a href="#" class="btn btn-success"> Search </a>
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 <!-- /Search Filter -->
 
-                <div class="row">
+                {{-- <div class="row">
                     <div class="col-lg-12">
                         <div class="table-responsive">
                             <table class="table table-striped custom-table mb-0">
@@ -241,7 +240,7 @@
                             </table>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
             <!-- /Page Content -->
 
@@ -249,7 +248,36 @@
         <!-- Page Wrapper -->
 
 
+        <script>
+            document.getElementById('current-date').innerText = new Date().toLocaleDateString();
 
+            function handlePunch() {
+                const punchButton = document.getElementById('punch-button');
+                const isPunchIn = punchButton.innerText === 'Punch In';
+                const url = isPunchIn ? 'punch-in' : 'punch-out';
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        time: new Date().toISOString()
+                    })
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          if (isPunchIn) {
+                              document.getElementById('punch-in-time').innerText = new Date().toLocaleTimeString();
+                              punchButton.innerText = 'Punch Out';
+                          } else {
+                              document.getElementById('punch-out-time').innerText = new Date().toLocaleTimeString();
+                              punchButton.innerText = 'Punch In';
+                          }
+                      }
+                  });
+            }
+        </script>
 
 
 @endsection

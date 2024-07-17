@@ -12,7 +12,7 @@
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
                             <li><a class="" href="{{ route('admin.dashboard') }}">Admin Dashboard</a></li>
-                            <li><a class="" href="{{ route('admin.employee-dashboard') }}">Employee Dashboard</a>
+                            <li><a class="" href="{{ route('employee.dashboard') }}">Employee Dashboard</a>
                             </li>
                         </ul>
                     </li>
@@ -34,10 +34,10 @@
                             <li><a class="" href="{{ route('admin.holidays') }}">Holidays</a></li>
                             <li><a class="" href="{{ route('admin.leaves') }}">Leaves (Admin) <span
                                         class="badge rounded-pill bg-primary float-end">1</span></a></li>
-                            <li><a class="" href="{{ route('admin.leaves-employee') }}">Leaves (Employee)</a></li>
+                            <li><a class="" href="{{ route('employee.leaves-employee') }}">Leaves (Employee)</a></li>
                             <li><a class="" href="{{ route('admin.leave-settings') }}">Leave Settings</a></li>
                             <li><a class="" href="{{ route('admin.attendance') }}">Attendance (Admin)</a></li>
-                            <li><a class="" href="{{ route('admin.attendance-employee') }}">Attendance
+                            <li><a class="" href="{{ route('employee.attendance-employee') }}">Attendance
                                     (Employee)</a></li>
                             <li><a class="" href="{{ route('admin.departments') }}">Departments</a></li>
                             <li><a class="" href="{{ route('admin.designations') }}">Designations</a></li>
@@ -260,11 +260,12 @@
                             <li><a class="" href="{{ route('admin.dashboard') }}">Admin Dashboard</a></li>
                         @endif
                         @if (auth()->user()->hasRole('employee'))
-                            <li><a class="" href="{{ route('admin.employee-dashboard') }}">Employee
+                            <li><a class="" href="{{ route('employee.dashboard') }}">Employee
                                     Dashboard</a></li>
                         @endif
                     </ul>
                 </li>
+                @if (auth()->user()->hasRole('admin'))
                 <li class="submenu">
                     <a href="#"><i class="la la-cube"></i> <span> Todo(s)</span> <span
                             class="menu-arrow"></span></a>
@@ -273,7 +274,7 @@
                         <li><a class="" href="{{ route('admin.events') }}">Calendar</a></li>
                     </ul>
                 </li>
-
+@endif
                 <li class="menu-title">
                     <span>HR</span>
                 </li>
@@ -288,15 +289,18 @@
                                         class="badge rounded-pill bg-primary float-end">1</span></a></li>
                         @endif
                         @if (auth()->user()->hasRole('employee'))
-                            <li><a class="" href="{{ route('admin.leaves-employee') }}">Leaves (Employee)</a>
+                            <li><a class="" href="{{ route('employee.leaves-employee') }}">Leaves (Employee)</a>
                             </li>
                         @endif
                         @if (auth()->user()->hasRole('admin'))
                             <li><a class="" href="{{ route('admin.attendance') }}">Attendance (Admin)</a></li>
                         @endif
                         @if (auth()->user()->hasRole('employee'))
-                            <li><a class="" href="{{ route('admin.attendance-employee') }}">Attendance
+                            <li><a class="" href="{{ route('employee.attendance-employee') }}">Attendance
                                     (Employee)</a></li>
+
+                            <li class=""><a href="{{ route('employee.resignation') }}"><i
+                                class="la la-external-link-square"></i> <span>Resignation</span></a></li>
                         @endif
                         @if (auth()->user()->hasRole('admin'))
                             <li><a class="" href="{{ route('admin.departments') }}">Departments</a></li>
@@ -323,6 +327,32 @@
                 <ul style="display: none;">
                     <li><a class="" href="{{ route('admin.salary') }}"> Employee Salary </a></li>
                 </ul>
+            </li> --}}
+            <li>
+                <a href="{{ route('admin.wallet') }}"><i class="la la-cog"></i> <span>Wallet</span></a>
+            </li>
+
+            <li>
+                <a href="{{ route('admin.walletrequest') }}"><i class="la la-cog"></i> <span>Wallet Requests</span></a>
+            </li>
+
+            <li>
+                <a href="{{ route('admin.inventories') }}"><i class="la la-cog"></i> <span>Inventory</span></a>
+            </li>
+            <li>
+                <a href="{{ route('admin.expiry.inventories') }}"><i class="la la-cog"></i> <span>Expiry Inventory</span></a>
+            </li>
+            {{-- <li>
+                <a href="{{ route('admin.adminholds') }}"><i class="la la-cog"></i> <span>Admin Holds</span></a>
+            </li> --}}
+            <li>
+                <a href="{{ route('admin.sectors') }}"><i class="la la-cog"></i> <span>Sectors</span></a>
+            </li>
+            {{-- <li>
+                <a href="{{ route('admin.holds') }}"><i class="la la-cog"></i> <span>Agent Hold</span></a>
+            </li>
+            <li>
+                <a href="{{ route('admin.holdsconfirm') }}"><i class="la la-cog"></i> <span>Confirm Agent Hold</span></a>
             </li> --}}
                 @endif
                 @if (auth()->user()->hasRole('admin'))

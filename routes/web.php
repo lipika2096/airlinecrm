@@ -36,6 +36,10 @@ use App\Http\Controllers\dashboard\{
     EventStatusController,
     SectorController,
     HoldController,
+    WalletController,
+    WalletRequestController,
+    InventoryController,
+    AdminHoldController,
 };
 
 /*
@@ -50,17 +54,45 @@ use App\Http\Controllers\dashboard\{
 */
 
 // Home route
+Route::get('/employee', function () {
+    return view('admin.employee-login');
+})->name('employee.login');
+
+Route::post('/employee/login', [EmployeeController::class, 'login'])->name('employee.post.login');
+// Dashboard routes
+Route::prefix('employee')->name('employee.')->middleware(['auth:employee', 'verified']) // Correct way to add middleware
+->group(function () {
+
+    Route::get('dashboard', [DashboardController::class, 'employeeDashboard'])->name('dashboard');
+    Route::get('/logout', [EmployeeController::class, 'logout'])->name('logout');
+
+    Route::get('profile', [ProfileController::class, 'employeeProfile'])->name('profile');
+    Route::get('attendance-employee', [EmployeeController::class, 'attendanceEmployee'])->name('attendance-employee');
+    Route::get('leaves-employee', [EmployeeController::class, 'leavesEmployee'])->name('leaves-employee');
+
+    Route::get('resignation', [HRController::class, 'Employeeresignation'])->name('resignation');
+    Route::post('resignation/store', [HRController::class, 'EmployeeresignationStore'])->name('resignation.store');
+    Route::patch('resignation/update', [HRController::class, 'EmployeeresignationUpdate'])->name('resignation.update');
+
+    Route::post('punch-in', [EmployeeController::class, 'punchIn']);
+    Route::post('punch-out', [EmployeeController::class, 'punchOut']);
+
+    Route::get('leaves', [EmployeeController::class, 'leavesEmployee'])->name('leaves');
+    Route::post('leaves/store', [EmployeeController::class, 'leavesEmployeeStore'])->name('leaves.store');
+    Route::patch('leaves/edit/{id}', [EmployeeController::class, 'leavesEmployeeUpdate'])->name('leaves.update');
+});
+
 Route::get('/', function () {
     return view('admin.index');
 })->name('admin.login');
 
 Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.post.login');
-// Dashboard routes
 Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified']) // Correct way to add middleware
 ->group(function () {
-    Route::get('/logout', [AdminController::class, 'logout'])->name('logout');
+
     Route::get('dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
-    Route::get('employee-dashboard', [DashboardController::class, 'employeeDashboard'])->name('employee-dashboard');
+
+    Route::get('/logout', [AdminController::class, 'logout'])->name('logout');
 
 //Project Routes
 Route::get('project-view', function(){
@@ -71,14 +103,24 @@ Route::get('project-view', function(){
 
 //Sectors
 
-Route::get('sectors', [SectorController::class, 'index'])->name('sectors');
-Route::post('store-sector', [SectorController::class, 'store'])->name('sector.store');
-Route::put('update-sector/{id}', [SectorController::class, 'update'])->name('sector.update');
-Route::delete('delete-sector/{id}', [SectorController::class, 'destroy'])->name('sector.delete');
+Route::get('wallet', [WalletController::class, 'index'])->name('wallet');
+  Route::post('wallet/store', [WalletController::class, 'store'])->name('wallet.store');
+  Route::put('wallets/edit/{id}', [WalletController::class, 'update'])->name('wallet.update');
+  Route::delete('wallets/{id}', [WalletController::class, 'destroy'])->name('wallet.destroy');
+
+  Route::get('walletrequest', [WalletRequestController::class, 'index'])->name('walletrequest');
+
+  Route::get('sectors', [SectorController::class, 'index'])->name('sectors');
+    Route::post('store-sector', [SectorController::class, 'store'])->name('sector.store');
+    Route::put('update-sector/{id}', [SectorController::class, 'update'])->name('sector.update');
+    Route::delete('delete-sector/{id}', [SectorController::class, 'destroy'])->name('sector.delete');
+
+    Route::get('inventories', [InventoryController::class, 'index'])->name('inventories');
+    Route::get('inventories/expiry', [InventoryController::class, 'expiryinventory'])->name('expiry.inventories');
+    Route::post('inventories/store', [InventoryController::class, 'store'])->name('inventory.store');
 
 
-
-Route::get('holds', [HoldController::class, 'index'])->name('holds');
+    Route::get('admin-holds', [AdminHoldController::class, 'index'])->name('adminholds');
 Route::get('/view-holds/{id}', [HoldController::class, 'view'])->name('view-holds');
 Route::get('/edit-hold/{id}', [HoldController::class, 'edit'])->name('edit-hold');
 Route::post('/edit-hold/{id}', [HoldController::class, 'update'])->name('edit-hold');
@@ -128,10 +170,8 @@ Route::get('agent/view/{id}', [AgentController::class, 'view'])->name('agent.vie
     Route::get('leaves', [EmployeeController::class, 'leavesAdmin'])->name('leaves');
     Route::post('leaves/store', [EmployeeController::class, 'leavesAdminStore'])->name('leaves.store');
     Route::patch('leaves/edit/{id}', [EmployeeController::class, 'leavesAdminUpdate'])->name('leaves.update');
-    Route::get('leaves-employee', [EmployeeController::class, 'leavesEmployee'])->name('leaves-employee');
     Route::get('leave-settings', [EmployeeController::class, 'leaveSettings'])->name('leave-settings');
     Route::get('attendance', [EmployeeController::class, 'attendanceAdmin'])->name('attendance');
-    Route::get('attendance-employee', [EmployeeController::class, 'attendanceEmployee'])->name('attendance-employee');
     Route::get('departments', [EmployeeController::class, 'departments'])->name('departments');
     Route::post('departments/store', [EmployeeController::class, 'storeDepartment'])->name('departments.store');
     Route::patch('departments/edit/{id}', [EmployeeController::class, 'editDepartment'])->name('departments.edit');

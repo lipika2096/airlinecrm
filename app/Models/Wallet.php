@@ -11,8 +11,6 @@ class Wallet extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $guarded = ['id'];
-
     public function getCreatedAtAttribute($value)
     {
         return date('Y-m-d H:i:s', strtotime($value));
@@ -32,4 +30,6 @@ class Wallet extends Model
         return $this->hasOne(Book::class, 'book_id', 'description');
 
     }
+
+
 }

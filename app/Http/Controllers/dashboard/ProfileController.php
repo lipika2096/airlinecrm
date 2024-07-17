@@ -3,13 +3,19 @@
 namespace App\Http\Controllers\dashboard;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Employee;
+use Illuminate\Support\Facades\Auth;
+
 
 class ProfileController extends Controller
 {
     public function employeeProfile()
     {
         // Add your logic for employee profile view
-        return view('admin.profile'); // Example view path, adjust as per your structure
+        $email = session('email');
+        $employee = Employee::where('email', $email)->first();
+        $profile = Employee::where('id', $employee->id)->first();
+        return view('admin.client-profile', compact('profile')); // Example view path, adjust as per your structure
     }
 
     public function clientProfile()

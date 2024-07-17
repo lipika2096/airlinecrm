@@ -2,8 +2,8 @@
 @section('content')
 
 
-    <div class="main-wrapper">
-        @include ('admin/layouts/menu')
+<div class="main-wrapper">
+    @include ('admin/layouts/menu')
     <!-- Page Wrapper -->
     <div class="page-wrapper">
 
@@ -38,7 +38,9 @@
                                             <p>Richard Miles is off sick today</p>
                                         </div>
                                         <div class="dash-card-avatars">
-                                            <div class="e-avatar"><img src="{{asset('public/assets/img/profiles/avatar-09.jpg')}}" alt=""></div>
+                                            <div class="e-avatar"><img
+                                                    src="{{asset('public/assets/img/profiles/avatar-09.jpg')}}" alt="">
+                                            </div>
                                         </div>
                                     </div>
                                 </a>
@@ -54,7 +56,9 @@
                                             <p>You are away today</p>
                                         </div>
                                         <div class="dash-card-avatars">
-                                            <div class="e-avatar"><img src="{{asset('public/assets/img/profiles/avatar-02.jpg')}}" alt=""></div>
+                                            <div class="e-avatar"><img
+                                                    src="{{asset('public/assets/img/profiles/avatar-02.jpg')}}" alt="">
+                                            </div>
                                         </div>
                                     </div>
                                 </a>
@@ -70,7 +74,9 @@
                                             <p>You are working from home today</p>
                                         </div>
                                         <div class="dash-card-avatars">
-                                            <div class="e-avatar"><img src="{{asset('public/assets/img/profiles/avatar-02.jpg')}}" alt=""></div>
+                                            <div class="e-avatar"><img
+                                                    src="{{asset('public/assets/img/profiles/avatar-02.jpg')}}" alt="">
+                                            </div>
                                         </div>
                                     </div>
                                 </a>
@@ -92,8 +98,12 @@
                                             <p>2 people will be away tomorrow</p>
                                         </div>
                                         <div class="dash-card-avatars">
-                                            <a href="#" class="e-avatar"><img src="{{asset('public/assets/img/profiles/avatar-04.jpg')}}" alt=""></a>
-                                            <a href="#" class="e-avatar"><img src="{{asset('public/assets/img/profiles/avatar-08.jpg')}}" alt=""></a>
+                                            <a href="#" class="e-avatar"><img
+                                                    src="{{asset('public/assets/img/profiles/avatar-04.jpg')}}"
+                                                    alt=""></a>
+                                            <a href="#" class="e-avatar"><img
+                                                    src="{{asset('public/assets/img/profiles/avatar-08.jpg')}}"
+                                                    alt=""></a>
                                         </div>
                                     </div>
                                 </div>
@@ -114,8 +124,12 @@
                                             <p>2 people are going to be away</p>
                                         </div>
                                         <div class="dash-card-avatars">
-                                            <a href="#" class="e-avatar"><img src="{{asset('public/assets/img/profiles/avatar-05.jpg')}}" alt=""></a>
-                                            <a href="#" class="e-avatar"><img src="{{asset('public/assets/img/profiles/avatar-07.jpg')}}" alt=""></a>
+                                            <a href="#" class="e-avatar"><img
+                                                    src="{{asset('public/assets/img/profiles/avatar-05.jpg')}}"
+                                                    alt=""></a>
+                                            <a href="#" class="e-avatar"><img
+                                                    src="{{asset('public/assets/img/profiles/avatar-07.jpg')}}"
+                                                    alt=""></a>
                                         </div>
                                     </div>
                                 </div>
@@ -127,10 +141,12 @@
                                             <i class="fa fa-user-plus"></i>
                                         </div>
                                         <div class="dash-card-content">
-                                            <p>Your first day is going to be  on Thursday</p>
+                                            <p>Your first day is going to be on Thursday</p>
                                         </div>
                                         <div class="dash-card-avatars">
-                                            <div class="e-avatar"><img src="{{asset('public/assets/img/profiles/avatar-02.jpg')}}" alt=""></div>
+                                            <div class="e-avatar"><img
+                                                    src="{{asset('public/assets/img/profiles/avatar-02.jpg')}}" alt="">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -142,7 +158,7 @@
                                             <i class="fa fa-calendar"></i>
                                         </div>
                                         <div class="dash-card-content">
-                                            <p>It's Spring Bank Holiday  on Monday</p>
+                                            <p>It's Spring Bank Holiday on Monday</p>
                                         </div>
                                     </div>
                                 </a>
@@ -153,7 +169,7 @@
 
                 <div class="col-lg-4 col-md-4">
                     <div class="dash-sidebar">
-                        <section>
+                        <!-- <section>
                             <h5 class="dash-title">Projects</h5>
                             <div class="card">
                                 <div class="card-body">
@@ -175,7 +191,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </section>
+                        </section> -->
                         <section>
                             <h5 class="dash-title">Your Leave</h5>
                             <div class="card">
@@ -234,8 +250,8 @@
     </div>
     <!-- /Page Wrapper -->
 
-    </div>
-    <!-- end main wrapper-->
+</div>
+<!-- end main wrapper-->
 
 
 @endsection

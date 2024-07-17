@@ -258,7 +258,7 @@
             </div>
         </li> --}}
         <!-- /Message Notifications -->
-
+        @if (auth()->user()->hasRole('admin'))
         <li class="nav-item dropdown has-arrow main-drop">
             <a href="#" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">
                 <span class="user-img"><img src="{{asset('public/assets/img/user.jpg')}}" alt="">
@@ -271,6 +271,21 @@
                 <a class="dropdown-item" href="{{route('admin.logout')}}">Logout</a>
             </div>
         </li>
+        @endif
+        @if (auth()->user()->hasRole('employee'))
+        <li class="nav-item dropdown has-arrow main-drop">
+            <a href="#" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">
+                <span class="user-img"><img src="{{asset('public/assets/img/user.jpg')}}" alt="">
+                <span class="status online"></span></span>
+                <span>{{session('employee_name')}}</span>
+            </a>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="{{route('employee.profile')}}">My Profile</a>
+                {{-- <a class="dropdown-item" href="{{route('admin.settings')}}">Settings</a> --}}
+                <a class="dropdown-item" href="{{route('employee.logout')}}">Logout</a>
+            </div>
+        </li>
+        @endif
     </ul>
     <!-- /Header Menu -->
 

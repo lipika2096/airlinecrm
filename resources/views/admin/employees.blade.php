@@ -207,14 +207,18 @@
                                                 <input class="form-control" type="password" name="password">
                                             </div>
                                         </div>
-
-\                                        <div class="col-sm-6">
+                                        <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Employee ID <span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" name="employee_id">
                                             </div>
                                         </div>
-
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Total Leave <span class="text-danger">*</span></label>
+                                                <input type="number" class="form-control" name="leave_count">
+                                            </div>
+                                        </div>
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Phone </label>
