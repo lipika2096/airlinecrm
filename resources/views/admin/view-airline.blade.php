@@ -1660,7 +1660,7 @@
                                                 <td>{!! $rule->date_change_policy !!}</td>
                                                 <td style="display:flex;">
                                                     <a class="btn" data-bs-toggle="modal"
-                                                        data-bs-target="#edit_rules{{ $data->id }}">
+                                                        data-bs-target="#edit_rules{{ $rule->id }}">
                                                         <i class="fa fa-edit"></i></a>
 
                                                     <form id="toggle-status-form5-{{ $rule->id }}"
@@ -1677,7 +1677,7 @@
                                                     </form>
                                                 </td>
                                             </tr>
-                                            <div id="edit_rules{{ $data->id }}" class="modal fade"
+                                            <div id="edit_rules{{ $rule->id }}" class="modal fade"
                                                 role="dialog">
                                                 <div class="modal-dialog modal-dialog-centered modal-lg">
                                                     <div class="modal-content">
