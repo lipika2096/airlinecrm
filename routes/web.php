@@ -236,10 +236,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
 
     Route::post('agent/address/update/{id}', [AgentController::class, 'addressUpdate'])->name('agent.address.update');
     Route::post('agent/general/update/{id}', [AgentController::class, 'generalUpdate'])->name('agent.general.update');
-    
+
     Route::delete('agent/product/delete/{id}', [AgentController::class, 'productDelete'])->name('agent.product.delete');
-    
-    
+
+
 
     Route::post('agent/edit/{id}', [AgentController::class, 'edit'])->name('agent.edit');
 
@@ -353,8 +353,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
     Route::get('budget-revenues', [AccountingController::class, 'budgetRevenues'])->name('budget-revenues');
 
     // Payroll routes
-    
-    
+
+
     //Acconts routes
     Route::get('accounts/view', [AccountController::class, 'account'])->name('accounts.view');
     Route::get('accounts/all', [AccountController::class, 'viewAccount'])->name('accounts.all');
@@ -401,7 +401,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
 
     Route::patch('airlines/library/{id}', [AirlineController::class, 'libraryupdate'])->name('airline.library.update');
     Route::post('airlines/rules/store', [AirlineController::class, 'rulesStore'])->name('airline.rules.store');
-    Route::patch('airlines/rules/update/{id}', [AirlineController::class, 'agreementsUpdate'])->name('airline.rules.update');
+    Route::patch('airlines/rules/update/{id}', [AirlineController::class, 'rulesUpdate'])->name('airline.rules.update');
 
 
     // Report routes
