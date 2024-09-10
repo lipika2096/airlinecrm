@@ -353,7 +353,7 @@
                                                 <td>
                                                     @if ($sla->status == 1)
                                                         <span style="color: green;">Active</span>
-                                                    @elseif($sla->status == 0)
+                                                    @elseif($sla->status == 2)
                                                         <span style="color: red;">Inactive</span>
                                                     @else
                                                         <span>Status Unknown</span>
@@ -1481,7 +1481,7 @@
                                                 <td>
                                                     @if($data->attachment && $decodedAttachments = json_decode($data->attachment))
                                                         @foreach($decodedAttachments as $index => $docLibrary)
-                                                           
+
                                                                 <a href="{{ asset('public/assets/docs/'.$docLibrary) }}" target="_blank">
                                                                    <i
                                                             class="fa fa-eye"></i>
@@ -1995,7 +1995,7 @@
                                                         <select name="agent_id" class="form-control">
                                                             @foreach ($agents as $agent)
                                                                 <option value="{{ $agent->id }}">
-                                                                    {{ $agent->company_name }} 
+                                                                    {{ $agent->company_name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -2181,12 +2181,12 @@
                                     <tbody>
                                         @foreach ($agents as $agent)
                                             <tr>
-                                               
+
                                                                       <td>
                                 @if ($agent->specialFare)
                                     {{ $agent->specialFare->fare_type }}
                                 @else
-                                   
+
                                 @endif
                                             </td>
                                                 </td>
