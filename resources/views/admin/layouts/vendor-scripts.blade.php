@@ -65,11 +65,10 @@ $routesWithDatetimepicker = [
     'admin.schedule-timing', 'admin.aptitude-results', 'admin.users', 'admin.profile', 'admin.components'
 ];
 @endphp
-@if (in_array($currentRoute, $routesWithDatetimepicker)) {
+@if (in_array($currentRoute, $routesWithDatetimepicker))
     <!-- Datetimepicker JS -->
     <script src="{{ asset('public/assets/js/moment.min.js') }}"></script>
     <script src="{{ asset('public/assets/js/bootstrap-datetimepicker.min.js') }}"></script>
-}
 @endif
 
 @php
@@ -109,7 +108,7 @@ $routesWithDatatable = [
     'admin.termination', 'admin.assets', 'admin.jobs', 'admin.job-applicants', 'admin.manage-resumes',
     'admin.shortlist-candidates', 'admin.interview-questions', 'admin.offer-approvals', 'admin.experience-level',
     'admin.candidates', 'admin.schedule-timing', 'admin.aptitude-results', 'admin.users', 'admin.leave-type',
-    'admin.subscribed-companies', 'data-tables'
+    'admin.subscribed-companies', 'data-tables','admin.holidays',  'admin.attendance','airlines.view'
 ];
 @endphp
 @if (in_array($currentRoute, $routesWithDatatable))
@@ -130,3 +129,22 @@ $routesWithDatatable = [
 
 <!-- Custom JS -->
 <script src="{{ asset('public/assets/js/app.js') }}"></script>
+
+
+<script>
+        function toggleActivation(element) {
+            const icon = element.querySelector('i');
+            const isActive = icon.classList.contains('fa-toggle-on');
+
+            if (isActive) {
+                icon.classList.remove('fa-toggle-on');
+                icon.classList.add('fa-toggle-off');
+                element.style.color = '#000'; // Change color when deactivated
+            } else {
+                icon.classList.remove('fa-toggle-off');
+                icon.classList.add('fa-toggle-on');
+                element.style.color = 'black'; // Change color when activated
+            }
+        }
+    </script>
+              

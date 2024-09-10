@@ -19,136 +19,584 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Ticket;
 use App\Models\AirTicket;
+use App\Models\Agent;
+use App\Models\AgentAccount;
+use App\Models\AgentProvisionsPli;
+use App\Models\AgentProductsType;
+use App\Models\AgentConversation;
+use App\Models\AgentAddress;
+use App\Models\HeadOfficeContactDetail;
+use App\Models\SpecialFare;
+use App\Models\FareType;
+use App\Models\CaseHistory;
+use App\Models\CaseUpdate;
+use App\Models\Agreement;
+use Carbon\Carbon;
+
 
 class AgentController extends Controller
 {
     public function index()
     {
         $designation = Designation::latest()->get();
-        $agents = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-                        ->get(['clients.*', 'users.*']);
+        $agents = Agent::get();
         return view('admin.agent', compact('agents', 'designation'));
     }
 
-    public function store(Request $request)
+    public function update($id)
     {
-        try {
-            // Create a new client record
-            $client = new Client();
-            $client->client_creatorid = 0;
-            $client->client_categoryid = 2;
-            $client->client_created_from_leadid = 0;
-            $client->client_company_name = "CRM";
-            $client->client_billing_street = $request->client_billing_street;
-            $client->client_phone = $request->client_phone;
-            $client->client_billing_city = $request->client_billing_city;
-            $client->client_billing_state = $request->client_billing_state;
-            $client->client_billing_country = $request->client_billing_country;
-            $client->client_billing_zip = $request->client_billing_zip;
-            $client->client_custom_field_4 = $request->client_custom_field_4;
-            $client->client_custom_field_2 = $request->client_custom_field_2;
-            $client->client_custom_field_3 = $request->client_custom_field_3;
-            $client->client_custom_field_1 = $request->client_custom_field_1;
-            $client->save();
-
-            // Create a new user record
-            $user = new User();
-            $user->clientid = $client->client_id;
-            $user->first_name = $request->first_name;
-            $user->last_name = $request->last_name;
-            $user->email = $request->email;
-            $user->password = bcrypt($request->password);
-            $user->unique_id = $request->employee_id;
-            $user->phone = $request->phone;
-
-
-            $user->account_owner = 'yes';
-            $user->primary_admin = 'no';
-            $user->type = 'client';
-
-            // // Handle image uploadsrc="{{ asset('staff/storage/avatars/'.$agent->avatar_directory."/" . $agent->avatar_filename) }}"
-            // if ($request->hasFile('avatar_filename')) {
-            //     $image = $request->file('avatar_filename');
-            //     $imageName = Str::random(20) . '.' . $image->getClientOriginalExtension();
-            //     $directory = "NJj0UmpChhzd3BkXrQlWlACfoeecqzlerZgdR5rs";
-            //     $imagePath = $image->move('staff/storage/avatars/NJj0UmpChhzd3BkXrQlWlACfoeecqzlerZgdR5rs/', $imageName);
-            //     $user->avatar_filename = $imageName;
-            // }
-
-            $user->save();
-
-            return redirect()->route('admin.agents')->with('success', 'Agent added successfully');
-        } catch (\Exception $e) {
-            // Log the error message
-            Log::error('Error adding agent: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'There was an error adding the agent. Please try again.');
-        }
+        $designation = Designation::latest()->get();
+        $agent = Agent::find($id);
+        $agentAccounts = AgentAccount::where('agent_id', $id)->get();
+        $agentPli = AgentProvisionsPli::latest()->whereNotNull('pli')->where('agent_id', $id)->get();
+        $agentProv = AgentProvisionsPli::latest()->whereNotNull('prov')->where('agent_id', $id)->get();
+        $agentTarget = AgentProvisionsPli::latest()->whereNotNull('target')->where('agent_id', $id)->get();
+        $agentProduct = AgentProductsType::latest()->where('agent_id', $id)->get();
+        $agentConversation = AgentConversation::latest()->get();
+        return view('admin.edit-agent', compact('agent', 'designation', 'agentAccounts','agentPli','agentProv','agentTarget','agentProduct','agentConversation'));
     }
 
-    public function edit(Request $request, $id)
+    public function store(Request $request)
 {
     try {
-        // Find the client and user records to update
-        $client = Client::findOrFail($id);
-        $user = User::where('clientid', $client->client_id)->firstOrFail();
 
-        // Update client fields
-        $client->client_billing_street = $request->input('client_billing_street');
-        $client->client_phone = $request->input('client_phone');
-        $client->client_billing_city = $request->input('client_billing_city');
-        $client->client_billing_state = $request->input('client_billing_state');
-        $client->client_billing_country = $request->input('client_billing_country');
-        $client->client_billing_zip = $request->input('client_billing_zip');
-        $client->client_custom_field_4 = $request->input('client_custom_field_4');
-        $client->client_custom_field_2 = $request->input('client_custom_field_2');
-        $client->client_custom_field_3 = $request->input('client_custom_field_3');
-        $client->client_custom_field_1 = $request->input('client_custom_field_1');
-        $client->save();
+        $agent = new Agent();
+        $agent->company_name = $request->company_name;
+        $agent->email = $request->email;
+        $agent->agency_name = $request->agency_name;
+        $agent->address = $request->address;
+        $agent->city = $request->city;
+        $agent->state = $request->state;
+        $agent->country = $request->country;
+        $agent->pincode = $request->pincode;
+        $agent->owner_name = $request->owner_name;
 
-        // Update user fields
-        $user->first_name = $request->input('first_name');
-        $user->last_name = $request->input('last_name');
-        $user->email = $request->input('email');
-        $user->unique_id = $request->input('employee_id');
-        $user->phone = $request->input('phone');
-        $user->joining_date = $request->input('joining_date');
-        $user->position = $request->input('designation');
-        $user->password = $request->input('password');
-        // Handle image update
-        // if ($request->hasFile('avatar_filename')) {
-        //     // Delete old avatar if exists
-        //     if ($user->avatar_filename) {
-        //         unlink('staff/storage/avatars/NJj0UmpChhzd3BkXrQlWlACfoeecqzlerZgdR5rs/'. $user->avatar_filename);
-        //     }
-
-        //     // Upload new avatar
-        //     $image = $request->file('avatar_filename');
-        //     $imageName = Str::random(20). '.'. $image->getClientOriginalExtension();
-        //     $imagePath = $image->move('staff/storage/avatars/NJj0UmpChhzd3BkXrQlWlACfoeecqzlerZgdR5rs/', $imageName);
-        //     $user->avatar_filename = $imageName;
-        // }
-
-        $user->save();
-
-        return redirect()->route('admin.agents')->with('success', 'Agent updated successfully');
+        // Store focus destinations as a JSON-encoded string
+        $agent->focus_destinations = json_encode($request->focus_destinations);
+        $agent->parent_company = $request->parent_company;
+        $agent->headquarters = $request->headquarters;
+        $agent->key_people = $request->key_people;
+        $agent->websites = $request->websites;
+        $agent->no_of_employees = $request->no_of_employees;
+        $agent->iata = $request->iata;
+        $agent->gds_type = $request->gds_type;
+        $agent->pcc_office_id = $request->pcc_office_id; // Assuming office phone is the same as the provided phone
+        $agent->business_mode = $request->business_mode;
+        $agent->discount = $request->discount;
+        $agent->remarks = $request->remarks;
+        $agent->account_code = $request->account_code;
+// dd($agent);
+        $agent->save();
+        return redirect()->route('admin.agents')->with('success', 'Agent added successfully');
     } catch (\Exception $e) {
         // Log the error message
-        Log::error('Error updating agent: '. $e->getMessage());
-        return redirect()->back()->with('error', 'There was an error updating the agent. Please try again.');
+        Log::error('Error adding agent: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'There was an error adding the agent. Please try again.');
     }
 }
 
-    public function view($id)
+public function caseHistorySearch(Request $request)
+    {
+        $agents = Agent::all();
+
+        // Get input values from the request
+        $caseId = $request->input('id');
+        $pnr = $request->input('pnr');
+        $ticket_no = $request->input('ticket_no');
+        $status = $request->input('case_status');
+        $openDate = $request->input('case_opening_date');
+        $agent_id = $request->input('agent_id');
+
+        // Start building the query
+        $query = CaseHistory::query();
+
+        // Apply filters based on the input values
+        if ($caseId) {
+            $query->where('id', $caseId);
+        }
+
+        if ($pnr) {
+            $query->where('pnr', $pnr);
+        }
+
+        if ($ticket_no) {
+            $query->where('ticket_no', $ticket_no);
+        }
+
+        if ($status) {
+            $query->where('case_status', $status);
+        }
+
+        if ($openDate) {
+            $query->whereDate('case_opening_date', $openDate);
+        }
+
+        if ($agent_id) {
+            $query->where('agent_id', $agent_id);
+        }
+
+        // Execute the query to get the filtered results
+        $cases = $query->get();
+
+        // Return the view with the filtered data
+        return view('admin.view-case-history', compact(
+            'agents',
+            'caseId',
+            'pnr',
+            'ticket_no',
+            'status',
+            'openDate',
+            'agent_id',
+            'cases'
+        ));
+    }
+
+public function caseStore(Request $request)
+    {
+        $validatedData = $request->validate([
+            'case_opening_date' => 'required|date',
+            'opened_by' => 'required|string|max:255',
+            'pnr' => 'required|string|max:255',
+            'case_status' => 'required|string|max:255',
+            'case_closed_by' => 'nullable|string|max:255',
+            'case_closing_date' => 'nullable|date',
+            'agent_id' => 'required|integer',
+        ]);
+
+        $airline = CaseHistory::create($validatedData);
+
+        return redirect()->back()->with('success', 'Special fares updated successfully.');
+    }
+
+
+    // Update the case based on the form submission
+    public function caseUpdate(Request $request, $id)
+    {
+        $case = CaseHistory::findOrFail($id);
+    
+        $request->validate([
+            'status' => 'required|string|in:Update,Close',
+            'comments' => 'required|string|max:1000',
+        ]);
+    
+        // Add the new update to the case_updates table
+        CaseUpdate::create([
+            'case_id' => $case->id,
+            'update_date' => Carbon::now(),
+            'updated_by' => auth()->user()->name,
+            'comments' => $request->comments,
+            'status' => $request->status,
+        ]);
+    
+        // Update the case status and other relevant fields if closing the case
+        if ($request->status === 'Close') {
+            $case->update([
+                'case_status' => 'Closed',
+                'case_closed_by' => auth()->user()->name,
+                'case_closing_date' => Carbon::now(),
+            ]);
+        } else {
+            $case->update(['case_status' => 'Updated']);
+        }
+    
+        return redirect()->back()->with('success', 'Case updated successfully.');
+    }
+    
+
+    // Close the case
+    public function caseClose(Request $request)
+    {
+        $case = CaseHistory::findOrFail($request->input('caseId'));
+
+        $request->validate([
+            'comments' => 'required|string|max:1000',
+        ]);
+
+        // Update the case status to closed and record closing comments
+        CaseUpdate::create([
+            'case_id' => $case->id,
+            'update_date' => Carbon::now(),
+            'updated_by' => auth()->user()->name,
+            'comments' => $request->comments,
+            'status' => 'Closed',
+        ]);
+
+        $case->update([
+            'case_status' => 'Closed',
+            'case_closed_by' => auth()->user()->name,
+            'case_closing_date' => Carbon::now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Special fares updated successfully.');
+    }
+public function targetStore(Request $request)
+{
+    foreach ($request->input('airline') as $airlineId => $fareTypes) {
+        foreach ($fareTypes as $fareType => $status) {
+
+            SpecialFare::updateOrCreate(
+                [
+                    'agent_id' => $request->input('agent_id'),
+                    'fare_type' => $fareType,
+                    'airline_id' => $airlineId
+                ],
+                [
+                    'status' => $status
+                ]
+            );
+        }
+    }
+
+    return redirect()->back()->with('success', 'Special fares updated successfully.');
+}
+
+    // public function pliStore(Request $request){
+    //     AgentProvisionsPli::create([
+    //         'agent_id' => $request->input('agent_id'),
+    //         'pli' => $request->input('pli'),
+    //         'business' => $request->input('business'),
+    //         'pre_economy' => $request->input('pre_economy'),
+    //         'economy' => $request->input('economy'),
+    //         'valid_from_to' => $request->input('valid_from_to')
+    //     ]);
+    //     return redirect()->back();
+    // }
+    public function pliStore(Request $request)
+    {
+        $request->validate([
+            'airline_id' => 'required|integer',
+            'agent_id' => 'required|integer',
+            'incentive_description' => 'required|string|max:255',
+            'term' => 'required|string|max:255',
+            'target' => 'required|string|max:255',
+            'businessclass_intl' => 'required|string|max:255',
+            'businessclass_dom' => 'required|string|max:255',
+            'premiumclass_intl' => 'required|string|max:255',
+            'premiumclass_dom' => 'required|string|max:255',
+            'economyclass_intl' => 'required|string|max:255',
+            'economyclass_dom' => 'required|string|max:255',
+            'valid_from' => 'required|string|max:255',
+            'valid_till' => 'required|string|max:255',
+        ]);
+
+        Agreement::create([
+            'airline_id' => $request->input('airline_id'),
+            'agent_id' => $request->input('agent_id'),
+            'incentive_description' => $request->input('incentive_description'),
+            'term' => $request->input('term'),
+            'target' => $request->input('target'),
+            'businessclass_intl' => $request->input('businessclass_intl'),
+            'businessclass_dom' => $request->input('businessclass_dom'),
+            'premiumclass_intl' => $request->input('premiumclass_intl'),
+            'premiumclass_dom' => $request->input('premiumclass_dom'),
+            'economyclass_intl' => $request->input('economyclass_intl'),
+            'economyclass_dom' => $request->input('economyclass_dom'),
+            'valid_from' => $request->input('valid_from'),
+            'valid_till' => $request->input('valid_till'),
+            'type' => 'PLI',
+
+
+        ]);
+
+        return redirect()->back()->with('success', 'Rules updated successfully.');
+    }
+
+    public function provStore(Request $request)
+    {
+        $request->validate([
+            'airline_id' => 'required|integer',
+            'agent_id' => 'required|integer',
+            'incentive_description' => 'required|string|max:255',
+            'term' => 'required|string|max:255',
+            'target' => 'required|string|max:255',
+            'businessclass_intl' => 'required|string|max:255',
+            'businessclass_dom' => 'required|string|max:255',
+            'premiumclass_intl' => 'required|string|max:255',
+            'premiumclass_dom' => 'required|string|max:255',
+            'economyclass_intl' => 'required|string|max:255',
+            'economyclass_dom' => 'required|string|max:255',
+            'valid_from' => 'required|string|max:255',
+            'valid_till' => 'required|string|max:255',
+        ]);
+
+        Agreement::create([
+            'airline_id' => $request->input('airline_id'),
+            'agent_id' => $request->input('agent_id'),
+            'incentive_description' => $request->input('incentive_description'),
+            'term' => $request->input('term'),
+            'target' => $request->input('target'),
+            'businessclass_intl' => $request->input('businessclass_intl'),
+            'businessclass_dom' => $request->input('businessclass_dom'),
+            'premiumclass_intl' => $request->input('premiumclass_intl'),
+            'premiumclass_dom' => $request->input('premiumclass_dom'),
+            'economyclass_intl' => $request->input('economyclass_intl'),
+            'economyclass_dom' => $request->input('economyclass_dom'),
+            'valid_from' => $request->input('valid_from'),
+            'valid_till' => $request->input('valid_till'),
+            'type' => 'Prov',
+
+
+        ]);
+
+        return redirect()->back()->with('success', 'Rules updated successfully.');
+    }
+
+    public function transactionStore(Request $request){
+        
+        // Get the last balance for the agent
+    $lastAccount = AgentAccount::where('agent_id', $request->agent_id)->orderBy('id', 'desc')->first();
+    $lastBalance = $lastAccount ? $lastAccount->balance : 0;
+
+    // Calculate new balance based on credit and debit
+    $credit = $request->credit ? floatval($request->credit) : 0;
+    $debit = $request->debit ? floatval($request->debit) : 0;
+    $newBalance = $lastBalance + $credit - $debit;
+        AgentAccount::create([
+            'agent_id' => $request->input('agent_id'),
+            'debit' => $request->input('debit'),
+            'credit' => $request->input('credit'),
+            'tr_date' => $request->input('tr_date'),
+            'tr_type' => $request->input('tr_type'),
+            'balance' => $newBalance
+        ]);
+        return redirect()->back();
+
+    }
+    public function productStore(Request $request){
+        AgentProductsType::create([
+            'agent_id' => $request->input('agent_id'),
+            'product_type' => $request->input('product_type')
+        ]);
+        return redirect()->back();
+
+    }
+    
+    public function productDelete(Request $request, $id){
+        // Find the product by id
+        $product = AgentProductsType::find($id);
+
+        // Check if product exists
+        if (!$product) {
+            return redirect()->back()->with('error', 'Product not found.');
+        }
+
+        // Delete the product
+        $product->delete();
+
+        // Redirect back with a success message
+        return redirect()->back();
+    }
+
+    public function productUpdate(Request $request, $id){
+        $prod = AgentProductsType::find($id);
+        $prod->update([
+            'agent_id' => $request->input('agent_id'),
+            'product_type' => $request->input('product_type')
+        ]);
+        return redirect()->back();
+
+    }
+    public function contactUpdate(Request $request, $id){
+        $prod = HeadOfficeContactDetail::find($id);
+        $prod->update([
+            'title' => $request->input('title'),
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
+            'email_address' => $request->input('email_address'),
+            'phone_number' => $request->input('phone_number'),
+            'position' => $request->input('position'),
+        ]);
+        return redirect()->back();
+
+    }
+    public function ContactStore(Request $request){
+        HeadOfficeContactDetail::create([
+            'title' => $request->input('title'),
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
+            'email_address' => $request->input('email_address'),
+            'phone_number' => $request->input('phone_number'),
+            'position' => $request->input('position'),
+            'agent_id' => $request->input('agent_id'),
+        ]);
+        return redirect()->back();
+
+    }
+    public function AddressStore(Request $request){
+        AgentAddress::create([
+            'city' => $request->input('city'),
+            'state' => $request->input('state'),
+            'street' => $request->input('street'),
+            'country' => $request->input('country'),
+            'pincode' => $request->input('pincode'),
+            'agent_id' => $request->input('agent_id'),
+        ]);
+        return redirect()->back();
+
+    }
+
+    public function addressUpdate(Request $request, $id){
+
+        $prod = AgentAddress::find($id);
+        $prod->update([
+            'city' => $request->input('city'),
+            'state' => $request->input('state'),
+            'street' => $request->input('street'),
+            'country' => $request->input('country'),
+            'pincode' => $request->input('pincode'),
+        ]);
+        return redirect()->back();
+
+    }
+    public function generalUpdate(Request $request, $id){
+        $prod = Agent::find($id);
+        $prod->update([
+            'city' => $request->input('city'),
+            'agency_name' => $request->input('agency_name'),
+            'address' => $request->input('address'),
+            'country' => $request->input('country'),
+            'pincode' => $request->input('pincode'),
+            'iata' => $request->input('iata'),
+            'gds_type' => $request->input('gds_type'),
+            'pcc_office_id' => $request->input('pcc_office_id'),
+            'business_mode' => $request->input('business_mode'),
+            'focus_destinations' => $request->input('focus_destinations'),
+            'key_people' => $request->input('key_people'),
+            'parent_company' => $request->input('parent_company'),
+            'headquarters' => $request->input('headquarters'),
+            'website' => $request->input('website'),
+            'no_of_employees' => $request->input('no_of_employees'),
+        ]);
+        return redirect()->back();
+
+    }
+
+    public function conversationStore(Request $request){
+        AgentConversation::create([
+            'from' => $request->input('from'),
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'c_date' => now()
+        ]);
+        return redirect()->back();
+
+    }
+
+    public function targetUpdate(Request $request, $id){
+        $target = AgentProvisionsPli::find($id);
+        $target->update([
+            'agent_id' => $request->input('agent_id'),
+            'target' => $request->input('target'),
+            'business' => $request->input('business'),
+            'pre_economy' => $request->input('pre_economy'),
+            'economy' => $request->input('economy'),
+        ]);
+        return redirect()->back();
+    }
+
+    public function pliUpdate(Request $request, $id){
+        $pli = AgentProvisionsPli::find($id);
+        $pli->update([
+            'agent_id' => $request->input('agent_id'),
+            'pli' => $request->input('pli'),
+            'business' => $request->input('business'),
+            'pre_economy' => $request->input('pre_economy'),
+            'economy' => $request->input('economy'),
+            'valid_from_to' => $request->input('valid_from_to')
+        ]);
+        return redirect()->back();
+    }
+
+    public function provUpdate(Request $request, $id){
+        $prov = AgentProvisionsPli::find($id);
+        $prov->update([
+            'agent_id' => $request->input('agent_id'),
+            'prov' => $request->input('prov'),
+            'business' => $request->input('business'),
+            'pre_economy' => $request->input('pre_economy'),
+            'economy' => $request->input('economy'),
+            'valid_from_to' => $request->input('valid_from_to')
+        ]);
+        return redirect()->back();
+
+    }
+
+    public function transactionUpdate(Request $request, $id){
+        $tr = AgentAccount::find($id);
+        $tr->update([
+            'agent_id' => $request->input('agent_id'),
+            'debit' => $request->input('debit'),
+            'credit' => $request->input('credit'),
+            'tr_date' => $request->input('tr_date'),
+            'tr_type' => $request->input('tr_type')
+        ]);
+        return redirect()->back();
+
+    }
+
+    public function edit(Request $request, $id)
+    {
+        try {
+            // Find the client and user records to update
+            $agent = Agent::find($id);
+
+
+        $agent->company_name = $request->company_name;
+        $agent->email = $request->email;
+        $agent->agency_name = $request->agency_name;
+        $agent->address = $request->address;
+        $agent->city = $request->city;
+        $agent->state = $request->state;
+        $agent->country = $request->country;
+        $agent->pincode = $request->pincode;
+        $agent->owner_name = $request->owner_name;
+
+        // Store focus destinations as a JSON-encoded string
+        $agent->focus_destinations = json_encode($request->focus_destinations);
+        $agent->parent_company = $request->parent_company;
+        $agent->headquarters = $request->headquarters;
+        $agent->key_people = $request->key_people;
+        $agent->websites = $request->websites;
+        $agent->no_of_employees = $request->no_of_employees;
+        $agent->iata = $request->iata;
+        $agent->gds_type = $request->gds_type;
+        $agent->pcc_office_id = $request->pcc_office_id; // Assuming office phone is the same as the provided phone
+        $agent->business_mode = $request->business_mode;
+        $agent->discount = $request->discount;
+        $agent->remarks = $request->remarks;
+        $agent->account_code = $request->account_code;
+            $agent->save();
+
+            return redirect()->back()->with('success', 'Agent updated successfully');
+        } catch (\Exception $e) {
+            // Log the error message
+            Log::error('Error updating agent: '. $e->getMessage());
+            return redirect()->back()->with('error', 'There was an error updating the agent. Please try again.');
+        }
+    }
+
+    public function view(Request $request, $id)
     {
 
-        $agent = User::find($id);
+        $agent = Agent::find($id);
+        $agentAccounts = AgentAccount::where('agent_id', $id)->where('acc_no', Null)->get();
+        $agentAccountBal = AgentAccount::where('agent_id', $id)->where('acc_no', '!=', Null)->first();
+        $agentPli = Agreement::latest()->where('type', 'PLI')->where('agent_id', $id)->get()->groupBy('term');
+        $agentProv = Agreement::latest()->where('type', 'Prov')->where('agent_id', $id)->get();
+        $agentTarget = AgentProvisionsPli::latest()->whereNotNull('target')->where('agent_id', $id)->get();
+        $agentProduct = AgentProductsType::latest()->where('agent_id', $id)->get();
+        $agentConversation = AgentConversation::latest()->get();
+        $agentAddress = AgentAddress::where('agent_id', $id)->get();
+        $agentContact = HeadOfficeContactDetail::where('agent_id', $id)->get();
+        $specialFare = SpecialFare::where('agent_id', $id)->get();
+        $caseData = CaseHistory::where('agent_id', $id)->get();
 
+        $fareType = FareType::get();
         if (!$agent) {
             return redirect()->route('admin.agents')->with('error', 'Agent not found.');
         }
 
-
-        $client = Client::find($agent->clientid);
+        $client = Agent::find($id);
 
         if (!$client) {
             return redirect()->route('admin.agents')->with('error', 'Client not found.');
@@ -160,7 +608,7 @@ class AgentController extends Controller
         $fareConditions = FareCondition::where('agent_id', $id)->get();
         $group = Group::where('agent_id', $id)->get();
         $commissions = Commission::all();
-        $agents = User::all();
+        $agents = Agent::all();
         $airlines = Airline::all();
 
 
@@ -173,7 +621,7 @@ class AgentController extends Controller
         $tickets = Ticket::where('ticket_clientid', $id)->get();
         $airtickets = AirTicket::where('agent_id', $id)->get();
 
-        return view('admin.view-agent', compact('agent', 'client', 'designation', 'group', 'airline', 'fareConditions', 'agents', 'airlines', 'commissions', 'wallets', 'walletRequests', 'tickets', 'airtickets'));
+        return view('admin.view-agent', compact('agentAccountBal','agent', 'client', 'designation', 'group', 'airline', 'fareConditions', 'agents', 'airlines', 'commissions', 'wallets', 'walletRequests', 'tickets', 'airtickets','agentAccounts', 'agentProv', 'agentPli', 'agentTarget','agentConversation','agentProduct', 'agentAddress','agentContact','specialFare','fareType','caseData'));
     }
 
     public function storeWallet(Request $request)
@@ -252,8 +700,6 @@ class AgentController extends Controller
         }
     }
 
-
-
     public function deleteWallet(Request $request)
     {
         try {
@@ -290,29 +736,24 @@ class AgentController extends Controller
 
     }
 
+    public function groupupdate(Request $request, $id)
+    {
+        // Validate the incoming request data
+        $validatedData = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'airline_id' => 'sometimes|required|integer',
+            'agent_id' => 'sometimes|required|integer',
+            // Add other fields as needed
+        ]);
 
+        // Find the group record by ID
+        $group = Group::findOrFail($id);
 
-        public function groupupdate(Request $request, $id)
-        {
-            // Validate the incoming request data
-            $validatedData = $request->validate([
-                'name' => 'sometimes|required|string|max:255',
-                'airline_id' => 'sometimes|required|integer',
-                'agent_id' => 'sometimes|required|integer',
-                // Add other fields as needed
-            ]);
+        // Update the group record with validated data
+        $group->update($validatedData);
 
-            // Find the group record by ID
-            $group = Group::findOrFail($id);
-
-            // Update the group record with validated data
-            $group->update($validatedData);
-
-            // Return a response
-            return redirect()->back()->with('success', 'Group updated successfully');
-        }
+        // Return a response
+        return redirect()->back()->with('success', 'Group updated successfully');
+    }
 
 }
-
-
-

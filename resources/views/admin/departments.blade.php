@@ -1,11 +1,9 @@
 @extends('admin/layouts/head-main')
 @section('content')
-
-
     <title>Departments</title>
 
 
-   <!-- Page Wrapper -->
+    <!-- Page Wrapper -->
     <div class="page-wrapper">
 
         <!-- Page Content -->
@@ -22,7 +20,8 @@
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
-                        <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_department"><i class="fa fa-plus"></i> Add Department</a>
+                        <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_department"><i
+                                class="fa fa-plus"></i> Add Department</a>
                     </div>
                 </div>
             </div>
@@ -39,46 +38,51 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($department as $data)
-                                <tr>
-                                    <td>{{$data->department_name}}</td>
-                                    <td class="text-end">
-                                    <div class="dropdown dropdown-action">
-                                            <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
-                                        <div class="dropdown-menu dropdown-menu-right">
-                                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_department{{$data->id}}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
-                                        </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- Edit Department Modal -->
-        <div id="edit_department{{$data->id}}" class="modal custom-modal fade" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Department</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="{{ route('admin.departments.edit', ['id' => $data->id]) }}" method="POST" >
+                                @foreach ($department as $data)
+                                    <tr>
+                                        <td>{{ $data->department_name }}</td>
+                                        <td class="text-end">
+                                            <div class="dropdown-action">
+                                                <a href="#" data-bs-toggle="modal"
+                                                    data-bs-target="#edit_department{{ $data->id }}"><i
+                                                        class="fa fa-pencil"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- Edit Department Modal -->
+                                    <div id="edit_department{{ $data->id }}" class="modal custom-modal fade"
+                                        role="dialog">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Edit Department</h5>
+                                                    <button type="button" class="close" data-bs-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form
+                                                        action="{{ route('admin.departments.edit', ['id' => $data->id]) }}"
+                                                        method="POST">
 
-                            @method('patch')
-                            @csrf
-                            <div class="form-group">
-                                <label>Department Name <span class="text-danger">*</span></label>
-                                <input class="form-control" name="department_name" value="{{$data->department_name}}" type="text">
-                            </div>
-                            <div class="submit-section">
-                                <button class="btn btn-primary" type="submit">Update</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- /Edit Department Modal -->
+                                                        @method('patch')
+                                                        @csrf
+                                                        <div class="form-group">
+                                                            <label>Department Name <span
+                                                                    class="text-danger">*</span></label>
+                                                            <input class="form-control" name="department_name"
+                                                                value="{{ $data->department_name }}" type="text">
+                                                        </div>
+                                                        <div class="submit-section">
+                                                            <button class="btn btn-primary" type="submit">Update</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- /Edit Department Modal -->
                                 @endforeach
                             </tbody>
                         </table>
@@ -99,7 +103,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form method="post" action ="{{route('admin.departments.store')}}">
+                        <form method="post" action ="{{ route('admin.departments.store') }}">
                             @csrf
                             <div class="form-group">
                                 <label>Department Name <span class="text-danger">*</span></label>
@@ -132,7 +136,8 @@
                                     <a href="javascript:void(0);" class="btn btn-primary continue-btn">Delete</a>
                                 </div>
                                 <div class="col-6">
-                                    <a href="javascript:void(0);" data-bs-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
+                                    <a href="javascript:void(0);" data-bs-dismiss="modal"
+                                        class="btn btn-primary cancel-btn">Cancel</a>
                                 </div>
                             </div>
                         </div>
@@ -144,9 +149,4 @@
 
     </div>
     <!-- /Page Wrapper -->
-
-
-
-
-
 @endsection

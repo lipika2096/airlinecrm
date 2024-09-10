@@ -56,18 +56,20 @@
                             <td>{{ $value->airport_code ?? 'N/A' }}</td>
                             <td>{{ $value->city_name ?? 'N/A' }}</td>
                             <td>{{ $value->country_code ?? 'N/A' }}</td>
-                            <td class="text-end">
-                                <div class="dropdown dropdown-action">
-                                    <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_Sector{{ $value->id }}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
-                                        <form action="{{ route('admin.sector.delete', $value->id) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="dropdown-item"><i class="fa fa-trash m-r-5"></i> Delete</button>
-                                        </form>
-                                    </div>
+                            <td>
+                                <div class="action-icons">
+                                    <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#edit_Sector{{ $value->id }}" style="margin-right: 10px;">
+                                        <i class="fa fa-pencil"></i>
+                                    </a>
+                                    <form action="{{ route('admin.sector.delete', $value->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="action-icon" style="border:none;background:none;padding:0;color:inherit;">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
+                                
                             </td>
                         </tr>
 

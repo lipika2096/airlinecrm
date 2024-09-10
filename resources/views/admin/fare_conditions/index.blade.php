@@ -72,12 +72,10 @@
                         <td>{{ $fareCondition->effective_from_date }}</td>
                         <td>{{ $fareCondition->valid_till_date }}</td>
                         <td class="text-end">
-                        <div class="dropdown dropdown-action">
-                            <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="{{ route('admin.fare_conditions.edit', $fareCondition->id) }}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+                        <div class="dropdown-action">
+                                <a class="action-icon" href="{{ route('admin.fare_conditions.edit', $fareCondition->id) }}"><i class="fa fa-pencil"></i> </a>
                                 <!-- Add more actions if needed -->
-                            </div>
+                           
                         </div>
                     </td>
                         <!--<td>-->

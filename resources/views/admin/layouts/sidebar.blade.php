@@ -34,7 +34,8 @@
                             <li><a class="" href="{{ route('admin.holidays') }}">Holidays</a></li>
                             <li><a class="" href="{{ route('admin.leaves') }}">Leaves (Admin) <span
                                         class="badge rounded-pill bg-primary float-end">1</span></a></li>
-                            <li><a class="" href="{{ route('employee.leaves-employee') }}">Leaves (Employee)</a></li>
+                            <li><a class="" href="{{ route('employee.leaves-employee') }}">Leaves (Employee)</a>
+                            </li>
                             <li><a class="" href="{{ route('admin.leave-settings') }}">Leave Settings</a></li>
                             <li><a class="" href="{{ route('admin.attendance') }}">Attendance (Admin)</a></li>
                             <li><a class="" href="{{ route('employee.attendance-employee') }}">Attendance
@@ -265,259 +266,212 @@
                         @endif
                     </ul>
                 </li>
-                @if (auth()->user()->hasRole('admin'))
-                <li class="submenu">
-                    <a href="#"><i class="la la-cube"></i> <span> Todo(s)</span> <span
-                            class="menu-arrow"></span></a>
-                    <ul style="display: none;">
-                        <li><a class="" href="{{ route('admin.events.status') }}">Custom Event Status</a></li>
-                        <li><a class="" href="{{ route('admin.events') }}">Calendar</a></li>
-                    </ul>
-                </li>
-@endif
+                {{-- @if (auth()->user()->hasRole('admin'))
+                    <li class="submenu">
+                        <a href="#"><i class="la la-cube"></i> <span> Todo(s)</span> <span
+                                class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            <li><a class="" href="{{ route('admin.events.status') }}">Custom Event Status</a>
+                            </li>
+                            <li><a class="" href="{{ route('admin.events') }}">Calendar</a></li>
+                        </ul>
+                    </li>
+                @endif --}}
                 <li class="menu-title">
                     <span>HR</span>
                 </li>
                 <li class="submenu">
-                    <a href="#" class="noti-dot"><i class="la la-user"></i> <span> Employees</span> <span
+                    <a href="#" class=""><i class="la la-user"></i> <span> HR</span> <span
                             class="menu-arrow"></span></a>
                     <ul style="display: none;">
                         @if (auth()->user()->hasRole('admin'))
-                            <li><a class="" href="{{ route('admin.employees') }}">All Employees</a></li>
-                            <li><a class="" href="{{ route('admin.holidays') }}">Holidays</a></li>
-                            <li><a class="" href="{{ route('admin.leaves') }}">Leaves (Admin) <span
-                                        class="badge rounded-pill bg-primary float-end">1</span></a></li>
+                            <!--<li><a class="" href="{{ route('admin.employees') }}">All Staff(s)</a></li>-->
+                            <li><a class="" href="{{ route('admin.employees') }}">Staff List</a></li>
+                            <li><a class="" href="{{ route('admin.manage-staff') }}">Manage Staff</a></li>
+                            <li><a class="" href="{{ route('admin.holidays') }}">Holidays & Leaves</a></li>
+                            <!--<li><a class="" href="{{ route('admin.leaves') }}">Manage Staff Leaves</a></li>-->
                         @endif
                         @if (auth()->user()->hasRole('employee'))
-                            <li><a class="" href="{{ route('employee.leaves-employee') }}">Leaves (Employee)</a>
+                            <li><a class="" href="{{ route('employee.leaves-employee') }}">Leaves
+                                    (Employee)</a>
                             </li>
                         @endif
-                        @if (auth()->user()->hasRole('admin'))
-                            <li><a class="" href="{{ route('admin.attendance') }}">Attendance (Admin)</a></li>
-                        @endif
+                        {{-- @if (auth()->user()->hasRole('admin')) --}}
+                        {{--     <li><a class="" href="{{ route('admin.attendance') }}">View Staff(s) Attendance</a></li> --}}
+                        {{-- @endif --}}
                         @if (auth()->user()->hasRole('employee'))
                             <li><a class="" href="{{ route('employee.attendance-employee') }}">Attendance
                                     (Employee)</a></li>
 
                             <li class=""><a href="{{ route('employee.resignation') }}"><i
-                                class="la la-external-link-square"></i> <span>Resignation</span></a></li>
+                                        class="la la-external-link-square"></i> <span>Resignation</span></a></li>
                         @endif
                         @if (auth()->user()->hasRole('admin'))
-                            <li><a class="" href="{{ route('admin.departments') }}">Departments</a></li>
-                            <li><a class="" href="{{ route('admin.designations') }}">Designations</a></li>
-                            {{-- <li><a class="" href="{{ route('admin.timesheet') }}">Timesheet</a></li>
-                            <li><a class="" href="{{ route('admin.shift-scheduling') }}">Shift & Schedule</a>
-                            </li>
-                            <li><a class="" href="{{ route('admin.overtime') }}">Overtime</a></li> --}}
-                            <li><a class="" href="{{ route('admin.salary') }}"> Employee Salary </a></li>
-                            <li class="">
-                                <a href="{{ route('admin.policies') }}"><i class="la la-file-pdf-o"></i>
-                                    <span>Policies</span></a>
-                            </li>
-                            <li class=""><a href="{{ route('admin.resignation') }}"><i
-                                        class="la la-external-link-square"></i> <span>Resignation</span></a></li>
-                            <li class=""><a href="{{ route('admin.termination') }}"><i
-                                        class="la la-times-circle"></i> <span>Termination</span></a></li>
+                           <li><a class="" href="javascript:void(0);">Pending Approvals </a></li>
+                            <li><a class="" href="{{route('admin.employee.view-profile')}}">User Profiles</a></li>    
+                         {{-- <li><a class="" href="{{ route('admin.salary') }}"> Manage Staff Salary </a></li> --}}
                         @endif
+                        @if (auth()->user()->hasRole('admin'))
+                        <li>
+                        <a class="" href="{{route('admin.employee.rights')}}" >User Rights</a>
+                        </li>
+                         @endif
+                         @if (auth()->user()->hasRole('admin'))
+                        <li>
+                            <a style="margin-left: 0px;" class="" href="{{ route('admin.staff-reports') }}">Reports</a>
+                        </li>
+                         @endif
                     </ul>
                 </li>
+                
                 @if (auth()->user()->hasRole('admin'))
+                    <li class="menu-title">
+                        <span>Admin</span>
+                    </li>
                     {{-- <li class="submenu">
-                <a href="#"><i class="la la-money"></i> <span> Payroll </span> <span class="menu-arrow"></span></a>
-                <ul style="display: none;">
-                    <li><a class="" href="{{ route('admin.salary') }}"> Employee Salary </a></li>
-                </ul>
-            </li> --}}
-            <li>
-                <a href="{{ route('admin.wallet') }}"><i class="la la-cog"></i> <span>Wallet</span></a>
-            </li>
-
-            <li>
-                <a href="{{ route('admin.walletrequest') }}"><i class="la la-cog"></i> <span>Wallet Requests</span></a>
-            </li>
-
-            <li>
-                <a href="{{ route('admin.inventories') }}"><i class="la la-cog"></i> <span>Inventory</span></a>
-            </li>
-            <li>
-                <a href="{{ route('admin.expiry.inventories') }}"><i class="la la-cog"></i> <span>Expiry Inventory</span></a>
-            </li>
-            {{-- <li>
-                <a href="{{ route('admin.adminholds') }}"><i class="la la-cog"></i> <span>Admin Holds</span></a>
-            </li> --}}
-            <li>
-                <a href="{{ route('admin.sectors') }}"><i class="la la-cog"></i> <span>Sectors</span></a>
-            </li>
-            {{-- <li>
-                <a href="{{ route('admin.holds') }}"><i class="la la-cog"></i> <span>Agent Hold</span></a>
-            </li>
-            <li>
-                <a href="{{ route('admin.holdsconfirm') }}"><i class="la la-cog"></i> <span>Confirm Agent Hold</span></a>
-            </li> --}}
-                @endif
-                @if (auth()->user()->hasRole('admin'))
+                        <a href="#" class=""><i class="la la-user"></i> <span> Categories</span> <span
+                                class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                                <li><a class="" href="{{ route('admin.delay.code.category') }}">Delay Code Categories</a></li>
+                                <li><a class="" href="{{ route('admin.origin') }}">Origin Categories</a></li>
+                                <li><a class="" href="{{ route('admin.destination') }}">Destination Categories</a></li>
+                        </ul>
+                    </li>
+                    <li><a class="" href="{{ route('admin.airline-library') }}"><i class="la la-address-book"></i><span>Airline Library</span></a></li>
+                    <li><a class="" href="{{ route('admin.airlines') }}"><i class="la la-id-card"></i><span>Airlines</span></a></li>
+                    <li><a class="" href="{{ route('admin.delay.code') }}"><i class="la la-address-book"></i><span>Delay Codes</span></a></li>
+                    <li><a class="" href="{{ route('admin.designations') }}"><i class="la la-id-card"></i><span>Designations</span></a></li>
+                    <li><a class="" href="{{ route('admin.departments') }}"><i class="la la-id-card"></i><span>Departments</span></a></li>
+                    <li><a class="" href="{{ route('admin.flights') }}"><i class="la la-address-book"></i><span>Flights</span></a></li> --}}
+                    {{-- <li><a class="" href="{{ route('admin.designations') }}"><i class="la la-id-card"></i><span>Library</span></a></li> --}}
+                    {{-- <li><a class="" href="{{ route('admin.license') }}"><i class="la la-address-book"></i><span>Licenses/Approvals</span></a></li> --}}
                     <li class="submenu">
-                        <a href="#" class="noti-dot"><i class="la la-user"></i> <span> Airline Details</span>
+                        <a href="javascript:void(0);"><i class="la la-cube"></i> <span>Admin</span> <span
+                                class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            <li><a class="" href="{{route('admin.departments')}}">Add Departments</a></li>
+                            <li><a class="" href="{{route('admin.categories.view')}}">Add Category</a></li>
+                            <li><a class="" href="{{route('admin.duties')}}">Add Duties</a></li>
+                            <!-- <li><a class="" href="javascript:void(0);">Add Public Holidays</a></li> -->
+                            <li><a class="" href="{{ route('admin.events.status') }}">Add Status</a></li>
+                            <li><a class="" href="{{ route('admin.leave-type') }}">Add Leave Types</a></li>
+                            <li><a class="" href="{{ route('admin.comingSoon') }}">Add Agent Types</a></li>
+                            <li><a class="" href="{{ route('admin.comingSoon') }}">Add Report Types</a></li>
+                            <li><a class="" href="{{ route('admin.events') }}">My Todo(s)</a>
+                                <!-- <ul style="display: none;">
+                                    <li><a class="" href="{{ route('admin.events.status') }}">Custom Event Status</a>
+                                    </li>
+                                    <li><a class="" href="{{ route('admin.events') }}">Calendar</a></li>
+                                </ul> -->
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    {{-- <li>
+                        <a href="{{ route('admin.sectors') }}"><i class="la la-cog"></i> <span>Sectors</span></a>
+                    </li> --}}
+
+                    <li class="menu-title">
+                        <span>Travel Agent</span>
+                    </li>
+                    <li class="submenu">
+                        <a href="#" class=""><i class="la la-user"></i> <span>Travel Agent</span>
                             <span class="menu-arrow"></span></a>
                         <ul style="display: none;">
                             @if (auth()->user()->hasRole('admin'))
-                                <li><a class="" href="{{ route('admin.airlines') }}">Airlines Details</a></li>
+                               
+                                 <li><a class="" href="{{ route('admin.agents') }}">Travel Partners List</a></li>
+                                <li><a class="" href="{{ route('admin.agent-library') }}">Library</a></li>
+                                <li><a class="" href="{{ route('admin.agent-reports') }}">Reports</a></li>
+                                <!--<li><a class="" href="{{ route('admin.task-reports') }}">Reports</a></li>-->
+                                 <li><a class="" href="{{ route('admin.view.case-history') }}">Case History</a></li>
+                                {{-- <li>
+                                    <a href="{{ route('admin.walletrequest') }}"><span>Agent Wallet
+                                            Requests</span></a>
+                                </li> --}}
                             @endif
                         </ul>
                     </li>
+                    <li class="menu-title">
+                        <span>Airline</span>
+                    </li>
                     <li class="submenu">
-                        <a href="#" class="noti-dot"><i class="la la-user"></i> <span> Agent</span> <span
-                                class="menu-arrow"></span></a>
+                        <a href="#" class=""><i class="la la-fighter-jet"></i> <span> Airline</span>
+                            <span class="menu-arrow"></span></a>
                         <ul style="display: none;">
                             @if (auth()->user()->hasRole('admin'))
-                                <li><a class="" href="{{ route('admin.agents') }}">Agent Lists</a></li>
+                                <li><a class="" href="{{ route('admin.airlines-details') }}">Airlines List</a></li>
+                                <li><a class="" href="{{ route('admin.airline-library') }}">Library</a></li>
+                                <li><a class="" href="{{ route('admin.airline-reports') }}">Reports</a></li>
                             @endif
                         </ul>
                     </li>
+                    <!--<li class="submenu">
+                        <a href="#" class="noti-dot"><i class="la la-users"></i> <span> Group Requests</span>
+                            <span class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            <li><a class="" href="{{ route('admin.groups') }}">All Group Requests</a></li>
+                            <li><a class="" href="{{ route('admin.groups') }}">Open Group Requests</a></li>-->
+                            <!--<li><a class="" href="{{ route('admin.groups') }}">Open Group Requests</a></li>--
+                        </ul>
+                    </li>-->
+                  
+                    <li class="menu-title">
+                        <span>Sales & Marketing</span>
+                    </li>
                     <li class="submenu">
-                        <a href="#" class="noti-dot"><i class="la la-user"></i> <span> Groups</span> <span
+                        <a href="#"><i class="la la-files-o"></i> <span>Sales & Marketing</span> <span
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
-                            @if (auth()->user()->hasRole('admin'))
-                                <li><a class="" href="{{ route('admin.groups') }}">Manage Groups</a></li>
-                            @endif
+                            <li><a class="" href="{{ route('admin.saleslead') }}">Add Sales Lead</a></li>
+                            <li><a class="" href="{{url('/admin/coming-soon')}}">Record Sales call/Visit</a></li>
                         </ul>
                     </li>
-                @endif
-                @if (auth()->user()->hasRole('admin'))
-                    <li class="">
-                        <a href="{{ route('admin.air-tickets') }}"><i class="la la-ticket"></i>
-                            <span>Tickets</span></a>
+
+                    <li class="menu-title">
+                        <span>Reservations</span>
                     </li>
-                @endif
-                @if (auth()->user()->hasRole('admin'))
                     <li class="submenu">
-                        <a href="#"><i class="la la-files-o"></i> <span> Sales Lead</span> <span
+                        <a href="#"><i class="la la-ticket"></i> <span>Reservations</span> <span
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
-                            <li><a class="" href="{{ route('admin.saleslead') }}">Sales Lead Entry</a></li>
+                            <li><a class="" href="{{ route('admin.air-tickets') }}">Manage Reservations</a></li>
+                            <li><a class="" href="{{url('/admin/coming-soon')}}">New Sale</a></li>
+                            <li><a class="" href="{{url('/admin/coming-soon')}}">Modify Booking</a></li>
+                            <li><a class="" href="{{url('/admin/coming-soon')}}">Refunds</a></li>
+                            <li><a class="" href="{{ route('admin.groups') }}">Groups</a></li>
                         </ul>
                     </li>
+                    <li class="menu-title">
+                        <span>Accounts</span>
+                    </li>
+                    <li class="submenu">
+                        <a href="#"><i class="la la-money"></i> <span>Accounts</span> <span
+                                class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            <li><a class="" href="{{route('admin.accounts.view')}}">Add account</a></li>
+                            <li><a class="" href="{{route('admin.accounts.all')}}">View accounts </a></li>
+                            <li><a class="" href="{{url('/admin/coming-soon')}}">Add Payment to Pool </a></li>
+                            <li><a class="" href="{{url('/admin/coming-soon')}}">View Invoice</a></li>
+                            <li><a class="" href="{{url('/admin/coming-soon')}}">View Booking Accounts </a></li>
+                        </ul>
+                    </li>
+
+
+                    {{-- <li class="menu-title">
+                        <span>Inventory</span>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.inventories') }}"><i class="la la-cog"></i>
+                            <span>Inventory</span></a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.expiry.inventories') }}"><i class="la la-cog"></i> <span>Expiry
+                                Inventory</span></a>
+                    </li> --}}
                 @endif
 
-
-
-                <li class="submenu">
-                    <a href="#"><i class="la la-user"></i> <span> Fare Conditions </span> <span
-                            class="menu-arrow"></span></a>
-                    <ul style="display: none;">
-                        <li><a class="" href="{{ route('admin.fare_conditions.index') }}"> Fare Cond. </a></li>
-                        <li><a class="" href="{{ route('admin.commissions.index') }}"> commission </a></li>
-                    </ul>
-                </li>
-
-                {{-- @if (auth()->user()->hasRole('admin'))
-            <li class="submenu">
-                <a href="#"><i class="la la-pie-chart"></i> <span> Reports </span> <span class="menu-arrow"></span></a>
-                <ul style="display: none;">
-                    <li><a class="" href="{{ route('admin.expense-reports') }}"> Expense Report </a></li>
-                    <li><a class="" href="{{ route('admin.invoice-reports') }}"> Invoice Report </a></li>
-                    <li><a class="" href="{{ route('admin.payments-reports') }}"> Payments Report </a></li>
-                    <li><a class="" href="{{ route('admin.project-reports') }}"> Project Report </a></li>
-                    <li><a class="" href="{{ route('admin.task-reports') }}"> Task Report </a></li>
-                    <li><a class="" href="{{ route('admin.user-reports') }}"> User Report </a></li>
-                    <li><a class="" href="{{ route('admin.employee-reports') }}"> Employee Report </a></li>
-                    <li><a class="" href="{{ route('admin.payslip-reports') }}"> Payslip Report </a></li>
-                    <li><a class="" href="{{ route('admin.attendance-reports') }}"> Attendance Report </a></li>
-                    <li><a class="" href="{{ route('admin.leave-reports') }}"> Leave Report </a></li>
-                    <li><a class="" href="{{ route('admin.daily-reports') }}"> Daily Report </a></li>
-                </ul>
-            </li>
-            <li class="menu-title">
-                <span>Performance</span>
-            </li>
-            <li class="submenu">
-                <a href="#"><i class="la la-graduation-cap"></i> <span> Performance </span> <span class="menu-arrow"></span></a>
-                <ul style="display: none;">
-                    <li><a class="" href="{{ route('admin.performance-indicator') }}"> Performance Indicator </a></li>
-                    <li><a class="" href="{{ route('admin.performance-review') }}"> Performance Review </a></li>
-                    <li><a class="" href="{{ route('admin.performance-appraisal') }}"> Performance Appraisal </a></li>
-                </ul>
-            </li>
-            <li class="submenu">
-                <a href="#"><i class="la la-crosshairs"></i> <span> Goals </span> <span class="menu-arrow"></span></a>
-                <ul style="display: none;">
-                    <li><a class="" href="{{ route('admin.goal-tracking') }}"> Goal List </a></li>
-                    <li><a class="" href="{{ route('admin.goal-type') }}"> Goal Type </a></li>
-                </ul>
-            </li>
-            <li class="submenu">
-                <a href="#"><i class="la la-edit"></i> <span> Training </span> <span class="menu-arrow"></span></a>
-                <ul style="display: none;">
-                    <li><a class="" href="{{ route('admin.training') }}"> Training List </a></li>
-                    <li><a class="" href="{{ route('admin.trainers') }}"> Trainers</a></li>
-                    <li><a class="" href="{{ route('admin.training-type') }}"> Training Type </a></li>
-                </ul>
-            </li>
-            <li class=""><a href="{{ route('admin.promotion')}}">Promotion</a></li>
-            <li class=""><a href="{{ route('admin.resignation') }}"><i class="la la-external-link-square"></i> <span>Resignation</span></a></li>
-            <li class=""><a href="{{ route('admin.termination') }}"><i class="la la-times-circle"></i> <span>Termination</span></a></li>
-            <li class="menu-title">
-                <span>Administration</span>
-            </li>
-            <li class="">
-                <a href="{{ route('admin.assets') }}"><i class="la la-object-ungroup"></i> <span>Assets</span></a>
-            </li>
-            <li class="submenu">
-                <a href="#"><i class="la la-briefcase"></i> <span> Jobs </span> <span class="menu-arrow"></span></a>
-                <ul style="display: none;">
-                    <li><a class="" href="{{ route('admin.user-dashboard') }}"> User Dasboard </a></li>
-                    <li><a class="" href="{{ route('admin.jobs-dashboard') }}"> Jobs Dasboard </a></li>
-                    <li><a class="" href="{{ route('admin.jobs') }}"> Manage Jobs </a></li>
-                    <li><a class="" href="{{ route('admin.manage-resumes') }}"> Manage Resumes </a></li>
-                    <li><a class="" href="{{ route('admin.shortlist-candidates') }}"> Shortlist Candidates </a></li>
-                    <li><a class="" href="{{ route('admin.interview-questions') }}"> Interview Questions </a></li>
-                    <li><a class="" href="{{ route('admin.offer-approvals') }}"> Offer Approvals </a></li>
-                    <li><a class="" href="{{ route('admin.experience-level') }}"> Experience Level </a></li>
-                    <li><a class="" href="{{ route('admin.candidates') }}"> Candidates List </a></li>
-                    <li><a class="" href="{{ route('admin.schedule-timing') }}"> Schedule timing </a></li>
-                    <li><a class="" href="{{ route('admin.apptitude-result') }}"> Aptitude Results </a></li>
-                </ul>
-            </li>
-            <li class="">
-                <a href="{{ route('admin.knowledgebase') }}"><i class="la la-question"></i> <span>Knowledgebase</span></a>
-            </li>
-            <li class="">
-                <a href="{{ route('admin.activities') }}"><i class="la la-bell"></i> <span>Activities</span></a>
-            </li>
-            <li class="">
-                <a href="{{ route('admin.users') }}"><i class="la la-user-plus"></i> <span>Users</span></a>
-            </li>
-            <li class="">
-                <a href="{{ route('admin.settings') }}"><i class="la la-cog"></i> <span>Settings</span></a>
-            </li>
-            <li class="menu-title">
-                <span>Pages</span>
-            </li>
-            <li class="submenu">
-                <a href="#"><i class="la la-user"></i> <span> Profile </span> <span class="menu-arrow"></span></a>
-                <ul style="display: none;">
-                    <li><a class="" href="{{ route('admin.profile') }}"> Employee Profile </a></li>
-                    <li><a class="" href="{{ route('admin.client-profile') }}"> Client Profile </a></li>
-                </ul>
-            </li>
-        @endif --}}
-                {{-- <li class="submenu">
-            <a href="#"><i class="la la-hand-o-up"></i> <span> Subscriptions </span> <span class="menu-arrow"></span></a>
-            <ul style="display: none;">
-
-            @if (auth()->user()->hasRole('admin'))
-                <li><a class="" href="{{ route('admin.subscriptions') }}"> Subscriptions (Admin) </a></li>
-            @endif
-            @if (auth()->user()->hasRole('employee'))
-                <li><a class="" href="{{ route('admin.subscriptions.company') }}"> Subscriptions (Company) </a></li>
-            @endif
-                <li><a class="" href="{{ route('admin.subscribed.companies') }}"> Subscribed Companies</a></li>
             </ul>
-        </li> --}}
-            </ul>
-
-
         </div>
     </div>
 </div>

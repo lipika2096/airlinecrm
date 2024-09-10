@@ -65,9 +65,9 @@
                                 <div class="form-group">
                                     <label>Leave Type <span class="text-danger">*</span></label>
                                     <select class="form-control" name="leave_type">
-                                        <option value="Casual Leave 12 Days">Casual Leave 12 Days</option>
-                                        <option value="Medical Leave">Medical Leave</option>
-                                        <option value="Loss of Pay">Loss of Pay</option>
+                                        <option>Casual Leave </option>
+                                        <option>Medical Leave</option>
+                                        <option>Loss of Pay</option>
                                     </select>
                                 </div>
                                 <div class="form-group">

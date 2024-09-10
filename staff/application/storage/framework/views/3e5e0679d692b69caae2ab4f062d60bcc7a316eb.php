@@ -42,7 +42,7 @@
 
     <div class="row">
     <div class="col-md-6">
-    <h1>Book Ticket </h1><br>
+    <h1>Reservations </h1><br>
     </div>
     <div class="col-md-6" style="text-align: right;">
 
@@ -61,6 +61,18 @@
                 <?php $__currentLoopData = $airlines; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $id => $airline_code): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <option value="<?php echo e($id); ?>"><?php echo e($airline_code); ?></option>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="airline_id">Service Type</label>
+            <select class="form-control" id="airline_id" name="airline_id" required>
+                <!--<?php $__currentLoopData = $airlines; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $id => $airline_code): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>-->
+                <!--    <option value="<?php echo e($id); ?>"><?php echo e($airline_code); ?></option>-->
+                <!--<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>-->
+                <option value="<?php echo e($id); ?>">New Tickets</option>
+                <option value="<?php echo e($id); ?>">Date Of change</option><!-- Excess Baggage
+Excess Weight
+Paid Seat -->
             </select>
         </div>
         <div class="form-group">

@@ -76,7 +76,7 @@
                                                     <th>Task Name</th>
                                                     <th>Schedule Date</th>
                                                     <th>Status</th>
-                                                    <th>Action</th>
+                                                    {{-- <th>Action</th> --}}
                                                 </tr>
                                             </thead>
                                             <tbody id="events-table-body">
@@ -86,14 +86,15 @@
                                                         <td>{{ $data->event_name }}</td>
                                                         <td>{{ $data->event_date }}</td>
                                                         <td>
-                                                            <div class="dropdown action-label">
-                                                                <a class="btn btn-white btn-sm btn-rounded" style="text-transform:capitalize;">
+                                                            <div class="dropdown action-label dropdown-item" >
+                                                                <a class="btn btn-white btn-sm btn-rounded" data-bs-toggle="modal"
+                                                                data-bs-target="#edit_employee{{ $data->id }}" style="text-transform:capitalize;">
                                                                     <i class="fa fa-dot-circle-o text-purple"></i>
-                                                                    {{ $data->statusId->status_type }}
+                                                                    {{ $data->statusId->status_type??'No status Assigned' }}
                                                                 </a>
                                                             </div>
                                                         </td>
-                                                        <td>
+                                                        {{-- <td>
                                                             <div class="dropdown dropdown-action">
                                                                 <a href="#" class="action-icon dropdown-toggle"
                                                                     data-bs-toggle="dropdown" aria-expanded="false"><i
@@ -105,7 +106,7 @@
                                                                     <!-- Add more actions if needed -->
                                                                 </div>
                                                             </div>
-                                                        </td>
+                                                        </td> --}}
                                                     </tr>
                                                     <!-- Edit Designation Modal -->
                                                     <div id="edit_employee{{ $data->id }}"

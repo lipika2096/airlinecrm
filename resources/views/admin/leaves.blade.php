@@ -130,7 +130,7 @@
                                         <tr>
                                              <td>
                                                 <h2 class="table-avatar">
-                                                    <a href="#">{{$data->employee->first_name}} {{$data->employee->last_name}} </a>
+                                                    <a href="#">{{$data->user->first_name}} {{$data->user->last_name}} </a>
                                                 </h2>
                                             </td>
                                             <td>{{$data->leave_type}}</td>

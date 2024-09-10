@@ -65,13 +65,170 @@
                         </div>
                     </div> --}}
                     <!-- Search Filter -->
+   
+        <style>
+            .profile-widget .user-name {
+                color: #333333;
+                margin-top: 30px !important;
+            }
+        </style>
+                <div class="card tab-box">
+                    <div class="row user-tabs">
+                        <div class="col-lg-12 col-md-12 col-sm-12 line-tabs">
+                            <ul class="nav nav-tabs nav-tabs-bottom">
+                                <li class="nav-item"><a href="#allstaff" data-bs-toggle="tab" class="nav-link active">All Current Staff</a></li>
+                                <li class="nav-item"><a href="#branch" data-bs-toggle="tab" class="nav-link">By Department</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>   
+
+                <div class="tab-content">
+                    <!-- All Current Staff Tab -->
+                    <div id="allstaff" class="pro-overview tab-pane fade show active">  
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-striped custom-table mb-0 datatable">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Picture</th>
+                                                <th>First Name</th>
+                                                <th>Last Name</th>
+                                                <th>Airlines</th>
+                                                <th>Department</th>
+                                                <th>Position</th>
+                                                <th>Staff No</th>
+                                                <th>DOJ</th>
+                                                <th>Min Hrs</th>
+                                                <th>Max Hrs</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($employees as $index => $data)
+                                                <tr>
+                                                    <td>{{ $index+1 }}</td>
+                                                    <td>
+                                                        @if(!empty($data->avatar_filename))
+                                                            <img src="{{ asset('staff/storage/avatars/'.$data->avatar_directory."/" . $data->avatar_filename) }}" alt="">
+                                                        @else
+                                                            <img src="{{ asset('public/assets/img/user.jpg/') }}" alt="">
+                                                        @endif
+                                                    </td>
+                                                    <td style="color:#ed5b24;">{{ $data->first_name }}</td>
+                                                    <td style="color:#ed5b24;">{{ $data->last_name }}</td>
+                                                    <td>@if($data->client_company_name)
+                                                            {{ $data->client_company_name }}
+                                                        @else
+                                                            Null
+                                                        @endif</td>
+                                                    <td>{{ $data->department }}</td>
+                                                    <td>{{ $data->position }}</td>
+                                                    <td>{{ $data->unique_id }}</td>
+                                                    <td>{{ $data->joining_date }}</td>
+                                                    <td>{{ $data->min_hrs }}</td>
+                                                    <td>{{ $data->max_hrs }}</td>
+                                                    <td>
+                                                        <div class="action-icons" style="display: flex; flex-direction: row;">
+                                                        <a class="dropdown-item" href="{{ route('admin.view-staff', ['id' => $data->id]) }}">
+                                                            <i class="fa fa-eye m-r-5"></i>
+                                                        </a>
+                                                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_employee{{$data->id}}"><i class="fa fa-pencil m-r-5"></i></a>
+                                                            <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_modal_{{ $data->id }}" style="margin-right: 10px;">
+                                                                <i class="fa fa-trash"></i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>    
+
+                    <!-- By Department Tab -->
+                    <div id="branch" class="pro-overview tab-pane fade show">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-striped custom-table mb-0 datatable">
+                                        <thead>
+                                            <tr>
+                                                <th>S.No</th>
+                                                <th>Picture</th>
+                                                <th>First Name</th>
+                                                <th>Last Name</th>
+                                                <th>Airlines</th>
+                                                <th>Position</th>
+                                                <th>Staff No</th>
+                                                <th>DOJ</th>
+                                                <th>Min Hrs</th>
+                                                <th>Max Hrs</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach($departmentEmployees as $index => $data)
+                                                <tr>
+                                                    <td>{{ $index+1 }}</td>
+                                                    <td>
+                                                        @if(!empty($data->avatar_filename))
+                                                            <img src="{{ asset('staff/storage/avatars/'.$data->avatar_directory."/" . $data->avatar_filename) }}" alt="">
+                                                        @else
+                                                            <img src="{{ asset('public/assets/img/user.jpg/') }}" alt="">
+                                                        @endif
+                                                    </td>
+                                                    <td style="color:#ed5b24;">{{ $data->first_name }}</td>
+                                                    <td style="color:#ed5b24;">{{ $data->last_name }}</td>
+                                                    <td>
+                                                        @if(!empty($data->client->client_company_name))
+                                                            {{ $data->client->client_company_name }}
+                                                        @else
+                                                            Null
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $data->position }}</td>
+                                                    <td>{{ $data->unique_id }}</td>
+                                                    <td>{{ $data->joining_date }}</td>
+                                                    <td>{{ $data->min_hrs }}</td>
+                                                    <td>{{ $data->max_hrs }}</td>
+                                                    <td>
+                                                        
+                                                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_employee{{$data->id}}"><i class="fa fa-pencil m-r-5"></i></a>
+                                                            <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_modal_{{ $data->id }}" style="margin-right: 10px;">
+                                                                <i class="fa fa-trash"></i>
+                                                            </a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
 
                     <div class="row staff-grid-row">
                         @foreach($employees as $data)
-                        <div class="col-md-4 col-sm-6 col-12 col-lg-4 col-xl-3">
+                        <!--<div class="col-md-4 col-sm-6 col-12 col-lg-4 col-xl-3">
                             <div class="profile-widget">
                                 <div class="profile-img">
-                                    <a href="{{route('admin.admin-profile')}}" class="avatar"><img src="{{asset('public/assets/img/user.jpg/')}}" alt=""></a>
+                                    <a href="{{route('admin.admin-profile')}}" class="avatar">
+                                        @if(!empty($data->avatar_filename))
+                                            <img src="{{ asset('staff/storage/avatars/'.$data->avatar_directory."/" . $data->avatar_filename) }}" alt="">
+                                        @else
+                                        <img src="{{asset('public/assets/img/user.jpg/')}}" alt="">
+                                        @endif
+                                    </a>
                                 </div>
                                 <div class="dropdown profile-action">
                                     <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
@@ -81,9 +238,10 @@
                                     </div>
                                 </div>
                                 <h4 class="user-name m-t-10 mb-0 text-ellipsis"><a href="javascript:void(0)">{{$data->first_name}} {{$data->last_name}}</a></h4>
-                                <div class="small text-muted">{{$data->designation->designation}}</div>
+                                <div class="small text-muted">{{$data->position}}</div>
                             </div>
-                        </div>
+                        </div>-->
+                 
 
                 <!-- Edit Employee Modal -->
                 <div id="edit_employee{{$data->id}}" class="modal custom-modal fade" role="dialog">
@@ -122,7 +280,13 @@
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Employee ID <span class="text-danger">*</span></label>
-                                                <input type="text" name="employee_id" value="{{$data->employee_id}}" readonly class="form-control floating">
+                                                <input type="text" name="employee_id" value="{{$data->unique_id}}" class="form-control floating">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label"></label>Joining Date<span class="text-danger">*</span></label>
+                                                <input type="date" name="joining_date" value="{{$data->joining_date}}" class="form-control floating">
                                             </div>
                                         </div>
                                         <div class="col-sm-6">
@@ -137,7 +301,7 @@
                                                 <select class="select" name="department">
                                                     <option>Select Department</option>
                                                     @foreach($department as $department_data)
-                                                        <option value="{{$department_data->id}}" @if ($data->department_id == $department_data->id) selected @endif>{{$department_data->department_name}}</option>
+                                                        <option value="{{$department_data->department_name}}" @if ($data->department == $department_data->department_name) selected @endif>{{$department_data->department_name}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -148,9 +312,21 @@
                                                 <select class="select" name="designation">
                                                     <option>Select Designation</option>
                                                     @foreach($designation as $designation_data)
-                                                        <option value="{{$designation_data->id}}" @if ($data->designation_id == $designation_data->id) selected @endif>{{$designation_data->designation}}</option>
+                                                        <option value="{{$designation_data->designation}}" @if ($data->position == $designation_data->designation) selected @endif>{{$designation_data->designation}}</option>
                                                     @endforeach
                                                 </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Min Hrs </label>
+                                                <input class="form-control" name="min_hrs"  value="{{$data->min_hrs}}" type="text">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Max Hrs </label>
+                                                <input class="form-control" name="max_hrs"  value="{{$data->max_hrs}}" type="text">
                                             </div>
                                         </div>
                                     </div>
@@ -163,12 +339,37 @@
                     </div>
                 </div>
                 <!-- /Edit Employee Modal -->
+                <div id="delete_modal_{{ $data->id }}" class="modal custom-modal fade" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Delete Employee</h5>
+                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('admin.employee.destroy', $data->id) }}" method="POST"
+                                    onsubmit="return confirm('Are you sure you want to delete this?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <p>Are you sure want to delete?</p>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                         @endforeach
                     </div>
                 </div>
                 <!-- /Page Content -->
 
-                <!-- Add Employee Modal -->
+               <!-- Add Employee Modal -->
                 <div id="add_employee" class="modal custom-modal fade" role="dialog">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
@@ -227,17 +428,50 @@
                                         </div>
                                         <div class="col-sm-6">
                                             <div class="form-group">
+                                                <label class="col-form-label">Personal Mobile </label>
+                                                <input class="form-control" name="personal_phone" type="text">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Company Mobile </label>
+                                                <input class="form-control" name="company_mobile" type="text">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Work Type </label>
+                                                <input class="form-control" name="work_type" type="text">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Branch </label>
+                                                <input class="form-control" name="branch" type="text">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Date of Birth </label>
+                                                <input class="form-control" name="dob" type="date">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
                                                 <label class="col-form-label">Joining Date <span class="text-danger">*</span></label>
-                                                <div class="cal-icon"><input class="form-control" type="date" name="joining_date"></div>
+                                                <div class=""><input class="form-control" type="date" name="joining_date"></div>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>Department <span class="text-danger">*</span></label>
-                                                <select class="select" name="department">
+                                                <select class="select form-control" name="department">
                                                     <option>Select Department</option>
                                                     @foreach($department as $department_data)
-                                                        <option value="{{$department_data->id}}">{{$department_data->department_name}}</option>
+                                                        <option value="{{$department_data->department_name}}">{{$department_data->department_name}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -245,12 +479,24 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>Designation <span class="text-danger">*</span></label>
-                                                <select class="select" name="designation">
+                                                <select class="select form-control" name="designation">
                                                     <option>Select Designation</option>
                                                     @foreach($designation as $data)
                                                         <option value="{{$data->designation}}">{{$data->designation}}</option>
                                                     @endforeach
                                                 </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Min Hrs </label>
+                                                <input class="form-control" name="min_hrs" type="text">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Max Hrs </label>
+                                                <input class="form-control" name="max_hrs"  type="text">
                                             </div>
                                         </div>
                                     </div>
@@ -264,31 +510,8 @@
                 </div>
                 <!-- /Add Employee Modal -->
 
-
-                <!-- Delete Employee Modal -->
-                <div class="modal custom-modal fade" id="delete_employee" role="dialog">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                <div class="form-header">
-                                    <h3>Delete Employee</h3>
-                                    <p>Are you sure want to delete?</p>
-                                </div>
-                                <div class="modal-btn delete-action">
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <a href="javascript:void(0);" class="btn btn-primary continue-btn">Delete</a>
-                                        </div>
-                                        <div class="col-6">
-                                            <a href="javascript:void(0);" data-bs-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- /Delete Employee Modal -->
+              
+     
 
             </div>
             <!-- /Page Wrapper -->

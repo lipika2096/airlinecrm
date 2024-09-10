@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Group;
 use App\Models\Client;
+use App\Models\Agent;
 use App\Models\User;
 use App\Models\Airline;
 
@@ -13,8 +14,7 @@ class GroupController extends Controller
     public function index()
     {
         $group = Group::latest()->get();
-        $agent = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-        ->get(['clients.*', 'users.*']);
+        $agent = Agent::latest()->get();
         $airline = Airline::latest()->get();
         // Add your logic for calendar view
         return view('admin.groups', compact('group', 'agent', 'airline')); // Example view path, adjust as per your structure

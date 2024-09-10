@@ -1,7 +1,5 @@
 @extends('admin/layouts/head-main')
 @section('content')
-
-
     <title>Salary</title>
 
 
@@ -22,7 +20,8 @@
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
-                        <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_salary"><i class="fa fa-plus"></i> Add Salary</a>
+                        <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_salary"><i
+                                class="fa fa-plus"></i> Add Salary</a>
                     </div>
                 </div>
             </div>
@@ -91,28 +90,35 @@
                                     <th>Join Date</th>
                                     <th>Role</th>
                                     <th>Salary</th>
+                                    <!--<th>Document</th>-->
                                     <th>Payslip</th>
                                     <!--<th class="text-end">Action</th>-->
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($employeeSalary as $data)
+                                @foreach ($employeeSalary as $data)
                                     <tr>
                                         <td>
                                             <h2 class="table-avatar">
-                                                <a href="javascript:void()">{{$data->user->first_name}} {{$data->user->last_name}}</a>
+                                                <a href="javascript:void()">{{ $data->user->first_name }}
+                                                    {{ $data->user->last_name }}</a>
                                             </h2>
                                         </td>
-                                        <td>{{$data->user->unique_id}}</td>
-                                        <td>{{$data->user->email}}</td>
-                                        <td>{{$data->user->joining_date}}</td>
+                                        <td>{{ $data->user->unique_id }}</td>
+                                        <td>{{ $data->user->email }}</td>
+                                        <td>{{ $data->user->joining_date }}</td>
                                         <td>
                                             <div class="dropdown">
-                                                <a href="" class="btn btn-white btn-sm btn-rounded "aria-expanded="false">{{$data->user->position}} </a>
+                                                <a href=""
+                                                    class="btn btn-white btn-sm btn-rounded "aria-expanded="false">{{ $data->user->position }}
+                                                </a>
                                             </div>
                                         </td>
-                                        <td>{{$data->salary}}</td>
-                                        <td><a class="btn btn-sm btn-primary" href="{{route('admin.salary-view', ['id' => $data->id])}}">Generate Slip</a></td>
+                                        <td>{{ $data->salary }}</td>
+                                        <td><a class="btn btn-sm btn-primary"
+                                                href="{{ asset('public/assets/docs/' . $data->salary_doc) }}">View Slip</a>
+                                        </td>
+                                        <!--<td><a class="btn btn-sm btn-primary" href="{{ route('admin.salary-view', ['id' => $data->id]) }}">Generate Slip</a></td>-->
                                         <!--<td class="text-end">-->
                                         <!--    <div class="dropdown dropdown-action">-->
                                         <!--        <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>-->
@@ -142,53 +148,61 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="salaryForm" method="post" action="{{route('admin.salary.store')}}"> @csrf
-                        <div class="row">
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label>Select Month</label>
-                                <select class="select" name="month">
-                                    <option value="January">January</option>
-                                    <option value="February">February</option>
-                                    <option value="March">March</option>
-                                    <option value="April">April</option>
-                                    <option value="May">May</option>
-                                    <option value="June">June</option>
-                                    <option value="July">July</option>
-                                    <option value="August">August</option>
-                                    <option value="September">September</option>
-                                    <option value="October">October</option>
-                                    <option value="November">November</option>
-                                    <option value="December">December</option>
-                                </select>
+                        <form id="salaryForm" method="post" action="{{ route('admin.salary.store') }}"
+                            enctype="multipart/form-data"> @csrf
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Select Month</label>
+                                        <select class="select" name="month">
+                                            <option value="January">January</option>
+                                            <option value="February">February</option>
+                                            <option value="March">March</option>
+                                            <option value="April">April</option>
+                                            <option value="May">May</option>
+                                            <option value="June">June</option>
+                                            <option value="July">July</option>
+                                            <option value="August">August</option>
+                                            <option value="September">September</option>
+                                            <option value="October">October</option>
+                                            <option value="November">November</option>
+                                            <option value="December">December</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>Select Year</label>
+                                        <select class="select" name="year">
+                                            @for ($year = date('Y'); $year >= date('Y') - 10; $year--)
+                                                <option value="{{ $year }}">{{ $year }}</option>
+                                            @endfor
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label>Select Year</label>
-                                <select class="select" name="year">
-                                    @for ($year = date('Y'); $year >= date('Y') - 10; $year--)
-                                        <option value="{{ $year }}">{{ $year }}</option>
-                                    @endfor
-                                </select>
-                            </div>
-                        </div>
-                    </div>
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label>Select Staff</label>
                                         <select class="select" name="employee_id">
                                             <option>Select Staff</option>
-                                            @foreach($staff as $staffData)
-                                                <option value="{{$staffData->client_id}}">{{$staffData->user->first_name}} {{$staffData->user->last_name}}</option>
+                                            @foreach ($staff as $staffData)
+                                                <option value="{{ $staffData->id }}">{{ $staffData->first_name }}
+                                                    {{ $staffData->last_name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
+
+                                <div class="col-sm-6">
+                                    <label>Salary Doc.</label>
+                                    <input id="salary_doc" class="form-control" type="file" name="salary_doc">
+                                </div>
+
                                 <div class="col-sm-6">
                                     <label>Net Salary</label>
-                                    <input id="netSalary" class="form-control" type="text" readonly  name="netsalary">
+                                    <input id="netSalary" class="form-control" type="text" readonly name="netsalary">
                                 </div>
                             </div>
                             <div class="row">
@@ -196,54 +210,66 @@
                                     <h4 class="text-primary">Earnings</h4>
                                     <div class="form-group">
                                         <label>Basic</label>
-                                        <input id="basic" class="form-control" type="text" oninput="calculateNetSalary()" name="basic">
+                                        <input id="basic" class="form-control" type="text"
+                                            oninput="calculateNetSalary()" name="basic">
                                     </div>
                                     <div class="form-group">
                                         <label>DA(40%)</label>
-                                        <input id="da" class="form-control" type="text" oninput="calculateNetSalary()"  name="da">
+                                        <input id="da" class="form-control" type="text"
+                                            oninput="calculateNetSalary()" name="da">
                                     </div>
                                     <div class="form-group">
                                         <label>HRA(15%)</label>
-                                        <input id="hra" class="form-control" type="text" oninput="calculateNetSalary()" name="hra">
+                                        <input id="hra" class="form-control" type="text"
+                                            oninput="calculateNetSalary()" name="hra">
                                     </div>
                                     <div class="form-group">
                                         <label>Conveyance</label>
-                                        <input id="conveyance" class="form-control" type="text" oninput="calculateNetSalary()" name="conveyance">
+                                        <input id="conveyance" class="form-control" type="text"
+                                            oninput="calculateNetSalary()" name="conveyance">
                                     </div>
                                     <div class="form-group">
                                         <label>Allowance</label>
-                                        <input id="allowance" class="form-control" type="text" oninput="calculateNetSalary()" name="allowance">
+                                        <input id="allowance" class="form-control" type="text"
+                                            oninput="calculateNetSalary()" name="allowance">
                                     </div>
                                     <div class="form-group">
                                         <label>Medical Allowance</label>
-                                        <input id="medicalAllowance" class="form-control" type="text" oninput="calculateNetSalary()" name="medical_allowance">
+                                        <input id="medicalAllowance" class="form-control" type="text"
+                                            oninput="calculateNetSalary()" name="medical_allowance">
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <h4 class="text-primary">Deductions</h4>
                                     <div class="form-group">
                                         <label>TDS</label>
-                                        <input id="tds" class="form-control" type="text" oninput="calculateNetSalary()" name="tds">
+                                        <input id="tds" class="form-control" type="text"
+                                            oninput="calculateNetSalary()" name="tds">
                                     </div>
                                     <div class="form-group">
                                         <label>ESI</label>
-                                        <input id="esi" class="form-control" type="text" oninput="calculateNetSalary()" name="esi">
+                                        <input id="esi" class="form-control" type="text"
+                                            oninput="calculateNetSalary()" name="esi">
                                     </div>
                                     <div class="form-group">
                                         <label>PF</label>
-                                        <input id="pf" class="form-control" type="text" oninput="calculateNetSalary()" name="pf">
+                                        <input id="pf" class="form-control" type="text"
+                                            oninput="calculateNetSalary()" name="pf">
                                     </div>
                                     <div class="form-group">
                                         <label>Leave</label>
-                                        <input id="leave" class="form-control" type="text" oninput="calculateNetSalary()" name="leave_dd">
+                                        <input id="leave" class="form-control" type="text"
+                                            oninput="calculateNetSalary()" name="leave_dd">
                                     </div>
                                     <div class="form-group">
                                         <label>Prof. Tax</label>
-                                        <input id="profTax" class="form-control" type="text" oninput="calculateNetSalary()" name="prof_tax">
+                                        <input id="profTax" class="form-control" type="text"
+                                            oninput="calculateNetSalary()" name="prof_tax">
                                     </div>
                                     <div class="form-group">
                                         <label>Labour Welfare</label>
-                                        <input id="labourWelfare" class="form-control" type="text" oninput="calculateNetSalary()" name="labour_welfare">
+                                        <input id="labourWelfare" class="form-control" type="text"
+                                            oninput="calculateNetSalary()" name="labour_welfare">
                                     </div>
                                 </div>
                             </div>
@@ -308,7 +334,7 @@
                                         <input class="form-control" type="text" value="$30">
                                     </div>
                                     <div class="form-group">
-                                        <label>Medical  Allowance</label>
+                                        <label>Medical Allowance</label>
                                         <input class="form-control" type="text" value="$20">
                                     </div>
                                     <div class="form-group">
@@ -377,7 +403,8 @@
                                     <a href="javascript:void(0);" class="btn btn-primary continue-btn">Delete</a>
                                 </div>
                                 <div class="col-6">
-                                    <a href="javascript:void(0);" data-bs-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
+                                    <a href="javascript:void(0);" data-bs-dismiss="modal"
+                                        class="btn btn-primary cancel-btn">Cancel</a>
                                 </div>
                             </div>
                         </div>
@@ -391,35 +418,33 @@
     <!-- /Page Wrapper -->
 
 
-<script>
-    function calculateNetSalary() {
-        // Get the values from the earnings fields
-        const basic = parseFloat(document.getElementById('basic').value) || 0;
-        const da = parseFloat(document.getElementById('da').value) || 0;
-        const hra = parseFloat(document.getElementById('hra').value) || 0;
-        const conveyance = parseFloat(document.getElementById('conveyance').value) || 0;
-        const allowance = parseFloat(document.getElementById('allowance').value) || 0;
-        const medicalAllowance = parseFloat(document.getElementById('medicalAllowance').value) || 0;
+    <script>
+        function calculateNetSalary() {
+            // Get the values from the earnings fields
+            const basic = parseFloat(document.getElementById('basic').value) || 0;
+            const da = parseFloat(document.getElementById('da').value) || 0;
+            const hra = parseFloat(document.getElementById('hra').value) || 0;
+            const conveyance = parseFloat(document.getElementById('conveyance').value) || 0;
+            const allowance = parseFloat(document.getElementById('allowance').value) || 0;
+            const medicalAllowance = parseFloat(document.getElementById('medicalAllowance').value) || 0;
 
-        // Get the values from the deductions fields
-        const tds = parseFloat(document.getElementById('tds').value) || 0;
-        const esi = parseFloat(document.getElementById('esi').value) || 0;
-        const pf = parseFloat(document.getElementById('pf').value) || 0;
-        const leave = parseFloat(document.getElementById('leave').value) || 0;
-        const profTax = parseFloat(document.getElementById('profTax').value) || 0;
-        const labourWelfare = parseFloat(document.getElementById('labourWelfare').value) || 0;
+            // Get the values from the deductions fields
+            const tds = parseFloat(document.getElementById('tds').value) || 0;
+            const esi = parseFloat(document.getElementById('esi').value) || 0;
+            const pf = parseFloat(document.getElementById('pf').value) || 0;
+            const leave = parseFloat(document.getElementById('leave').value) || 0;
+            const profTax = parseFloat(document.getElementById('profTax').value) || 0;
+            const labourWelfare = parseFloat(document.getElementById('labourWelfare').value) || 0;
 
-        // Calculate total earnings and total deductions
-        const totalEarnings = basic + da + hra + conveyance + allowance + medicalAllowance;
-        const totalDeductions = tds + esi + pf + leave + profTax + labourWelfare;
+            // Calculate total earnings and total deductions
+            const totalEarnings = basic + da + hra + conveyance + allowance + medicalAllowance;
+            const totalDeductions = tds + esi + pf + leave + profTax + labourWelfare;
 
-        // Calculate net salary
-        const netSalary = totalEarnings - totalDeductions;
+            // Calculate net salary
+            const netSalary = totalEarnings - totalDeductions;
 
-        // Display the net salary
-        document.getElementById('netSalary').value = netSalary.toFixed(2);
-    }
-</script>
-
-
+            // Display the net salary
+            document.getElementById('netSalary').value = netSalary.toFixed(2);
+        }
+    </script>
 @endsection

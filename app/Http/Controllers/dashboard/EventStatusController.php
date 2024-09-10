@@ -25,4 +25,10 @@ class EventStatusController extends Controller{
         ]);
         return redirect()->route('admin.events.status');
     }
+    
+    public function delete(Request $request, $id){
+        $eventStatus = EventStatus::find($id);
+        $eventStatus->delete();
+        return redirect()->route('admin.events.status');
+    }
 }

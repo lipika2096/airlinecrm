@@ -7,6 +7,8 @@ use App\Models\LeadModal;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Models\EmployeeLeave;
+use App\Models\Employee;
 
 class LeadsController extends Controller
 {
@@ -111,6 +113,44 @@ class LeadsController extends Controller
     {
         $agentId = Auth::id();
         $agent = User::findOrFail($agentId); // Assuming you have a User model
-        return view('user.view', compact('agent'));
+
+        $authId = auth()->id();
+
+        $annualLeave = 12;
+
+        $medicalLeave = EmployeeLeave::where('employee_id', $authId)
+                                     ->where('leave_type', 'Medical Leave')
+                                     ->count();
+
+        $otherLeave = EmployeeLeave::where('employee_id', $authId)
+                                   ->whereNotIn('leave_type', ['Medical Leave'])
+                                   ->count();
+
+        $usedAnnualLeave = EmployeeLeave::where('employee_id', $authId)
+
+                                        ->count();
+        $remainingLeave = $annualLeave - $usedAnnualLeave;
+
+        $total_employee = Employee::count();
+        $employees = Employee::latest()->get();
+        $total_leaves = EmployeeLeave::where('created_at', now()->toDateString())
+                                     ->where('employee_id', $authId)
+                                     ->count();
+        $total_pending_leaves = EmployeeLeave::where('status', 2)
+                                             ->where('employee_id', $authId)
+                                             ->count();
+        $employee_leaves = EmployeeLeave::where('employee_id', $authId)->latest()->get();
+
+
+        return view('user.view', compact('agent',
+        'total_employee',
+        'employees',
+        'total_pending_leaves',
+        'total_leaves',
+        'employee_leaves',
+        'annualLeave',
+        'medicalLeave',
+        'otherLeave',
+        'remainingLeave'));
     }
 }

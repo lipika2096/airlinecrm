@@ -1046,6 +1046,8 @@ return [
     'profile' => "Profile",
     'viewProfile' => 'View Profile',
     'bank' => 'Wallet Req.',
+    'attendance' => 'Attendance',
+    'leaves' => 'Leaves',
     'group_request' => 'Group Request',
     'bookings' => 'Bookings',
     'manageBooking' => 'Manage Booking',

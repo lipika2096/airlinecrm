@@ -48,6 +48,7 @@
                 <th>ID</th>
                 <th>Airline</th>
                 <th>Commission Rate</th>
+                <th>Action</th>
 
                 <!-- <th>Actions</th> -->
             </tr>
@@ -58,13 +59,11 @@
                     <td>{{ $commission->id }}</td>
                     <td>{{ $commission->airline->airline_code }}</td>
                     <td>{{ $commission->commissions_rate }}</td>
-                    <td class="text-end">
-                        <div class="dropdown dropdown-action">
-                            <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="{{ route('admin.commissions.edit', $commission->id) }}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+                    <td>
+                        <div class="dropdown-action">
+                                <a class="action-icon" href="{{ route('admin.commissions.edit', $commission->id) }}"><i class="fa fa-pencil"></i> </a>
                                 <!-- Add more actions if needed -->
-                            </div>
+                            
                         </div>
                     </td>
  <!--<td>-->

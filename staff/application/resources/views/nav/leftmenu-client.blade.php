@@ -38,18 +38,27 @@
 
 
                 @if (auth()->user()->is_client_owner)
-                    {{-- <li data-modular-id="main_menu_client_projects"
+                <li data-modular-id="main_menu_client_projects"
+                class="sidenav-menu-item {{ $page['mainmenu_projects'] ?? '' }} menu-tooltip menu-with-tooltip"
+                title="{{ cleanLang(__('lang.leaves')) }}">
+                    <a class="waves-effect waves-dark" href="{{ route('leaves-employee') }}" aria-expanded="false"
+                        target="_self">
+                        <i class="ti-user"></i>
+                        <span class="hide-menu">{{ cleanLang(__('lang.leaves')) }}
+                        </span>
+                    </a>
+                </li>
+                    <li data-modular-id="main_menu_client_projects"
                         class="sidenav-menu-item {{ $page['mainmenu_projects'] ?? '' }} menu-tooltip menu-with-tooltip"
-                        title="{{ cleanLang(__('lang.group_request')) }}">
+                        title="{{ cleanLang(__('lang.attendance')) }}">
                         <a class="waves-effect waves-dark" href="{{ route('attendance') }}" aria-expanded="false"
                             target="_self">
                             <i class="ti-user"></i>
-                            <span class="hide-menu">{{ cleanLang(__('lang.group_request')) }}
+                            <span class="hide-menu">{{ cleanLang(__('lang.attendance')) }}
                             </span>
                         </a>
-
-                    </li> --}}
-                    <li data-modular-id="main_menu_client_projects"
+                    </li>
+                    {{-- <li data-modular-id="main_menu_client_projects"
                         class="sidenav-menu-item {{ $page['mainmenu_projects'] ?? '' }} menu-tooltip menu-with-tooltip"
                         title="{{ cleanLang(__('lang.bank')) }}">
                         <a class="waves-effect waves-dark" href="{{ route('bank') }}" aria-expanded="false"
@@ -59,7 +68,7 @@
                             </span>
                         </a>
 
-                    </li>
+                    </li> --}}
                 @endif
 
 
@@ -160,7 +169,7 @@
                 @endif
                 <!--tickets-->
                 <!--proposals-->
-                @if (config('visibility.modules.proposals') && auth()->user()->is_client_owner)
+                {{-- @if (config('visibility.modules.proposals') && auth()->user()->is_client_owner)
                     <li data-modular-id="main_menu_client_billing"
                         class="sidenav-menu-item {{ $page['mainmenu_client_billing'] ?? '' }}">
                         <a class="has-arrow waves-effect waves-dark" href="javascript:void(0);"
@@ -184,7 +193,7 @@
                             @endif
                         </ul>
                     </li>
-                @endif
+                @endif --}}
 
                 {!! config('menus.main_menu_client') !!}
 

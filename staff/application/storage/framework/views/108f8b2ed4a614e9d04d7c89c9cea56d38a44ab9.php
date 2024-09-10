@@ -40,6 +40,17 @@
 
 
                 <?php if(auth()->user()->is_client_owner): ?>
+                <li data-modular-id="main_menu_client_projects"
+                class="sidenav-menu-item <?php echo e($page['mainmenu_projects'] ?? ''); ?> menu-tooltip menu-with-tooltip"
+                title="<?php echo e(cleanLang(__('lang.leaves'))); ?>">
+                    <a class="waves-effect waves-dark" href="<?php echo e(route('leaves-employee')); ?>" aria-expanded="false"
+                        target="_self">
+                        <i class="ti-user"></i>
+                        <span class="hide-menu"><?php echo e(cleanLang(__('lang.leaves'))); ?>
+
+                        </span>
+                    </a>
+                </li>
                     <li data-modular-id="main_menu_client_projects"
                         class="sidenav-menu-item <?php echo e($page['mainmenu_projects'] ?? ''); ?> menu-tooltip menu-with-tooltip"
                         title="<?php echo e(cleanLang(__('lang.attendance'))); ?>">
@@ -50,20 +61,8 @@
 
                             </span>
                         </a>
-
                     </li>
-                    <li data-modular-id="main_menu_client_projects"
-                        class="sidenav-menu-item <?php echo e($page['mainmenu_projects'] ?? ''); ?> menu-tooltip menu-with-tooltip"
-                        title="<?php echo e(cleanLang(__('lang.leaves'))); ?>">
-                        <a class="waves-effect waves-dark" href="<?php echo e(route('leaves-employee')); ?>" aria-expanded="false"
-                            target="_self">
-                            <i class="ti-user"></i>
-                            <span class="hide-menu"><?php echo e(cleanLang(__('lang.leaves'))); ?>
-
-                            </span>
-                        </a>
-
-                    </li>
+                    
                 <?php endif; ?>
 
 
@@ -170,32 +169,7 @@
                 <?php endif; ?>
                 <!--tickets-->
                 <!--proposals-->
-                <?php if(config('visibility.modules.proposals') && auth()->user()->is_client_owner): ?>
-                    <li data-modular-id="main_menu_client_billing"
-                        class="sidenav-menu-item <?php echo e($page['mainmenu_client_billing'] ?? ''); ?>">
-                        <a class="has-arrow waves-effect waves-dark" href="javascript:void(0);"
-                            aria-expanded="false">
-                            <i class="ti-wallet"></i>
-                            <span class="hide-menu"><?php echo e(cleanLang(__('lang.fareConditions'))); ?>
-
-                            </span>
-                        </a>
-                        <ul aria-expanded="false" class="collapse">
-                            <?php if(config('visibility.modules.invoices')): ?>
-                                <li class="sidenav-submenu <?php echo e($page['submenu_invoices'] ?? ''); ?>"
-                                    id="submenu_invoices">
-                                    <a href="<?php echo e(route('fare_conditions.index')); ?>"
-                                        class=" <?php echo e($page['submenu_invoices'] ?? ''); ?>"><?php echo e(cleanLang(__('lang.fareConditions'))); ?></a>
-                                </li>
-                                <li class="sidenav-submenu <?php echo e($page['submenu_invoices'] ?? ''); ?>"
-                                    id="submenu_invoices">
-                                    <a href="<?php echo e(route('commissions.index')); ?>"
-                                        class=" <?php echo e($page['submenu_invoices'] ?? ''); ?>"><?php echo e(cleanLang(__('lang.commission'))); ?></a>
-                                </li>
-                            <?php endif; ?>
-                        </ul>
-                    </li>
-                <?php endif; ?>
+                
 
                 <?php echo config('menus.main_menu_client'); ?>
 

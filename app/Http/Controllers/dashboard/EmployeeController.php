@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Employee;
 use App\Models\Department;
+use App\Models\DepartmentRight;
 use App\Models\Designation;
 use App\Models\Holiday;
 use App\Models\EmployeeLeave;
@@ -14,11 +15,164 @@ use App\Models\EmployeeAttendance;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Calender;
+use App\Models\LeaveType;
 use Carbon\Carbon;
+
+use App\Models\Duty;
+use App\Models\SpecialFare;
+
+
+use App\Models\FareType;
 use Illuminate\Support\Facades\Auth;
 
 class EmployeeController extends Controller
 {
+    
+    public function PemployeeProfile($id){
+        $employees = User::find($id);
+        return view('admin.view-profile', compact('employees'));
+    }
+
+    public function viewUserProfile(){
+        $employees = User::where('role_id', 2)->get();
+         $department = Department::latest()->get();
+        $designation = Designation::latest()->get();
+        
+        return view('admin.view-employee', compact('employees','department', 'designation'));
+    }
+    
+    public function storeUserProfile(Request $request) {
+
+        // Create a new client record
+        $client = new Client();
+        $client->client_creatorid = 0;
+        $client->client_categoryid = 2;
+        $client->client_created_from_leadid = 0;
+        $client->client_company_name = "CRM";
+        $client->save();
+
+        // Create a new user record
+        $user = new User();
+        $user->clientid = $client->client_id;
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+        $user->unique_id = $request->employee_id;
+        $user->phone = $request->phone;
+        $user->joining_date = $request->joining_date;
+        $user->leave_count = $request->leave_count;
+        $user->department = $request->department;
+        $user->position = $request->designation;
+        $user->account_owner = 'yes';
+        $user->primary_admin = 'no';
+        $user->type = 'client';
+        $user->min_hrs = $request->min_hrs; // Set min_hrs
+        $user->max_hrs = $request->max_hrs; // Set max_hrs
+        $user->personal_phone = $request->phone;
+        $user->dob = $request->joining_date;
+        $user->work_type = $request->work_type;
+        $user->branch = $request->branch;
+        $user->company_mobile = $request->company_mobile;
+        $user->save();
+
+        return redirect()->back()->with('success', 'Employee added successfully');
+    }
+    
+    
+    public function updateUserProfile(Request $request, $id)
+    {
+        // // Handle image upload
+        // $image = $request->file('image');
+        // $imageName = null;
+        // if ($image) {
+        //     $imageName = uniqid() . '.' . $image->getClientOriginalExtension();
+        //     $imagePath = $image->move('pubilc/assets/upload', $imageName);
+        //     if (!$imagePath) {
+        //         return back()->with('error', 'Failed to upload image');
+        //     }
+        // }
+
+        // Create a new employee
+        $employee =  User::find($id);
+        $employee->update([
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
+            'email' => $request->input('email'),
+            'unique_id' => $request->input('employee_id'),
+            'joining_date' => $request->input('joining_date'),
+            'phone' => $request->input('phone'),
+            'department' => $request->input('department'),
+            'position' => $request->input('designation'),
+            'min_hrs' => $request->input('min_hrs'),
+            'max_hrs' => $request->input('max_hrs'),
+            'personal_phone' => $request->input('personal_phone'),
+            'company_mobile' => $request->input('company_mobile'),
+            'branch' => $request->input('branch'),
+            'work_type' => $request->input('work_type'),
+            'dob' => $request->input('dob')
+        ]);
+        return redirect()->back()->with('success', 'Employee added successfully');
+    }
+    
+    public function viewUserRights(){
+        $department_rights = DepartmentRight::get();
+         $department = Department::latest()->get();
+        $duties = Duty::latest()->get();
+        
+        $specialFare = SpecialFare::where('agent_id', 4)->get();
+        
+        $fareType = FareType::get();
+        
+        
+        return view('admin.view-rights', compact('department_rights', 'department','duties'));
+    }
+    
+    public function storeUserRights(Request $request) {
+
+        foreach ($request->input('department') as $departmentId => $duty) {
+        foreach ($duty as $dutiesData => $status) {
+
+            DepartmentRight::updateOrCreate(
+                [
+                    'staff_id' => $request->input('staff_id'),
+                    'duties_id' => $dutiesData,
+                    'department_id' => $departmentId
+                ],
+                [
+                    'status' => $status
+                ]
+            );
+        }
+    }
+        return redirect()->back()->with('success', 'User Rights by department added successfully');
+    }
+    
+    
+    // public function updateUserRights(Request $request, $id)
+    // {
+    //     // // Handle image upload
+    //     // $image = $request->file('image');
+    //     // $imageName = null;
+    //     // if ($image) {
+    //     //     $imageName = uniqid() . '.' . $image->getClientOriginalExtension();
+    //     //     $imagePath = $image->move('pubilc/assets/upload', $imageName);
+    //     //     if (!$imagePath) {
+    //     //         return back()->with('error', 'Failed to upload image');
+    //     //     }
+    //     // }
+
+    //     // Create a new employee
+    //     $rights =  DepartmentRight::find($id);
+    //     $rights->update([
+    //          'view_accounts' => $request->input('view_accounts'),
+    //         'view_sales_leads' => $request->input('view_sales_leads'),
+    //         'approve_holidays' => $request->input('approve_holidays'),
+    //         'approve_overtime' => $request->input('approve_overtime'),
+    //         ]);
+    //     return redirect()->back()->with('success', 'Employee added successfully');
+    // }
+
     public function punchIn(Request $request)
     {
         $email = session('email');
@@ -77,13 +231,103 @@ class EmployeeController extends Controller
 
         return redirect()->route('employee.login'); // Redirect to the login page
     }
-    public function allEmployees()
+
+    public function allEmployees(Request $request)
     {
-        $employees = Employee::latest()->get();
+        
+        $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')->where('users.role_id', 2)
+                        ->get(['clients.*', 'users.*']);
         $department = Department::latest()->get();
         $designation = Designation::latest()->get();
-        return view('admin.employees', compact('employees', 'department', 'designation')); // Example view path, adjust as per your structure
+        
+        $departmentEmployees = User::where('role_id', 2)->groupBy('department')->get();
+
+        return view('admin.employees', compact('employees', 'department', 'designation','departmentEmployees'));
     }
+    
+    // Display the employee's details and leave information
+
+    public function viewEmployee($id)
+{
+    $employee = Client::join('users', 'users.clientid', '=', 'clients.client_id')
+        ->where('users.id', $id)
+        ->first(['clients.*', 'users.*']);
+
+    $currentDate = \Carbon\Carbon::now()->format('l, j.n.Y');
+
+    $total_leave_taken = EmployeeLeave::where('employee_id', $id)
+        ->where('status', 1)
+        ->get()
+        ->sum(function ($leave) {
+            return \Carbon\Carbon::parse($leave->from)->diffInDays(\Carbon\Carbon::parse($leave->to)) + 1;
+        });
+
+    $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
+        ->whereDate('to', '>=', now()->toDateString())->count();
+    $remaining_leaves = $total_leaves - $total_leave_taken;
+    $leave_used_percentage = ($total_leaves > 0) ? ($total_leave_taken / $total_leaves) * 100 : 0;
+    $leave_used_percentage = min(100, max(0, $leave_used_percentage));
+
+    $absent_colleagues = EmployeeLeave::whereDate('from', '<=', \Carbon\Carbon::today()->toDateString())
+        ->whereDate('to', '>=', \Carbon\Carbon::today()->toDateString())
+        ->get();
+
+    $approvedLeaves = EmployeeLeave::where('status', 3)->count();
+    $total_min_hrs = User::where('id', $id)->pluck('min_hrs')->first();
+    $total_max_hrs = User::where('id', $id)->pluck('max_hrs')->first();
+    $total_overtime = $total_max_hrs - $total_min_hrs;
+    $total_pending_leaves = EmployeeLeave::where('status', 2)->count();
+
+    $total_employee = Client::count();
+	 
+	  $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
+                                                 ->whereDate('to', '>=', now()->toDateString())
+                                                 ->count();
+    $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
+
+    $leavetypes = LeaveType::all();
+    return view('admin.view-staff', compact(
+        'employee', 
+        'currentDate', 
+        'total_leave_taken', 
+        'remaining_leaves', 
+        'total_leaves', 
+        'leave_used_percentage', 
+        'absent_colleagues', 
+        'total_pending_leaves', 
+        'approvedLeaves', 
+        'total_overtime',  
+        'id',
+        'noofpresentemployeestoday',
+        'total_employee',
+        'leavetypes'
+    ));
+}
+
+// Store the employee's leave request
+public function leavesStaffStore(Request $request)
+{
+    $request->validate([
+        'employee_id' => 'required|exists:users,id',
+        'leave_type' => 'required|string',
+        'from' => 'required|date',
+        'to' => 'required|date|after_or_equal:from',
+        'reason' => 'nullable|string',
+    ]);
+
+    EmployeeLeave::create([
+        'employee_id' => $request->input('employee_id'),
+        'leave_type' => $request->input('leave_type'),
+        'from' => $request->input('from'),
+        'to' => $request->input('to'),
+        'reason' => $request->input('reason'),
+        'status' => 1
+    ]);
+
+    return redirect()->route('admin.view-staff', ['id' => $request->input('employee_id')]);
+}
+
+
 
     public function Employeeslist()
     {
@@ -107,19 +351,62 @@ class EmployeeController extends Controller
         //     // Add validation for permissions if needed
         // ]);
         // Create a new employee
-        $employee = new Employee();
-        $employee->first_name = $request->first_name;
-        $employee->last_name = $request->last_name;
-        $employee->email = $request->email;
-        $employee->password = Hash::make($request->password);
-        $employee->employee_id = $request->employee_id;
-        $employee->joining_date = $request->joining_date;
-        $employee->phone = $request->phone;
-        $employee->department_id = $request->department;
-        $employee->designation_id = $request->designation;
-        $employee->leave_count = $request->input('leave_count');
+        // $employee = new Employee();
+        // $employee->first_name = $request->first_name;
+        // $employee->last_name = $request->last_name;
+        // $employee->email = $request->email;
+        // $employee->password = Hash::make($request->password);
+        // $employee->employee_id = $request->employee_id;
+        // $employee->joining_date = $request->joining_date;
+        // $employee->phone = $request->phone;
+        // $employee->department_id = $request->department;
+        // $employee->designation_id = $request->designation;
+        // $employee->leave_count = $request->input('leave_count');
 
-        $employee->save();
+        // $employee->save();
+
+        // Create a new client record
+        $client = new Client();
+        $client->client_creatorid = 0;
+        $client->client_categoryid = 2;
+        $client->client_created_from_leadid = 0;
+        $client->client_company_name = "CRM";
+        $client->save();
+
+        // Create a new user record
+        $user = new User();
+        $user->clientid = $client->client_id;
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+        $user->unique_id = $request->employee_id;
+        $user->phone = $request->phone;
+        $user->joining_date = $request->joining_date;
+        $user->leave_count = $request->leave_count;
+        $user->department = $request->department;
+        $user->position = $request->designation;
+        $user->account_owner = 'yes';
+        $user->primary_admin = 'no';
+        $user->type = 'client';
+        $user->min_hrs = $request->min_hrs; // Set min_hrs
+        $user->max_hrs = $request->max_hrs; // Set max_hrs
+        $user->personal_phone = $request->phone;
+        $user->dob = $request->joining_date;
+        $user->work_type = $request->work_type;
+        $user->branch = $request->branch;
+        $user->company_mobile = $request->company_mobile;
+
+        // // Handle image uploadsrc="{{ asset('staff/storage/avatars/'.$agent->avatar_directory."/" . $agent->avatar_filename) }}"
+        // if ($request->hasFile('avatar_filename')) {
+        //     $image = $request->file('avatar_filename');
+        //     $imageName = Str::random(20) . '.' . $image->getClientOriginalExtension();
+        //     $directory = "NJj0UmpChhzd3BkXrQlWlACfoeecqzlerZgdR5rs";
+        //     $imagePath = $image->move('staff/storage/avatars/NJj0UmpChhzd3BkXrQlWlACfoeecqzlerZgdR5rs/', $imageName);
+        //     $user->avatar_filename = $imageName;
+        // }
+
+        $user->save();
 
         return redirect()->route('admin.employees')->with('success', 'Employee added successfully');
     }
@@ -137,32 +424,111 @@ class EmployeeController extends Controller
         // }
 
         // Create a new employee
-        $employee =  Employee::find($id);
+        $employee =  User::find($id);
         $employee->update([
             'first_name' => $request->input('first_name'),
-        'last_name' => $request->input('last_name'),
-        'username' => $request->input('username'),
-        'email' => $request->input('email'),
-        'employee_id' => $request->input('employee_id'),
-        'joining_date' => $request->input('joining_date'),
-        'phone' => $request->input('phone'),
-        'department' => $request->input('department'),
-        'designation' => $request->input('designation')
+            'last_name' => $request->input('last_name'),
+            'email' => $request->input('email'),
+            'unique_id' => $request->input('employee_id'),
+            'joining_date' => $request->input('joining_date'),
+            'phone' => $request->input('phone'),
+            'department' => $request->input('department'),
+            'position' => $request->input('designation'),
+            'min_hrs' => $request->input('min_hrs'),
+            'max_hrs' => $request->input('max_hrs'),
+            'personal_phone' => $request->input('personal_phone'),
+            'company_mobile' => $request->input('company_mobile'),
+            'branch' => $request->input('branch'),
+            'work_type' => $request->input('work_type'),
+            'dob' => $request->input('dob')
         ]);
         return redirect()->route('admin.employees')->with('success', 'Employee added successfully');
     }
+
+    public function destroy($id)
+    {
+        try {
+            // Find the user based on the provided ID
+            $user = User::findOrFail($id);
+
+            // Find the client associated with this user
+            $client = Client::where('client_id', $user->clientid)->first();
+
+            // Delete the user and client records
+            if ($user) {
+                $user->delete();
+            }
+            
+            if ($client) {
+                $client->delete();
+            }
+
+            return redirect()->route('admin.employees')
+                ->with('success', 'Employee and associated client deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.employees')
+                ->with('error', 'Deletion failed: ' . $e->getMessage());
+        }
+    }
+
+    public function manageStaff()
+    {
+        // Reuse the existing logic to fetch employees
+        $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
+                            ->where('users.role_id', 2)
+                            ->get(['clients.*', 'users.*']);
+        
+        $department = Department::latest()->get();
+        $designation = Designation::latest()->get();
+        $total_employee = Client::count();
+        $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
+                                                 ->whereDate('to', '>=', now()->toDateString())->count();
+        $total_pending_leaves = EmployeeLeave::where('status', 2)->count();
+        //$employee_leaves = EmployeeLeave::latest()->get();
+        $employee_leaves = EmployeeLeave::latest()->get();
+        // Number of employees on leave today
+        $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
+                                                 ->whereDate('to', '>=', now()->toDateString())
+                                                 ->count();
+        // Number of present employees today
+        $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
+
+        // Return the view with the same data
+        return view('admin.manage-staff', compact('employees', 'department', 'designation','total_employee', 'total_leaves', 'total_pending_leaves','total_leaves','employee_leaves','noofpresentemployeestoday'));
+    }
+
 
     public function viewEmployeeProfile(Request $request, $id){
         $employeeProfile = Employee::find($id);
         return view('admin.employee-profile', compact('employeeProfile'));
     }
 
-    public function holidays()
+   public function holidays()
     {
+
+
         $holidays = Holiday::latest()->get();
-        // Add your logic for holidays view
-        return view('admin.holidays',compact('holidays')); // Example view path, adjust as per your structure
-    }
+        $total_employee = Client::count();
+        $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
+        ->get(['clients.*', 'users.*']);
+        $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
+                                                 ->whereDate('to', '>=', now()->toDateString())->count();
+        $total_pending_leaves = EmployeeLeave::where('status', 2)->count();
+        //$employee_leaves = EmployeeLeave::latest()->get();
+        $employee_leaves = EmployeeLeave::latest()->get();
+        // Number of employees on leave today
+        $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
+                                                 ->whereDate('to', '>=', now()->toDateString())
+                                                 ->count();
+        // Number of present employees today
+        $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
+
+        $leavetypes = LeaveType::all();
+        // Add your logic for leaves admin view
+        return view('admin.holidays', compact('total_employee','employees','total_pending_leaves','total_leaves','employee_leaves','noofpresentemployeestoday', 'holidays', 'leavetypes')); // Example view path, adjust as per your structure
+
+
+    } 
     public function holidayStore(Request $request)
     {
         // Validate the request
@@ -180,6 +546,7 @@ class EmployeeController extends Controller
             'holiday_day' => $holidayDay,
             'category' => $request->input('category')
             ]);
+            
 
         $holidays = Holiday::latest()->get();
         // Add your logic for holidays view
@@ -202,8 +569,9 @@ class EmployeeController extends Controller
 
     public function leavesAdmin()
     {
-        $total_employee = Employee::count();
-        $employees = Employee::latest()->get();
+        $total_employee = Client::count();
+        $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
+        ->get(['clients.*', 'users.*']);
         $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
                                                  ->whereDate('to', '>=', now()->toDateString())->count();
         $total_pending_leaves = EmployeeLeave::where('status', 2)->count();
@@ -231,7 +599,7 @@ class EmployeeController extends Controller
             'status' => 1
             ]);
         // Add your logic for leaves admin view
-        return redirect()->route('admin.leaves')->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
+        return redirect()->route('admin.holidays')->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
     }
 
     public function leavesAdminUpdate(Request $request, $id)
@@ -241,7 +609,7 @@ class EmployeeController extends Controller
             'status' => $request->input('status')
         ]);
         // Add your logic for leaves admin view
-        return redirect()->route('admin.leaves')->with('success', 'Employee added successfully');
+        return redirect()->route('admin.holidays')->with('success', 'Employee added successfully');
     }
 
     public function leavesEmployee()
@@ -290,8 +658,9 @@ class EmployeeController extends Controller
         ->get()
         ->groupBy('employee_id');
 
-// Fetch employee data to include in the view
-$employees = Employee::get();
+        // Fetch employee data to include in the view
+        $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
+        ->get(['clients.*', 'users.*']);
         // Add your logic for attendance admin view
         return view('admin.attendance', compact('attendance', 'employees'));
     }

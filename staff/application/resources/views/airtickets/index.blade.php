@@ -43,7 +43,7 @@
 
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <h1>Booked Tickets</h1>
+                                        <h1>Reservations</h1>
                                     </div>
                                     <div class="col-md-6" style="text-align: right;">
                                         <a href="{{ route('airtickets.create') }}" class="btn btn-primary mb-3">Add</a>

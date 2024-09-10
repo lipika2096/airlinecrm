@@ -42,7 +42,7 @@
 
     <div class="row">
     <div class="col-md-6">
-    <h1>Book Ticket </h1><br>
+    <h1>Reservations </h1><br>
     </div>
     <div class="col-md-6" style="text-align: right;">
 
@@ -61,6 +61,18 @@
                 @foreach ($airlines as $id => $airline_code)
                     <option value="{{ $id }}">{{  $airline_code }}</option>
                 @endforeach
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="airline_id">Service Type</label>
+            <select class="form-control" id="airline_id" name="airline_id" required>
+                <!--@foreach ($airlines as $id => $airline_code)-->
+                <!--    <option value="{{ $id }}">{{  $airline_code }}</option>-->
+                <!--@endforeach-->
+                <option value="{{ $id }}">New Tickets</option>
+                <option value="{{ $id }}">Date Of change</option><!-- Excess Baggage
+Excess Weight
+Paid Seat -->
             </select>
         </div>
         <div class="form-group">

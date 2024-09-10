@@ -17,7 +17,7 @@
 
     <!--BOOTSTRAP-->
     <link href="<?php echo e(asset('/public/vendor/css/bootstrap/bootstrap.min.css')); ?>" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -192,4 +192,5 @@
     <!--[note: no sanitizing required] for this trusted content, which is added by the admin-->
     <?php echo config('system.settings_theme_head'); ?>
 
-</head><?php /**PATH /home/pentasof/hrcrm.testpentas.in/staff/application/resources/views/layout/header.blade.php ENDPATH**/ ?>
+</head>
+<?php /**PATH /home/pentasof/hrcrm.testpentas.in/staff/application/resources/views/layout/header.blade.php ENDPATH**/ ?>

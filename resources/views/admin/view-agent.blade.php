@@ -1,194 +1,2035 @@
 @extends('admin/layouts/head-main')
 @section('content')
-@php
-use Carbon\Carbon;
-@endphp
-<title>Employee Profile</title>
-<!-- Page Wrapper -->
-<div class="page-wrapper">
-   <style>
-      .profile-view .profile-img-wrap {
-      height: 145px!important;
-      width: 120px;
-      position: absolute;
-      }
-      .profile-view .profile-img {
-      width: 120px;
-      height: 156px!important;
-      }
-      .personal-info li .title {
-      text-wrap: nowrap!important;
-      }
-
-      .personal-info li .title {
-    color: #333333;
-    float: left;
-    font-weight: 500;
-    margin-right: 30px;
-    width: 45%!important;
-}
-   </style>
-   <!-- Page Content -->
-   <div class="content container-fluid">
-      <!-- Page Header -->
-      <div class="page-header">
-         <div class="row">
-            <div class="col-sm-12">
-               <h3 class="page-title">Profile</h3>
-               <ul class="breadcrumb">
-                  <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
-                  <li class="breadcrumb-item active">Profile</li>
-               </ul>
+    @php
+        use Carbon\Carbon;
+    @endphp
+    <title>
+    Agent Profile</title>
+    <!-- Page Wrapper -->
+    <div class="page-wrapper">
+        <style>
+        </style>
+        <!-- Page Content -->
+        <div class="content container-fluid">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h3 class="page-title">Profile</h3>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Profile</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-         </div>
-      </div>
-      <!-- /Page Header -->
-      <div class="card mb-0">
-         <div class="card-body">
-            <div class="row">
-               <div class="col-md-12">
-                  <div class="profile-view">
-                     <div class="profile-img-wrap">
-                     @if ($agent)
-                        <div class="profile-img">
-                           <a href="#" ><img alt="" style="margin-top:20px;" src="{{  asset('staff/storage/avatars/'.$agent->avatar_directory.'/'. $agent->avatar_filename) }}"  class="avatar"></a>
-                        </div>
-                        @else
-                        <a href="{{route('admin.admin-profile')}}" ><img class="avatar" src="{{asset('public/assets/img/user.jpg/')}}" alt=""></a>
-                        @endif
-                     </div>
-                     <div class="profile-basic">
-                        <div class="row">
-                           <div class="col-md-5">
-                              <div class="profile-info-left">
-                                 @if ($agent)
-                                 <h3 class="user-name m-t-0 mb-0">{{ $agent->first_name }} {{ $agent->last_name }}</h3>
-                                 <small class="text-muted">Position: {{ $agent->position }}</small>
-                                 <div class="staff-id">Employee ID : {{ $agent->unique_id }}</div>
-                                 <div class="staff-id">Owner Name : {{ $client->client_custom_field_4 }}</div>
-                                 @else
-                                 <p>Agent not found.</p>
-                                 @endif
-                              </div>
-                           </div>
-                           <div class="col-md-7">
-                              @if ($agent)
-                              <ul class="personal-info">
-                                 <li>
-                                    <div class="title">Phone:</div>
-                                    <div class="text"><a href="">{{ $agent->phone }}</a></div>
-                                 </li>
-                                 <li>
-                                    <div class="title">Email:</div>
-                                    <div class="text"><a href="">{{ $agent->email }}</a></div>
-                                 </li>
-                                 <li>
-                                    <div class="title">Pincode:</div>
-                                    <div class="text">{{ $client->client_billing_zip }}</div>
-                                 </li>
-                                 <li>
-                                    <div class="title">Address:</div>
-                                    <div class="text">{{ $client->client_billing_street }}</div>
-                                 </li>
-                                 <li>
-                                    <div class="title">GST No.:</div>
-                                    <div class="text">{{ $client->client_custom_field_2 }}</div>
-                                 </li>
-                                 <li>
-                                    <div class="title">Pan Card.</div>
-                                    <div class="text">{{ $client->client_custom_field_3 }}</div>
-                                 </li>
-                              </ul>
-                              @endif
-                           </div>
-                        </div>
-                     </div>
-                     <div class="pro-edit"><a data-bs-target="#profile_info{{ $agent->id }}" data-bs-toggle="modal" class="edit-icon" href="#"><i class="fa fa-pencil"></i></a></div>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
+            <!-- /Page Header -->
 
-      <div id="profile_info{{$agent->id}}" class="modal custom-modal fade" role="dialog">
-                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+
+            <div class="card tab-box">
+                <div class="row user-tabs">
+                    <div class="col-lg-12 col-md-12 col-sm-12 line-tabs">
+                    <ul class="nav nav-tabs nav-tabs-bottom">
+                            <li class="nav-item"><a href="#general" data-bs-toggle="tab" class="nav-link active">General</a>
+                            </li>
+                            <li class="nav-item"><a href="#address" data-bs-toggle="tab" class="nav-link">Address</a>
+                            </li>
+                            <li class="nav-item"><a href="#contact_details" data-bs-toggle="tab" class="nav-link">Contact
+                                    Details</a></li>
+                            <li class="nav-item"><a href="#special_fares" data-bs-toggle="tab" class="nav-link">Special
+                                    Fares
+                                </a></li>
+                            <li class="nav-item"><a href="#products_type" data-bs-toggle="tab" class="nav-link">Products
+                                    Type
+                                </a>
+                            </li>
+                            <li class="nav-item"><a href="#airline_activation" data-bs-toggle="tab" class="nav-link">Airline
+                                    Activation </a></li>
+                            <li class="nav-item"><a href="#provision" data-bs-toggle="tab" class="nav-link">Provision / PLI
+                                </a></li>
+                            <li class="nav-item"><a href="#conversation" data-bs-toggle="tab" class="nav-link">Conversations
+                                </a></li>
+                            <li class="nav-item"><a href="#case_history" data-bs-toggle="tab" class="nav-link">Case History
+                                </a></li>
+                            <li class="nav-item"><a href="#accounts" data-bs-toggle="tab" class="nav-link">Accounts </a>
+                            </li>
+                            {{-- <li class="nav-item"><a href="#library" data-bs-toggle="tab" class="nav-link">Library </a>
+                            </li> --}}
+                        </ul>
+                   
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content">
+                <!-- Profile Info Tab -->
+
+            
+                <div id="general" class="pro-overview tab-pane fade show active">
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <div class="card profile-box flex-fill">
+                                <div class="card-body">
+                                    <ul class="personal-info">
+                                        <li>
+                                            <div class="title">Company Name</div>
+                                            <div class="text">{{ $agent->company_name }}</div>
+                                        </li>
+
+                                        <li>
+                                            <div class="title">Brand Name</div>
+                                            <div class="text">{{ $agent->owner_name }}</div>
+                                        </li>
+                                        <li>
+                                            <div class="title">Group</div>
+                                            <div class="text">{{ $agent->agency_name }}</div>
+                                        </li>
+                                        <li>
+                                            <div class="title">Street</div>
+                                            <div class="text">{{ $agent->address }}</div>
+                                        </li>
+                                        <li>
+                                            <div class="title">City</div>
+                                            <div class="text">{{ $agent->city }}</div>
+                                        </li>
+                                        <li>
+                                            <div class="title">Pincode</div>
+                                            <div class="text">{{ $agent->pincode }}</div>
+                                        </li>
+                                        <li>
+                                            <div class="title">Country</div>
+                                            <div class="text">{{ $agent->country }}</div>
+                                        </li>
+                                        <ul id="field-list" class="list-unstyled">
+                                            <li class="col-md-12 field-item">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="title">IATA Number:</div>
+                                                        <div class="text">{{ $agent->iata }}</div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="title">GDS Type:</div>
+                                                        <div class="text">{{ $agent->gds_type }}</div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="title">PCC/Office ID:</div>
+                                                        <div class="text">{{ $agent->pcc_office_id }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+
+                                        <li>
+                                            <div class="title">Account Code</div>
+                                            <div class="text">{{ $agent->account_code }}</div>
+                                        </li>
+                                        <li>
+                                            <div class="title">Discount</div>
+                                            <div class="text">{{ $agent->discount }}</div>
+                                        </li>
+                                        <li>
+                                            <div class="title">Remarks</div>
+                                            <div class="text">{{ $agent->remarks }}</div>
+                                        </li>
+                                        <li>
+                                            <div class="title">Business Model:</div>
+                                            <div class="text">{{ $agent->business_mode }}</div>
+                                        </li>
+                                        <li>
+                                            <div class="title">Focused Destinations</div>
+                                            <div class="text">
+                                                <ul style="list-style: disc; margin-left: 20px;">
+                                                    @foreach (json_decode($agent->focus_destinations) as $destination)
+                                                        <li>{{ $destination }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="title">Key People</div>
+                                            <div class="text">{{ $agent->key_people }}</div>
+                                        </li>
+                                        <li>
+                                            <div class="title">Parent Company</div>
+                                            <div class="text">{{ $agent->parent_company }}</div>
+                                        </li>
+                                        <li>
+                                            <div class="title">Headquarters</div>
+                                            <div class="text">{{ $agent->headquarters }}</div>
+                                        </li>
+                                        <li>
+                                            <div class="title">Website</div>
+                                            <div class="text"><a href="{{ $agent->websites }}"
+                                                    target="_blank">{{ $agent->websites }}</a></div>
+                                        </li>
+                                        <li>
+                                            <div class="title">Employees</div>
+                                            <div class="text">{{ $agent->no_of_employees }}</div>
+                                        </li>
+
+                                    </ul>
+                                </div>
+
+                                <!-- Edit Icon -->
+                                <i class="fas fa-edit position-absolute top-0 end-0 m-3" data-bs-toggle="modal"
+                                    data-bs-target="#edit_general{{ $agent->id }}"></i>
+
+                                <div id="edit_general{{ $agent->id }}" class="modal custom-modal fade"
+                                    role="dialog">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Edit General Profile</h5>
+                                                <button type="button" class="close" data-bs-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+
+                                                <form action="{{ route('admin.agent.edit', ['id' => $agent->id]) }}#general"
+                                                    method="POST" enctype="multipart/form-data">@csrf
+                                                    <ul class="personal-info">
+                                                        <li>
+                                                            <div class="title">Company Name</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control"
+                                                                    name="company_name"
+                                                                    value="{{ $agent->company_name }}">
+                                                            </div>
+                                                        </li>
+
+                                                        <li>
+                                                            <div class="title">Brand Name</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control"
+                                                                    name="owner_name" value="{{ $agent->owner_name }}">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Group</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control"
+                                                                    name="agency_name" value="{{ $agent->agency_name }}">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Street</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control" name="address"
+                                                                    value="{{ $agent->address }}">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">City</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control" name="city"
+                                                                    value="{{ $agent->city }}">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Pincode</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control" name="pincode"
+                                                                    value="{{ $agent->pincode }}">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Country</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control" name="country"
+                                                                    value="{{ $agent->country }}">
+                                                            </div>
+                                                        </li>
+                                                        <ul id="field-list" class="list-unstyled">
+                                                            <li class="col-md-12 field-item">
+                                                                <div class="row">
+                                                                    <div class="col-md-4">
+                                                                        <div class="title">IATA Number:</div>
+                                                                        <div class="text">
+                                                                            <input type="text" class="form-control"
+                                                                                name="iata"
+                                                                                value="{{ $agent->iata }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <div class="title">GDS Type:</div>
+                                                                        <div class="text">
+                                                                            <input type="text" class="form-control"
+                                                                                name="gds_type"
+                                                                                value="{{ $agent->gds_type }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <div class="title">PCC/Office ID:</div>
+                                                                        <div class="text">
+                                                                            <input type="text" class="form-control"
+                                                                                name="pcc_office_id"
+                                                                                value="{{ $agent->pcc_office_id }}">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                        </ul>
+
+                                                        <li>
+                                                            <div class="title">Account Code</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control"
+                                                                    name="account_code"
+                                                                    value="{{ $agent->account_code }}">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Discount</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control"
+                                                                    name="discount" value="{{ $agent->discount }}">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Remarks</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control" name="remarks"
+                                                                    value="{{ $agent->remarks }}">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Business Model:</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control"
+                                                                    name="business_mode"
+                                                                    value="{{ $agent->business_mode }}">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Focused Destinations</div>
+                                                            <div class="text">
+                                                                @foreach (json_decode($agent->focus_destinations) as $destination)
+                                                                    <input type="text" class="form-control"
+                                                                        name="focus_destinations[]"
+                                                                        value="{{ $destination }}">
+                                                                @endforeach
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Key People</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control"
+                                                                    name="key_people" value="{{ $agent->key_people }}">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Parent Company</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control"
+                                                                    name="parent_company"
+                                                                    value="{{ $agent->parent_company }}">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Headquarters</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control"
+                                                                    name="headquarters"
+                                                                    value="{{ $agent->headquarters }}">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Website</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control"
+                                                                    name="websites" value="{{ $agent->websites }}"
+                                                                    placeholder="http://example.com">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Employees</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control"
+                                                                    name="no_of_employees"
+                                                                    value="{{ $agent->no_of_employees }}">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title"></div>
+                                                            <div class="text"><button class="btn btn-primary"
+                                                                    type="submit">Update</button></div>
+                                                        </li>
+                                                    </ul>
+
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+         
+                <div id="address" class="pro-overview tab-pane fade show">
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <div class="card profile-box flex-fill"
+                                style="    background: none; border: none !important; box-shadow: none;">
+                                <div class="card-header">
+                                    <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_address"><i
+                                            class="fa fa-plus"></i> Add Address</a>
+                                </div>
+                                @foreach ($agentAddress as $address)
+                                    <div class="card profile-box flex-fill">
+                                        <div class="card-body">
+                                            <ul class="personal-info">
+                                                <li>
+                                                    <div class="title">Street Address</div>
+                                                    <div class="text">{{ $address->street }}</div>
+                                                </li>
+                                                <li>
+                                                    <div class="title">City</div>
+                                                    <div class="text">{{ $address->city }}</div>
+                                                </li>
+                                                <li>
+                                                    <div class="title">State</div>
+                                                    <div class="text">{{ $address->state }}</div>
+                                                </li>
+                                                <li>
+                                                    <div class="title">Country</div>
+                                                    <div class="text">{{ $address->country }}</div>
+                                                </li>
+                                                <li>
+                                                    <div class="title">Pincode</div>
+                                                    <div class="text">{{ $address->pincode }}</div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <!-- Edit Icon -->
+                                        <i class="fas fa-edit position-absolute top-0 end-0 m-3" data-bs-toggle="modal"
+                                            data-bs-target="#edit_address{{ $address->id }}"></i>
+                                        <div id="edit_address{{ $address->id }}" class="modal custom-modal fade"
+                                            role="dialog">
+                                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Edit Address</h5>
+                                                        <button type="button" class="close" data-bs-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form
+                                                            action="{{ route('admin.agent.address.update', ['id' => $address->id]) }}#address"
+                                                            method="POST" enctype="multipart/form-data">
+                                                            @csrf
+                                                            <div class="row">
+                                                                <div class="col-sm-6">
+
+                                                                    <div class="form-group">
+                                                                        <input class="form-control" type="hidden"
+                                                                            name="agent_id" value="{{ $agent->id }}">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label class="col-form-label">Street Address <span
+                                                                                class="text-danger">*</span></label>
+                                                                        <input class="form-control"
+                                                                            value="{{ $address->street }}"type="text"
+                                                                            name="street">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-6">
+                                                                    <div class="form-group">
+                                                                        <label class="col-form-label">City</label>
+                                                                        <input class="form-control"
+                                                                            value="{{ $address->city }}" type="text"
+                                                                            name="city">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-6">
+                                                                    <div class="form-group">
+                                                                        <label class="col-form-label">State</label>
+                                                                        <input class="form-control"
+                                                                            value="{{ $address->state }}" type="text"
+                                                                            name="state">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-6">
+                                                                    <div class="form-group">
+                                                                        <label class="col-form-label">Country</label>
+                                                                        <input class="form-control"
+                                                                            value="{{ $address->country }}"
+                                                                            type="text" name="country">
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-sm-6">
+                                                                    <div class="form-group">
+                                                                        <label class="col-form-label">Pincode</label>
+                                                                        <input class="form-control" type="text" required
+                                                                            value="{{ $address->pincode }}"
+                                                                            name="pincode">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="submit-section">
+                                                                <button class="btn btn-primary"
+                                                                    type="submit">Submit</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="contact_details" class="pro-overview tab-pane fade show ">
+
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <div class="card profile-box flex-fill"
+                                style="    background: none; border: none !important; box-shadow: none;">
+                                <div class="card-header">
+                                    <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_contact"><i
+                                            class="fa fa-plus"></i> Add Contacts</a>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-striped custom-table mb-0 datatable">
+                                        <thead>
+                                            <tr>
+                                                <th>S.No.</th>
+                                                <th>Title</th>
+                                                <th>Name</th>
+                                                <th>Position</th>
+                                                <th>Email Address</th>
+                                                <th>Phone Number</th>
+                                                <th>Last Updated on</th>
+                                                <th>Last Updated by</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($agentContact as $index => $contact)
+                                                <tr>
+                                                    <td>{{ $index + 1 }}</td>
+                                                    <td>{{ $contact->title }}</td>
+                                                    <td>{{ $contact->first_name }} {{ $contact->last_name }}</td>
+                                                    <td>{{ $contact->position }}</td>
+                                                    <td>{{ $contact->email_address }}</td>
+                                                    <td>{{ $contact->phone_number }}</td>
+                                                    <td>{{ $contact->updated_at }}</td>
+                                                    <td>{{ $contact->updated_by }}</td><!-- Edit Icon -->
+                                                    <td>
+                                                        <a data-bs-toggle="modal"
+                                                            data-bs-target="#edit_contact{{ $contact->id }}"><i
+                                                                class="fas fa-edit"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <div id="edit_contact{{ $contact->id }}" class="modal custom-modal fade"
+                                                    role="dialog">
+                                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Edit Contact</h5>
+                                                                <button type="button" class="close"
+                                                                    data-bs-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form
+                                                                    action="{{ route('admin.agent.contact.update', ['id' => $contact->id]) }}#contact_details"
+                                                                    method="POST" enctype="multipart/form-data">
+                                                                    @csrf
+                                                                    <div class="row">
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Title <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <input class="form-control"
+                                                                                    value="{{ $contact->title }}"
+                                                                                    type="text" name="title">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+
+                                                                            <div class="form-group">
+                                                                                <input class="form-control" type="hidden"
+                                                                                    name="agent_id"
+                                                                                    value="{{ $agent->id }}">
+                                                                            </div>
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">First Name
+                                                                                    <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <input class="form-control"
+                                                                                    value="{{ $contact->first_name }}"
+                                                                                    type="text" name="first_name">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Last
+                                                                                    Name</label>
+                                                                                <input class="form-control"
+                                                                                    value="{{ $contact->last_name }}"
+                                                                                    type="text" name="last_name">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Email</label>
+                                                                                <input class="form-control"
+                                                                                    value="{{ $contact->email_address }}"
+                                                                                    type="text" name="email_address">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Phone</label>
+                                                                                <input class="form-control"
+                                                                                    value="{{ $contact->phone_number }}"
+                                                                                    type="text" name="phone_number">
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label
+                                                                                    class="col-form-label">Position</label>
+                                                                                <input class="form-control"
+                                                                                    value="{{ $contact->position }}"
+                                                                                    type="text" name="position">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="submit-section">
+                                                                        <button class="btn btn-primary"
+                                                                            type="submit">Submit</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                            <!-- Repeat for other agents -->
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="special_fares" class="pro-overview tab-pane fade show">
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <div class="card profile-box flex-fill">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12 d-flex">
+                                            <div class="card profile-box flex-fill">
+                                                <div class="col-auto float-end ms-auto mt-2 mx-2">
+                                                    <a class="btn btn-primary" data-bs-toggle="modal"
+                                                        style="border-radius:10px;" data-bs-target="#add_target"><i
+                                                            class="fa fa-plus"></i> Add / Edit
+                                                        Special Fares</a>
+
+                                                    <a class="btn btn-info text-white" data-bs-toggle="modal"
+                                                        style="margin-right:10px; border-radius:10px !important;"
+                                                        data-bs-target="#view_fares"><i class="fa fa-plus"></i> View
+                                                        Special Fares</a>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-striped custom-table mb-0 datatable">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Airline</th>
+                                                                    <th>Private Fare Type</th>
+                                                                    <th>Status</th>
+                                                                    <th>IATA</th>
+                                                                    <th>PCC/ Office Id</th>
+                                                                    <th>Discount</th>
+                                                                    <th>remarks</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach ($specialFare as $fare)
+                                                                    <tr>
+                                                                        <td>{{ $fare->airline->airline_name }}</td>
+                                                                        <td>{{ $fare->fare_type }}</td>
+                                                                        <td>
+                                                                            @if($fare->status == 1)
+                                                                            Active
+                                                                            @else
+                                                                            Inactive
+                                                                            @endif
+                                                                            
+                                                                        </td>
+                                                                        <td>{{ $fare->agent->iata }}</td>
+                                                                        <td>{{ $fare->agent->pcc_office_id }}</td>
+                                                                        <td>{{ $fare->agent->discount }}</td>
+                                                                        <td>{{ $fare->agent->remarks }}</td>
+                                                                    </tr>
+                                                                @endforeach
+                                                                <!-- Repeat for other agents -->
+                                                            </tbody>
+                                                        </table>
+
+                                                    </div>
+                                                </div>
+                                                <div id="add_target" class="modal custom-modal fade" role="dialog">
+                                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Add Target</h5>
+                                                                <button type="button" class="close"
+                                                                    data-bs-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form
+                                                                    action="{{ route('admin.agent.target.store') }}#special_fares"
+                                                                    method="POST" enctype="multipart/form-data">
+                                                                    @csrf
+                                                                    <div class="table-responsive text-nowrap">
+                                                                        <table class="table">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th class="fw-bold">Airline/Service
+                                                                                    </th>
+                                                                                    @foreach ($fareType as $ft)
+                                                                                        <th class="fw-bold">
+                                                                                            {{ $ft->fare_type }}</th>
+                                                                                    @endforeach
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                @foreach ($airline as $air)
+                                                                                    <tr>
+                                                                                        <div class="form-group">
+                                                                                            <input class="form-control"
+                                                                                                type="hidden"
+                                                                                                name="agent_id"
+                                                                                                value="{{ $agent->id }}">
+                                                                                        </div>
+                                                                                        <th class="fw-bold">
+                                                                                            {{ $air->airline_name }}</th>
+                                                                                        @foreach ($fareType as $ft)
+                                                                                            @php
+                                                                                                $status = DB::table(
+                                                                                                    'special_fares',
+                                                                                                )
+                                                                                                    ->where(
+                                                                                                        'airline_id',
+                                                                                                        $air->id,
+                                                                                                    )
+                                                                                                    ->where(
+                                                                                                        'fare_type',
+                                                                                                        $ft->fare_type_name,
+                                                                                                    )
+                                                                                                    ->where(
+                                                                                                        'agent_id',
+                                                                                                        $agent->id,
+                                                                                                    )
+                                                                                                    ->value('status');
+                                                                                            @endphp
+                                                                                            <input type="hidden"
+                                                                                                name="airline[{{ $air->id }}][{{ $ft->fare_type_name }}]"
+                                                                                                value="2">
+                                                                                            <th>
+                                                                                                <input type="checkbox"
+                                                                                                    name="airline[{{ $air->id }}][{{ $ft->fare_type_name }}]"
+                                                                                                    value="1"
+                                                                                                    {{ $status == 1 ? 'checked' : '' }}>
+                                                                                            </th>
+                                                                                        @endforeach
+                                                                                    </tr>
+                                                                                @endforeach
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                    <div class="submit-section">
+                                                                        <button class="btn btn-primary"
+                                                                            type="submit">Submit</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="view_fares" class="modal custom-modal fade" role="dialog">
+                                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Add Target</h5>
+                                                                <button type="button" class="close"
+                                                                    data-bs-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                {{-- <form action="{{ route('admin.agent.target.store') }}"
+                                                                    method="POST" enctype="multipart/form-data">
+                                                                    @csrf --}}
+                                                                <div class="table-responsive text-nowrap">
+                                                                    <table class="table">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th class="fw-bold">
+                                                                                    Airline/Service</th>
+                                                                                @foreach ($fareType as $ft)
+                                                                                    <th class="fw-bold">
+                                                                                        {{ $ft->fare_type }}
+                                                                                    </th>
+                                                                                @endforeach
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @foreach ($airline as $air)
+                                                                                <tr>
+                                                                                    <div class="form-group">
+                                                                                        <input class="form-control"
+                                                                                            type="hidden" name="agent_id"
+                                                                                            value="{{ $agent->id }}">
+                                                                                    </div>
+                                                                                    <th class="fw-bold">
+                                                                                        {{ $air->airline_name }}
+                                                                                    </th>
+                                                                                    @foreach ($fareType as $ft)
+                                                                                        @php
+                                                                                            $status = DB::table(
+                                                                                                'special_fares',
+                                                                                            )
+                                                                                                ->where(
+                                                                                                    'airline_id',
+                                                                                                    $air->id,
+                                                                                                )
+                                                                                                ->where(
+                                                                                                    'fare_type',
+                                                                                                    $ft->fare_type_name,
+                                                                                                )
+                                                                                                ->where(
+                                                                                                    'agent_id',
+                                                                                                    $agent->id,
+                                                                                                )
+                                                                                                ->value('status');
+                                                                                        @endphp
+                                                                                        <input type="hidden"
+                                                                                            name="airline[{{ $air->id }}][{{ $ft->fare_type_name }}]"
+                                                                                            value="2">
+                                                                                        <th>
+                                                                                            <input type="checkbox"
+                                                                                                name="airline[{{ $air->id }}][{{ $ft->fare_type_name }}]"
+                                                                                                value="1"
+                                                                                                {{ $status == 1 ? 'checked' : '' }}>
+                                                                                        </th>
+                                                                                    @endforeach
+                                                                                </tr>
+                                                                            @endforeach
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                                {{-- </form> --}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="products_type" class="pro-overview tab-pane fade show">
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <div class="card profile-box flex-fill">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12 d-flex">
+                                            <div class="card profile-box flex-fill">
+                                                <div class="col-auto float-end ms-auto mt-2 mx-2">
+                                                    <a class="btn add-btn" data-bs-toggle="modal"
+                                                        data-bs-target="#add_product"><i class="fa fa-plus"></i> Add
+                                                        Products types</a>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-striped custom-table mb-0 datatable">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>List of Products </th>
+                                                                    <th>Actions</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach ($agentProduct as $prod)
+                                                                    <tr>
+                                                                        <td>{{ $prod->product_type }}</td>
+                                                                        <td>
+                                                                            <a data-bs-toggle="modal"
+                                                                                data-bs-target="#edit_product{{ $prod->id }}"><i
+                                                                                    class="fa fa-pencil m-r-5"></i></a>
+                                                                                    
+                                                                            <a data-bs-toggle="modal"
+                                                                                data-bs-target="#delete_product{{ $prod->id }}"><i
+                                                                                    class="fa fa-trash m-r-5"></i></a>
+                                                                                    
+                                                                        </td>
+                                                                    </tr>
+                                                                    <div id="edit_product{{ $prod->id }}"
+                                                                        class="modal custom-modal fade" role="dialog">
+                                                                        <div
+                                                                            class="modal-dialog modal-dialog-centered modal-lg">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title">Edit Product
+                                                                                    </h5>
+                                                                                    <button type="button" class="close"
+                                                                                        data-bs-dismiss="modal"
+                                                                                        aria-label="Close">
+                                                                                        <span
+                                                                                            aria-hidden="true">&times;</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                                <div class="modal-body">
+                                                                                    <form
+                                                                                        action="{{ route('admin.agent.product.update', ['id' => $prod->id]) }}#products_type"
+                                                                                        method="POST"
+                                                                                        enctype="multipart/form-data">
+                                                                                        @csrf
+                                                                                        <div class="row">
+                                                                                            <div class="col-sm-6">
+                                                                                                <div class="form-group">
+                                                                                                    <input
+                                                                                                        class="form-control"
+                                                                                                        type="hidden"
+                                                                                                        name="agent_id"
+                                                                                                        value="{{ $agent->id }}">
+                                                                                                </div>
+                                                                                                <div class="form-group">
+                                                                                                    <label
+                                                                                                        class="col-form-label">Product
+                                                                                                        Name <span
+                                                                                                            class="text-danger">*</span></label>
+                                                                                                    <input
+                                                                                                        class="form-control"
+                                                                                                        type="text"
+                                                                                                        name="product_type"
+                                                                                                        value="{{ $prod->product_type }}">
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="submit-section">
+                                                                                            <button class="btn btn-primary"
+                                                                                                type="submit">Update</button>
+                                                                                        </div>
+                                                                                    </form>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    
+                                                                    <!-- Delete Confirmation Modal -->
+                                                                    <div id="delete_product{{ $prod->id }}" class="modal custom-modal fade" role="dialog">
+                                                                        <div class="modal-dialog modal-dialog-centered">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title">Delete Product</h5>
+                                                                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                                                                        <span aria-hidden="true">&times;</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                                <div class="modal-body">
+                                                                                    <p>Are you sure you want to delete the product "{{ $prod->product_type }}"?</p>
+                                                                                </div>
+                                                                                <div class="modal-footer">
+                                                                                    <form action="{{ route('admin.agent.product.delete', ['id' => $prod->id]) }}#products_type" method="POST">
+                                                                                        @csrf
+                                                                                        @method('DELETE')
+                                                                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                                    </form>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                                                <!-- Repeat for other agents -->
+                                                            </tbody>
+                                                        </table>
+
+                                                    </div>
+                                                </div>
+                                                <div id="add_product" class="modal custom-modal fade" role="dialog">
+                                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Add Product</h5>
+                                                                <button type="button" class="close"
+                                                                    data-bs-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form
+                                                                    action="{{ route('admin.agent.product.store') }}#products_type"
+                                                                    method="POST" enctype="multipart/form-data">
+                                                                    @csrf
+                                                                    <div class="row">
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <input class="form-control" type="hidden"
+                                                                                    name="agent_id"
+                                                                                    value="{{ $agent->id }}">
+                                                                            </div>
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Product Name
+                                                                                    <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <input class="form-control" type="text"
+                                                                                    name="product_type" required>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="submit-section">
+                                                                        <button class="btn btn-primary"
+                                                                            type="submit">Submit</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="conversation" class="pro-overview tab-pane fade show">
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <div class="card profile-box flex-fill">
+                                <div class="col-auto float-end ms-auto mt-2 mx-2">
+                                    <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_comments"><i
+                                            class="fa fa-plus"></i> Add Comments</a>
+                                </div>
+                                <div class="card-body">
+                                    @foreach ($agentConversation as $conversation)
+                                        <div class="container">
+                                            <div class="conversation-date">{{ $conversation->c_date }}</div>
+                                            <div class="conversation-title">{{ $conversation->title }}</div>
+                                            <div class="conversation-description">
+                                                {{ $conversation->description }}
+                                            </div>
+                                            <div class="conversation-author">added by {{ $conversation->from }}</div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div id="add_comments" class="modal custom-modal fade" role="dialog">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Add Comments</h5>
+                                                <button type="button" class="close" data-bs-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{ route('admin.agent.conversation.store') }}#conversation"
+                                                    method="POST" enctype="multipart/form-data">
+                                                    @csrf
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <input class="form-control" type="hidden" name="from"
+                                                                    value="{{ $agent->id }}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Title <span
+                                                                        class="text-danger">*</span></label>
+                                                                <input class="form-control" type="text" required
+                                                                    name="title">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Description</label>
+                                                                <input class="form-control" type="text" required
+                                                                    name="description">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="submit-section">
+                                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="case_history" class="pro-overview tab-pane fade show">
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <div class="card profile-box flex-fill">
+
+                            <div class="col-auto float-end ms-auto mt-2 mx-2">
+                                                    <a class="btn add-btn" data-bs-toggle="modal"
+                                                        data-bs-target="#add_case"><i class="fa fa-plus"></i> Add Case History
+                                                        Data</a>
+                                                </div>
+
+                                <div class="card-body">
+
+                                  
+
+                                    <div class="table-responsive">
+                                        <table class="table custom-table mb-0 datatable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="fw-bold">Case Opening Date</th>
+                                                    <th class="fw-bold">Case Id</th>
+                                                    <th class="fw-bold">Opened By</th>
+                                                    <th class="fw-bold">PNR</th>
+                                                    <th class="fw-bold">Case Status</th>
+                                                    <th class="fw-bold">Case Closed by</th>
+                                                    <th class="fw-bold">Case Closing Date</th>
+                                                    <th>Actions</th>
+
+                                                </tr>
+
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($caseData as $data)
+                                                <tr>
+                                                    <td>{{ $data->case_opening_date }}</td>
+                                                    <td>{{ $data->id }}</td>
+                                                    <td>{{ $data->opened_by }}</td>
+                                                    <td>{{ $data->pnr }}</td>
+                                                    <td>{{ $data->case_status }}</td>
+                                                    <td>{{ $data->case_closed_by }}</td>
+                                                    <td>{{ $data->case_closing_date }}</td>
+                                                    <td>
+                                                        <!-- View Button -->
+                                                        <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                                                            data-bs-target="#viewCaseModal-{{ $data->id }}"><i
+                                                                class="fa fa-eye"></i></button>
+
+                                                        <!-- Edit Button -->
+                                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                            data-bs-target="#editCaseModal-{{ $data->id }}"><i
+                                                                class="fa fa-edit"></i></button>
+
+                                                        <!-- Close Button -->
+                                                        @if ($data->case_status !== 'Closed')
+                                                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                                                                data-bs-target="#closeCaseModal-{{ $data->id }}">Close</button>
+                                                        @endif
+                                                    </td>
+                                                    </tr>
+                                                    <div class="modal fade" id="viewCaseModal-{{ $data->id }}"
+                                                        tabindex="-1" aria-labelledby="viewCaseModalLabel"
+                                                        aria-hidden="true">
+                                                        <div class="modal-dialog modal-lg">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="viewCaseModalLabel">View
+                                                                        Case: {{ $data->case_id }}</h5>
+                                                                    <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <p><strong>PNR:</strong> {{ $data->pnr }}</p>
+                                                                    <p><strong>Ticket No:</strong> {{ $data->ticket_no }}
+                                                                    </p>
+                                                                    <p><strong>Opened by:</strong> {{ $data->opened_by }}
+                                                                    </p>
+                                                                    <p><strong>Status:</strong> {{ $data->case_status }}
+                                                                    </p>
+                                                                    <p><strong>Closing Date:</strong>
+                                                                        {{ $data->case_closing_date }}</p>
+                                                                    <hr>
+                                                                    <h5>Conversation History:</h5>
+                                                                    @foreach ($data->updates as $update)
+                                                                        <p><strong>{{ $update->update_date }}</strong> -
+                                                                            {{ $update->comments }}</p>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="modal fade" id="editCaseModal-{{ $data->id }}"
+                                                        tabindex="-1" aria-labelledby="editCaseModalLabel"
+                                                        aria-hidden="true">
+                                                        <div class="modal-dialog modal-lg">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="editCaseModalLabel">Edit
+                                                                        Case: {{ $data->case_id }}</h5>
+                                                                    <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <form action="{{ route('admin.agent.cases.update', ['id' => $data->id]) }}#case_history" method="POST">
+                                                                        @csrf
+                                                                        @method('PATCH')
+                                                                        <div class="mb-3">
+                                                                            <h5>Previous Conversations:</h5>
+                                                                            @foreach ($data->updates as $update)
+                                                                                <p><strong>{{ $update->update_date }}</strong>
+                                                                                    - {{ $update->comments }}</p>
+                                                                            @endforeach
+                                                                        </div>
+                                                                        <div class="mb-3">
+                                                                            <label for="status"
+                                                                                class="form-label">Update Status</label>
+                                                                            <select name="status" id="status"
+                                                                                class="form-select">
+                                                                                <option value="Update">Update</option>
+                                                                                <option value="Close">Close</option>
+                                                                            </select>
+                                                                        </div>
+                                                                        <div class="mb-3">
+                                                                            <label for="comments"
+                                                                                class="form-label">Comments</label>
+                                                                            <textarea name="comments" id="comments" class="form-control" rows="4" required></textarea>
+                                                                        </div>
+                                                                        <div class="text-end">
+                                                                            <button type="submit"
+                                                                                class="btn btn-primary">Save
+                                                                                Changes</button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- resources/views/cases/partials/close-modal.blade.php -->
+
+                                                    <div class="modal fade" id="closeCaseModal-{{ $data->id }}"
+                                                        tabindex="-1" aria-labelledby="closeCaseModalLabel"
+                                                        aria-hidden="true">
+                                                        <div class="modal-dialog modal-lg">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="closeCaseModalLabel">Close
+                                                                        Case: {{ $data->case_id }}</h5>
+                                                                    <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <form
+                                                                        action="{{ route('admin.agent.cases.close', ['id' => $data->id]) }}#case_history"
+                                                                        method="POST">
+                                                                        @csrf
+                                                                        <div class="mb-3">
+                                                                            <div class="col-sm-6">
+                                                                                <div class="form-group">
+                                                                                    <input class="form-control"
+                                                                                        type="hidden" name="caseId"
+                                                                                        value="{{ $data->id }}">
+                                                                                </div>
+                                                                            </div>
+                                                                            <h5>Previous Conversations:</h5>
+                                                                            @foreach ($data->updates as $update)
+                                                                                <p><strong>{{ $update->update_date }}</strong>
+                                                                                    - {{ $update->comments }}</p>
+                                                                            @endforeach
+                                                                        </div>
+                                                                        <div class="mb-3">
+                                                                            <label for="comments"
+                                                                                class="form-label">Closing Comments</label>
+                                                                            <textarea name="comments" id="comments" class="form-control" rows="4" required></textarea>
+                                                                        </div>
+                                                                        <div class="text-end">
+                                                                            <button type="submit"
+                                                                                class="btn btn-danger">Close Case</button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                    <div id="add_case" class="modal custom-modal fade" role="dialog">
+                                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Add Case History</h5>
+                                                    <button type="button" class="close" data-bs-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form action="{{ route('admin.agent.case.store') }}#case_history"
+                                                        method="POST" enctype="multipart/form-data">
+                                                        @csrf
+                                                       
+
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                <div class="form-group">
+                                                                    <label class="col-form-label">Case Opening Date <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <input class="form-control" type="date"
+                                                                        name="case_opening_date" required>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-sm-6">
+                                                                <div class="form-group">
+                                                                    <label class="col-form-label">Opened By <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <input class="form-control" type="text" required
+                                                                        name="opened_by" required>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-sm-6">
+                                                                <div class="form-group">
+                                                                    <label class="col-form-label">PNR <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <input class="form-control" type="text" required
+                                                                        name="pnr" required>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-sm-6">
+                                                                <div class="form-group">
+                                                                    <label class="col-form-label">Case Status <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <select class="form-control" name="case_status">
+                                                                        <option value="" disabled>Select status
+                                                                        </option>
+                                                                        <option name="opened">Opened</option>
+                                                                        <option name="updated">Updated</option>
+                                                                        <option name="closed">Closed</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-sm-6">
+                                                                <div class="form-group">
+                                                                    <label class="col-form-label">Case Closed By</label>
+                                                                    <input class="form-control" type="text" required
+                                                                        name="case_closed_by">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-sm-6">
+                                                                <div class="form-group">
+                                                                    <label class="col-form-label">Case Closing Date</label>
+                                                                    <input class="form-control" type="date"
+                                                                        name="case_closing_date">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-sm-6">
+                                                                <div class="form-group">
+                                                                    <input class="form-control" type="hidden"
+                                                                        name="agent_id" value="{{ $agent->id }}">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="submit-section">
+                                                            <button class="btn btn-primary" type="submit">Submit</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="accounts" class="pro-overview tab-pane fade show">
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <div class="card profile-box flex-fill">
+                                <div class="col-auto float-end ms-auto mt-2 mx-2">
+                                    <a href="#" class="btn add-btn" data-bs-toggle="modal"
+                                        data-bs-target="#add_agent"><i class="fa fa-plus"></i> Add transaction</a>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table custom-table mb-0 datatable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Type</th>
+                                                    <th>Credit</th>
+                                                    <th>Debit</th>
+                                                    <th>Balance</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @php
+                                                    $balance =  $agentAccountBal->balance;
+                                                @endphp
+                                                @foreach ($agentAccounts as $account)
+                                                    @php
+                                                        $balance += $account->credit - $account->debit;
+                                                    @endphp
+                                                    <tr>
+                                                        <td>{{ $account->tr_date }}</td>
+                                                        <td>{{ $account->tr_type }}</td>
+                                                        <td>{{ $account->credit ??0 }}</td>
+                                                        <td>{{ $account->debit??0 }}</td>
+                                                        <td>{{ $account->balance }}</td>
+                                                    </tr>
+                                                @endforeach
+                                                <!-- Repeat for other agents -->
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+                                <div id="add_agent" class="modal custom-modal fade" role="dialog">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Add Transactions</h5>
+                                                <button type="button" class="close" data-bs-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{ route('admin.transaction.store') }}#accounts"
+                                                    method="POST" enctype="multipart/form-data">
+                                                    @csrf
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <input class="form-control" type="hidden"
+                                                                    name="agent_id" value="{{ $agent->id }}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Debit Amount <span
+                                                                        class="text-danger">*</span></label>
+                                                                <input class="form-control" type="text" required name="debit"
+                                                                    id="debit">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Credit Amount</label>
+                                                                <input class="form-control" type="text" required name="credit"
+                                                                    id="credit">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Type</label>
+                                                                <input class="form-control" type="yext"
+                                                                    name="tr_type">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Transaction Date</label>
+                                                                <input class="form-control" type="date"
+                                                                    name="tr_date">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="submit-section">
+                                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div id="provision" class="pro-overview tab-pane fade">
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <div class="card profile-box flex-fill">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12 d-flex">
+                                            <div class="card profile-box flex-fill">
+                                                <div class="col-auto float-end ms-auto mt-2 mx-2">
+                                                    <a class="btn add-btn" data-bs-toggle="modal"
+                                                        data-bs-target="#add_prov"><i class="fa fa-plus"></i> Add Prov.
+                                                        Data</a>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table custom-table mb-0 datatable">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th rowspan="2" style="padding-bottom: 70px;">Term
+                                                                    </th>
+                                                                    <th rowspan="2" style="padding-bottom: 70px;">
+                                                                        Incentive Description</th>
+                                                                    <th rowspan="2" style="padding-bottom: 70px;">
+                                                                        Target</th>
+
+                                                                    <th class="text-center" colspan="2">Buissness Class
+
+                                                                    </th>
+                                                                    <th class="text-center" colspan="2">Premium Class
+                                                                    </th>
+                                                                    <th class="text-center" colspan="2">Economy Class
+                                                                    </th>
+                                                                    <th>Valid From</th>
+                                                                    <th>Valid Till</th>
+                                                                    <th>Airline</th>
+                                                                </tr>
+                                                                <tr>
+
+
+
+
+                                                                    <th>Intl</th>
+                                                                    <th>Dom</th>
+
+
+
+                                                                    <th>Intl</th>
+                                                                    <th>Dom</th>
+
+
+
+                                                                    <th>Intl</th>
+                                                                    <th>Dom</th>
+
+                                                                    <th></th>
+                                                                    <th></th>
+                                                                    <th></th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach ($agentProv as $prov)
+                                                           
+                                                                <tr>
+                                                                    <td>{{ $prov->term }}</td>
+                                                                    <td>{{ $prov->incentive_description }}</td>
+                                                                    <td>{{ $prov->target }}</td>
+                                                                    <td>{{ $prov->businessclass_intl }}</td>
+                                                                    <td>{{ $prov->businessclass_dom }}</td>
+                                                                    <td>{{ $prov->premiumclass_intl }}</td>
+                                                                    <td>{{ $prov->premiumclass_dom }}</td>
+                                                                    <td>{{ $prov->economyclass_intl }}</td>
+                                                                    <td>{{ $prov->economyclass_dom }}</td>
+                                                                    <td>{{ $prov->valid_from }}</td>
+                                                                    <td>{{ $prov->valid_till }}</td>
+                                                                    <td>{{ $prov->airline->airline_name }}</td>
+
+                                                                </tr>
+
+                                                            </tbody>
+                                                            @endforeach
+                                                            <!-- Repeat for other agents -->
+                                                          
+                                                        </table>
+
+                                                    </div>
+                                                </div>
+                                                <div id="add_prov" class="modal custom-modal fade" role="dialog">
+                                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Add Prov. Data</h5>
+                                                                <button type="button" class="close"
+                                                                    data-bs-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form action="{{ route('admin.prov.store') }}#provision"
+                                                                    method="POST" enctype="multipart/form-data">
+                                                                    @csrf
+                                                                    <div class="row">
+                                                                        <input class="form-control" type="hidden"
+                                                                            name="agent_id" value="{{ $agent->id }}">
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Airline<span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <select class="select form-control"
+                                                                                    name="airline_id">
+                                                                                    <option selected disabled>Select Airline
+                                                                                    </option>
+                                                                                    @foreach ($airline as $air)
+                                                                                        <option
+                                                                                            value="{{ $air->id }}">
+                                                                                            {{ $air->airline_name }}
+                                                                                        </option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Incentive
+                                                                                    Description <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <input class="form-control" type="text" required
+                                                                                    name="incentive_description" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Term <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <input class="form-control" type="text" required
+                                                                                    name="term" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Target <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <input class="form-control" type="text" required
+                                                                                    name="target" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Business
+                                                                                    Class Intl <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <input class="form-control" type="number"
+                                                                                    name="businessclass_intl" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Business
+                                                                                    Class Dom <span
+                                                                                        class="text-danger">*</span></label>
+                                                                             <input class="form-control"
+                                                                                    type="number"
+                                                                                    name="businessclass_dom" id="numberInput" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Premium
+                                                                                    Class
+                                                                                    Intl <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <input class="form-control"
+                                                                                    type="number"
+                                                                                    name="premiumclass_intl" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Premium
+                                                                                    Class
+                                                                                    Dom <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <input class="form-control"
+                                                                                    type="number"
+                                                                                    name="premiumclass_dom" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Economy
+                                                                                    Class
+                                                                                    Intl <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <input class="form-control"
+                                                                                    type="number"
+                                                                                    name="economyclass_intl" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Economy
+                                                                                    Class
+                                                                                    Dom <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <input class="form-control"
+                                                                                    type="number"
+                                                                                    name="economyclass_dom" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Valid From
+                                                                                    <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <input class="form-control"
+                                                                                    type="date" name="valid_from"
+                                                                                    required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Valid Till
+                                                                                    <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <input class="form-control"
+                                                                                    type="date" name="valid_till"
+                                                                                    required>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="submit-section">
+                                                                        <button class="btn btn-primary"
+                                                                            type="submit">Submit</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <div class="card profile-box flex-fill">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12 d-flex">
+                                            <div class="card profile-box flex-fill">
+                                                <div class="col-auto float-end ms-auto mt-2 mx-2">
+                                                    <a class="btn add-btn" data-bs-toggle="modal"
+                                                        data-bs-target="#add_pli"><i class="fa fa-plus"></i> Add PLI
+                                                        Data</a>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table custom-table mb-0 datatable">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th rowspan="2" style="padding-bottom: 70px;">
+                                                                        Term
+                                                                    </th>
+                                                                    <th rowspan="2" style="padding-bottom: 70px;">
+                                                                        Incentive Description</th>
+                                                                    <th rowspan="2" style="padding-bottom: 70px;">
+                                                                        Target</th>
+                                                                    <th class="text-center" colspan="2">Business
+                                                                        Class
+                                                                    </th>
+                                                                    <th class="text-center" colspan="2">Premium Class
+                                                                    </th>
+                                                                    <th class="text-center" colspan="2">Economy Class
+                                                                    </th>
+                                                                    <th>Valid From</th>
+                                                                    <th>Valid Time</th>
+                                                                    <th>Airline</th>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th>Intl</th>
+                                                                    <th>Dom</th>
+                                                                    <th>Intl</th>
+                                                                    <th>Dom</th>
+                                                                    <th>Intl</th>
+                                                                    <th>Dom</th>
+                                                                    <th></th>
+                                                                    <th></th>
+                                                                    <th></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>@php
+                                                                        // Initialize sum values to 0
+                                                                        $sumBusinessIntl = 0;
+                                                                        $sumBusinessDom = 0;
+                                                                        $sumPremiumIntl = 0;
+                                                                        $sumPremiumDom = 0;
+                                                                        $sumEconomyIntl = 0;
+                                                                        $sumEconomyDom = 0;
+                                                                    @endphp
+                                                                                                                                                                                @foreach ($agentPli as $pliGroup)
+                                                                                                                                                                                    
+                                                                                                                                                                                    @foreach ($pliGroup as $index => $pli)
+                                                                                                                                                                                    @php
+                                                                            // Calculate the sum for each field within the group
+                                                                            $sumBusinessIntl += $pli->businessclass_intl;
+                                                                            $sumBusinessDom += $pli->businessclass_dom;
+                                                                            $sumPremiumIntl += $pli->premiumclass_intl;
+                                                                            $sumPremiumDom += $pli->premiumclass_dom;
+                                                                            $sumEconomyIntl += $pli->economyclass_intl;
+                                                                            $sumEconomyDom += $pli->economyclass_dom;
+                                                                        @endphp
+                                                                        <tr>
+                                                                            @if ($index == 0)
+                                                                                <td rowspan="{{ count($pliGroup) }}">
+                                                                                    {{ $pli->term }}</td>
+                                                                            @endif
+                                                                            <td>{{ $pli->incentive_description }}</td>
+                                                                            <td>{{ $pli->target }}</td>
+                                                                            <td>{{ $pli->businessclass_intl }}%</td>
+                                                                            <td>{{ $pli->businessclass_dom }}%</td>
+                                                                            <td>{{ $pli->premiumclass_intl }}%</td>
+                                                                            <td>{{ $pli->premiumclass_dom }}%</td>
+                                                                            <td>{{ $pli->economyclass_intl }}%</td>
+                                                                            <td>{{ $pli->economyclass_dom }}%</td>
+                                                                            @if ($index == 0)
+                                                                                <td rowspan="{{ count($pliGroup) }}">
+                                                                                    {{ $pli->valid_from }}</td>
+                                                                                <td rowspan="{{ count($pliGroup) }}">
+                                                                                    {{ $pli->valid_till }}</td>
+                                                                                <td rowspan="{{ count($pliGroup) }}">
+                                                                                    {{ $pli->airline->airline_name }}</td>
+                                                                            @endif
+                                                                        </tr>
+                                                                    
+                                                                    @endforeach
+                                                                    @endforeach
+                                                                    <tr>
+                                                                        <td colspan="2">Total Max Payout</td>
+                                                                        <td></td>
+                                                                        <td>{{ $sumBusinessIntl }}%</td>
+                                                                        <td>{{ $sumBusinessDom }}%</td>
+                                                                        <td>{{ $sumPremiumIntl }}%</td>
+                                                                        <td>{{ $sumPremiumDom }}%</td>
+                                                                        <td>{{ $sumEconomyIntl }}%</td>
+                                                                        <td>{{ $sumEconomyDom }}%</td>
+                                                                    </tr>
+                                                            </tbody>
+                                                        </table>
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div id="airline_activation" class="pro-overview tab-pane fade show">
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <div class="card profile-box flex-fill">
+                                <div class="card-body">
+                                    <form action="{{ route('admin.agent.target.store') }}#airline_activation"
+                                        method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        <div class="table-responsive text-nowrap">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="fw-bold">Airline/Service</th>
+                                                        @foreach ($fareType as $ft)
+                                                            <th class="fw-bold">{{ $ft->fare_type }}</th>
+                                                        @endforeach
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($airline as $air)
+                                                        <tr>
+                                                            <div class="form-group">
+                                                                <input class="form-control" type="hidden"
+                                                                    name="agent_id" value="{{ $agent->id }}">
+                                                            </div>
+                                                            <th class="fw-bold">{{ $air->airline_name }}</th>
+                                                            @foreach ($fareType as $ft)
+                                                                @php
+                                                                    $status = DB::table('special_fares')
+                                                                        ->where('airline_id', $air->id)
+                                                                        ->where('fare_type', $ft->fare_type_name)
+                                                                        ->where('agent_id', $agent->id)
+                                                                        ->value('status');
+                                                                @endphp
+                                                                <input type="hidden"
+                                                                    name="airline[{{ $air->id }}][{{ $ft->fare_type_name }}]"
+                                                                    value="2">
+                                                                <th>
+                                                                    <input type="checkbox"
+                                                                        name="airline[{{ $air->id }}][{{ $ft->fare_type_name }}]"
+                                                                        value="1"
+                                                                        {{ $status == 1 ? 'checked' : '' }}>
+                                                                </th>
+                                                            @endforeach
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="submit-section">
+                                            <button class="btn btn-primary" type="submit">Submit</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div id="add_pli" class="modal custom-modal fade" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Edit Agent</h5>
+                                <h5 class="modal-title">Add PLI Data</h5>
                                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="{{ route('admin.agent.edit', ['id' => $agent->id]) }}" method="POST" enctype="multipart/form-data">
-
-                                @method('patch')
-                                @csrf
+                                <form action="{{ route('admin.pli.store') }}#provision" method="POST"
+                                    enctype="multipart/form-data">
+                                    @csrf
                                     <div class="row">
+                                        <input class="form-control" type="hidden" name="agent_id"
+                                            value="{{ $agent->id }}">
                                         <div class="col-sm-6">
                                             <div class="form-group">
-                                                <label class="col-form-label">First Name <span class="text-danger">*</span></label>
-                                                <input class="form-control"name="first_name"  value="{{$agent->first_name}}" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="col-form-label">Last Name</label>
-                                                <input class="form-control" name="last_name" value="{{$agent->last_name}}" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="col-form-label">Email <span class="text-danger">*</span></label>
-                                                <input class="form-control" name="email"  value="{{$agent->email}}" type="email">
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="col-form-label">Employee ID <span class="text-danger">*</span></label>
-                                                <input type="text" name="employee_id" value="{{$agent->unique_id}}" readonly class="form-control floating">
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="col-form-label">Phone </label>
-                                                <input class="form-control" name="phone"  value="{{$agent->phone}}" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label>Designation <span class="text-danger">*</span></label>
-                                                <select class="form-control"  name="designation">
-                                                    <option>Select Designation</option>
-                                                    @foreach($designation as $designation_data)
-                                                        <option value="{{$designation_data->designation}}" @if ($agent->position == $designation_data->designation) selected @endif>{{$designation_data->designation}}</option>
+                                                <label class="col-form-label">Airline<span
+                                                        class="text-danger">*</span></label>
+                                                <select class="select form-control" name="airline_id">
+                                                    <option selected disabled>Select Airline</option>
+                                                    @foreach ($airline as $air)
+                                                        <option value="{{ $air->id }}">{{ $air->airline_name }}
+                                                        </option>
                                                     @endforeach
                                                 </select>
                                             </div>
                                         </div>
-
-                                        {{-- <div class="col-sm-6">
+                                        <div class="col-sm-6">
                                             <div class="form-group">
-                                                <label class="col-form-label">Profile Image</label>
-                                                <input type="file" class="form-control" name="avatar_filename">
+                                                <label class="col-form-label">Incentive Description <span
+                                                        class="text-danger">*</span></label>
+                                                <input class="form-control" type="text" required
+                                                    name="incentive_description" required>
                                             </div>
-                                        </div> --}}
-
-                                        <!-- Add image display -->
-                                        {{-- <div class="col-md-6">
+                                        </div>
+                                        <div class="col-sm-6">
                                             <div class="form-group">
-                                                <label>Profile Image:</label>
-                                                @if ($agent->avatar_filename)
-                                                    <img src="{{ asset('staff/storage/avatars/'.$agent->avatar_directory.'/'. $agent->avatar_filename) }}" style="height:100px;" class="img-fluid" alt="Agent Image">
-                                                @else
-                                                    <p>No image uploaded</p>
-                                                @endif
+                                                <label class="col-form-label">Term <span
+                                                        class="text-danger">*</span></label>
+                                                <input class="form-control" type="text" required name="term" required>
                                             </div>
-                                        </div> --}}
-
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Target <span
+                                                        class="text-danger">*</span></label>
+                                                <input class="form-control" type="text" required name="target" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Business Class Intl <span
+                                                        class="text-danger">*</span></label>
+                                                <input class="form-control" type="number" name="businessclass_intl"
+                                                    required>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Business Class Dom <span
+                                                        class="text-danger">*</span></label>
+                                                <input class="form-control" type="number" name="businessclass_dom"
+                                                    required>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Premium Class Intl <span
+                                                        class="text-danger">*</span></label>
+                                                <input class="form-control" type="number" name="premiumclass_intl"
+                                                    required>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Premium Class Dom <span
+                                                        class="text-danger">*</span></label>
+                                                <input class="form-control" type="number" name="premiumclass_dom"
+                                                    required>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Economy Class Intl <span
+                                                        class="text-danger">*</span></label>
+                                                <input class="form-control" type="number" name="economyclass_intl"
+                                                    required>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Economy Class Dom <span
+                                                        class="text-danger">*</span></label>
+                                                <input class="form-control" type="number" name="economyclass_dom"
+                                                    required>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Valid From <span
+                                                        class="text-danger">*</span></label>
+                                                <input class="form-control" type="date" name="valid_from" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Valid Till <span
+                                                        class="text-danger">*</span></label>
+                                                <input class="form-control" type="date" name="valid_till" required>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="submit-section">
-                                        <button class="btn btn-primary" type="submit">Update</button>
+                                        <button class="btn btn-primary" type="submit">Submit</button>
                                     </div>
                                 </form>
                             </div>
@@ -196,655 +2037,215 @@ use Carbon\Carbon;
                     </div>
                 </div>
 
-      <div class="card tab-box">
-         <div class="row user-tabs">
-            <div class="col-lg-12 col-md-12 col-sm-12 line-tabs">
-               <ul class="nav nav-tabs nav-tabs-bottom">
-                  <li class="nav-item"><a href="#groups" data-bs-toggle="tab" class="nav-link active">Groups</a></li>
-                  <li class="nav-item"><a href="#wallets" data-bs-toggle="tab" class="nav-link">Wallets</a></li>
-                  <li class="nav-item"><a href="#request" data-bs-toggle="tab" class="nav-link">Wallet Request</a></li>
-                  <li class="nav-item"><a href="#airtickets" data-bs-toggle="tab" class="nav-link">Air Tickets </a></li>
-                  <li class="nav-item"><a href="#comments" data-bs-toggle="tab" class="nav-link">Comments </a></li>
-                  {{-- <li class="nav-item"><a href="#salesreports" data-bs-toggle="tab" class="nav-link">Sales Reports </a></li> --}}
-               </ul>
-            </div>
-         </div>
-      </div>
-      <div class="tab-content">
-         <!-- Profile Info Tab -->
-         <div id="groups" class="pro-overview tab-pane fade show active">
-            <div class="page-header">
-               <div class="row align-items-center">
-                  <div class="col">
-                     <h3 class="page-title">Groups</h3>
-                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Groups</li>
-                     </ul>
-                  </div>
-                  <div class="col-auto float-end ms-auto">
-                     <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_group"><i class="fa fa-plus"></i> Add Groups</a>
-                  </div>
-               </div>
-            </div>
-            <div class="row">
-               @foreach($group as $index => $data)
-               <div class="col-md-6 d-flex">
-                  <div class="card profile-box flex-fill">
-                     <div class="card-body">
-                        <h3 class="card-title">Group {{ $index + 1 }} <a href="#" class="edit-icon" data-bs-toggle="modal" data-bs-target="#edit_group{{ $data->id }}"><i class="fa fa-pencil"></i></a></h3>
-                        <ul class="personal-info">
-                           <li>
-                              <div class="title">Group Name</div>
-                              <div class="text">{{ $data->name }}</div>
-                           </li>
-                           <li>
-                              <div class="title">Airline Name</div>
-                              <div class="text">{{ $data->airline->airline_code }}</div>
-                           </li>
-                        </ul>
-                     </div>
-                  </div>
-               </div>
-               <div id="edit_group{{$data->id}}" class="modal custom-modal fade" role="dialog">
-                  <div class="modal-dialog modal-dialog-centered" role="document">
-                     <div class="modal-content">
-                        <div class="modal-header">
-                           <h5 class="modal-title">Edit Group</h5>
-                           <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                           <span aria-hidden="true">&times;</span>
-                           </button>
-                        </div>
-                        <div class="modal-body">
-                           <form id="edit_group_form{{$data->id}}" action="{{ route('admin.agentgroups.update', ['id' => $data->id]) }}" method="POST" enctype="multipart/form-data">
-                              @csrf
-                              @method('PUT')
-                              <div class="form-group">
-                                 <label>Select Airline <span class="text-danger">*</span></label>
-                                 <select class="form-control" name="airline_id" id="edit_airline_id{{$data->id}}">
-                                 @foreach($airlines as $airline_data)
-                                 <option value="{{ $airline_data->id }}" {{ $airline_data->id == $data->airline_id ? 'selected' : '' }}>{{ $airline_data->airline_code }}</option>
-                                 @endforeach
-                                 </select>
-                              </div>
-                              <div class="form-group">
-                                 <label>Group Name <span class="text-danger">*</span></label>
-                                 <input class="form-control" name="name" id="edit_group_name{{$data->id}}" type="text" value="{{ $data->name }}" required>
-                              </div>
-                              <div class="submit-section">
-                                 <button class="btn btn-primary" type="submit">Update</button>
-                              </div>
-                           </form>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-               @endforeach
-            </div>
-         </div>
-         <div class="tab-pane fade" id="request">
-            <div class="page-header">
-               <div class="row align-items-center">
-                  <div class="col">
-                     <h3 class="page-title">Wallet Request </h3>
-                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Wallet Request</li>
-                     </ul>
-                  </div>
-                  <!-- <div class="col-auto float-end ms-auto">
-                     <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_group"><i
-                             class="fa fa-plus"></i> Add Wallets</a>
-                     </div> -->
-               </div>
-            </div>
-            <div class="row">
-               @foreach($walletRequests as $request)
-               <div class="col-md-6 d-flex">
-                  <div class="card profile-box flex-fill">
-                     <div class="card-body">
-                        <h3 class="card-title">Wallet Request #{{ $request->id }}  <a href="#" class="edit-icon" data-bs-toggle="modal" data-bs-target="#delete_walletrequest{{ $request->id }}">
-                           <i class="fa fa-trash"></i>
-                           </a>
-                        </h3>
-                        <ul class="personal-info">
-                           <li>
-                              <div class="title">Payment Mode</div>
-                              <div class="text">{{ $request->payment_mode }}</div>
-                           </li>
-                           <li>
-                              <div class="title">Amount</div>
-                              <div class="text">{{ $request->amount }}</div>
-                           </li>
-                           <li>
-                              <div class="title">Bank Transaction ID</div>
-                              <div class="text">{{ $request->bank_tran_id }}</div>
-                           </li>
-                           <!-- Add other fields as needed -->
-                           <li>
-                              <div class="title">Status</div>
-                              <div class="text">{{ $request->status }}</div>
-                           </li>
-                           <li>
-                              <div class="title">Created at</div>
-                              <div class="text">{{ $request->created_at }}</div>
-                           </li>
-                        </ul>
-                     </div>
-                  </div>
-               </div>
-               <div id="delete_walletrequest{{ $request->id }}" class="modal custom-modal fade" role="dialog">
-                  <div class="modal-dialog modal-dialog-centered" role="document">
-                     <div class="modal-content">
-                        <div class="modal-header">
-                           <h5 class="modal-title">Delete Wallet Request</h5>
-                           <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                           <span aria-hidden="true">&times;</span>
-                           </button>
-                        </div>
-                        <div class="modal-body">
-                           <p>Are you sure you want to delete this wallet request?</p>
-                           <form action="{{ route('admin.wallet.requests.delete', ['id' => $request->id]) }}" method="POST">
-                              @csrf
-                              @method('DELETE')
-                              <button type="submit" class="btn btn-danger">Delete</button>
-                           </form>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-               @endforeach
-            </div>
-         </div>
-         <div class="tab-pane fade" id="wallets">
-            <div class="page-header">
-               <div class="row align-items-center">
-                  <div class="col">
-                     <h3 class="page-title">Wallets</h3>
-                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Wallets</li>
-                     </ul>
-                  </div>
-                  <div class="col-auto float-end ms-auto">
-                     <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_wallet">
-                     <i class="fa fa-plus"></i> Add Wallets
-                     </a>
-                  </div>
-               </div>
-            </div>
-            <div class="row">
-               @foreach($wallets as $index => $wallet)
-               <div class="col-md-4 mb-4">
-                  <div class="card profile-box flex-fill">
-                     <div class="card-body">
-                        <h3 class="card-title">Wallet Details
-                           <a href="#" class="edit-icon" data-bs-toggle="modal" data-bs-target="#delete_wallet{{ $wallet->id }}">
-                           <i class="fa fa-trash"></i>
-                           </a>
-                        </h3>
-                        <ul class="personal-info">
-                           <li>
-                              <div class="title">Agent Name</div>
-                              <div class="text">{{ $agent->first_name ?? '' }} {{ $agent->last_name ?? '' }}</div>
-                           </li>
-                           <li>
-                              <div class="title">Wallet Payment</div>
-                              <div class="text">{{ $wallet->wallet ?? '' }}</div>
-                           </li>
-                           <li>
-                              <div class="title">Status</div>
-                              <div class="text">{{ $wallet->status ?? '' }}</div>
-                           </li>
-                           <li>
-                              <div class="title">Description</div>
-                              <div class="text">{{ $wallet->description ?? '' }}</div>
-                           </li>
-                           <li>
-                              <div class="title">Available Balance</div>
-                              <div class="text">{{ $wallet->available_balance ?? '' }}</div>
-                           </li>
-                        </ul>
-                     </div>
-                  </div>
-               </div>
-               <!-- Modal for delete confirmation -->
-               <div id="delete_wallet{{ $wallet->id }}" class="modal custom-modal fade" role="dialog">
-                  <div class="modal-dialog modal-dialog-centered" role="document">
-                     <div class="modal-content">
-                        <div class="modal-header">
-                           <h5 class="modal-title">Confirm Delete Wallet</h5>
-                           <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                           <span aria-hidden="true">&times;</span>
-                           </button>
-                        </div>
-                        <div class="modal-body">
-                           <p>Are you sure you want to delete this wallet entry?</p>
-                        </div>
-                        <div class="modal-footer">
-                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                           <form action="{{ route('admin.wallet.delete') }}" method="POST">
-                              @csrf
-                              @method('DELETE')
-                              <input type="hidden" name="wallet_id" value="{{ $wallet->id }}">
-                              <button type="submit" class="btn btn-danger">Delete</button>
-                           </form>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-               <!-- Close the row if it's the end of a group of three or the last item -->
-               @if (($index + 1) % 3 == 0 || $loop->last)
-            </div>
-            <div class="row">
-               @endif
-               @endforeach
-            </div>
-         </div>
 
-<div class="tab-pane fade" id="comments">
-    <div class="page-header">
-        <!-- Breadcrumb and page title -->
-    </div>
-    <div class="row">
-        @foreach($tickets as $ticket)
-        <div class="col-md-6 d-flex">
-            <div class="card profile-box flex-fill">
-                <div class="card-body">
-                    <h3 class="card-title">Ticket ID: {{ $ticket->id }}</h3>
-                    <ul class="personal-info">
-                        <li>
-                            <div class="title">Subject</div>
-                            <div class="text">{{ $ticket->ticket_subject }}</div>
-                        </li>
-                        <li>
-                            <div class="title">Date</div>
-                            <div class="text">{{ $ticket->ticket_last_updated }}</div>
-                        </li>
-                        <li>
-                            <div class="title">Priority</div>
-                            <div class="text">{{ $ticket->ticket_priority }}</div>
-                        </li>
-                        <li>
-                        <div class="title">Status</div>
-                        <div class="text">
-                            @php
-                                switch($ticket->ticket_status) {
-                                    case 1:
-                                        echo 'Open';
-                                        break;
-                                    case 2:
-                                        echo 'Closed';
-                                        break;
-                                    case 3:
-                                        echo 'On Hold';
-                                        break;
-                                    case 4:
-                                        echo 'Answered';
-                                        break;
-                                    default:
-                                        echo 'Unknown';
-                                }
-                            @endphp
-                        </div>
-                    </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        @endforeach
-    </div>
-</div>
+                <div id="add_address" class="modal custom-modal fade" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Address</h5>
+                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('admin.agent.address.store') }}#address" method="POST"
+                                    enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="row">
+                                        <div class="col-sm-6">
 
-<div class="tab-pane fade" id="airtickets">
-    <div class="page-header">
-        <div class="row align-items-center">
-            <div class="col">
-                <h3 class="page-title">Air Tickets</h3>
-                <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Air Tickets</li>
-                </ul>
-            </div>
-            <div class="col-auto float-end ms-auto">
-                <!-- <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_group"><i class="fa fa-plus"></i> Add Tickets</a> -->
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        @foreach($airtickets as $ticket)
-        <div class="col-md-4 d-flex">
-            <div class="card profile-box flex-fill">
-                <div class="card-body">
-                    <h3 class="card-title">Ticket {{ $loop->iteration }} </h3>
-                    <ul class="personal-info">
-                        <li>
-                            <div class="title">Ticket Number</div>
-                            <div class="text">{{ $ticket->ticket_number }}</div>
-                        </li>
-                        <li>
-                            <div class="title">EMD</div>
-                            <div class="text">{{ $ticket->emd }}</div>
-                        </li>
-                        <li>
-                            <div class="title">MCO</div>
-                            <div class="text">{{ $ticket->mco }}</div>
-                        </li>
-                        <li>
-                            <div class="title">Date Change</div>
-                            <div class="text">{{ $ticket->date_change }}</div>
-                        </li>
-                        <li>
-                            <div class="title">Refund</div>
-                            <div class="text">{{ $ticket->refund }}</div>
-                        </li>
-                        <li>
-                            <div class="title">Ticket Issued From</div>
-                            <div class="text">{{ $ticket->ticket_issued_from }}</div>
-                        </li>
-                        <li>
-                            <div class="title">Ticket Issued To</div>
-                            <div class="text">{{ $ticket->ticket_issued_to }}</div>
-                        </li>
-                        <li>
-                            <div class="title">Departure Date</div>
-                            <div class="text">{{ $ticket->departure_date }}</div>
-                        </li>
-                        <li>
-                            <div class="title">Return Date</div>
-                            <div class="text">{{ $ticket->return_date }}</div>
-                        </li>
-                        <li>
-                            <div class="title">Airline</div>
-                            <div class="text">{{ $ticket->airline->airline_code }}</div>
-                        </li>
-                        <li>
-                            <div class="title">Base Fare</div>
-                            <div class="text">{{ $ticket->base_fare }}</div>
-                        </li>
-                        <li>
-                            <div class="title">Taxes</div>
-                            <div class="text">{{ $ticket->taxes }}</div>
-                        </li>
-                        <li>
-                            <div class="title">Amount Paid to Airlines</div>
-                            <div class="text">{{ $ticket->amount_paid_to_airlines }}</div>
-                        </li>
-                        <li>
-                            <div class="title">Amount Charged from Pax</div>
-                            <div class="text">{{ $ticket->amount_charged_from_pax }}</div>
-                        </li>
-                        <li>
-                            <div class="title">Status</div>
-                            <div class="text">{{ $ticket->status }}</div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        @endforeach
-    </div>
-</div>
+                                            <div class="form-group">
+                                                <input class="form-control" type="hidden" name="agent_id"
+                                                    value="{{ $agent->id }}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-form-label">Street Address <span
+                                                        class="text-danger">*</span></label>
+                                                <input class="form-control" type="text" required name="street">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">City</label>
+                                                <input class="form-control" type="text" required name="city">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">State</label>
+                                                <input class="form-control" type="text" required name="state">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Country</label>
+                                                <input class="form-control" type="text" required name="country">
+                                            </div>
+                                        </div>
 
-{{-- <div class="tab-pane fade" id="salesreports">
-                <div class="page-header">
-                    <div class="row align-items-center">
-                        <div class="col">
-                            <h3 class="page-title">Sales Reports</h3>
-                            <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
-                                <li class="breadcrumb-item active">Sales Reports</li>
-                            </ul>
-                        </div>
-                        <!-- <div class="col-auto float-end ms-auto">
-                            <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_group"><i
-                                    class="fa fa-plus"></i> Add Tickets</a>
-                        </div> -->
-                    </div>
-                </div>
-                <div class="row">
-                    @foreach($group as $index => $data)
-                    <div class="col-md-6 d-flex">
-                        <div class="card profile-box flex-fill">
-                            <div class="card-body">
-                                <h3 class="card-title">Group {{ $index + 1 }}
-                                 <!-- <a href="#" class="edit-icon"
-                                        data-bs-toggle="modal" data-bs-target="#edit_group{{ $data->id }}"><i
-                                            class="fa fa-eye"></i></a> -->
-                                          </h3>
-                                <ul class="personal-info">
-                                    <li>
-                                        <div class="title">Book Id</div>
-                                        <div class="text">{{ $data->name }}</div>
-                                    </li>
-                                    <li>
-                                        <div class="title">Flight Number</div>
-                                        <div class="text">{{ $data->name }}</div>
-                                    </li>
-                                    <li>
-                                        <div class="title">P. No.</div>
-                                        <div class="text">{{ $data->airline->airline_code }}</div>
-                                    </li>
-                                    <li>
-                                        <div class="title">Agent Name</div>
-                                        <div class="text"><a href="">{{ $agent->first_name ?? '' }}
-                                                {{ $agent->last_name ?? '' }}</a></div>
-                                    </li>
-                                    <li>
-                                        <div class="title">Package</div>
-                                        <div class="text"><a href="">{{ $agent->first_name ?? '' }}
-                                                {{ $agent->last_name ?? '' }}</a></div>
-                                    </li>
-                                    <li>
-                                        <div class="title">Seat</div>
-                                        <div class="text"><a href="">{{ $agent->first_name ?? '' }}
-                                                {{ $agent->last_name ?? '' }}</a></div>
-                                    </li>
-                                    <li>
-                                        <div class="title">Selling Cost</div>
-                                        <div class="text"><a href="">{{ $agent->first_name ?? '' }}
-                                                {{ $agent->last_name ?? '' }}</a></div>
-                                    </li>
-                                    <li>
-                                        <div class="title">Purchasing Cost</div>
-                                        <div class="text"><a href="">{{ $agent->first_name ?? '' }}
-                                                {{ $agent->last_name ?? '' }}</a></div>
-                                    </li>
-                                    <li>
-                                        <div class="title">Departure</div>
-                                        <div class="text"><a href="">{{ $agent->first_name ?? '' }}
-                                                {{ $agent->last_name ?? '' }}</a></div>
-                                    </li>
-                                    <li>
-                                        <div class="title">Destination</div>
-                                        <div class="text"><a href="">{{ $agent->first_name ?? '' }}
-                                                {{ $agent->last_name ?? '' }}</a></div>
-                                    </li>
-                                    <li>
-                                        <div class="title">Date</div>
-                                        <div class="text"><a href="">{{ $agent->first_name ?? '' }}
-                                                {{ $agent->last_name ?? '' }}</a></div>
-                                    </li>
-                                    <li>
-                                        <div class="title">Time</div>
-                                        <div class="text"><a href="">{{ $agent->first_name ?? '' }}
-                                                {{ $agent->last_name ?? '' }}</a></div>
-                                    </li>
-                                </ul>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Pincode</label>
+                                                <input class="form-control" type="text" required name="pincode">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="submit-section">
+                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
-                    <!-- Edit Designation Modal -->
-                    <!-- Edit Group Modal -->
-                    <div id="edit_group{{$data->id}}" class="modal custom-modal fade" role="dialog">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Edit Group</h5>
-                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <form id="edit_group_form{{$data->id}}" action="" method="POST"
-                                        enctype="multipart/form-data">
-                                        @csrf
-                                        @method('PUT')
-                                        <div class="form-group">
-                                            <label>Select Agent <span class="text-danger">*</span></label>
-                                            <select class="form-control" name="agent_id"
-                                                id="edit_agent_id{{$data->id}}">
-                                                @foreach($agents as $agent_data)
-                                                <option value="{{ $agent_data->id }}"
-                                                    {{ $agent_data->id == $data->agent_id ? 'selected' : '' }}>
-                                                    {{ $agent_data->first_name }} {{ $agent_data->last_name }}</option>
-                                                @endforeach
-                                            </select>
+                </div>
+
+                <div id="add_contact" class="modal custom-modal fade" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Contact</h5>
+                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('admin.agent.contact.store') }}#contact_details" method="POST"
+                                    enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Title <span
+                                                        class="text-danger">*</span></label>
+                                                <input class="form-control" type="text" required name="title">
+                                            </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label>Select Airline <span class="text-danger">*</span></label>
-                                            <select class="form-control" name="airline_id"
-                                                id="edit_airline_id{{$data->id}}">
-                                                @foreach($airlines as $airline_data)
-                                                <option value="{{ $airline_data->id }}"
-                                                    {{ $airline_data->id == $data->airline_id ? 'selected' : '' }}>
-                                                    {{ $airline_data->airline_code }}</option>
-                                                @endforeach
-                                            </select>
+                                        <div class="col-sm-6">
+
+                                            <div class="form-group">
+                                                <input class="form-control" type="hidden" name="agent_id"
+                                                    value="{{ $agent->id }}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-form-label">First Name <span
+                                                        class="text-danger">*</span></label>
+                                                <input class="form-control" type="text" required name="first_name">
+                                            </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label>Group Name <span class="text-danger">*</span></label>
-                                            <input class="form-control" name="name" id="edit_group_name{{$data->id}}"
-                                                type="text" value="{{ $data->name }}" required>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Last Name</label>
+                                                <input class="form-control" type="text" required name="last_name">
+                                            </div>
                                         </div>
-                                        <div class="submit-section">
-                                            <button class="btn btn-primary" type="submit">Update</button>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Email</label>
+                                                <input class="form-control" type="text" required name="email_address">
+                                            </div>
                                         </div>
-                                    </form>
-                                </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Phone</label>
+                                                <input class="form-control" type="text" required name="phone_number">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Position</label>
+                                                <input class="form-control" type="text" required name="position">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="submit-section">
+                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
-                    @endforeach
-
                 </div>
+                
+
+
             </div>
 
-</div> --}}
-<div id="add_wallet" class="modal custom-modal fade" role="dialog">
-   <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-         <div class="modal-header">
-            <h5 class="modal-title">Add Payment Wallet</h5>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-         </div>
-         <div class="modal-body">
-            <form method="POST" action="{{ route('admin.store.wallet') }}">
-               @csrf
-               <div class="row">
-                  <input type="hidden" name="agent_id" value="{{ $agent->id }}">
-                  <div class="col-md-6">
-                     <div class="form-group">
-                        <label>Payment <span class="text-danger">*</span></label>
-                        <input class="form-control" name="payment" type="number" step="any" required>
-                     </div>
-                  </div>
-                  <div class="col-md-6">
-                     <div class="form-group">
-                        <label>Date <span class="text-danger">*</span></label>
-                        <input class="form-control" name="date" type="date" required>
-                     </div>
-                  </div>
-                  <div class="col-md-6">
-                     <div class="form-group">
-                        <label>Description <span class="text-danger">*</span></label>
-                        <input class="form-control" name="description" type="text" required>
-                     </div>
-                  </div>
-               </div>
-               <div class="submit-section">
-                  <button type="submit" class="btn btn-primary submit-btn">Submit</button>
-               </div>
-            </form>
-         </div>
-      </div>
-   </div>
-</div>
 
+            <style>
+                    .conversation-date {
+                        font-weight: bold;
+                        margin-bottom: 10px;
+                    }
 
-<div id="add_group" class="modal custom-modal fade" role="dialog">
-   <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-         <div class="modal-header">
-            <h5 class="modal-title">Add Agent</h5>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-         </div>
-         <div class="modal-body">
-            <form action="{{ route('admin.agentgroups.store') }}" method="POST" enctype="multipart/form-data">
-               @csrf
+                    .conversation-title {
+                        font-weight: bold;
+                        font-size: 1.2em;
+                        margin-bottom: 20px;
+                    }
 
-               <input type="hidden" name="agent_id" value="{{ $agent->id }}">
-               <div class="form-group">
-                  <label>Select Airline <span class="text-danger">*</span></label>
-                  <select class="form-control" name="airline_id">
-                     <option>Select Airline</option>
-                     @foreach($airlines as $airline_data)
-                     <option value="{{ $airline_data->id }}">{{ $airline_data->airline_name }}</option>
-                     @endforeach
-                  </select>
-               </div>
-               <div class="form-group">
-                  <label>Group Name<span class="text-danger">*</span></label>
-                  <input class="form-control" name="name" type="text" required>
-               </div>
-               <div class="submit-section">
-                  <button class="btn btn-primary" type="submit">Submit</button>
-               </div>
-            </form>
-         </div>
-      </div>
-   </div>
-</div>
+                    .conversation-description {
+                        margin-bottom: 20px;
+                    }
 
-<div id="add_commission_modal" class="modal custom-modal fade" role="dialog">
-   <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-         <div class="modal-header">
-            <h5 class="modal-title">Add Commission</h5>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-         </div>
-         <div class="modal-body">
-            <form id="add_commission_form" action="" method="POST">
-               @csrf
-               <!-- Agent ID (hidden input, assuming it's passed via route or session) -->
-               <input type="hidden" name="agent_id" value="{{ $agent->id }}">
-               <!-- Commission Rate -->
-               <div class="form-group">
-                  <label for="add_commission_rate">Commission Rate</label>
-                  <input type="text" class="form-control" id="add_commission_rate" name="commission_rate" required>
-               </div>
-               <!-- Airline -->
-               <div class="form-group">
-                  <label for="add_airline_id">Airline</label>
-                  <select class="form-control" id="add_airline_id" name="airline_id" required>
-                     <option value="">Select Airline</option>
-                     @foreach($airlines as $airline)
-                     <option value="{{ $airline->id }}">{{ $airline->airline_name }}</option>
-                     @endforeach
-                  </select>
-               </div>
-               <div class="submit-section">
-                  <button class="btn btn-primary" type="submit">Add</button>
-               </div>
-            </form>
-         </div>
-      </div>
-   </div>
-</div>
-@endsection
+                    .conversation-author {
+                        text-align: right;
+                        font-style: italic;
+                    }
+                </style>
+<script>
+    document.addEventListener('input', function (e) {
+        if (e.target.type === 'number') {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        }
+    });
+</script>
+<script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    // Check if there's a hash in the URL
+                    if (window.location.hash) {
+                        const activeTab = window.location.hash;
+                        // Find the corresponding tab and show it
+                        const tabElement = document.querySelector(`a[href="${activeTab}"]`);
+                        if (tabElement) {
+                            tabElement.click();
+                        }
+                    }
+
+                    // Optional: update the form action with the current tab on form submit
+                    const forms = document.querySelectorAll('form');
+                    forms.forEach(form => {
+                        form.addEventListener('submit', function() {
+                            const activeTab = document.querySelector('.nav-tabs .active a');
+                            if (activeTab) {
+                                form.action += activeTab.getAttribute('href');
+                            }
+                        });
+                    });
+                });
+            </script>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const debitField = document.getElementById('debit');
+                    const creditField = document.getElementById('credit');
+
+                    debitField.addEventListener('input', function() {
+                        if (debitField.value.trim() !== '') {
+                            creditField.disabled = true;
+                        } else {
+                            creditField.disabled = false;
+                        }
+                    });
+
+                    creditField.addEventListener('input', function() {
+                        if (creditField.value.trim() !== '') {
+                            debitField.disabled = true;
+                        } else {
+                            debitField.disabled = false;
+                        }
+                    });
+                });
+            </script>
+
+        @endsection

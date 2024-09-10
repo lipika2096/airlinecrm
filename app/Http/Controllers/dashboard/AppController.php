@@ -32,7 +32,7 @@ class AppController extends Controller
         Calender::create([
             'event_name' => $request->input('event_name'),
             'event_date' => $request->input('event_date'),
-            'category' => $request->input('category'),
+            'category' => $request->input('category')
         ]);
 
         // Redirect back with success message

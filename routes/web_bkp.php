@@ -1,0 +1,456 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\dashboard\{
+    DashboardController,
+    AppController,
+    EmployeeController,
+    TaskController,
+    LeadController,
+    TicketController,
+    SalesController,
+    AccountingController,
+    PayrollController,
+    PolicyController,
+    ReportController,
+    PerformanceController,
+    GoalController,
+    TrainingController,
+    HRController,
+    AdministrationController,
+    JobController,
+    KnowledgebaseController,
+    ActivityController,
+    UserController,
+    SettingController,
+    ProfileController,
+    SubscriptionController,
+    AdminController,
+    AirlineController,
+    AgentController,
+    GroupController,
+    SalesLeadController,
+    AirTicketController,
+    FareConditionController,
+    CommissionController,
+    EventStatusController,
+    SectorController,
+    HoldController,
+    WalletController,
+    WalletRequestController,
+    InventoryController,
+    AdminHoldController,
+    AirlineLibraryController,
+    GroupRequestController,
+    AirlineDetailController,
+    DelaycodeController,
+    CategoryController,
+    FlightController,
+    LicenseApprovalController
+};
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
+// Home route
+Route::get('/employee', function () {
+    return view('admin.employee-login');
+})->name('employee.login');
+
+Route::post('/employee/login', [EmployeeController::class, 'login'])->name('employee.post.login');
+// Dashboard routes
+Route::prefix('employee')->name('employee.')->middleware(['auth:employee', 'verified'])->group(function () {
+
+    Route::get('dashboard', [DashboardController::class, 'employeeDashboard'])->name('dashboard');
+    Route::get('/logout', [EmployeeController::class, 'logout'])->name('logout');
+
+    Route::get('profile', [ProfileController::class, 'employeeProfile'])->name('profile');
+    Route::get('attendance-employee', [EmployeeController::class, 'attendanceEmployee'])->name('attendance-employee');
+    Route::get('leaves-employee', [EmployeeController::class, 'leavesEmployee'])->name('leaves-employee');
+
+    Route::get('resignation', [HRController::class, 'Employeeresignation'])->name('resignation');
+    Route::post('resignation/store', [HRController::class, 'EmployeeresignationStore'])->name('resignation.store');
+    Route::patch('resignation/update', [HRController::class, 'EmployeeresignationUpdate'])->name('resignation.update');
+
+    Route::post('punch-in', [EmployeeController::class, 'punchIn']);
+    Route::post('punch-out', [EmployeeController::class, 'punchOut']);
+
+    Route::get('leaves', [EmployeeController::class, 'leavesEmployee'])->name('leaves');
+    Route::post('leaves/store', [EmployeeController::class, 'leavesEmployeeStore'])->name('leaves.store');
+    Route::patch('leaves/edit/{id}', [EmployeeController::class, 'leavesEmployeeUpdate'])->name('leaves.update');
+});
+
+Route::get('/', function () {
+    return view('admin.index');
+})->name('admin.login');
+
+Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.post.login');
+Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->group(function () {
+
+    Route::get('dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
+    
+        Route::get('coming-soon', [DashboardController::class, 'comingSoon'])->name('comingSoon');
+
+    Route::get('/logout', [AdminController::class, 'logout'])->name('logout');
+
+    //Project Routes
+    Route::get('project-view', function(){
+        return view('admin.project-view');
+    })->name('project-view');
+
+    // App routes
+    
+    Route::post('agent/casehistory/store', [AgentController::class, 'caseStore'])->name('agent.case.store');
+    Route::post('agent/casehistory/update/{id}', [AgentController::class, 'caseUpdate'])->name('agent.cases.update');
+    Route::post('agent/casehistory/close/{id}', [AgentController::class, 'caseClose'])->name('agent.cases.close');
+
+	Route::get('airlines-details', [AirlineDetailController::class, 'index'])->name('airlines-details');
+    Route::post('airlines-details/store', [AirlineController::class, 'store'])->name('airlines-details.store');
+    Route::patch('/admin/airline-details/{airlineDetail}', [AirlineController::class, 'update'])->name('airlines-details.update');
+    Route::delete('/admin/airline-details/{airlineDetail}', [AirlineDetailController::class, 'destroy'])->name('airlines-details.destroy');
+
+
+    Route::get('/delay-code', [DelaycodeController::class, 'delay'])->name('delay.code');
+    Route::get('/delay-code-category', [CategoryController::class, 'delaycategory'])->name('delay.code.category');
+    Route::get('/origin', [CategoryController::class, 'origin'])->name('origin');
+    Route::post('origin/store', [CategoryController::class, 'originstore'])->name('origins.store');
+    Route::put('origin/{origin}/update', [CategoryController::class, 'originupdate'])->name('origins.update');
+    Route::delete('origin/{origin}', [CategoryController::class, 'origindestroy'])->name('origins.destroy');
+    Route::get('/destination', [CategoryController::class, 'destination'])->name('destination');
+    Route::post('destination/store', [CategoryController::class, 'destinationstore'])->name('destinations.store');
+    Route::put('destination/{destination}/update', [CategoryController::class, 'destinationupdate'])->name('destinations.update');
+    Route::delete('destination/{destination}', [CategoryController::class, 'destinationdestroy'])->name('destinations.destroy');
+    Route::post('delaycategories/store', [CategoryController::class, 'store'])->name('delay_code_categories.store');
+    Route::put('delaycategories/{id}/update', [CategoryController::class, 'update'])->name('delay_code_categories.update');
+    Route::delete('delaycategories/{id}/destroy', [CategoryController::class, 'destroy'])->name('delay_code_categories.destroy');
+    Route::post('delay-code/store', [DelaycodeController::class, 'store'])->name('delaycodes.store');
+    Route::put('delay-code/{id}/update', [DelaycodeController::class, 'update'])->name('delaycodes.update');
+    Route::delete('delay-code/{id}/destroy', [DelaycodeController::class, 'destroy'])->name('delaycodes.destroy');
+
+    Route::get('library', [AirlineLibraryController::class, 'library'])->name('airline-library');
+    Route::post('library/store', [AirlineLibraryController::class, 'store'])->name('library.store');
+
+    Route::get('library/{library}/documents', [AirlineLibraryController::class, 'viewDocuments'])->name('library.documents');
+
+    Route::get('license', [LicenseApprovalController::class, 'index'])->name('license');
+    Route::post('license/store', [LicenseApprovalController::class, 'store'])->name('license.store');
+    Route::patch('license_approvals/{licenseApproval}/status', [LicenseApprovalController::class, 'updateStatus'])->name('license_approvals.updateStatus');
+    Route::delete('license_approvals/{licenseApproval}', [LicenseApprovalController::class, 'destroy'])->name('license_approvals.destroy');
+    Route::get('flights', [FlightController::class, 'index'])->name('flights');
+    Route::get('flights/create', [FlightController::class, 'create'])->name('flights.create');
+    Route::post('flights', [FlightController::class, 'store'])->name('flights.store');
+    Route::get('flights/{flight}', [FlightController::class, 'show'])->name('flights.show');
+    Route::get('flights/{flight}/edit', [FlightController::class, 'edit'])->name('flights.edit');
+    Route::put('flights/{flight}', [FlightController::class, 'update'])->name('flights.update');
+    Route::patch('flights/{flight}', [FlightController::class, 'update'])->name('flights.update');
+    Route::delete('flights/{flight}', [FlightController::class, 'destroy'])->name('flights.destroy');
+
+    Route::get('wallet', [WalletController::class, 'index'])->name('wallet');
+    Route::post('wallet/store', [WalletController::class, 'store'])->name('wallet.store');
+    Route::put('wallets/edit/{id}', [WalletController::class, 'update'])->name('wallet.update');
+    Route::delete('wallets/{id}', [WalletController::class, 'destroy'])->name('wallet.destroy');
+
+    Route::get('walletrequest', [WalletRequestController::class, 'index'])->name('walletrequest');
+
+    Route::get('sectors', [SectorController::class, 'index'])->name('sectors');
+    Route::post('store-sector', [SectorController::class, 'store'])->name('sector.store');
+    Route::put('update-sector/{id}', [SectorController::class, 'update'])->name('sector.update');
+    Route::delete('delete-sector/{id}', [SectorController::class, 'destroy'])->name('sector.delete');
+
+    Route::get('inventories', [InventoryController::class, 'index'])->name('inventories');
+    Route::get('inventories/expiry', [InventoryController::class, 'expiryinventory'])->name('expiry.inventories');
+    Route::post('inventories/store', [InventoryController::class, 'store'])->name('inventory.store');
+
+
+    Route::get('admin-holds', [AdminHoldController::class, 'index'])->name('adminholds');
+    Route::get('/view-holds/{id}', [HoldController::class, 'view'])->name('view-holds');
+    Route::get('/edit-hold/{id}', [HoldController::class, 'edit'])->name('edit-hold');
+    Route::post('/edit-hold/{id}', [HoldController::class, 'update'])->name('edit-hold');
+    Route::get('holds-confirm/', [HoldController::class, 'confirmHold'])->name('holdsconfirm');
+
+    Route::delete('wallet/delete', [AgentController::class, 'deleteWallet'])->name('wallet.delete');
+
+    Route::post('store-wallet', [AgentController::class, 'storeWallet'])->name('store.wallet');
+
+    Route::post('agentgroups/store', [AgentController::class, 'groupstore'])->name('agentgroups.store');
+
+    Route::put('agentgroups/update/{id}', [AgentController::class, 'groupupdate'])->name('agentgroups.update');
+
+    Route::delete('wallet/requests/{id}', [AgentController::class, 'deleteWalletRequest'])->name('wallet.requests.delete');
+
+    Route::post('agent/store', [AgentController::class, 'store'])->name('agent.store');
+
+    Route::post('agent/transaction/store', [AgentController::class, 'transactionStore'])->name('transaction.store');
+    Route::post('agent/product/store', [AgentController::class, 'productStore'])->name('agent.product.store');
+    Route::post('agent/target/store', [AgentController::class, 'targetStore'])->name('agent.target.store');
+    Route::post('agent/address/store', [AgentController::class, 'AddressStore'])->name('agent.address.store');
+    Route::post('agent/contact/store', [AgentController::class, 'ContactStore'])->name('agent.contact.store');
+
+    Route::post('agent/prov/store', [AgentController::class, 'provStore'])->name('prov.store');
+
+    Route::post('agent/pli/store', [AgentController::class, 'pliStore'])->name('pli.store');
+
+    Route::post('agent/conversation/store', [AgentController::class, 'conversationStore'])->name('agent.conversation.store');
+
+    Route::get('agent/update/{id}', [AgentController::class, 'update'])->name('agent.update');
+    Route::post('agent/target/update/{id}', [AgentController::class, 'targetUpdate'])->name('agent.target.update');
+    Route::post('agent/product/update/{id}', [AgentController::class, 'productUpdate'])->name('agent.product.update');
+    Route::post('agent/pli/update/{id}', [AgentController::class, 'pliUpdate'])->name('agent.pli.update');
+    Route::post('agent/prov/update/{id}', [AgentController::class, 'provUpdate'])->name('agent.prov.update');
+    Route::post('agent/contact/update/{id}', [AgentController::class, 'contactUpdate'])->name('agent.contact.update');
+
+    Route::post('agent/address/update/{id}', [AgentController::class, 'addressUpdate'])->name('agent.address.update');
+    Route::post('agent/general/update/{id}', [AgentController::class, 'generalUpdate'])->name('agent.general.update');
+
+    Route::patch('agent/edit/{id}', [AgentController::class, 'edit'])->name('agent.edit');
+
+    Route::get('agent/view/{id}', [AgentController::class, 'view'])->name('agent.view');
+    Route::get('events', [AppController::class, 'calendar'])->name('events');
+    Route::post('events/store', [AppController::class, 'store'])->name('events.store');
+    Route::patch('events/update/{id}', [AppController::class, 'update'])->name('events.update');
+    Route::get('airlines', [AirlineController::class, 'index'])->name('airlines');
+    Route::post('airlines/store', [AirlineController::class, 'store'])->name('airlines.store');
+    Route::patch('airlines/edit/{id}', [AirlineController::class, 'update'])->name('airlines.update');
+    Route::get('airlines/view/{id}', [AirlineController::class, 'view'])->name('airlines.view');
+    Route::post('airlines/aircraft/', [AirlineController::class, 'aircraftStore'])->name('airline.aircraft.store');
+    Route::post('airlines/fleet/', [AirlineController::class, 'fleetStore'])->name('airline.fleet.store');
+    Route::patch('airlines/aircraft/update/{id}', [AirlineController::class, 'aircraftUpdate'])->name('airline.aircraft.update');
+    Route::post('airlines/fleet/update/{id}', [AirlineController::class, 'fleetUpdate'])->name('airline.fleet.update');
+    Route::post('airlines/approved-staff/', [AirlineController::class, 'approvedStaffStore'])->name('airline.approvedstaff.store');
+    Route::post('airlines/approved-staff/upadte/{id}', [AirlineController::class, 'approvedStaffUpdate'])->name('airline.approvedstaff.update');
+    Route::get('agent', [AgentController::class, 'index'])->name('agents');
+
+    Route::patch('airlines/specialfares/update/{id}', [AirlineController::class, 'specialfaresUpdate'])->name('airline.specialfares.update');
+
+
+    Route::post('airlines/SLA/store', [AirlineController::class, 'slaStore'])->name('airline.sla.store');
+    Route::patch('airlines/SLA/{id}/update', [AirlineController::class, 'slaUpdate'])->name('airline.sla.update'); 
+    Route::patch('airline/sla/toggle-status/{id}', [AirlineController::class, 'slaUpdateStatus']);
+    Route::post('airlines/approved-staff/update-status', [AirlineController::class, 'approvedStaffUpdateStatus'])->name('airline.approvedstaff.updatestatus');
+    
+    Route::post('airlines/head_office/store', [AirlineController::class, 'headOfficeStore'])->name('airline.head_office.store');
+    Route::patch('airlines/head_office/{id}/update', [AirlineController::class, 'headOfficeUpdate'])->name('airline.head_office.update');
+    Route::delete('airlines/head_office/{id}/destroy', [AirlineController::class, 'headofficdestroy'])->name('airline.head_office.destroy');
+
+
+
+    Route::get('sales-lead', [SalesLeadController::class, 'index'])->name('saleslead');
+    Route::post('sales-lead/store', [SalesLeadController::class, 'store'])->name('saleslead.store');
+    Route::patch('sales-lead/edit/{id}', [SalesLeadController::class, 'update'])->name('saleslead.update');
+
+    Route::get('air-tickets', [AirTicketController::class, 'index'])->name('air-tickets');
+
+    Route::get('groups', [GroupController::class, 'index'])->name('groups');
+    Route::post('groups/store', [GroupController::class, 'store'])->name('groups.store');
+    Route::patch('groups/update/{id}', [GroupController::class, 'update'])->name('groups.update');
+   Route::get('employees', [EmployeeController::class, 'allEmployees'])->name('employees');
+    Route::get('employees-list', [EmployeeController::class, 'Employeeslist'])->name('employees-list');
+    Route::post('employees/store', [EmployeeController::class, 'store'])->name('employees.store');
+    Route::patch('employees/edit/{id}', [EmployeeController::class, 'edit'])->name('employees.edit');
+    Route::delete('/admin/employee/{id}', [EmployeeController::class, 'destroy'])->name('employee.destroy');
+    
+    Route::get('employee/view', [EmployeeController::class, 'viewUserProfile'])->name('employee.view-profile');
+    Route::post('employee/view/store', [EmployeeController::class, 'storeUserProfile'])->name('employee.store-profile');
+    Route::patch('employee/view/update/{id}', [EmployeeController::class, 'updateUserProfile'])->name('employee.update-profile');
+    
+    // Route::get('employee/rights', [EmployeeController::class, 'viewUserRights'])->name('employee.rights');
+    // Route::post('employee/rights/store', [EmployeeController::class, 'storeUserRights'])->name('employee.rights.store');
+    // Route::patch('employee/rights/update/{id}', [EmployeeController::class, 'updateUserRights'])->name('employee.rights.update');
+
+    Route::get('employee/view/{id}', [EmployeeController::class, 'PemployeeProfile'])->name('employee.list-profile');
+    // Route to display the employee's details
+    Route::get('view-staff/{id}', [EmployeeController::class, 'viewEmployee'])->name('view-staff');
+
+    // Route to store the employee's leave request
+    Route::post('view-staff/store', [EmployeeController::class, 'leavesStaffStore'])->name('view-staff.store');
+    
+    
+    
+    Route::get('holidays', [EmployeeController::class, 'holidays'])->name('holidays');
+    Route::post('holidays/store', [EmployeeController::class, 'holidayStore'])->name('holidays.store');
+    Route::patch('holidays/edit/{id}', [EmployeeController::class, 'holidayUpdate'])->name('holidays.update');
+    Route::get('leaves', [EmployeeController::class, 'leavesAdmin'])->name('leaves');
+    Route::post('leaves/store', [EmployeeController::class, 'leavesAdminStore'])->name('leaves.store');
+    Route::patch('leaves/edit/{id}', [EmployeeController::class, 'leavesAdminUpdate'])->name('leaves.update');
+    Route::get('leave-settings', [EmployeeController::class, 'leaveSettings'])->name('leave-settings');
+    Route::get('attendance', [EmployeeController::class, 'attendanceAdmin'])->name('attendance');
+    Route::get('departments', [EmployeeController::class, 'departments'])->name('departments');
+    Route::post('departments/store', [EmployeeController::class, 'storeDepartment'])->name('departments.store');
+    Route::patch('departments/edit/{id}', [EmployeeController::class, 'editDepartment'])->name('departments.edit');
+    Route::get('designations', [EmployeeController::class, 'designations'])->name('designations');
+    Route::post('designations/store', [EmployeeController::class, 'storeDesignation'])->name('designations.store');
+    Route::patch('designations/edit/{id}', [EmployeeController::class, 'editDesignation'])->name('designations.edit');
+    Route::get('timesheet', [EmployeeController::class, 'timesheet'])->name('timesheet');
+    Route::get('shift-scheduling', [EmployeeController::class, 'shiftScheduling'])->name('shift-scheduling');
+    Route::get('overtime', [EmployeeController::class, 'overtime'])->name('overtime');
+
+    // Task routes
+    Route::get('tasks', [TaskController::class, 'tasks'])->name('tasks');
+    Route::get('task-board', [TaskController::class, 'taskBoard'])->name('task-board');
+
+    // Lead routes
+    Route::get('leads', [LeadController::class, 'index'])->name('leads');
+    //Status Routes
+    Route::get('events/status', [EventStatusController:: class, 'index'])->name('events.status');
+    Route::post('events/status/store', [EventStatusController::class, 'store'])->name('events.status.store');
+    Route::patch('events/status/update/{id}', [EventStatusController::class, 'update'])->name('events.status.update');
+
+    // Ticket routes
+    Route::get('tickets', [TicketController::class, 'index'])->name('tickets');
+
+    // Sales routes
+    Route::get('estimates', [SalesController::class, 'estimates'])->name('estimates');
+    Route::get('invoices', [SalesController::class, 'invoices'])->name('invoices');
+    Route::get('payments', [SalesController::class, 'payments'])->name('payments');
+    Route::get('expenses', [SalesController::class, 'expenses'])->name('expenses');
+    Route::get('provident-fund', [SalesController::class, 'providentFund'])->name('provident-fund');
+    Route::get('taxes', [SalesController::class, 'taxes'])->name('taxes');
+
+    // Accounting routes
+    Route::get('categories', [AccountingController::class, 'categories'])->name('categories');
+    Route::get('budgets', [AccountingController::class, 'budgets'])->name('budgets');
+    Route::get('budget-expenses', [AccountingController::class, 'budgetExpenses'])->name('budget-expenses');
+    Route::get('budget-revenues', [AccountingController::class, 'budgetRevenues'])->name('budget-revenues');
+
+    // Payroll routes
+   
+    // Payroll routes
+    Route::get('salary', [PayrollController::class, 'employeeSalary'])->name('salary');
+    Route::get('manage-staff', [EmployeeController::class, 'manageStaff'])->name('manage-staff');
+    Route::get('/admin/manage-salary/{id}', [PayrollController::class, 'employeeSalaryId'])->name('manage-salary');
+
+
+    // Route to handle the form submission
+    Route::post('/admin/manage-salary/store', [PayrollController::class, 'employeeSalaryIdStore'])->name('manage-salary.store');
+    
+    Route::post('salary/store', [PayrollController::class, 'employeeSalaryStore'])->name('salary.store');
+    Route::get('salary-view/{id}', [PayrollController::class, 'payslip'])->name('salary-view');
+    Route::get('payroll-items', [PayrollController::class, 'payrollItems'])->name('payroll-items');
+
+    // Policy routes
+    Route::get('policies', [PolicyController::class, 'index'])->name('policies');
+    Route::post('policies/store', [PolicyController::class, 'store'])->name('policies.store');
+    Route::patch('policies/update', [PolicyController::class, 'update'])->name('policies.update');
+    
+    Route::patch('airline/sla/{id}/statusupdate', [AirlineController::class, 'slaUpdateStatus'])->name('airline.sla.statusupdate');
+    Route::patch('airline/headOffice/toggle-status/{id}', [AirlineController::class, 'headOfficeUpdateStatus'])->name('airline.headOffice.statusupdate');
+    Route::patch('airline/fleet/toggle-status/{id}', [AirlineController::class, 'fleetUpdateStatus'])->name('airline.fleet.statusupdate');
+    Route::patch('airline/schedule/statusupdate/{id}', [AirlineController::class, 'scheduleUpdateStatus'])->name('airline.schedule.statusupdate');
+    Route::patch('airline/library/statusupdate/{id}', [AirlineController::class, 'librarystatusUpdate'])->name('airline.library.statusupdate');
+    Route::patch('airline/rules/statusupdate/{id}', [AirlineController::class, 'rulesupdateStatus'])->name('airline.rules.statusupdate');
+    Route::patch('airline/specialfares/statusupdate/{id}', [AirlineController::class, 'specialfaresupdateStatus'])->name('airline.specialfares.statusupdate');
+    Route::patch('admin/agreements/statusupdate/{id}', [AgreementController::class, 'agreemenstStatusUpdate'])->name('airline.agreements.statusupdate');
+    Route::post('airlines/agreements/store', [AirlineController::class, 'agreementsStore'])->name('airline.agreements.store');
+    Route::patch('airlines/agreements/{id}/update', [AirlineController::class, 'agreementsUpdate'])->name('airline.agreements.update');
+    Route::post('airlines/pli/store', [AirlineController::class, 'pliStore'])->name('airline.pli.store');
+   
+    Route::patch('airlines/library/{id}', [AirlineController::class, 'libraryupdate'])->name('airline.library.update');
+    Route::post('airlines/rules/store', [AirlineController::class, 'rulesStore'])->name('airline.rules.store');
+    Route::patch('airlines/rules/update/{id}', [AirlineController::class, 'agreementsUpdate'])->name('airline.rules.update');
+
+
+    // Report routes
+    Route::get('expense-reports', [ReportController::class, 'expenseReport'])->name('expense-reports');
+    Route::get('invoice-reports', [ReportController::class, 'invoiceReport'])->name('invoice-reports');
+    Route::get('payments-reports', [ReportController::class, 'paymentsReport'])->name('payments-reports');
+    Route::get('project-reports', [ReportController::class, 'projectReport'])->name('project-reports');
+    Route::get('task-reports', [ReportController::class, 'taskReport'])->name('task-reports');
+    Route::get('user-reports', [ReportController::class, 'userReport'])->name('user-reports');
+    Route::get('employee-reports', [ReportController::class, 'employeeReport'])->name('employee-reports');
+    Route::get('payslip-reports', [ReportController::class, 'payslipReport'])->name('payslip-reports');
+    Route::get('attendance-reports', [ReportController::class, 'attendanceReport'])->name('attendance-reports');
+    Route::get('leave-reports', [ReportController::class, 'leaveReport'])->name('leave-reports');
+    Route::get('daily-reports', [ReportController::class, 'dailyReport'])->name('daily-reports');
+
+    // Performance routes
+    Route::get('performance-indicator', [PerformanceController::class, 'performanceIndicator'])->name('performance-indicator');
+    Route::get('performance-review', [PerformanceController::class, 'performanceReview'])->name('performance-review');
+    Route::get('performance-appraisal', [PerformanceController::class, 'performanceAppraisal'])->name('performance-appraisal');
+
+    // Goal routes
+    Route::get('goal-tracking', [GoalController::class, 'goalList'])->name('goal-tracking');
+    Route::get('goal-type', [GoalController::class, 'goalType'])->name('goal-type');
+
+    // Training routes
+    Route::get('training', [TrainingController::class, 'trainingList'])->name('training');
+    Route::get('trainers', [TrainingController::class, 'trainers'])->name('trainers');
+    Route::get('training-type', [TrainingController::class, 'trainingType'])->name('training-type');
+
+    // HR routes
+    Route::get('promotion', [HRController::class, 'promotion'])->name('promotion');
+    Route::get('resignation', [HRController::class, 'resignation'])->name('resignation');
+    Route::get('termination', [HRController::class, 'termination'])->name('termination');
+    Route::post('termination/store', [HRController::class, 'terminationStore'])->name('termination.store');
+    Route::post('termination/update', [HRController::class, 'terminationUpdate'])->name('termination.update');
+    Route::post('resignation/store', [HRController::class, 'resignationStore'])->name('resignation.store');
+    Route::patch('resignation/update', [HRController::class, 'resignationUpdate'])->name('resignation.update');
+
+    // Administration routes
+    Route::get('assets', [AdministrationController::class, 'assets'])->name('assets');
+
+    // Job routes
+    Route::get('user-dashboard', [JobController::class, 'userDashboard'])->name('user-dashboard');
+    Route::get('jobs-dashboard', [JobController::class, 'jobsDashboard'])->name('jobs-dashboard');
+    Route::get('jobs', [JobController::class, 'manageJobs'])->name('jobs');
+    Route::get('manage-resumes', [JobController::class, 'manageResumes'])->name('manage-resumes');
+    Route::get('shortlist-candidates', [JobController::class, 'shortlistCandidates'])->name('shortlist-candidates');
+    Route::get('interview-questions', [JobController::class, 'interviewQuestions'])->name('interview-questions');
+    Route::get('offer-approvals', [JobController::class, 'offerApprovals'])->name('offer-approvals');
+    Route::get('experience-level', [JobController::class, 'experienceLevel'])->name('experience-level');
+    Route::get('candidates', [JobController::class, 'candidatesList'])->name('candidates');
+    Route::get('schedule-timing', [JobController::class, 'scheduleTiming'])->name('schedule-timing');
+    Route::get('apptitude-result', [JobController::class, 'aptitudeResults'])->name('apptitude-result');
+
+    // Knowledgebase routes
+    Route::get('knowledgebase', [KnowledgebaseController::class, 'index'])->name('knowledgebase');
+
+    // Activity routes
+    Route::get('activities', [ActivityController::class, 'index'])->name('activities');
+
+    // User routes
+    Route::get('users', [UserController::class, 'index'])->name('users');
+
+    // Setting routes
+    Route::get('settings', [SettingController::class, 'index'])->name('settings');
+
+    // Profile routes
+    Route::get('profile', [ProfileController::class, 'employeeProfile'])->name('profile');
+    Route::get('client-profile', [ProfileController::class, 'clientProfile'])->name('client-profile');
+    Route::get('admin-profile', [ProfileController::class, 'adminProfile'])->name('admin-profile');
+
+    // Subscription routes
+    Route::get('subscriptions', [SubscriptionController::class, 'subscriptionsAdmin'])->name('subscriptions');
+    Route::get('subscriptions-company', [SubscriptionController::class, 'subscriptionsCompany'])->name('subscriptions.company');
+    Route::get('subscribed-companies', [SubscriptionController::class, 'subscribedCompanies'])->name('subscribed.companies');
+
+    Route::get('roles-permissions', function () {
+        return view('admin.roles-permissions');
+    });
+
+    Route::get('fare_conditions', [FareConditionController::class, 'index'])->name('fare_conditions.index');
+    Route::get('fare_conditions/create', [FareConditionController::class, 'create'])->name('fare_conditions.create');
+    Route::post('fare_conditions', [FareConditionController::class, 'store'])->name('fare_conditions.store');
+    Route::get('fare_conditions/{fare_condition}', [FareConditionController::class, 'show'])->name('fare_conditions.show');
+    Route::get('fare_conditions/{fare_condition}/edit', [FareConditionController::class, 'edit'])->name('fare_conditions.edit');
+    Route::put('fare_conditions/{fare_condition}', [FareConditionController::class, 'update'])->name('fare_conditions.update');
+    Route::delete('fare_conditions/{fare_condition}', [FareConditionController::class, 'destroy'])->name('fare_conditions.destroy');
+    Route::put('/airtickets/{id}/update-status', 'AirTicketController@updateStatus')
+        ->name('airtickets.update_status');
+
+    Route::get('commissions', [CommissionController::class, 'index'])->name('commissions.index');
+
+    Route::get('commissions/create', [CommissionController::class, 'create'])->name('commissions.create');
+    Route::post('commissions', [CommissionController::class, 'store'])->name('commissions.store');
+    Route::get('commissions/{commission}/edit', [CommissionController::class, 'edit'])->name('commissions.edit');
+    Route::put('commissions/{commission}', [CommissionController::class, 'update'])->name('commissions.update');
+    Route::delete('commissions/{commission}', [CommissionController::class, 'destroy'])->name('commissions.destroy');
+
+});

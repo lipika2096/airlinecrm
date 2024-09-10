@@ -17,7 +17,7 @@ class DashboardController extends Controller
     {
         // Get counts from the database
         $employeeCount = DB::table('employees')->count();
-        $agentCount = DB::table('users')->where('role_id', 2)->count();
+        $agentCount = DB::table('agents')->count();
         $ticketCount = DB::table('air_tickets')->count();
         $groupCount = DB::table('groups')->count();
         $leadCount = DB::table('detail_leads')->count();
@@ -49,5 +49,9 @@ class DashboardController extends Controller
     public function employeeDashboard()
     {
         return view('admin.employee-dashboard'); // Replace with your employee dashboard view
+    }
+    
+    public function comingSoon(){
+         return view('admin.coming-soon'); 
     }
 }

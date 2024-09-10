@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" >
 <style>
-    
+
 .table-responsive {
     overflow-x: hidden !important;
 
@@ -42,7 +42,7 @@
 
     <div class="row">
     <div class="col-md-6">
-    <h1>Leads Add </h1><br>
+    <h1>Reservations </h1><br>
     </div>
     <div class="col-md-6" style="text-align: right;">
 
@@ -56,15 +56,27 @@
     <form action="<?php echo e(route('airtickets.store')); ?>" method="POST">
         <?php echo csrf_field(); ?>
         <div class="form-group">
-    <label for="airline_id">Airline</label>
-    <select class="form-control" id="airline_id" name="airline_id" required>
-        <?php $__currentLoopData = $airlines; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $id => $airline_code): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <option value="<?php echo e($id); ?>"><?php echo e($airline_code); ?></option>
-        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-    </select>
-</div>
+            <label for="airline_id">Airline</label>
+            <select class="form-control" id="airline_id" name="airline_id" required>
+                <?php $__currentLoopData = $airlines; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $id => $airline_code): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($id); ?>"><?php echo e($airline_code); ?></option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </select>
+        </div>
         <div class="form-group">
-            <label for="ticket_number">Ticket Number</label>
+            <label for="airline_id">Service Type</label>
+            <select class="form-control" id="airline_id" name="airline_id" required>
+                <!--<?php $__currentLoopData = $airlines; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $id => $airline_code): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>-->
+                <!--    <option value="<?php echo e($id); ?>"><?php echo e($airline_code); ?></option>-->
+                <!--<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>-->
+                <option value="<?php echo e($id); ?>">New Tickets</option>
+                <option value="<?php echo e($id); ?>">Date Of change</option><!-- Excess Baggage
+Excess Weight
+Paid Seat -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="ticket_number">Flight Number</label>
             <input type="text" class="form-control" id="ticket_number" name="ticket_number" required>
         </div>
 
@@ -78,15 +90,9 @@
             <input type="text" class="form-control" id="mco" name="mco">
         </div>
 
-        <div class="form-group">
-            <label for="date_change">Date Change</label>
-            <input type="text" class="form-control" id="date_change" name="date_change" >
-        </div>
+        
 
-        <div class="form-group">
-            <label for="refund">Refund</label>
-            <input type="text" class="form-control" id="refund" name="refund" >
-        </div>
+        
 <div class="row">
 <div class="col-md-3">
         <div class="form-group">

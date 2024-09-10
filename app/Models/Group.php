@@ -13,6 +13,6 @@ class Group extends Model
   }
   public function agent()
   {
-    return $this->belongsTo(User::class, 'agent_id', 'clientid');
+    return $this->belongsTo(Agent::class, 'agent_id', 'id');
   }
 }

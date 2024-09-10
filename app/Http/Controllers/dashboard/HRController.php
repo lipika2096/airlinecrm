@@ -20,7 +20,8 @@ class HRController extends Controller
     public function resignation()
     {
         $resignation = Resignation::latest()->get();
-         $staff = Client::get();
+         $staff = Client::join('users', 'users.clientid', '=', 'clients.client_id')
+         ->get(['clients.*', 'users.*']);
         // Add your logic for resignation view
         return view('admin.resignation', compact('resignation', 'staff')); // Example view path, adjust as per your structure
     }
@@ -37,7 +38,8 @@ class HRController extends Controller
     public function termination()
     {
         $termination = Termination::latest()->get();
-         $staff = Client::get();
+         $staff = Client::join('users', 'users.clientid', '=', 'clients.client_id')
+         ->get(['clients.*', 'users.*']);
         // Add your logic for termination view
         return view('admin.termination',  compact('termination', 'staff')); // Example view path, adjust as per your structure
     }

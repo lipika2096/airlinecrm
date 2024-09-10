@@ -1,7 +1,5 @@
 @extends('admin/layouts/head-main')
 @section('content')
-
-
     <title>Designations</title>
 
 
@@ -22,7 +20,8 @@
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
-                        <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_designation"><i class="fa fa-plus"></i> Add Designation</a>
+                        <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_designation"><i
+                                class="fa fa-plus"></i> Add Designation</a>
                     </div>
                 </div>
             </div>
@@ -40,55 +39,61 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($designation as $data)
-                                <tr>
-                                    <td>{{$data->department->department_name}}</td>
-                                    <td>{{$data->designation}}</td>
-                                    <td class="text-end">
-                                    <div class="dropdown dropdown-action">
-                                            <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
-                                        <div class="dropdown-menu dropdown-menu-right">
-                                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_designation{{$data->id}}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
-                                        </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                 <!-- Edit Designation Modal -->
-        <div id="edit_designation{{$data->id}}" class="modal custom-modal fade" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Designation</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form  action="{{ route('admin.designations.edit', ['id' => $data->id]) }}" method="POST" enctype="multipart/form-data">
+                                @foreach ($designation as $data)
+                                    <tr>
+                                        <td>{{ $data->department->department_name }}</td>
+                                        <td>{{ $data->designation }}</td>
+                                        <td class="text-end">
+                                            <div class="dropdown-action"> <a href="#" data-bs-toggle="modal"
+                                                    data-bs-target="#edit_designation{{ $data->id }}"><i
+                                                        class="fa fa-pencil"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- Edit Designation Modal -->
+                                    <div id="edit_designation{{ $data->id }}" class="modal custom-modal fade"
+                                        role="dialog">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Edit Designation</h5>
+                                                    <button type="button" class="close" data-bs-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form
+                                                        action="{{ route('admin.designations.edit', ['id' => $data->id]) }}"
+                                                        method="POST" enctype="multipart/form-data">
 
-                            @method('patch') @csrf
-                            <div class="form-group">
-                                <label>Designation Name <span class="text-danger">*</span></label>
-                                <input class="form-control" name="designation" value="{{$data->designation}}" type="text">
-                            </div>
-                            <div class="form-group">
-                                <label>Department <span class="text-danger">*</span></label>
-                                <select class="select" name="department">
-                                    <option>Select Department</option>
-                                    @foreach($department as $department_data)
-                                        <option value="{{$department_data->id}}" @if ($data->department_id == $department_data->id) selected @endif>{{$department_data->department_name}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="submit-section">
-                                <button class="btn btn-primary" type="submit">Update</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- /Edit Designation Modal -->
+                                                        @method('patch') @csrf
+                                                        <div class="form-group">
+                                                            <label>Designation Name <span
+                                                                    class="text-danger">*</span></label>
+                                                            <input class="form-control" name="designation"
+                                                                value="{{ $data->designation }}" type="text">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Department <span class="text-danger">*</span></label>
+                                                            <select class="select" name="department">
+                                                                <option>Select Department</option>
+                                                                @foreach ($department as $department_data)
+                                                                    <option value="{{ $department_data->id }}"
+                                                                        @if ($data->department_id == $department_data->id) selected @endif>
+                                                                        {{ $department_data->department_name }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="submit-section">
+                                                            <button class="btn btn-primary" type="submit">Update</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- /Edit Designation Modal -->
                                 @endforeach
                             </tbody>
                         </table>
@@ -109,7 +114,8 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form  action="{{ route('admin.designations.store') }}" method="POST" enctype="multipart/form-data">@csrf
+                        <form action="{{ route('admin.designations.store') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
                             <div class="form-group">
                                 <label>Designation Name <span class="text-danger">*</span></label>
                                 <input class="form-control" name="designation" type="text">
@@ -118,8 +124,8 @@
                                 <label>Department <span class="text-danger">*</span></label>
                                 <select class="select" name="department">
                                     <option>Select Department</option>
-                                    @foreach($department as $data)
-                                        <option value="{{$data->id}}">{{$data->department_name}}</option>
+                                    @foreach ($department as $data)
+                                        <option value="{{ $data->id }}">{{ $data->department_name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -150,7 +156,8 @@
                                     <a href="javascript:void(0);" class="btn btn-primary continue-btn">Delete</a>
                                 </div>
                                 <div class="col-6">
-                                    <a href="javascript:void(0);" data-bs-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
+                                    <a href="javascript:void(0);" data-bs-dismiss="modal"
+                                        class="btn btn-primary cancel-btn">Cancel</a>
                                 </div>
                             </div>
                         </div>
@@ -162,9 +169,4 @@
 
     </div>
     <!-- /Page Wrapper -->
-
-
-
-
-
 @endsection

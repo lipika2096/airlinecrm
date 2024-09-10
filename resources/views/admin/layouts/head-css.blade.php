@@ -88,7 +88,7 @@ $currentRoute = Route::currentRouteName();
     'admin.manage-resumes', 'admin.shortlist-candidates', 'admin.interview-questions',
     'admin.offer-approvals', 'admin.experience-level', 'admin.candidates',
     'admin.schedule-timing', 'admin.aptitude-results', 'admin.users',
-    'admin.leave-type', 'admin.subscribed-companies', 'data-tables'
+    'admin.leave-type', 'admin.subscribed-companies', 'data-tables', 'admin.events', 'admin.holidays', 'admin.attendance','airlines.view'
 ]))
 <!-- Datatable CSS -->
 <link rel="stylesheet" href="{{ asset('public/assets/css/dataTables.bootstrap4.min.css') }}">

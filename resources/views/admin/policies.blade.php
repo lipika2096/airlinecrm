@@ -37,6 +37,7 @@
                                     <th>Policy Name </th>
                                     <th>Department </th>
                                     <th>Description </th>
+                                    <th>Document </th>
                                     <th>Created </th>
                                 </tr>
                             </thead>
@@ -46,6 +47,7 @@
                                     <td>{{$data->policy_name}}</td>
                                     <td>{{$data->department->department_name}}</td>
                                     <td>{{$data->description}}</td>
+                                    <td><a href="{{asset('public/assets/docs/'.$data->policy_doc)}}">View Document</a></td>
                                     <td>{{$data->created_at}}</td>
                                 </tr>
                                 @endforeach
@@ -68,7 +70,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form method="post" action ="{{route('admin.policies.store')}}">@csrf
+                        <form method="post" action ="{{route('admin.policies.store')}}" enctype="multipart/form-data">@csrf
                             <div class="form-group">
                                 <label>Policy Name <span class="text-danger">*</span></label>
                                 <input class="form-control" type="text" name="policy_name">
@@ -84,6 +86,10 @@
                                     <option value="{{$departmentData->id}}">{{$departmentData->department_name}}</option>
                                     @endforeach
                                 </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Policy Doc <span class="text-danger">*</span></label>
+                                <input class="form-control" type="file" name="policy_doc">
                             </div>
                             <div class="submit-section">
                                 <button class="btn btn-primary submit-btn">Submit</button>
