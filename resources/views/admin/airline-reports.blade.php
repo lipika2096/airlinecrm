@@ -72,7 +72,7 @@
                                         <td>{{ $specialFare->agent->agency_name }}</td>
                                         <td class="text-end">
                                             <div class="action-icons">
-                                                <a href="{{route('admin.agent.view', ['id' => $specialFare->agent->id])}}" class="action-icon"><i class="fa fa-eye"></i></a>
+                                                <a href="{{route('admin.airlines.view', ['id' => $specialFare->airline_id])}}" class="action-icon"><i class="fa fa-eye"></i></a>
                                                 <a class="btn btn-white" id="print-account" onclick="window.print()">
                                                     <i class="fa fa-print fa-lg"></i> Print
                                                 </a>

@@ -133,7 +133,7 @@
                                         <!-- /Add account Modal -->
                                         <td class="text-end">
                                             <div class="action-icons">
-                                                <a href="{{ route('admin.airlines.view', ['id' => $specialFare->airline_id]) }}" class="action-icon"><i class="fa fa-eye"></i></a>
+                                                <a href="{{ route('admin.agent.view', ['id' => $specialFare->agent_id]) }}" class="action-icon"><i class="fa fa-eye"></i></a>
                                                 <a id="print-account" onclick="window.print()">
                                                     <i class="fa fa-print fa-lg"></i>
                                                 </a>
