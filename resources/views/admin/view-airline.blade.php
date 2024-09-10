@@ -2343,6 +2343,7 @@
             success: function(response) {
                 if (response.success) {
                     console.log('Status updated successfully');
+                    window.location.reload();
                 } else {
                     console.error('Status update failed');
                 }
@@ -2373,6 +2374,7 @@
             success: function(response) {
                 if (response.success) {
                     console.log('Status updated successfully');
+                    window.location.reload();
                 } else {
                     console.error('Status update failed');
                 }
@@ -2396,6 +2398,7 @@
             success: function(response) {
                 if (response.success) {
                     console.log('Status updated successfully');
+                    window.location.reload();
                 } else {
                     console.error('Status update failed');
                 }
@@ -2419,6 +2422,7 @@
             success: function(response) {
                 if (response.success) {
                     console.log('Status updated successfully');
+                    window.location.reload();
                 } else {
                     console.error('Status update failed');
                 }
@@ -2442,6 +2446,7 @@
             success: function(response) {
                 if (response.success) {
                     console.log('Status updated successfully');
+                    window.location.reload();
                 } else {
                     console.error('Status update failed');
                 }
@@ -2465,6 +2470,7 @@
             success: function(response) {
                 if (response.success) {
                     console.log('Status updated successfully');
+                    window.location.reload();
                 } else {
                     console.error('Status update failed');
                 }
@@ -2488,6 +2494,7 @@
             success: function(response) {
                 if (response.success) {
                     console.log('Status updated successfully');
+                    window.location.reload();
                 } else {
                     console.error('Status update failed');
                 }
@@ -2512,6 +2519,7 @@
                 if (response.success) {
                     console.log('Status updated successfully');
                     // Optionally, you can add code here to handle UI updates
+                    window.location.reload();
                 } else {
                     console.error('Status update failed:', response.error);
                 }
