@@ -212,19 +212,19 @@
                                 <div class="row headline" style="">
                                     <div class="col-md-3 headlinetitle">
                                         <div class="title">IATA</div>
-                                        <div class="bluetext">{{ $airlineDetails->IATA }}</div>
+                                        <div class="bluetext">{{ $airlineDetails->IATA ?? Null }}</div>
                                     </div>
                                     <div class="col-md-3 headlinetitle">
                                         <div class="title">ICAO</div>
-                                        <div class="bluetext">{{ $airlineDetails->ICAO }}</div>
+                                        <div class="bluetext">{{ $airlineDetails->ICAO ?? Null }}</div>
                                     </div>
                                     <div class="col-md-3 headlinetitle">
                                         <div class="title">Airline Code</div>
-                                        <div class="skybluetext">{{ $airlineDetails->airline->airline_code }}</div>
+                                        <div class="skybluetext">{{ $airlineDetails->airline->airline_code ?? Null }}</div>
                                     </div>
                                     <div class="col-md-3 headlinetitle">
                                         <div class="title">Callsign</div>
-                                        <div class="bluetext">{{ $airlineDetails->callsign }}</div>
+                                        <div class="bluetext">{{ $airlineDetails->callsign ?? Null }}</div>
                                     </div>
                                 </div>
                                 <div class="card-body">
