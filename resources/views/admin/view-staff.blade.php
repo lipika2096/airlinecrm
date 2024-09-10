@@ -22,7 +22,7 @@
                     </ul>
                 </div>
                 <div class="col-auto float-end ms-auto">
-                    
+
                     {{-- <div class="view-icons">
                                     <a href="employees.php" class="grid-view btn btn-link active"><i class="fa fa-th"></i></a>
                                     <a href="employees-list.php" class="list-view btn btn-link"><i class="fa fa-bars"></i></a>
@@ -107,22 +107,22 @@
                     </div>
                     <div class="col-md-4" style="text-align: center;">
                         <div class="card bg-white text-dark " style="width:325px!important; height: 21pc;">
-                            <p class="mt-3 fw-bold">Absence of Your Colleagues</p>
+                            <p class="mt-3 fw-bold">Absence in Current Month</p>
 
-                            @if(empty($absent_colleagues))
-                                <p style="margin-top: 9.50rem !important;" class="fw-bold">No colleagues are absent today.</p>
-                            @else
+                            <!-- @if(empty($absent_colleagues)) -->
+                                <p style="margin-top: 9.50rem !important;" class="fw-bold">{{$absencePerMonth}}</p>
+                            <!-- @else
                                 <ul class="list-unstyled" style="margin-top: 2rem !important;">
                                     @foreach($absent_colleagues as $absence)
                                         <li>{{ $absence->user->first_name }} {{ $absence->user->last_name }} - </li>
                                     @endforeach
                                 </ul>
-                            @endif
+                            @endif -->
                         </div>
                     </div>
                     <div class="col-md-4" style="text-align: center;">
 
-                        <div class="col-md-3">
+                        <!-- <div class="col-md-3">
                             <div class="card " style="width: 20.3pc; height: 102px;">
 
                                 <div class="row">
@@ -140,14 +140,17 @@
                             </div>
 
 
-                        </div>
+                        </div> -->
                         <div class="col-md-3">
                             <div class="card" style="width: 20.3pc; height: 108px;">
 
                                 <div class="row">
                                     <div class="col-md-2">
-                                        <p class="bg-warning stv ms-4 mt-4"><span
-                                                class="mt-5 text-white dtxt fw-bold">{{$total_leaves}} <span>Today</span></span></p>
+                                        <p class="bg-warning stv ms-4 mt-4">
+                                            <span class="mt-5 text-white dtxt fw-bold">{{$approvedLeaves}}
+                                                <!--<span>Today</span>-->
+                                            </span>
+                                        </p>
                                     </div>
 
 
@@ -176,6 +179,26 @@
                                 </div>
 
                             </div>
+
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="card " style="width: 20.3pc; height: 102px;">
+
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <p class="bg-danger stv ms-4 mt-4">
+                                            <span class="mt-5 text-white dtxt fw-bold">{{$total_declined_leaves}}</span>
+                                        </p>
+                                    </div>
+
+                                    <div class="col-md-10">
+                                        <p class="fw-bold text-dark txt">Declined Requests</p>
+                                    </div>
+                                </div>
+
+                            </div>
+
 
                         </div>
 
@@ -214,10 +237,10 @@
                                         <textarea class="form-control" name="reason"  id="remarks" rows="2"></textarea>
                                     </div>
 
-                                   
+
 
                                     <div class="d-flex justify-content-between align-items-center">
-                                       
+
                                         <button type="submit" class="btn btn-primary">Submit</button>
                                     </div>
                               </form>
@@ -582,8 +605,8 @@ function displayReminders() {
             currentYear) {
             let listItem = document.createElement("li");
             listItem.innerHTML =
-                `<strong>${event.title}</strong> - 
-          ${event.description} on 
+                `<strong>${event.title}</strong> -
+          ${event.description} on
           ${eventDate.toLocaleDateString()}`;
 
             // Add a delete button for each reminder item
@@ -601,7 +624,7 @@ function displayReminders() {
     }
 }
 
-// Function to generate a range of 
+// Function to generate a range of
 // years for the year select input
 function generate_year_range(start, end) {
     let years = "";
@@ -745,8 +768,8 @@ function createEventTooltip(date, month, year) {
     for (let i = 0; i < eventsOnDate.length; i++) {
         let event = eventsOnDate[i];
         let eventDate = new Date(event.date);
-        let eventText = `<strong>${event.title}</strong> - 
-          ${event.description} on 
+        let eventText = `<strong>${event.title}</strong> -
+          ${event.description} on
           ${eventDate.toLocaleDateString()}`;
         let eventElement = document.createElement("p");
         eventElement.innerHTML = eventText;

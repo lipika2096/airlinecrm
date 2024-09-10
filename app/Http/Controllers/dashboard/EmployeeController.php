@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Auth;
 
 class EmployeeController extends Controller
 {
-    
+
     public function PemployeeProfile($id){
         $employees = User::find($id);
         return view('admin.view-profile', compact('employees'));
@@ -37,10 +37,10 @@ class EmployeeController extends Controller
         $employees = User::where('role_id', 2)->get();
          $department = Department::latest()->get();
         $designation = Designation::latest()->get();
-        
+
         return view('admin.view-employee', compact('employees','department', 'designation'));
     }
-    
+
     public function storeUserProfile(Request $request) {
 
         // Create a new client record
@@ -78,8 +78,8 @@ class EmployeeController extends Controller
 
         return redirect()->back()->with('success', 'Employee added successfully');
     }
-    
-    
+
+
     public function updateUserProfile(Request $request, $id)
     {
         // // Handle image upload
@@ -114,20 +114,20 @@ class EmployeeController extends Controller
         ]);
         return redirect()->back()->with('success', 'Employee added successfully');
     }
-    
+
     public function viewUserRights(){
         $department_rights = DepartmentRight::get();
          $department = Department::latest()->get();
         $duties = Duty::latest()->get();
-        
+
         $specialFare = SpecialFare::where('agent_id', 4)->get();
-        
+
         $fareType = FareType::get();
-        
-        
+
+
         return view('admin.view-rights', compact('department_rights', 'department','duties'));
     }
-    
+
     public function storeUserRights(Request $request) {
 
         foreach ($request->input('department') as $departmentId => $duty) {
@@ -147,8 +147,8 @@ class EmployeeController extends Controller
     }
         return redirect()->back()->with('success', 'User Rights by department added successfully');
     }
-    
-    
+
+
     // public function updateUserRights(Request $request, $id)
     // {
     //     // // Handle image upload
@@ -234,75 +234,92 @@ class EmployeeController extends Controller
 
     public function allEmployees(Request $request)
     {
-        
+
         $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')->where('users.role_id', 2)
                         ->get(['clients.*', 'users.*']);
         $department = Department::latest()->get();
         $designation = Designation::latest()->get();
-        
+
         $departmentEmployees = User::where('role_id', 2)->groupBy('department')->get();
 
         return view('admin.employees', compact('employees', 'department', 'designation','departmentEmployees'));
     }
-    
+
     // Display the employee's details and leave information
 
     public function viewEmployee($id)
-{
-    $employee = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-        ->where('users.id', $id)
-        ->first(['clients.*', 'users.*']);
+    {
+        $employee = Client::join('users', 'users.clientid', '=', 'clients.client_id')
+            ->where('users.id', $id)
+            ->first(['clients.*', 'users.*']);
 
-    $currentDate = \Carbon\Carbon::now()->format('l, j.n.Y');
+        $currentDate = \Carbon\Carbon::now()->format('l, j.n.Y');
 
-    $total_leave_taken = EmployeeLeave::where('employee_id', $id)
-        ->where('status', 1)
-        ->get()
-        ->sum(function ($leave) {
-            return \Carbon\Carbon::parse($leave->from)->diffInDays(\Carbon\Carbon::parse($leave->to)) + 1;
-        });
+        $total_leave_taken = EmployeeLeave::where('employee_id', $id)
+            ->where('status', 1)
+            ->get()
+            ->sum(function ($leave) {
+                return \Carbon\Carbon::parse($leave->from)->diffInDays(\Carbon\Carbon::parse($leave->to)) + 1;
+            });
 
-    $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
+            $tl = EmployeeLeave::where('employee_id',$id)->sum('no_of_days');
+            $eel = User::where('id',$id)->first();
+
+        $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
         ->whereDate('to', '>=', now()->toDateString())->count();
-    $remaining_leaves = $total_leaves - $total_leave_taken;
-    $leave_used_percentage = ($total_leaves > 0) ? ($total_leave_taken / $total_leaves) * 100 : 0;
-    $leave_used_percentage = min(100, max(0, $leave_used_percentage));
 
-    $absent_colleagues = EmployeeLeave::whereDate('from', '<=', \Carbon\Carbon::today()->toDateString())
-        ->whereDate('to', '>=', \Carbon\Carbon::today()->toDateString())
-        ->get();
+        $approvedLeaves = EmployeeLeave::where('status', 3)->count();
+        $total_pending_leaves = EmployeeLeave::where('status', 2)->count();
+        $total_declined_leaves = EmployeeLeave::where('status', 4)->count();
 
-    $approvedLeaves = EmployeeLeave::where('status', 3)->count();
-    $total_min_hrs = User::where('id', $id)->pluck('min_hrs')->first();
-    $total_max_hrs = User::where('id', $id)->pluck('max_hrs')->first();
-    $total_overtime = $total_max_hrs - $total_min_hrs;
-    $total_pending_leaves = EmployeeLeave::where('status', 2)->count();
+        $remaining_leaves = $eel->leave_count-$approvedLeaves;
+        $leave_used_percentage = ($total_leaves > 0) ? ($total_leave_taken / $total_leaves) * 100 : 0;
+        $leave_used_percentage = min(100, max(0, $leave_used_percentage));
 
-    $total_employee = Client::count();
-	 
-	  $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
-                                                 ->whereDate('to', '>=', now()->toDateString())
-                                                 ->count();
-    $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
+        $absent_colleagues = EmployeeLeave::whereDate('from', '<=', \Carbon\Carbon::today()->toDateString())
+            ->whereDate('to', '>=', \Carbon\Carbon::today()->toDateString())
+            ->get();
 
-    $leavetypes = LeaveType::all();
-    return view('admin.view-staff', compact(
-        'employee', 
-        'currentDate', 
-        'total_leave_taken', 
-        'remaining_leaves', 
-        'total_leaves', 
-        'leave_used_percentage', 
-        'absent_colleagues', 
-        'total_pending_leaves', 
-        'approvedLeaves', 
-        'total_overtime',  
-        'id',
-        'noofpresentemployeestoday',
-        'total_employee',
-        'leavetypes'
-    ));
-}
+        $approvedLeaves = EmployeeLeave::where('status', 3)->count();
+        $total_min_hrs = User::where('id', $id)->pluck('min_hrs')->first();
+        $total_max_hrs = User::where('id', $id)->pluck('max_hrs')->first();
+        $total_overtime = $total_max_hrs - $total_min_hrs;
+
+        $total_employee = Client::count();
+
+          $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
+                                                     ->whereDate('to', '>=', now()->toDateString())
+                                                     ->count();
+        $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
+
+        // Calculate approved leaves for the current month
+        $absencePerMonth = EmployeeLeave::where('employee_id', $id)
+            ->where('status', 3) // Approved status
+            ->whereMonth('from', now()->month)
+            ->whereYear('from', now()->year)
+            ->count();
+
+        $leavetypes = LeaveType::all();
+        return view('admin.view-staff', compact(
+            'employee',
+            'currentDate',
+            'total_leave_taken',
+            'remaining_leaves',
+            'total_leaves',
+            'tl',
+            'leave_used_percentage',
+            'absent_colleagues',
+            'total_pending_leaves',
+            'total_declined_leaves',
+            'approvedLeaves',
+            'total_overtime',
+            'id',
+            'noofpresentemployeestoday',
+            'total_employee',
+            'absencePerMonth',
+            'leavetypes'
+        ));
+    }
 
 // Store the employee's leave request
 public function leavesStaffStore(Request $request)
@@ -458,7 +475,7 @@ public function leavesStaffStore(Request $request)
             if ($user) {
                 $user->delete();
             }
-            
+
             if ($client) {
                 $client->delete();
             }
@@ -477,7 +494,7 @@ public function leavesStaffStore(Request $request)
         $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
                             ->where('users.role_id', 2)
                             ->get(['clients.*', 'users.*']);
-        
+
         $department = Department::latest()->get();
         $designation = Designation::latest()->get();
         $total_employee = Client::count();
@@ -528,7 +545,7 @@ public function leavesStaffStore(Request $request)
         return view('admin.holidays', compact('total_employee','employees','total_pending_leaves','total_leaves','employee_leaves','noofpresentemployeestoday', 'holidays', 'leavetypes')); // Example view path, adjust as per your structure
 
 
-    } 
+    }
     public function holidayStore(Request $request)
     {
         // Validate the request
@@ -546,7 +563,7 @@ public function leavesStaffStore(Request $request)
             'holiday_day' => $holidayDay,
             'category' => $request->input('category')
             ]);
-            
+
 
         $holidays = Holiday::latest()->get();
         // Add your logic for holidays view
