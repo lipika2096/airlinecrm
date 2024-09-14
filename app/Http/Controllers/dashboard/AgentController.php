@@ -173,12 +173,12 @@ public function caseStore(Request $request)
     public function caseUpdate(Request $request, $id)
     {
         $case = CaseHistory::findOrFail($id);
-    
+
         $request->validate([
             'status' => 'required|string|in:Update,Close',
             'comments' => 'required|string|max:1000',
         ]);
-    
+
         // Add the new update to the case_updates table
         CaseUpdate::create([
             'case_id' => $case->id,
@@ -187,7 +187,7 @@ public function caseStore(Request $request)
             'comments' => $request->comments,
             'status' => $request->status,
         ]);
-    
+
         // Update the case status and other relevant fields if closing the case
         if ($request->status === 'Close') {
             $case->update([
@@ -198,10 +198,10 @@ public function caseStore(Request $request)
         } else {
             $case->update(['case_status' => 'Updated']);
         }
-    
+
         return redirect()->back()->with('success', 'Case updated successfully.');
     }
-    
+
 
     // Close the case
     public function caseClose(Request $request)
@@ -342,7 +342,7 @@ public function targetStore(Request $request)
     }
 
     public function transactionStore(Request $request){
-        
+
         // Get the last balance for the agent
     $lastAccount = AgentAccount::where('agent_id', $request->agent_id)->orderBy('id', 'desc')->first();
     $lastBalance = $lastAccount ? $lastAccount->balance : 0;
@@ -370,7 +370,7 @@ public function targetStore(Request $request)
         return redirect()->back();
 
     }
-    
+
     public function productDelete(Request $request, $id){
         // Find the product by id
         $product = AgentProductsType::find($id);
@@ -588,7 +588,7 @@ public function targetStore(Request $request)
         $agentConversation = AgentConversation::latest()->get();
         $agentAddress = AgentAddress::where('agent_id', $id)->get();
         $agentContact = HeadOfficeContactDetail::where('agent_id', $id)->get();
-        $specialFare = SpecialFare::where('agent_id', $id)->get();
+        $specialFare = SpecialFare::where('agent_id', $id)->where('status',1)->get();
         $caseData = CaseHistory::where('agent_id', $id)->get();
 
         $fareType = FareType::get();

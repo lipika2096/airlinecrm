@@ -308,7 +308,7 @@
                         @endif
                         @if (auth()->user()->hasRole('admin'))
                            <li><a class="" href="javascript:void(0);">Pending Approvals </a></li>
-                            <li><a class="" href="{{route('admin.employee.view-profile')}}">User Profiles</a></li>    
+                            <li><a class="" href="{{route('admin.employee.view-profile')}}">User Profiles</a></li>
                          {{-- <li><a class="" href="{{ route('admin.salary') }}"> Manage Staff Salary </a></li> --}}
                         @endif
                         @if (auth()->user()->hasRole('admin'))
@@ -323,7 +323,7 @@
                          @endif
                     </ul>
                 </li>
-                
+
                 @if (auth()->user()->hasRole('admin'))
                     <li class="menu-title">
                         <span>Admin</span>
@@ -351,6 +351,8 @@
                         <ul style="display: none;">
                             <li><a class="" href="{{route('admin.departments')}}">Add Departments</a></li>
                             <li><a class="" href="{{route('admin.categories.view')}}">Add Category</a></li>
+                            <li><a class="" href="{{route('admin.faretypes')}}">Add Fare Types</a></li>
+
                             <li><a class="" href="{{route('admin.duties')}}">Add Duties</a></li>
                             <!-- <li><a class="" href="javascript:void(0);">Add Public Holidays</a></li> -->
                             <li><a class="" href="{{ route('admin.events.status') }}">Add Status</a></li>
@@ -366,7 +368,7 @@
                             </li>
                         </ul>
                     </li>
-                    
+
                     {{-- <li>
                         <a href="{{ route('admin.sectors') }}"><i class="la la-cog"></i> <span>Sectors</span></a>
                     </li> --}}
@@ -379,7 +381,7 @@
                             <span class="menu-arrow"></span></a>
                         <ul style="display: none;">
                             @if (auth()->user()->hasRole('admin'))
-                               
+
                                  <li><a class="" href="{{ route('admin.agents') }}">Travel Partners List</a></li>
                                 <li><a class="" href="{{ route('admin.agent-library') }}">Library</a></li>
                                 <li><a class="" href="{{ route('admin.agent-reports') }}">Reports</a></li>
@@ -415,7 +417,7 @@
                             <!--<li><a class="" href="{{ route('admin.groups') }}">Open Group Requests</a></li>--
                         </ul>
                     </li>-->
-                  
+
                     <li class="menu-title">
                         <span>Sales & Marketing</span>
                     </li>

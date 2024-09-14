@@ -52,7 +52,8 @@ use App\Http\Controllers\dashboard\{
     AgentReportController,
     FlightController,
     LicenseApprovalController,
-    AgentLibraryController
+    AgentLibraryController,
+    FareTypeController
 };
 
 /*
@@ -111,6 +112,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
     Route::post('duties/store', [DutyController::class, 'storeDuty'])->name('duties.store');
     Route::put('duties/update/{id}', [DutyController::class, 'updateDuty'])->name('duties.update');
     Route::post('/update-duty-status', [DutyController::class, 'updateStatus'])->name('duties.updateStatus');
+
+
+    Route::get('fare-types', [FareTypeController::class, 'index'])->name('faretypes');
+    Route::post('fare-types/store', [FareTypeController::class, 'store'])->name('faretypes.store');
+    Route::put('fare-types/update/{id}', [FareTypeController::class, 'update'])->name('faretypes.update');
+    Route::delete('fare-types/delete/{id}', [FareTypeController::class, 'delete'])->name('faretypes.delete');
 
     //LeaveType rotes
     Route::get('leavetypes', [LeaveTypeController::class, 'leaveType'])->name('leave-type');

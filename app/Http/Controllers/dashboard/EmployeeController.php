@@ -253,6 +253,8 @@ class EmployeeController extends Controller
             ->where('users.id', $id)
             ->first(['clients.*', 'users.*']);
 
+        $employees = User::find($id);
+
         $currentDate = \Carbon\Carbon::now()->format('l, j.n.Y');
 
         $total_leave_taken = EmployeeLeave::where('employee_id', $id)
@@ -300,8 +302,9 @@ class EmployeeController extends Controller
             ->count();
 
         $leavetypes = LeaveType::all();
-        return view('admin.view-staff', compact(
+        return view('admin.view-profile', compact(
             'employee',
+            'employees',
             'currentDate',
             'total_leave_taken',
             'remaining_leaves',

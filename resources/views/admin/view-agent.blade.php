@@ -4,7 +4,7 @@
         use Carbon\Carbon;
     @endphp
     <title>
-    Agent Profile</title>
+        Agent Profile</title>
     <!-- Page Wrapper -->
     <div class="page-wrapper">
         <style>
@@ -29,22 +29,23 @@
             <div class="card tab-box">
                 <div class="row user-tabs">
                     <div class="col-lg-12 col-md-12 col-sm-12 line-tabs">
-                    <ul class="nav nav-tabs nav-tabs-bottom">
+                        <ul class="nav nav-tabs nav-tabs-bottom">
                             <li class="nav-item"><a href="#general" data-bs-toggle="tab" class="nav-link active">General</a>
                             </li>
                             <li class="nav-item"><a href="#address" data-bs-toggle="tab" class="nav-link">Address</a>
                             </li>
                             <li class="nav-item"><a href="#contact_details" data-bs-toggle="tab" class="nav-link">Contact
                                     Details</a></li>
-                            <li class="nav-item"><a href="#special_fares" data-bs-toggle="tab" class="nav-link">Special
-                                    Fares
-                                </a></li>
-                            <li class="nav-item"><a href="#products_type" data-bs-toggle="tab" class="nav-link">Products
+
+                             <li class="nav-item"><a href="#products_type" data-bs-toggle="tab" class="nav-link">Products
                                     Type
                                 </a>
                             </li>
                             <li class="nav-item"><a href="#airline_activation" data-bs-toggle="tab" class="nav-link">Airline
                                     Activation </a></li>
+
+                            <li class="nav-item"><a href="#special_fares" data-bs-toggle="tab" class="nav-link">Special Fares
+                                </a></li>
                             <li class="nav-item"><a href="#provision" data-bs-toggle="tab" class="nav-link">Provision / PLI
                                 </a></li>
                             <li class="nav-item"><a href="#conversation" data-bs-toggle="tab" class="nav-link">Conversations
@@ -56,7 +57,7 @@
                             {{-- <li class="nav-item"><a href="#library" data-bs-toggle="tab" class="nav-link">Library </a>
                             </li> --}}
                         </ul>
-                   
+
                     </div>
                 </div>
             </div>
@@ -64,7 +65,7 @@
             <div class="tab-content">
                 <!-- Profile Info Tab -->
 
-            
+
                 <div id="general" class="pro-overview tab-pane fade show active">
                     <div class="row">
                         <div class="col-md-12 d-flex">
@@ -188,7 +189,8 @@
                                             </div>
                                             <div class="modal-body">
 
-                                                <form action="{{ route('admin.agent.edit', ['id' => $agent->id]) }}#general"
+                                                <form
+                                                    action="{{ route('admin.agent.edit', ['id' => $agent->id]) }}#general"
                                                     method="POST" enctype="multipart/form-data">@csrf
                                                     <ul class="personal-info">
                                                         <li>
@@ -370,7 +372,7 @@
                     </div>
                 </div>
 
-         
+
                 <div id="address" class="pro-overview tab-pane fade show">
                     <div class="row">
                         <div class="col-md-12 d-flex">
@@ -468,8 +470,8 @@
                                                                 <div class="col-sm-6">
                                                                     <div class="form-group">
                                                                         <label class="col-form-label">Pincode</label>
-                                                                        <input class="form-control" type="text" required
-                                                                            value="{{ $address->pincode }}"
+                                                                        <input class="form-control" type="text"
+                                                                            required value="{{ $address->pincode }}"
                                                                             name="pincode">
                                                                     </div>
                                                                 </div>
@@ -659,6 +661,7 @@
                                                                     <th>Status</th>
                                                                     <th>IATA</th>
                                                                     <th>PCC/ Office Id</th>
+                                                                    <th>Account Code</th>
                                                                     <th>Discount</th>
                                                                     <th>remarks</th>
                                                                 </tr>
@@ -669,15 +672,16 @@
                                                                         <td>{{ $fare->airline->airline_name }}</td>
                                                                         <td>{{ $fare->fare_type }}</td>
                                                                         <td>
-                                                                            @if($fare->status == 1)
-                                                                            Active
+                                                                            @if ($fare->status == 1)
+                                                                                Active
                                                                             @else
-                                                                            Inactive
+                                                                                Inactive
                                                                             @endif
-                                                                            
+
                                                                         </td>
                                                                         <td>{{ $fare->agent->iata }}</td>
                                                                         <td>{{ $fare->agent->pcc_office_id }}</td>
+                                                                        <td>{{$fare->agent->account_code}}</td>
                                                                         <td>{{ $fare->agent->discount }}</td>
                                                                         <td>{{ $fare->agent->remarks }}</td>
                                                                     </tr>
@@ -886,11 +890,11 @@
                                                                             <a data-bs-toggle="modal"
                                                                                 data-bs-target="#edit_product{{ $prod->id }}"><i
                                                                                     class="fa fa-pencil m-r-5"></i></a>
-                                                                                    
+
                                                                             <a data-bs-toggle="modal"
                                                                                 data-bs-target="#delete_product{{ $prod->id }}"><i
                                                                                     class="fa fa-trash m-r-5"></i></a>
-                                                                                    
+
                                                                         </td>
                                                                     </tr>
                                                                     <div id="edit_product{{ $prod->id }}"
@@ -945,27 +949,39 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    
-                                                                    
+
+
                                                                     <!-- Delete Confirmation Modal -->
-                                                                    <div id="delete_product{{ $prod->id }}" class="modal custom-modal fade" role="dialog">
+                                                                    <div id="delete_product{{ $prod->id }}"
+                                                                        class="modal custom-modal fade" role="dialog">
                                                                         <div class="modal-dialog modal-dialog-centered">
                                                                             <div class="modal-content">
                                                                                 <div class="modal-header">
-                                                                                    <h5 class="modal-title">Delete Product</h5>
-                                                                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                                                                        <span aria-hidden="true">&times;</span>
+                                                                                    <h5 class="modal-title">Delete Product
+                                                                                    </h5>
+                                                                                    <button type="button" class="close"
+                                                                                        data-bs-dismiss="modal"
+                                                                                        aria-label="Close">
+                                                                                        <span
+                                                                                            aria-hidden="true">&times;</span>
                                                                                     </button>
                                                                                 </div>
                                                                                 <div class="modal-body">
-                                                                                    <p>Are you sure you want to delete the product "{{ $prod->product_type }}"?</p>
+                                                                                    <p>Are you sure you want to delete the
+                                                                                        product
+                                                                                        "{{ $prod->product_type }}"?</p>
                                                                                 </div>
                                                                                 <div class="modal-footer">
-                                                                                    <form action="{{ route('admin.agent.product.delete', ['id' => $prod->id]) }}#products_type" method="POST">
+                                                                                    <form
+                                                                                        action="{{ route('admin.agent.product.delete', ['id' => $prod->id]) }}#products_type"
+                                                                                        method="POST">
                                                                                         @csrf
                                                                                         @method('DELETE')
-                                                                                        <button type="submit" class="btn btn-danger">Delete</button>
-                                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                                        <button type="submit"
+                                                                                            class="btn btn-danger">Delete</button>
+                                                                                        <button type="button"
+                                                                                            class="btn btn-secondary"
+                                                                                            data-bs-dismiss="modal">Cancel</button>
                                                                                     </form>
                                                                                 </div>
                                                                             </div>
@@ -1100,15 +1116,15 @@
                         <div class="col-md-12 d-flex">
                             <div class="card profile-box flex-fill">
 
-                            <div class="col-auto float-end ms-auto mt-2 mx-2">
-                                                    <a class="btn add-btn" data-bs-toggle="modal"
-                                                        data-bs-target="#add_case"><i class="fa fa-plus"></i> Add Case History
-                                                        Data</a>
-                                                </div>
+                                <div class="col-auto float-end ms-auto mt-2 mx-2">
+                                    <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_case"><i
+                                            class="fa fa-plus"></i> Add Case History
+                                        Data</a>
+                                </div>
 
                                 <div class="card-body">
 
-                                  
+
 
                                     <div class="table-responsive">
                                         <table class="table custom-table mb-0 datatable">
@@ -1128,31 +1144,32 @@
                                             </thead>
                                             <tbody>
                                                 @foreach ($caseData as $data)
-                                                <tr>
-                                                    <td>{{ $data->case_opening_date }}</td>
-                                                    <td>{{ $data->id }}</td>
-                                                    <td>{{ $data->opened_by }}</td>
-                                                    <td>{{ $data->pnr }}</td>
-                                                    <td>{{ $data->case_status }}</td>
-                                                    <td>{{ $data->case_closed_by }}</td>
-                                                    <td>{{ $data->case_closing_date }}</td>
-                                                    <td>
-                                                        <!-- View Button -->
-                                                        <button class="btn btn-info btn-sm" data-bs-toggle="modal"
-                                                            data-bs-target="#viewCaseModal-{{ $data->id }}"><i
-                                                                class="fa fa-eye"></i></button>
+                                                    <tr>
+                                                        <td>{{ $data->case_opening_date }}</td>
+                                                        <td>{{ $data->id }}</td>
+                                                        <td>{{ $data->opened_by }}</td>
+                                                        <td>{{ $data->pnr }}</td>
+                                                        <td>{{ $data->case_status }}</td>
+                                                        <td>{{ $data->case_closed_by }}</td>
+                                                        <td>{{ $data->case_closing_date }}</td>
+                                                        <td>
+                                                            <!-- View Button -->
+                                                            <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                                                                data-bs-target="#viewCaseModal-{{ $data->id }}"><i
+                                                                    class="fa fa-eye"></i></button>
 
-                                                        <!-- Edit Button -->
-                                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                            data-bs-target="#editCaseModal-{{ $data->id }}"><i
-                                                                class="fa fa-edit"></i></button>
+                                                            <!-- Edit Button -->
+                                                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                                data-bs-target="#editCaseModal-{{ $data->id }}"><i
+                                                                    class="fa fa-edit"></i></button>
 
-                                                        <!-- Close Button -->
-                                                        @if ($data->case_status !== 'Closed')
-                                                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                                                data-bs-target="#closeCaseModal-{{ $data->id }}">Close</button>
-                                                        @endif
-                                                    </td>
+                                                            <!-- Close Button -->
+                                                            @if ($data->case_status !== 'Closed')
+                                                                <button class="btn btn-danger btn-sm"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#closeCaseModal-{{ $data->id }}">Close</button>
+                                                            @endif
+                                                        </td>
                                                     </tr>
                                                     <div class="modal fade" id="viewCaseModal-{{ $data->id }}"
                                                         tabindex="-1" aria-labelledby="viewCaseModalLabel"
@@ -1200,7 +1217,9 @@
                                                                         aria-label="Close"></button>
                                                                 </div>
                                                                 <div class="modal-body">
-                                                                    <form action="{{ route('admin.agent.cases.update', ['id' => $data->id]) }}#case_history" method="POST">
+                                                                    <form
+                                                                        action="{{ route('admin.agent.cases.update', ['id' => $data->id]) }}#case_history"
+                                                                        method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
                                                                         <div class="mb-3">
@@ -1300,7 +1319,7 @@
                                                     <form action="{{ route('admin.agent.case.store') }}#case_history"
                                                         method="POST" enctype="multipart/form-data">
                                                         @csrf
-                                                       
+
 
                                                         <div class="row">
                                                             <div class="col-sm-6">
@@ -1403,7 +1422,7 @@
                                             </thead>
                                             <tbody>
                                                 @php
-                                                    $balance =  $agentAccountBal->balance;
+                                                    $balance = $agentAccountBal->balance;
                                                 @endphp
                                                 @foreach ($agentAccounts as $account)
                                                     @php
@@ -1412,8 +1431,8 @@
                                                     <tr>
                                                         <td>{{ $account->tr_date }}</td>
                                                         <td>{{ $account->tr_type }}</td>
-                                                        <td>{{ $account->credit ??0 }}</td>
-                                                        <td>{{ $account->debit??0 }}</td>
+                                                        <td>{{ $account->credit ?? 0 }}</td>
+                                                        <td>{{ $account->debit ?? 0 }}</td>
                                                         <td>{{ $account->balance }}</td>
                                                     </tr>
                                                 @endforeach
@@ -1446,15 +1465,15 @@
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Debit Amount <span
                                                                         class="text-danger">*</span></label>
-                                                                <input class="form-control" type="text" required name="debit"
-                                                                    id="debit">
+                                                                <input class="form-control" type="text" required
+                                                                    name="debit" id="debit">
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-6">
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Credit Amount</label>
-                                                                <input class="form-control" type="text" required name="credit"
-                                                                    id="credit">
+                                                                <input class="form-control" type="text" required
+                                                                    name="credit" id="credit">
                                                             </div>
                                                         </div>
 
@@ -1550,27 +1569,26 @@
                                                             </thead>
                                                             <tbody>
                                                                 @foreach ($agentProv as $prov)
-                                                           
-                                                                <tr>
-                                                                    <td>{{ $prov->term }}</td>
-                                                                    <td>{{ $prov->incentive_description }}</td>
-                                                                    <td>{{ $prov->target }}</td>
-                                                                    <td>{{ $prov->businessclass_intl }}</td>
-                                                                    <td>{{ $prov->businessclass_dom }}</td>
-                                                                    <td>{{ $prov->premiumclass_intl }}</td>
-                                                                    <td>{{ $prov->premiumclass_dom }}</td>
-                                                                    <td>{{ $prov->economyclass_intl }}</td>
-                                                                    <td>{{ $prov->economyclass_dom }}</td>
-                                                                    <td>{{ $prov->valid_from }}</td>
-                                                                    <td>{{ $prov->valid_till }}</td>
-                                                                    <td>{{ $prov->airline->airline_name }}</td>
+                                                                    <tr>
+                                                                        <td>{{ $prov->term }}</td>
+                                                                        <td>{{ $prov->incentive_description }}</td>
+                                                                        <td>{{ $prov->target }}</td>
+                                                                        <td>{{ $prov->businessclass_intl }}</td>
+                                                                        <td>{{ $prov->businessclass_dom }}</td>
+                                                                        <td>{{ $prov->premiumclass_intl }}</td>
+                                                                        <td>{{ $prov->premiumclass_dom }}</td>
+                                                                        <td>{{ $prov->economyclass_intl }}</td>
+                                                                        <td>{{ $prov->economyclass_dom }}</td>
+                                                                        <td>{{ $prov->valid_from }}</td>
+                                                                        <td>{{ $prov->valid_till }}</td>
+                                                                        <td>{{ $prov->airline->airline_name }}</td>
 
-                                                                </tr>
+                                                                    </tr>
 
                                                             </tbody>
                                                             @endforeach
                                                             <!-- Repeat for other agents -->
-                                                          
+
                                                         </table>
 
                                                     </div>
@@ -1614,15 +1632,17 @@
                                                                                 <label class="col-form-label">Incentive
                                                                                     Description <span
                                                                                         class="text-danger">*</span></label>
-                                                                                <input class="form-control" type="text" required
-                                                                                    name="incentive_description" required>
+                                                                                <input class="form-control" type="text"
+                                                                                    required name="incentive_description"
+                                                                                    required>
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-sm-6">
                                                                             <div class="form-group">
                                                                                 <label class="col-form-label">Term <span
                                                                                         class="text-danger">*</span></label>
-                                                                                <input class="form-control" type="text" required
+                                                                                <input class="form-control"
+                                                                                    type="text" required
                                                                                     name="term" required>
                                                                             </div>
                                                                         </div>
@@ -1630,7 +1650,8 @@
                                                                             <div class="form-group">
                                                                                 <label class="col-form-label">Target <span
                                                                                         class="text-danger">*</span></label>
-                                                                                <input class="form-control" type="text" required
+                                                                                <input class="form-control"
+                                                                                    type="text" required
                                                                                     name="target" required>
                                                                             </div>
                                                                         </div>
@@ -1639,7 +1660,8 @@
                                                                                 <label class="col-form-label">Business
                                                                                     Class Intl <span
                                                                                         class="text-danger">*</span></label>
-                                                                                <input class="form-control" type="number"
+                                                                                <input class="form-control"
+                                                                                    type="number"
                                                                                     name="businessclass_intl" required>
                                                                             </div>
                                                                         </div>
@@ -1648,9 +1670,10 @@
                                                                                 <label class="col-form-label">Business
                                                                                     Class Dom <span
                                                                                         class="text-danger">*</span></label>
-                                                                             <input class="form-control"
+                                                                                <input class="form-control"
                                                                                     type="number"
-                                                                                    name="businessclass_dom" id="numberInput" required>
+                                                                                    name="businessclass_dom"
+                                                                                    id="numberInput" required>
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-sm-6">
@@ -1783,20 +1806,20 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>@php
-                                                                        // Initialize sum values to 0
-                                                                        $sumBusinessIntl = 0;
-                                                                        $sumBusinessDom = 0;
-                                                                        $sumPremiumIntl = 0;
-                                                                        $sumPremiumDom = 0;
-                                                                        $sumEconomyIntl = 0;
-                                                                        $sumEconomyDom = 0;
-                                                                    @endphp
-                                                                                                                                                                                @foreach ($agentPli as $pliGroup)
-                                                                                                                                                                                    
-                                                                                                                                                                                    @foreach ($pliGroup as $index => $pli)
-                                                                                                                                                                                    @php
+                                                                // Initialize sum values to 0
+                                                                $sumBusinessIntl = 0;
+                                                                $sumBusinessDom = 0;
+                                                                $sumPremiumIntl = 0;
+                                                                $sumPremiumDom = 0;
+                                                                $sumEconomyIntl = 0;
+                                                                $sumEconomyDom = 0;
+                                                            @endphp
+                                                                @foreach ($agentPli as $pliGroup)
+                                                                    @foreach ($pliGroup as $index => $pli)
+                                                                        @php
                                                                             // Calculate the sum for each field within the group
-                                                                            $sumBusinessIntl += $pli->businessclass_intl;
+                                                                            $sumBusinessIntl +=
+                                                                                $pli->businessclass_intl;
                                                                             $sumBusinessDom += $pli->businessclass_dom;
                                                                             $sumPremiumIntl += $pli->premiumclass_intl;
                                                                             $sumPremiumDom += $pli->premiumclass_dom;
@@ -1825,19 +1848,18 @@
                                                                                     {{ $pli->airline->airline_name }}</td>
                                                                             @endif
                                                                         </tr>
-                                                                    
                                                                     @endforeach
-                                                                    @endforeach
-                                                                    <tr>
-                                                                        <td colspan="2">Total Max Payout</td>
-                                                                        <td></td>
-                                                                        <td>{{ $sumBusinessIntl }}%</td>
-                                                                        <td>{{ $sumBusinessDom }}%</td>
-                                                                        <td>{{ $sumPremiumIntl }}%</td>
-                                                                        <td>{{ $sumPremiumDom }}%</td>
-                                                                        <td>{{ $sumEconomyIntl }}%</td>
-                                                                        <td>{{ $sumEconomyDom }}%</td>
-                                                                    </tr>
+                                                                @endforeach
+                                                                <tr>
+                                                                    <td colspan="2">Total Max Payout</td>
+                                                                    <td></td>
+                                                                    <td>{{ $sumBusinessIntl }}%</td>
+                                                                    <td>{{ $sumBusinessDom }}%</td>
+                                                                    <td>{{ $sumPremiumIntl }}%</td>
+                                                                    <td>{{ $sumPremiumDom }}%</td>
+                                                                    <td>{{ $sumEconomyIntl }}%</td>
+                                                                    <td>{{ $sumEconomyDom }}%</td>
+                                                                </tr>
                                                             </tbody>
                                                         </table>
 
@@ -1859,9 +1881,12 @@
                         <div class="col-md-12 d-flex">
                             <div class="card profile-box flex-fill">
                                 <div class="card-body">
-                                    <form action="{{ route('admin.agent.target.store') }}#airline_activation"
+                                    <a class="btn btn-primary" data-bs-toggle="modal"
+                                    style="border-radius:10px;" data-bs-target="#add_airline_activation"><i
+                                        class="fa fa-plus"></i> Add / Edit Airline Activations</a>
+                                    {{-- <form action="{{ route('admin.agent.target.store') }}#airline_activation"
                                         method="POST" enctype="multipart/form-data">
-                                        @csrf
+                                        @csrf --}}
                                         <div class="table-responsive text-nowrap">
                                             <table class="table">
                                                 <thead>
@@ -1903,11 +1928,76 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="submit-section">
+                                        {{-- <div class="submit-section">
                                             <button class="btn btn-primary" type="submit">Submit</button>
                                         </div>
-                                    </form>
+                                    </form> --}}
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div id="add_airline_activation" class="modal custom-modal fade" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Target</h5>
+                                <button type="button" class="close"
+                                    data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('admin.agent.target.store') }}#airline_activation"
+                                method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div class="table-responsive text-nowrap">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="fw-bold">Airline/Service</th>
+                                                @foreach ($fareType as $ft)
+                                                    <th class="fw-bold">{{ $ft->fare_type }}</th>
+                                                @endforeach
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($airline as $air)
+                                                <tr>
+                                                    <div class="form-group">
+                                                        <input class="form-control" type="hidden"
+                                                            name="agent_id" value="{{ $agent->id }}">
+                                                    </div>
+                                                    <th class="fw-bold">{{ $air->airline_name }}</th>
+                                                    @foreach ($fareType as $ft)
+                                                        @php
+                                                            $status = DB::table('special_fares')
+                                                                ->where('airline_id', $air->id)
+                                                                ->where('fare_type', $ft->fare_type_name)
+                                                                ->where('agent_id', $agent->id)
+                                                                ->value('status');
+                                                        @endphp
+                                                        <input type="hidden"
+                                                            name="airline[{{ $air->id }}][{{ $ft->fare_type_name }}]"
+                                                            value="2">
+                                                        <th>
+                                                            <input type="checkbox"
+                                                                name="airline[{{ $air->id }}][{{ $ft->fare_type_name }}]"
+                                                                value="1"
+                                                                {{ $status == 1 ? 'checked' : '' }}>
+                                                        </th>
+                                                    @endforeach
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="submit-section">
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                </div>
+                            </form>
                             </div>
                         </div>
                     </div>
@@ -1955,14 +2045,16 @@
                                             <div class="form-group">
                                                 <label class="col-form-label">Term <span
                                                         class="text-danger">*</span></label>
-                                                <input class="form-control" type="text" required name="term" required>
+                                                <input class="form-control" type="text" required name="term"
+                                                    required>
                                             </div>
                                         </div>
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Target <span
                                                         class="text-danger">*</span></label>
-                                                <input class="form-control" type="text" required name="target" required>
+                                                <input class="form-control" type="text" required name="target"
+                                                    required>
                                             </div>
                                         </div>
                                         <div class="col-sm-6">
@@ -2141,13 +2233,15 @@
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Email</label>
-                                                <input class="form-control" type="text" required name="email_address">
+                                                <input class="form-control" type="text" required
+                                                    name="email_address">
                                             </div>
                                         </div>
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Phone</label>
-                                                <input class="form-control" type="text" required name="phone_number">
+                                                <input class="form-control" type="text" required
+                                                    name="phone_number">
                                             </div>
                                         </div>
 
@@ -2166,41 +2260,41 @@
                         </div>
                     </div>
                 </div>
-                
+
 
 
             </div>
 
 
             <style>
-                    .conversation-date {
-                        font-weight: bold;
-                        margin-bottom: 10px;
-                    }
+                .conversation-date {
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                }
 
-                    .conversation-title {
-                        font-weight: bold;
-                        font-size: 1.2em;
-                        margin-bottom: 20px;
-                    }
+                .conversation-title {
+                    font-weight: bold;
+                    font-size: 1.2em;
+                    margin-bottom: 20px;
+                }
 
-                    .conversation-description {
-                        margin-bottom: 20px;
-                    }
+                .conversation-description {
+                    margin-bottom: 20px;
+                }
 
-                    .conversation-author {
-                        text-align: right;
-                        font-style: italic;
+                .conversation-author {
+                    text-align: right;
+                    font-style: italic;
+                }
+            </style>
+            <script>
+                document.addEventListener('input', function(e) {
+                    if (e.target.type === 'number') {
+                        e.target.value = e.target.value.replace(/[^0-9]/g, '');
                     }
-                </style>
-<script>
-    document.addEventListener('input', function (e) {
-        if (e.target.type === 'number') {
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-        }
-    });
-</script>
-<script>
+                });
+            </script>
+            <script>
                 document.addEventListener("DOMContentLoaded", function() {
                     // Check if there's a hash in the URL
                     if (window.location.hash) {
@@ -2247,5 +2341,4 @@
                     });
                 });
             </script>
-
         @endsection
