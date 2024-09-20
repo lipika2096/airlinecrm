@@ -306,7 +306,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
     Route::get('employee/view/{id}', [EmployeeController::class, 'PemployeeProfile'])->name('employee.list-profile');
     // Route to display the employee's details
     Route::get('view-staff/{id}', [EmployeeController::class, 'viewEmployee'])->name('view-staff');
-
+    Route::post('view-staff/leaves/store', [EmployeeController::class, 'leavesEmployeeViewStore'])->name('view-staff.leaves.store');
+    Route::patch('view-staff/leaves/edit/{id}', [EmployeeController::class, 'leavesEmployeeViewUpdate'])->name('view-staff.leaves.update');
     // Route to store the employee's leave request
     Route::post('view-staff/store', [EmployeeController::class, 'leavesStaffStore'])->name('view-staff.store');
 

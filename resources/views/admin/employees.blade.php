@@ -65,7 +65,7 @@
                         </div>
                     </div> --}}
                     <!-- Search Filter -->
-   
+
         <style>
             .profile-widget .user-name {
                 color: #333333;
@@ -81,11 +81,11 @@
                             </ul>
                         </div>
                     </div>
-                </div>   
+                </div>
 
                 <div class="tab-content">
                     <!-- All Current Staff Tab -->
-                    <div id="allstaff" class="pro-overview tab-pane fade show active">  
+                    <div id="allstaff" class="pro-overview tab-pane fade show active">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="table-responsive">
@@ -94,15 +94,14 @@
                                             <tr>
                                                 <th>No</th>
                                                 <th>Picture</th>
-                                                <th>First Name</th>
-                                                <th>Last Name</th>
+                                                <th>Staff Name</th>
                                                 <th>Airlines</th>
                                                 <th>Department</th>
                                                 <th>Position</th>
                                                 <th>Staff No</th>
-                                                <th>DOJ</th>
+                                                {{-- <th>DOJ</th>
                                                 <th>Min Hrs</th>
-                                                <th>Max Hrs</th>
+                                                <th>Max Hrs</th> --}}
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -117,8 +116,7 @@
                                                             <img src="{{ asset('public/assets/img/user.jpg/') }}" alt="">
                                                         @endif
                                                     </td>
-                                                    <td style="color:#ed5b24;">{{ $data->first_name }}</td>
-                                                    <td style="color:#ed5b24;">{{ $data->last_name }}</td>
+                                                    <td style="color:#ed5b24;">{{ $data->first_name }} {{ $data->last_name }}</td>
                                                     <td>@if($data->client_company_name)
                                                             {{ $data->client_company_name }}
                                                         @else
@@ -127,15 +125,15 @@
                                                     <td>{{ $data->department }}</td>
                                                     <td>{{ $data->position }}</td>
                                                     <td>{{ $data->unique_id }}</td>
-                                                    <td>{{ $data->joining_date }}</td>
+                                                    {{-- <td>{{ $data->joining_date }}</td>
                                                     <td>{{ $data->min_hrs }}</td>
-                                                    <td>{{ $data->max_hrs }}</td>
+                                                    <td>{{ $data->max_hrs }}</td> --}}
                                                     <td>
                                                         <div class="action-icons" style="display: flex; flex-direction: row;">
-                                                        <a class="dropdown-item" href="{{ route('admin.view-staff', ['id' => $data->id]) }}">
+                                                        <a class="action-icon" href="{{ route('admin.view-staff', ['id' => $data->id]) }}">
                                                             <i class="fa fa-eye m-r-5"></i>
                                                         </a>
-                                                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_employee{{$data->id}}"><i class="fa fa-pencil m-r-5"></i></a>
+                                                            <a class="action-icon" href="#" data-bs-toggle="modal" data-bs-target="#edit_employee{{$data->id}}"><i class="fa fa-pencil m-r-5"></i></a>
                                                             <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_modal_{{ $data->id }}" style="margin-right: 10px;">
                                                                 <i class="fa fa-trash"></i>
                                                             </a>
@@ -148,7 +146,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>    
+                    </div>
 
                     <!-- By Department Tab -->
                     <div id="branch" class="pro-overview tab-pane fade show">
@@ -160,14 +158,13 @@
                                             <tr>
                                                 <th>S.No</th>
                                                 <th>Picture</th>
-                                                <th>First Name</th>
-                                                <th>Last Name</th>
+                                                <th>Staff Name</th>
                                                 <th>Airlines</th>
                                                 <th>Position</th>
                                                 <th>Staff No</th>
-                                                <th>DOJ</th>
+                                                {{-- <th>DOJ</th>
                                                 <th>Min Hrs</th>
-                                                <th>Max Hrs</th>
+                                                <th>Max Hrs</th> --}}
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -182,8 +179,7 @@
                                                             <img src="{{ asset('public/assets/img/user.jpg/') }}" alt="">
                                                         @endif
                                                     </td>
-                                                    <td style="color:#ed5b24;">{{ $data->first_name }}</td>
-                                                    <td style="color:#ed5b24;">{{ $data->last_name }}</td>
+                                                    <td style="color:#ed5b24;">{{ $data->first_name }} {{ $data->last_name }}</td>
                                                     <td>
                                                         @if(!empty($data->client->client_company_name))
                                                             {{ $data->client->client_company_name }}
@@ -193,13 +189,12 @@
                                                     </td>
                                                     <td>{{ $data->position }}</td>
                                                     <td>{{ $data->unique_id }}</td>
-                                                    <td>{{ $data->joining_date }}</td>
+                                                    {{-- <td>{{ $data->joining_date }}</td>
                                                     <td>{{ $data->min_hrs }}</td>
-                                                    <td>{{ $data->max_hrs }}</td>
+                                                    <td>{{ $data->max_hrs }}</td> --}}
                                                     <td>
-                                                        
-                                                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_employee{{$data->id}}"><i class="fa fa-pencil m-r-5"></i></a>
-                                                            <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_modal_{{ $data->id }}" style="margin-right: 10px;">
+                                                            <a class="action-icon" href="#" data-bs-toggle="modal" data-bs-target="#edit_employee{{$data->id}}"><i class="fa fa-pencil"></i></a>
+                                                            <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_modal_{{ $data->id }}" style="">
                                                                 <i class="fa fa-trash"></i>
                                                             </a>
                                                     </td>
@@ -241,7 +236,7 @@
                                 <div class="small text-muted">{{$data->position}}</div>
                             </div>
                         </div>-->
-                 
+
 
                 <!-- Edit Employee Modal -->
                 <div id="edit_employee{{$data->id}}" class="modal custom-modal fade" role="dialog">
@@ -438,21 +433,21 @@
                                                 <input class="form-control" name="company_mobile" type="text">
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Work Type </label>
                                                 <input class="form-control" name="work_type" type="text">
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Branch </label>
                                                 <input class="form-control" name="branch" type="text">
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Date of Birth </label>
@@ -510,8 +505,8 @@
                 </div>
                 <!-- /Add Employee Modal -->
 
-              
-     
+
+
 
             </div>
             <!-- /Page Wrapper -->

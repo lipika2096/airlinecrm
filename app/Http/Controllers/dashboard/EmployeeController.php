@@ -302,6 +302,7 @@ class EmployeeController extends Controller
             ->count();
 
         $leavetypes = LeaveType::all();
+        $employee_leaves_view = EmployeeLeave::where('employee_id',$id)->latest()->get();
         return view('admin.view-profile', compact(
             'employee',
             'employees',
@@ -320,7 +321,8 @@ class EmployeeController extends Controller
             'noofpresentemployeestoday',
             'total_employee',
             'absencePerMonth',
-            'leavetypes'
+            'leavetypes',
+            'employee_leaves_view'
         ));
     }
 
@@ -662,6 +664,31 @@ public function leavesStaffStore(Request $request)
             ]);
         // Add your logic for leaves admin view
         return redirect()->route('employee.leaves')->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
+    }
+
+    public function leavesEmployeeViewStore(Request $request)
+    {
+        EmployeeLeave::create([
+            'employee_id' => $request->input('employee_id'),
+            'leave_type' => $request->input('leave_type'),
+            'from' => $request->input('from'),
+            'to' => $request->input('to'),
+            'no_of_days' => $request->input('no_of_days'),
+            'reason' => $request->input('reason'),
+            'status' => 1
+            ]);
+        // Add your logic for leaves admin view
+        return redirect()->back()->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
+    }
+
+    public function leavesEmployeeViewUpdate(Request $request, $id)
+    {
+        $leaves =  EmployeeLeave::find($id);
+        $leaves->update([
+            'status' => $request->input('status')
+        ]);
+        // Add your logic for leaves admin view
+        return redirect()->back()->with('success', 'Employee added successfully');
     }
 
     public function leaveSettings()
