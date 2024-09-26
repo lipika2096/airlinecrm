@@ -525,7 +525,7 @@ public function leavesStaffStore(Request $request)
         return view('admin.employee-profile', compact('employeeProfile'));
     }
 
-   public function holidays()
+    public function holidays()
     {
 
 
@@ -546,8 +546,17 @@ public function leavesStaffStore(Request $request)
         $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
 
         $leavetypes = LeaveType::all();
+
+        $departments = Department::get();
+        $users = User::where('department', '!=', null)->get()->groupBy('department');
+
+
+
+        if ($departments->isEmpty()) {
+            return response()->json(['error' => 'No departments found'], 404);
+        }
         // Add your logic for leaves admin view
-        return view('admin.holidays', compact('total_employee','employees','total_pending_leaves','total_leaves','employee_leaves','noofpresentemployeestoday', 'holidays', 'leavetypes')); // Example view path, adjust as per your structure
+        return view('admin.holidays', compact('total_employee','employees','total_pending_leaves','total_leaves','employee_leaves','noofpresentemployeestoday', 'holidays', 'leavetypes', 'departments', 'users')); // Example view path, adjust as per your structure
 
 
     }
@@ -799,5 +808,70 @@ public function leavesStaffStore(Request $request)
     {
         // Add your logic for overtime view
         return view('admin.overtime'); // Example view path, adjust as per your structure
+    }
+
+    public function storeReportSick(Request $request)
+{
+    $request->validate([
+        'employee_id' => 'required|integer',
+        'leave_type' => 'required|string',
+        'from' => 'required|date',
+        'to' => 'required|date',
+        'note' => 'nullable|string',
+        'no_of_days' => 'nullable|integer',
+        'reason' => 'nullable|string',
+        'attachment' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,pdf,doc,docx|max:2048',
+    ]);
+
+    if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
+        $attachment = $request->file('attachment');
+        $path = $attachment->store('attachments', 'public');
+    } else {
+        $path = null; // Handle accordingly
+    }
+
+    EmployeeLeave::create([
+        'employee_id' => $request->input('employee_id'),
+        'leave_type' => $request->input('leave_type'),
+        'from' => $request->input('from'),
+        'to' => $request->input('to'),
+        'note' => $request->input('note'),
+        'no_of_days' => $request->input('no_of_days'),
+        'attachment' => $path,
+        'status' => 1
+    ]);
+
+    return redirect()->back()->with('success', 'Sick Report added successfully');
+}
+
+
+
+    public function storeNewAbsence(Request $request)
+    {
+        $request->validate([
+            'employee_id' => 'required|integer',
+            'leave_type' => 'required|string',
+            'from' => 'required|date',
+            'to' => 'required|date',
+            'absence_series' => 'nullable|string',
+            'note' => 'nullable|string',
+            'representation' => 'nullable|string',
+            'no_of_days' => 'nullable|integer',
+            'reason' => 'nullable|string',
+        ]);
+
+        EmployeeLeave::create([
+            'employee_id' => $request->input('employee_id'),
+            'leave_type' => $request->input('leave_type'),
+            'from' => $request->input('from'),
+            'to' => $request->input('to'),
+            'no_of_days' => $request->input('no_of_days'),
+            'absence_series' => $request->input('absence_series'),
+            'note' => $request->input('note'),
+            'representation' => $request->input('representation'),
+            'status' => 1
+            ]);
+        // Add your logic for leaves admin view
+        return redirect()->back()->with('success', 'New Absence added successfully');
     }
 }

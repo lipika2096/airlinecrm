@@ -331,6 +331,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
     Route::get('shift-scheduling', [EmployeeController::class, 'shiftScheduling'])->name('shift-scheduling');
     Route::get('overtime', [EmployeeController::class, 'overtime'])->name('overtime');
 
+    Route::post('reportsick/store', [EmployeeController::class, 'storeReportSick'])->name('reportsick.store');
+    Route::post('newabsence/store', [EmployeeController::class, 'storeNewAbsence'])->name('newabsence.store');
     // Task routes
     Route::get('tasks', [TaskController::class, 'tasks'])->name('tasks');
     Route::get('task-board', [TaskController::class, 'taskBoard'])->name('task-board');
