@@ -75,8 +75,8 @@ return [
     |
      */
 
-    'url' => env('APP_URL', 'https://hrcrm.testpentas.in/staff'),
-    'asset_url' => 'https://hrcrm.testpentas.in/staff',
+    'url' => env('APP_URL', 'http://localhost/crmforairlines/staff'),
+    'asset_url' => 'http://localhost/crmforairlines/staff',
 
     /*
     |--------------------------------------------------------------------------

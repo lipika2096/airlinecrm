@@ -22,6 +22,8 @@ Route::any('/', function () {
 Route::any('home', 'Home@index')->name('home');
 
 //LOGIN & SIGNUP
+Route::post('leaves/store', [EmployeeController::class, 'leavesEmployeeStore'])->name('leaves.store');
+
 Route::get("/login", "Authenticate@logIn")->name('login');
 Route::post("/login", "Authenticate@logInAction");
 Route::get("/forgotpassword", "Authenticate@forgotPassword");

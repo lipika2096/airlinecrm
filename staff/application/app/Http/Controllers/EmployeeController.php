@@ -14,7 +14,32 @@ use Illuminate\Support\Facades\Validator;
 
 class EmployeeController extends Controller
 {
+    public function leavesEmployeeStore(Request $request)
+				{
 
+					$request->validate([
+						'leave_type' => 'required|string',
+						'from' => 'required|date',
+						'to' => 'required|date|after_or_equal:from',
+						'reason' => 'required|string',
+					]);
+
+
+					$employee = auth()->user();
+
+
+					EmployeeLeave::create([
+						'employee_id' => $employee->id,
+						'leave_type' => $request->input('leave_type'),
+						'from' => $request->input('from'),
+						'to' => $request->input('to'),
+						'no_of_days' => $request->input('no_of_days'),
+						'reason' => $request->input('reason'),
+						'status' => 1 // Default status
+					]);
+
+					return redirect()->back()->with('success', 'Leave submitted successfully');
+				}
     public function leavesEmployee()
     {
         $authId = auth()->id();

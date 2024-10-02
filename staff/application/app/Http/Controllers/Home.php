@@ -16,6 +16,12 @@ use App\Repositories\ProjectRepository;
 use App\Repositories\StatsRepository;
 use App\Repositories\TaskRepository;
 use DB;
+use Carbon\Carbon;
+use App\Models\EmployeeLeave;
+use App\Models\Client;
+use App\Models\User;
+use App\Models\LeaveType;
+
 
 class Home extends Controller {
 
@@ -62,58 +68,77 @@ class Home extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-
-
         $page = $this->pageSettings();
-
-
-
-
         $payload = [];
-
-        //Team Dashboards
         if (auth()->user()->type == 'team') {
-            //admin user
-            if (auth()->user()->is_admin) {
-                //get payload
-                $payload = $this->adminDashboard();
+               if (auth()->user()->is_admin) {
+
+                    $payload = $this->adminDashboard();
+                }
+                if (!auth()->user()->is_admin) {
+                    //get payload
+                    $payload = $this->teamDashboard();
+                }
             }
-            //team uder
-            if (!auth()->user()->is_admin) {
-                //get payload
-                $payload = $this->teamDashboard();
+            if (auth()->user()->type == 'client') {
+                $payload = $this->clientDashboard();
+                $authId = auth()->id(); // Get authenticated user's ID
+                $annualLeave = 12; // Set the total annual leave days
+                $medicalLeave = EmployeeLeave::where('employee_id', $authId)
+                                              ->where('leave_type', 'Medical Leave')
+                                              ->count();
+                $otherLeave = EmployeeLeave::where('employee_id', $authId)
+                                            ->whereNotIn('leave_type', ['Medical Leave'])
+                                            ->count();
+                $usedAnnualLeave = EmployeeLeave::where('employee_id', $authId)
+                                                 ->count();
+                $remainingLeave = $annualLeave - $usedAnnualLeave;
+
+                $total_leaves = EmployeeLeave::where('created_at', now()->toDateString())
+                                              ->where('employee_id', $authId)
+                                              ->count();
+                $total_pending_leaves = EmployeeLeave::where('status', 2)
+                                                      ->where('employee_id', $authId)
+                                                      ->count();
+                $total_employee = Client::count();
+
+                $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
+                                                         ->whereDate('to', '>=', now()->toDateString())
+                                                         ->count();
+                $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
+
+                $absent_colleagues = EmployeeLeave::with('employee')
+                    ->whereDate('from', '<=', now()->toDateString())
+                    ->whereDate('to', '>=', now()->toDateString())
+                    ->get();
+
+                $payload['annualLeave'] = $annualLeave;
+                $payload['medicalLeave'] = $medicalLeave;
+                $payload['otherLeave'] = $otherLeave;
+                $payload['remainingLeave'] = $remainingLeave;
+                $payload['total_leaves'] = $total_leaves;
+                $payload['total_pending_leaves'] = $total_pending_leaves;
+                $payload['total_employee'] = $total_employee;
+                $payload['noofpresentemployeestoday'] = $noofpresentemployeestoday;
+                $payload['absent_colleagues'] = $absent_colleagues;
+
+                $bookingscount = DB::table('bookings')->count();
+                $agentCount = DB::table('users')->where('role_id', 2)->count();
+                $ticketCount = DB::table('air_tickets')->count();
+                $groupCount = DB::table('groups')->count();
+                $leadCount = DB::table('detail_leads')->count();
+                return view('pages.home.home', compact('page', 'payload'));
             }
-        }
-
-        //Client Dashboards
-        if (auth()->user()->type == 'client') {
-            //get payload
-            $payload = $this->clientDashboard();
-
-            $bookingscount = DB::table('bookings')->count();
-            $agentCount = DB::table('users')->where('role_id', 2)->count();
-            $ticketCount = DB::table('air_tickets')->count();
-            $groupCount = DB::table('groups')->count();
-            $leadCount = DB::table('detail_leads')->count();
-
-        }
-
-        //[AFFILIATE]
-        if (config('settings.custom_modules.cs_affiliate')) {
-            if (auth()->user()->type == 'cs_affiliate') {
-                //get payload
-                $payload = $this->csAffiliateDashboard();
-                return view('pages/cs_affiliates/home/home', compact('page', 'payload'));
+            if (config('settings.custom_modules.cs_affiliate')) {
+                if (auth()->user()->type == 'cs_affiliate') {
+                    //get payload
+                    $payload = $this->csAffiliateDashboard();
+                    return view('pages/cs_affiliates/home/home', compact('page', 'payload'));
+                }
             }
+                    $payload['page'] = $page;
+            return new HomeResponse($payload);
         }
-
-        //page
-        $payload['page'] = $page;
-
-        //process reponse
-        return new HomeResponse($payload);
-
-    }
 
     /**
      * [AFFILIATE]

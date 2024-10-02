@@ -708,7 +708,7 @@
                     }
 
                     .calendar {
-                        display: ruby;
+                        display: flex;
                     }
 
                     .input-group-text {
