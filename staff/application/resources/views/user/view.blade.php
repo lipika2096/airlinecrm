@@ -34,7 +34,7 @@
                         <li class="breadcrumb-item active" aria-current="page">Profile</li>
                     </ol>
                 </nav>
-                <div class="row">
+                <!-- <div class="row">
                     <div class="col-md-6">
                         <div class="profile-card">
                             <div class="col-md-1">
@@ -63,369 +63,298 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                {{-- <ul class="row nav nav-tabs" id="profileTab" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="group-requests-tab" data-toggle="tab" href="#group-requests" role="tab" aria-controls="group-requests" aria-selected="true">Read and Sign</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="wallets-tab" data-toggle="tab" href="#wallets" role="tab" aria-controls="wallets" aria-selected="false">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="wallet-request-tab" data-toggle="tab" href="#wallet-request" role="tab" aria-controls="wallet-request" aria-selected="false">Licences Approvals</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="air-tickets-tab" data-toggle="tab" href="#air-tickets" role="tab" aria-controls="air-tickets" aria-selected="false">Leave Information</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="comments-tab" data-toggle="tab" href="#comments" role="tab" aria-controls="comments" aria-selected="false">Leave Request</a>
-                    </li>
-                </ul> --}}
-                <div class="row nav nav-tabs ">
-                    <button class="tablinks btn btn-default" onclick="openCity(event, 'ReadandSign')">Read and Sign</button>
-                    <button class="tablinks btn btn-default" onclick="openCity(event, 'Services')">Services</button>
-                    <button class="tablinks btn btn-default" onclick="openCity(event, 'LicencesApprovals')">Licences Approvals</button>
-                    <button class="tablinks btn btn-default" onclick="openCity(event, 'LeaveInformation')">Leave Information</button>
-                    <button class="tablinks btn btn-default" onclick="openCity(event, 'LeaveRequests')">Leave Requests</button>
-                </div>
-                <div id="ReadandSign" class="tabcontent">
-                    <div class="card">
-                        <div class="card-body">
-                            <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Airline</th>
-                                <th>Created</th>
-                                <th>Last Viewed</th>
-                                <th>Viewed & Signed</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="6">No data found</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                        </div>
-                    </div>
-                    
-                  </div>
+                </div> -->
 
-                  <div id="Services" class="tabcontent">
-                   <div class="card">
-                        <div class="card-body">
-                            <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="2">No data found</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                        </div>
-                    </div>
-                  </div>
+                <div class="row nav nav-tabs">
+    <button class="tablinks btn btn-default" onclick="openCity(event, 'General')">General</button>
+    <button class="tablinks btn btn-default" onclick="openCity(event, 'MyOverview')">My Overview</button>
+    <button class="tablinks btn btn-default" onclick="openCity(event, 'MyColleagues')">My Colleagues</button>
+    <button class="tablinks btn btn-default" onclick="openCity(event, 'Applications')">Applications</button>
+    <button class="tablinks btn btn-default" onclick="openCity(event, 'TrainingCertificates')">Training & Certificates</button>
+    <button class="tablinks btn btn-default" onclick="openCity(event, 'ReadandSign')">Read & Sign</button>
+    <button class="tablinks btn btn-default" onclick="openCity(event, 'Library')">Library</button>
+    <button class="tablinks btn btn-default" onclick="openCity(event, 'LastRequestForm')">Last Request Form</button>
+</div>
 
-                  <div id="LicencesApprovals" class="tabcontent">
-                     <div class="card">
+<!-- General Tab Content -->
+<div id="General" class="tabcontent active">
+     <div class="card">
                         <div class="card-body">
-                            <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>File</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="4">No data found</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                        </div>
-                    </div>
-                  </div>
-
-                  <div id="LeaveRequests" class="tabcontent">
-                    <div class="card count-1" id="tickets-table-wrapper">
-                        <div class="card-body">
-                            <div class="table-responsive list-table-wrapper">
-                                <div class="backgroundheadingsection">
                                     <div class="row">
+                                        <!-- Left column for user image -->
+                                        <div class="col-md-4 text-center">
+                                            <img src="{{ auth()->user()->avatar }}" class="rounded-circle bg-secondary" width="124px" style="margin-top:10px">
+                                            <!-- Button with ID below the image -->
+                                            <div class="row" style="justify-content: center;">
 
-                                        <div class="col-md-6" style="text-align: right;"></div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <form action="{{ route('leave.store') }}" method="POST">
-                                            @csrf
-                                            <div class="form-group">
-                                                <label>Leave Type <span class="text-danger">*</span></label>
-                                                <select class="form-control" name="leave_type">
-                                                    <option>Casual Leave </option>
-                                                    <option>Medical Leave</option>
-                                                    <option>Loss of Pay</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label>From <span class="text-danger">*</span></label>
-                                                <input class="form-control" type="date" name="from" id="from" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label>To <span class="text-danger">*</span></label>
-                                                <input class="form-control" type="date" name="to" id="to" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label>Number of Days <span class="text-danger">*</span></label>
-                                                <input id="no_of_days" type="text" class="form-control" readonly required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label>Remaining Leaves <span class="text-danger">*</span></label>
-                                                <input id="remaining_leaves" type="text" class="form-control" value="{{$remainingLeave}}" readonly required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label>Reason <span class="text-danger">*</span></label>
-                                                <textarea class="form-control" name="reason" rows="4" required></textarea>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary">Submit</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                  </div>
+                                        </div>
+                                        </div>
 
-                  <div id="LeaveInformation" class="tabcontent">
-                    <!-- Leave Statistics -->
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="stats-info">
-                                        <h6>Annual Leave</h6>
-                                        <h4>12</h4>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="stats-info">
-                                        <h6>Medical Leave</h6>
-                                        <h4>{{ $medicalLeave }}</h4>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="stats-info">
-                                        <h6>Other Leave</h6>
-                                        <h4>{{ $otherLeave }}</h4>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="stats-info">
-                                        <h6>Remaining Leave</h6>
-                                        <h4>{{ $remainingLeave }}</h4>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- /Leave Statistics -->
-
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="table-responsive">
-                                        <table class="table table-striped custom-table mb-0 datatable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Leave Type</th>
-                                                    <th>From</th>
-                                                    <th>To</th>
-                                                    <th>No of Days</th>
-                                                    <th>Reason</th>
-                                                    <th class="text-center">Status</th>
-
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($employee_leaves as $leave)
+                                        <!-- Right column for user details -->
+                                        <div class="col-md-8">
+                                            <table class="table table-bordered">
+                                                <tbody>
                                                     <tr>
-                                                        <td>{{ $leave->leave_type }}</td>
-                                                        <td>{{ $leave->from }}</td>
-                                                        <td>{{ $leave->to }}</td>
-                                                        <td>{{ $leave->number_of_days }} days</td>
-                                                        <td>{{ $leave->reason }}</td>
-                                                        <td class="text-center">
-                                                            <div class="action-label">
-                                                                @if ($leave->status == 1)
-                                                                    <a class="btn btn-white btn-sm btn-rounded"
-                                                                        href="javascript:void(0);">
-                                                                        <i class="fa fa-dot-circle-o text-purple"></i>
-                                                                        New
-                                                                    </a>
-                                                                @elseif ($leave->status == 2)
-                                                                    <a class="btn btn-white btn-sm btn-rounded"
-                                                                        href="javascript:void(0);">
-                                                                        <i class="fa fa-dot-circle-o text-success"></i>
-                                                                        Pending
-                                                                    </a>
-                                                                @elseif ($leave->status == 3)
-                                                                    <a class="btn btn-white btn-sm btn-rounded"
-                                                                        href="javascript:void(0);">
-                                                                        <i class="fa fa-dot-circle-o text-danger"></i>
-                                                                        Approved
-                                                                    </a>
-                                                                @else
-                                                                    <a class="btn btn-white btn-sm btn-rounded"
-                                                                        href="javascript:void(0);">
-                                                                        <i class="fa fa-dot-circle-o text-danger"></i>
-                                                                        Declined
-                                                                    </a>
-                                                                @endif
-                                                            </div>
-                                                        </td>
-                                                        {{-- <td>
-                                                                    <h2 class="table-avatar">
-                                                                        <a href="#" class="avatar avatar-xs"><img
-                                                                                src="{{ asset('public/assets/img/profiles/avatar-09.jpg') }}"
-                                                                                alt=""></a>
-                                                                        <a href="#">{{ $leave->approved_by }}</a>
-                                                                    </h2>
-                                                                </td> --}}
-
+                                                        <td><strong>First Name</strong></td>
+                                                        <td>{{$agent->first_name}} </td>
                                                     </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+                                                    <tr>
+                                                        <td><strong>Last Name</strong></td>
+                                                        <td>{{$agent->last_name}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Email</strong></td>
+                                                        <td>{{$agent->email}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>DOB</strong></td>
+                                                        <td>{{$agent->dob}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>DOJ</strong></td>
+                                                        <td>{{$agent->joining_date}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Branch</strong></td>
+                                                        <td>{{$agent->branch}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Department</strong></td>
+                                                        <td>{{$agent->department}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Position</strong></td>
+                                                        <td>{{$agent->position}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Work Type</strong></td>
+                                                        <td>{{$agent->work_type}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Phone Mobile (Personal)</strong></td>
+                                                        <td>{{$agent->personal_phone}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Mobile (Company)</strong></td>
+                                                        <td>{{$agent->company_mobile}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Company</strong></td>
+                                                        <td>{{$agent->client_company_name}}</td>
+                                                    </tr>
 
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
+                    </div>
 
-                  </div>
-                {{-- <div class="tab-content" id="profileTabContent">
-                    <div class="tab-pane fade show" id="group-requests" role="tabpanel" aria-labelledby="group-requests-tab">
-                        <!-- Group Requests content here -->
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Booking ID</th>
-                                    <th>Refund Reason</th>
-                                    <th>Refund Amount</th>
-                                    <th>Refund Status</th>
-                                    <th>Request Date</th>
-                                    <th>Processed Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Dynamic content here -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="tab-pane fade" id="wallets" role="tabpanel" aria-labelledby="wallets-tab">
-                        <!-- Wallets content here -->
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Booking ID</th>
-                                    <th>Refund Reason</th>
-                                    <th>Refund Amount</th>
-                                    <th>Refund Status</th>
-                                    <th>Request Date</th>
-                                    <th>Processed Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Dynamic content here -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="tab-pane fade" id="wallet-request" role="tabpanel" aria-labelledby="wallet-request-tab">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Booking ID</th>
-                                    <th>Refund Reason</th>
-                                    <th>Refund Amount</th>
-                                    <th>Refund Status</th>
-                                    <th>Request Date</th>
-                                    <th>Processed Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Dynamic content here -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="tab-pane fade" id="air-tickets" role="tabpanel" aria-labelledby="air-tickets-tab">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Booking ID</th>
-                                    <th>Refund Reason</th>
-                                    <th>Refund Amount</th>
-                                    <th>Refund Status</th>
-                                    <th>Request Date</th>
-                                    <th>Processed Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Dynamic content here -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Booking ID</th>
-                                    <th>Refund Reason</th>
-                                    <th>Refund Amount</th>
-                                    <th>Refund Status</th>
-                                    <th>Request Date</th>
-                                    <th>Processed Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Dynamic content here -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div> --}}
-            </div>
+<!-- My Overview Tab Content -->
+<div id="MyOverview" class="tabcontent">
+
+    <div class="card">
+        <div class="card-body">
+        <div class="container">
+        <div class="month-dates">
+
+            <div id="monthDateList"></div>
         </div>
-        <script>
-            function openCity(evt, cityName) {
-              var i, tabcontent, tablinks;
-              tabcontent = document.getElementsByClassName("tabcontent");
-              for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-              }
-              tablinks = document.getElementsByClassName("tablinks");
-              for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-              }
-              document.getElementById(cityName).style.display = "block";
-              evt.currentTarget.className += " active";
-            }
-            </script>
+    </div>
+
+
+        </div>
+    </div>
+</div>
+
+<style>
+
+
+
+.month-dates {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.month-date {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.month {
+    width: 88px; /* Fixed width for month names */
+    font-weight: bold;
+}
+
+.dates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1px;
+}
+
+.date {
+    margin: 0 0px;
+    padding: 2px 6px;
+    background-color: #e0e0e0;
+    border-radius: 3px;
+}
+</style>
+
+<script>
+const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+];
+
+function getDaysInMonth(month) {
+    const date = new Date(2024, month + 1, 0); // Get the last date of the month
+    return date.getDate();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const monthDateList = document.getElementById("monthDateList");
+
+    monthNames.forEach((month, index) => {
+        const monthDateDiv = document.createElement("div");
+        monthDateDiv.classList.add("month-date");
+
+        const monthDiv = document.createElement("div");
+        monthDiv.classList.add("month");
+        monthDiv.textContent = month;
+
+        const datesDiv = document.createElement("div");
+        datesDiv.classList.add("dates");
+
+        const days = getDaysInMonth(index);
+        for (let day = 1; day <= days; day++) {
+            const dateDiv = document.createElement("div");
+            dateDiv.classList.add("date");
+            dateDiv.textContent = day;
+            datesDiv.appendChild(dateDiv);
+        }
+
+        monthDateDiv.appendChild(monthDiv);
+        monthDateDiv.appendChild(datesDiv);
+        monthDateList.appendChild(monthDateDiv);
+    });
+});
+
+</script>
+<!-- My Colleagues Tab Content -->
+<div id="MyColleagues" class="tabcontent">
+    <div class="card">
+        <div class="card-body">
+            <p>My Colleagues content goes here.</p>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Applications Tab Content -->
+<div id="Applications" class="tabcontent">
+    <div class="card">
+        <div class="card-body">
+            <p>Applications content goes here.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Training & Certificates Tab Content -->
+<div id="TrainingCertificates" class="tabcontent">
+    <div class="card">
+        <div class="card-body">
+            <p>Training & Certificates content goes here.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Read & Sign Tab Content -->
+<div id="ReadandSign" class="tabcontent">
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Airline</th>
+                        <th>Created</th>
+                        <th>Last Viewed</th>
+                        <th>Viewed & Signed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="6">No data found</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Library Tab Content -->
+<div id="Library" class="tabcontent">
+    <div class="card">
+        <div class="card-body">
+            <p>Library content goes here.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Last Request Form Tab Content -->
+<div id="LastRequestForm" class="tabcontent">
+    <div class="card">
+        <div class="card-body">
+            <p>Last Request Form content goes here.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openCity(evt, cityName) {
+        // Hide all tab content
+        var tabcontent = document.getElementsByClassName("tabcontent");
+        for (var i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].classList.remove("active"); // Use classList to manage classes
+        }
+
+        // Remove active class from all buttons
+        var tablinks = document.getElementsByClassName("tablinks");
+        for (var i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+
+        // Show the current tab and add an active class to the button that opened the tab
+        document.getElementById(cityName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    // Display the default tab (General) on page load
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById('General').classList.add("active");
+        document.querySelector('.tablinks').classList.add("active");
+    });
+</script>
+<style>
+        .tabcontent {
+            display: none; /* Hide all tab content by default */
+        }
+        .tabcontent.active {
+            display: block; /* Show active tab content */
+        }
+    </style>
+
+
         <style>
             body {
                 font-family: Arial, sans-serif;
