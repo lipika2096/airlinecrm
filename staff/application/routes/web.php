@@ -10,7 +10,7 @@ use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\BankController;
-
+Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
 //TESTING [DEV]
 Route::get("test", "Test@index");
 Route::post("test", "Test@index");

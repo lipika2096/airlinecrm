@@ -22,6 +22,7 @@
     "mews/purifier": "^3.3",
     "mollie/mollie-api-php": "2.41.0",
     "nwidart/laravel-modules": "^8.3",
+    "rap2hpoutre/laravel-log-viewer": "^2.4",
     "razorpay/razorpay": "^2.5",
     "stripe/stripe-php": "^7.33",
     "twbs/bootstrap": "4.0.0-beta.2"

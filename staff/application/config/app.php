@@ -75,8 +75,8 @@ return [
     |
      */
 
-    'url' => env('APP_URL', 'http://localhost/crmforairlines/staff'),
-    'asset_url' => 'http://localhost/crmforairlines/staff',
+    'url' => env('APP_URL', 'https://airlinecrm.admissionwala.co.in/staff'),
+    'asset_url' => 'https://airlinecrm.admissionwala.co.in/staff',
 
     /*
     |--------------------------------------------------------------------------
