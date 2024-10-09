@@ -36,11 +36,9 @@ class AirlineLibraryController extends Controller
             $docFiles = $request->file('documents');
 
             foreach ($docFiles as $docFile) {
-                // Generate a unique file name with extension
                 $fileName = Str::uuid() . '.' . $docFile->getClientOriginalExtension();
 
-                // Define the storage path
-                $storagePath = public_path('assets/docs/');
+                $storagePath = ('public/assets/docs/');
 
                 // Check if the directory exists, if not create it
                 if (!File::exists($storagePath)) {
@@ -51,7 +49,7 @@ class AirlineLibraryController extends Controller
                 $docFile->move($storagePath, $fileName);
 
                 // Add the filename to the array
-                $fileNames[] = $fileName;
+                $fileNames[] = asset('public/assets/docs/')."/".$fileName;
             }
         }
         // Convert array to a JSON string or comma-separated string
@@ -69,7 +67,7 @@ class AirlineLibraryController extends Controller
 
         return redirect()->back();
     }
-    
+
      public function viewstore(Request $request)
     {
         $request->validate([
@@ -87,7 +85,7 @@ class AirlineLibraryController extends Controller
                 $fileName = Str::uuid() . '.' . $docFile->getClientOriginalExtension();
 
                 // Define the storage path
-                $storagePath = public_path('assets/docs/');
+                $storagePath = ('public/assets/docs/');
 
                 // Check if the directory exists, if not create it
                 if (!File::exists($storagePath)) {
@@ -98,7 +96,7 @@ class AirlineLibraryController extends Controller
                 $docFile->move($storagePath, $fileName);
 
                 // Add the filename to the array
-                $fileNames[] = $fileName;
+                $fileNames[] = asset('public/assets/docs/')."/".$fileName;
             // }
         }
         // Convert array to a JSON string or comma-separated string

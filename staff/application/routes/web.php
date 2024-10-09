@@ -10,6 +10,13 @@ use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\BankController;
+use App\Http\Controllers\AgentController;
+use App\Http\Controllers\AgentLibraryController;
+use App\Http\Controllers\AgentReportController;
+use App\Http\Controllers\AirlineController;
+use App\Http\Controllers\AirlineDetailController;
+use App\Http\Controllers\AirlineLibraryController;
+
 Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
 //TESTING [DEV]
 Route::get("test", "Test@index");
@@ -23,6 +30,10 @@ Route::any('home', 'Home@index')->name('home');
 
 //LOGIN & SIGNUP
 Route::post('leaves/store', [EmployeeController::class, 'leavesEmployeeStore'])->name('leaves.store');
+
+Route::post('newabsence/store', [EmployeeController::class, 'storeNewAbsence'])->name('admin.newabsence.store');
+
+Route::post('reportsick/store', [EmployeeController::class, 'storeReportSick'])->name('admin.reportsick.store');
 
 Route::get("/login", "Authenticate@logIn")->name('login');
 Route::post("/login", "Authenticate@logInAction");
@@ -124,6 +135,108 @@ Route::group(['prefix' => 'invoices'], function () {
 
 });
 Route::resource('invoices', 'Invoices');
+//agent
+Route::post('store-wallet', [AgentController::class, 'storeWallet'])->name('store.wallet');
+
+Route::post('agentgroups/store', [AgentController::class, 'groupstore'])->name('agentgroups.store');
+
+Route::put('agentgroups/update/{id}', [AgentController::class, 'groupupdate'])->name('agentgroups.update');
+
+Route::delete('wallet/requests/{id}', [AgentController::class, 'deleteWalletRequest'])->name('wallet.requests.delete');
+
+Route::post('agent/store', [AgentController::class, 'store'])->name('agent.store');
+
+Route::post('agent/transaction/store', [AgentController::class, 'transactionStore'])->name('transaction.store');
+Route::post('agent/product/store', [AgentController::class, 'productStore'])->name('agent.product.store');
+Route::post('agent/target/store', [AgentController::class, 'targetStore'])->name('agent.target.store');
+Route::post('agent/address/store', [AgentController::class, 'AddressStore'])->name('agent.address.store');
+Route::post('agent/contact/store', [AgentController::class, 'ContactStore'])->name('agent.contact.store');
+
+Route::post('agent/prov/store', [AgentController::class, 'provStore'])->name('prov.store');
+
+Route::post('agent/pli/store', [AgentController::class, 'pliStore'])->name('pli.store');
+
+Route::post('agent/conversation/store', [AgentController::class, 'conversationStore'])->name('agent.conversation.store');
+
+Route::get('agent/update/{id}', [AgentController::class, 'update'])->name('agent.update');
+Route::post('agent/target/update/{id}', [AgentController::class, 'targetUpdate'])->name('agent.target.update');
+Route::post('agent/product/update/{id}', [AgentController::class, 'productUpdate'])->name('agent.product.update');
+Route::post('agent/pli/update/{id}', [AgentController::class, 'pliUpdate'])->name('agent.pli.update');
+Route::post('agent/prov/update/{id}', [AgentController::class, 'provUpdate'])->name('agent.prov.update');
+Route::post('agent/contact/update/{id}', [AgentController::class, 'contactUpdate'])->name('agent.contact.update');
+
+Route::post('agent/address/update/{id}', [AgentController::class, 'addressUpdate'])->name('agent.address.update');
+Route::post('agent/general/update/{id}', [AgentController::class, 'generalUpdate'])->name('agent.general.update');
+
+Route::delete('agent/product/delete/{id}', [AgentController::class, 'productDelete'])->name('agent.product.delete');
+
+
+
+Route::post('agent/edit/{id}', [AgentController::class, 'edit'])->name('agent.edit');
+
+Route::get('agent/view/{id}', [AgentController::class, 'view'])->name('agent.view');   Route::get('holds-confirm/', [HoldController::class, 'confirmHold'])->name('holdsconfirm');
+
+Route::delete('wallet/delete', [AgentController::class, 'deleteWallet'])->name('wallet.delete');
+Route::get('agent', [AgentController::class, 'index'])->name('agents');
+Route::get('case-history', [AgentController::class, 'caseHistorySearch'])->name('view.case-history');
+Route::post('agent/casehistory/store', [AgentController::class, 'caseStore'])->name('agent.case.store');
+Route::patch('agent/casehistory/update/{id}', [AgentController::class, 'caseUpdate'])->name('agent.cases.update');
+Route::post('agent/casehistory/close/{id}', [AgentController::class, 'caseClose'])->name('agent.cases.close');
+Route::get('library', [AirlineLibraryController::class, 'library'])->name('airline-library');
+Route::post('library/store', [AirlineLibraryController::class, 'store'])->name('library.store');
+Route::post('library/airine/store', [AirlineLibraryController::class, 'viewstore'])->name('library.viewstore');
+
+Route::get('library/{library}/documents', [AirlineLibraryController::class, 'viewDocuments'])->name('library.documents');
+Route::get('/agent/library', [AgentLibraryController::class, 'index'])->name('agent-library');
+
+Route::post('agent/library/store', [AgentLibraryController::class, 'store'])->name('agent.library.store');
+Route::get('agent-reports', [AgentReportController::class, 'airlineReport'])->name('agent-reports');
+Route::get('case-history', [AgentController::class, 'caseHistorySearch'])->name('view.case-history');
+Route::post('agent/casehistory/store', [AgentController::class, 'caseStore'])->name('agent.case.store');
+Route::patch('agent/casehistory/update/{id}', [AgentController::class, 'caseUpdate'])->name('agent.cases.update');
+Route::post('agent/casehistory/close/{id}', [AgentController::class, 'caseClose'])->name('agent.cases.close');
+
+Route::get('airlines-details', [AirlineDetailController::class, 'index'])->name('airlines-details');
+Route::post('airlines-details/store', [AirlineController::class, 'store'])->name('airlines-details.store');
+Route::patch('/admin/airline-details/{airlineDetail}', [AirlineController::class, 'update'])->name('airlines-details.update');
+Route::delete('/admin/airline-details/{airlineDetail}', [AirlineDetailController::class, 'destroy'])->name('airlines-details.destroy');
+Route::get('airlines', [AirlineController::class, 'index'])->name('airlines');
+Route::post('airlines/store', [AirlineController::class, 'store'])->name('airlines.store');
+Route::patch('airlines/edit/{id}', [AirlineController::class, 'update'])->name('airlines.update');
+Route::get('airlines/view/{id}', [AirlineController::class, 'view'])->name('airlines.view');
+Route::post('airlines/aircraft/', [AirlineController::class, 'aircraftStore'])->name('airline.aircraft.store');
+Route::post('airlines/fleet/', [AirlineController::class, 'fleetStore'])->name('airline.fleet.store');
+Route::patch('airlines/aircraft/update/{id}', [AirlineController::class, 'aircraftUpdate'])->name('airline.aircraft.update');
+Route::post('airlines/fleet/update/{id}', [AirlineController::class, 'fleetUpdate'])->name('airline.fleet.update');
+Route::post('airlines/approved-staff/', [AirlineController::class, 'approvedStaffStore'])->name('airline.approvedstaff.store');
+Route::post('airlines/approved-staff/upadte/{id}', [AirlineController::class, 'approvedStaffUpdate'])->name('airline.approvedstaff.update');
+Route::post('airlines/SLA/store', [AirlineController::class, 'slaStore'])->name('airline.sla.store');
+Route::patch('airlines/SLA/{id}/update', [AirlineController::class, 'slaUpdate'])->name('airline.sla.update');
+Route::patch('airline/sla/toggle-status/{id}', [AirlineController::class, 'slaUpdateStatus']);
+Route::post('airlines/approved-staff/update-status', [AirlineController::class, 'approvedStaffUpdateStatus'])->name('airline.approvedstaff.updatestatus');
+Route::post('airlines/head_office/store', [AirlineController::class, 'headOfficeStore'])->name('airline.head_office.store');
+Route::patch('airlines/head_office/{id}/update', [AirlineController::class, 'headOfficeUpdate'])->name('airline.head_office.update');
+Route::delete('airlines/head_office/{id}/destroy', [AirlineController::class, 'headofficdestroy'])->name('airline.head_office.destroy');
+Route::patch('airline/sla/{id}/statusupdate', [AirlineController::class, 'slaUpdateStatus'])->name('airline.sla.statusupdate');
+Route::patch('airline/headOffice/toggle-status/{id}', [AirlineController::class, 'headOfficeUpdateStatus'])->name('airline.headOffice.statusupdate');
+Route::patch('airline/fleet/toggle-status/{id}', [AirlineController::class, 'fleetUpdateStatus'])->name('airline.fleet.statusupdate');
+Route::patch('airline/schedule/statusupdate/{id}', [AirlineController::class, 'scheduleUpdateStatus'])->name('airline.schedule.statusupdate');
+Route::patch('airline/library/statusupdate/{id}', [AirlineController::class, 'librarystatusUpdate'])->name('airline.library.statusupdate');
+Route::patch('airline/rules/statusupdate/{id}', [AirlineController::class, 'rulesupdateStatus'])->name('airline.rules.statusupdate');
+Route::patch('airline/specialfares/statusupdate/{id}', [AirlineController::class, 'specialfaresupdateStatus'])->name('airline.specialfares.statusupdate');
+Route::patch('admin/agreements/statusupdate/{id}', [AirlineController::class, 'agreemenstStatusUpdate'])->name('airline.agreements.statusupdate');
+Route::post('airlines/agreements/store', [AirlineController::class, 'agreementsStore'])->name('airline.agreements.store');
+Route::patch('airlines/agreements/{id}/update', [AirlineController::class, 'agreementsUpdate'])->name('airline.agreements.update');
+Route::post('airlines/pli/store', [AirlineController::class, 'pliStore'])->name('airline.pli.store');
+Route::patch('airlines/library/{id}', [AirlineController::class, 'libraryupdate'])->name('airline.library.update');
+Route::post('airlines/rules/store', [AirlineController::class, 'rulesStore'])->name('airline.rules.store');
+Route::patch('airlines/rules/update/{id}', [AirlineController::class, 'rulesUpdate'])->name('airline.rules.update');
+Route::patch('airlines/specialfares/update/{id}', [AirlineController::class, 'specialfaresUpdate'])->name('airline.specialfares.update');
+Route::get('airline-reports', [AirlineController::class, 'report'])->name('airline-reports');
+
+
+
+
 
 //SUBSCRIPTIONS
 Route::group(['prefix' => 'subscriptions'], function () {

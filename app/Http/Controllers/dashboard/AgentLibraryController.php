@@ -34,8 +34,7 @@ class AgentLibraryController extends Controller
                 // Generate a unique file name with extension
                 $fileName = Str::uuid() . '.' . $docFile->getClientOriginalExtension();
 
-                // Define the storage path
-                $storagePath = public_path('assets/docs/');
+                $storagePath = ('public/assets/docs/');
 
                 // Check if the directory exists, if not create it
                 if (!File::exists($storagePath)) {
@@ -46,7 +45,7 @@ class AgentLibraryController extends Controller
                 $docFile->move($storagePath, $fileName);
 
                 // Add the filename to the array
-                $fileNames[] = $fileName;
+                $fileNames[] = asset('public/assets/docs/')."/".$fileName;
             }
         }
         // Convert array to a JSON string or comma-separated string

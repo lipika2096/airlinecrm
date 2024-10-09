@@ -1475,14 +1475,17 @@
                                                 <td>{{ $data->effective_date }}</td>
                                                 <td>{{ $data->edition_no }}</td>
                                                 <td>{{ $data->created_at }}</td>
-                                                <td>{{ $data->uploaded_by }}</td>
+                                                <td>{{ $data->admin->name ??  ($data->user->first_name ." ".$data->user->last_name) }}</td>
                                                 <td>{{ $data->updated_at }}</td>
-                                                <td>{{ $data->updated_by }}</td>
+                                                <td>
+                                                    {{ $data->adminUpdated->name ?? ($data->userUpdated ? $data->userUpdated->first_name . ' ' . $data->userUpdated->last_name : '') }}
+                                                </td>
+
                                                 <td>
                                                     @if($data->attachment && $decodedAttachments = json_decode($data->attachment))
                                                         @foreach($decodedAttachments as $index => $docLibrary)
 
-                                                                <a href="{{ asset('public/assets/docs/'.$docLibrary) }}" target="_blank">
+                                                                <a href="{{$docLibrary}}" target="_blank">
                                                                    <i
                                                             class="fa fa-eye"></i>
                                                                 </a>

@@ -36,7 +36,8 @@
                                     <th>Logo</th>
                                     <th>Name</th>
                                     <th>Documents</th>
-                                    <th>Last Updated</th>
+                                    <th>Last Updated By</th>
+                                    <th>Last Updated At</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -54,7 +55,7 @@
                         @if($library->attachment && $decodedAttachments = json_decode($library->attachment))
                             @foreach($decodedAttachments as $index => $docLibrary)
                                 <li>
-                                    <a href="{{ asset('public/assets/docs/'.$docLibrary) }}" target="_blank">
+                                    <a href="{{ $docLibrary }}" target="_blank">
                                         Document {{ $index + 1 }}
                                     </a>
                                 </li>
@@ -64,6 +65,7 @@
                         @endif
                     </ul>
                                         </td>
+                                        <td>{{ $library->admin->name ??  ($library->user->first_name ." ".$library->user->last_name) }}</td>
                                         <td>{{ $library->updated_at->format('d-m-Y') }}</td>
                                     </tr>
                                 @endforeach

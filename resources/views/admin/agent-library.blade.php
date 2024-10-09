@@ -47,12 +47,13 @@
                                             <ul style="list-style:disc !important;">
                                             @foreach(json_decode($library->attachment) as $index => $docLibrary)
                                                 <li>
-                                                    <a href = "{{asset('public/assets/docs/'.$docLibrary)}}" target="_blank">Document {{$index+1}}</a>
+                                                    <a href = "{{$docLibrary}}" target="_blank">Document {{$index+1}}</a>
                                                 </li>
                                             @endforeach
                                             </ul>
                                         </td>
-                                        <td>{{ $library->admin->name }}</td>
+                                        <td>{{ $library->admin->name ??  ($library->user->first_name ." ".$library->user->last_name) }}</td>
+
                                         <td>{{ $library->updated_at->format('d-m-Y') }}</td>
                                     </tr>
                                 @endforeach

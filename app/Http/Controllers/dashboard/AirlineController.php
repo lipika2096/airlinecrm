@@ -27,10 +27,10 @@ class AirlineController extends Controller
 {
     public function index()
     {
-        
+
         $airlineDetails = AirlineDetail::with('airline')->get();
         $airlines = Airline::all();
-      
+
         return view('admin.airlines', compact('airlines','airlineDetails'));
     }
 
@@ -46,7 +46,7 @@ class AirlineController extends Controller
 
         return view('admin.airline-reports', compact('airlines','specialFares'));
     }
-    
+
     public function view($id)
     {
         $rules = Rule::where('airline_id', $id)->get();
@@ -62,7 +62,7 @@ class AirlineController extends Controller
         $headOffices = HeadOfficeContactDetail::where('airline_id', $id)->get();
         $Staffs = User::where('status', 'active')->get();
         $agreements = Agreement::with(['agent', 'airline'])->get();
-        
+
         return view('admin.view-airline', compact('airlines','airlineDetails','aircrafts', 'fleets', 'staff', 'approvedStaffs','library','slas', 'headOffices', 'Staffs', 'agents', 'rules', 'agreements'));
     }
     public function store(Request $request)
@@ -151,7 +151,7 @@ class AirlineController extends Controller
         $validatedData = $request->validate([
             'airline_name' => 'required|string|max:255',
             'airline_code' => 'required|string|max:255',
-            
+
             'country' => 'required|string',
             'founded_on' => 'required|date',
             'commenced_on' => 'required|date',
@@ -205,7 +205,7 @@ class AirlineController extends Controller
         // Prepare data for airlineDetails
         $airlineDetailsData = [
             'airline_id' => $airline->id,
-           
+
             'country' => $validatedData['country'],
             'founded_on' => $validatedData['founded_on'],
             'commenced_on' => $validatedData['commenced_on'],
@@ -359,22 +359,22 @@ class AirlineController extends Controller
             'content' => 'nullable|string',
             'document' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
         ]);
-    
+
         $fileName = null;
-    
+
         if ($request->hasFile('document')) {
-            
+
             $docName = $request->file('document');
- 
+
             $fileName = uniqid() . '.' . $docName->getClientOriginalExtension();
-          
+
             $mediaPath = $docName->move('public/assets/docs/', $fileName);
             if (!$mediaPath) {
             return back()->withErrors(['media' => 'Failed to upload banner image']);
             }
         }
-        
-    
+
+
         // Create a new SLA record with validated data
         SLA::create([
             'airline_id' => $request->input('airline_id'),
@@ -383,16 +383,16 @@ class AirlineController extends Controller
             'content' => $request->input('content'),
             'document' => $fileName,
         ]);
-    
+
         return redirect()->back()->with('success', 'SLA added successfully.');
     }
-    
-    
 
-   
+
+
+
     public function slaUpdate(Request $request, $id)
     {
-       
+
         $validatedData = $request->validate([
             'airline_id' => 'required|exists:airlines,id',
             'title' => 'required|string|max:255',
@@ -400,26 +400,26 @@ class AirlineController extends Controller
             'content' => 'nullable|string',
             'document' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
         ]);
-    
-       
+
+
         $sla = SLA::findOrFail($id);
-    
-        $fileName = $sla->document; 
-    
-       
+
+        $fileName = $sla->document;
+
+
         if ($request->hasFile('document')) {
-            
+
             $docName = $request->file('document');
- 
+
             $fileName = uniqid() . '.' . $docName->getClientOriginalExtension();
-          
+
             $mediaPath = $docName->move('public/assets/docs/', $fileName);
             if (!$mediaPath) {
             return back()->withErrors(['media' => 'Failed to upload banner image']);
             }
         }
-    
-      
+
+
         $sla->update([
             'airline_id' => $request->input('airline_id'),
             'title' => $request->input('title'),
@@ -427,10 +427,10 @@ class AirlineController extends Controller
             'content' => $request->input('content'),
             'document' => $fileName,
         ]);
-    
+
         return redirect()->back()->with('success', 'SLA updated successfully.');
     }
-    
+
 
 
     public function slaUpdateStatus($id, Request $request)
@@ -438,16 +438,16 @@ class AirlineController extends Controller
     try {
         // Find the SLA record by ID
         $sla = SLA::findOrFail($id);
-    
+
         // Toggle the status
         $sla->status = ($sla->status == 1) ? 2 : 1;
         $sla->save();
-    
+
         // Return a JSON response for AJAX requests
         if ($request->ajax()) {
             return response()->json(['success' => true, 'status' => $sla->status]);
         }
-    
+
         // Fallback for non-AJAX requests
         return redirect()->back()->with('success', 'SLA status updated successfully.');
     } catch (\Exception $e) {
@@ -462,11 +462,11 @@ class AirlineController extends Controller
         return redirect()->back()->with('error', 'Error updating status.');
     }
 }
-    
+
 
     public function headOfficeStore(Request $request)
     {
-      
+
         $validated = $request->validate([
             'airline_id' => 'required|exists:airlines,id',
             'title' => 'required|string|max:255',
@@ -486,7 +486,7 @@ class AirlineController extends Controller
     public function headOfficeUpdate(Request $request, $id)
     {
         $headOffice = HeadOfficeContactDetail::findOrFail($id);
-    
+
         $validated = $request->validate([
             'airline_id' => 'required|integer',
             'title' => 'required|string|max:255',
@@ -496,45 +496,45 @@ class AirlineController extends Controller
             'department' => 'required|string|max:255',
             'email_address' => 'required|email|max:255',
             'phone_number' => 'required|string|max:20',
-            
+
         ]);
-    
-       
-        $validated['last_updated_by'] = auth()->user()->name; 
-        $validated['last_updated_on'] = now(); 
+
+
+        $validated['last_updated_by'] = auth()->user()->name;
+        $validated['last_updated_on'] = now();
         $headOffice->update($validated);
-    
+
         return redirect()->back()->with('success', 'Head Office Contact Details updated successfully.');
     }
 
 
     public function headOfficeUpdateStatus($id, Request $request)
     {
-       
+
 
             $headOffice = HeadOfficeContactDetail::findOrFail($id);
-    
-       
+
+
             $headOffice->status = ($headOffice->status == 1) ? 2 : 1;
             $headOffice->save();
-        
+
             // Return a JSON response for AJAX requests
             if ($request->ajax()) {
                 return response()->json(['success' => true, 'status' => $headOffice->status]);
             }
-        
+
             // Fallback for non-AJAX requests
             return redirect()->back()->with('success', 'SLA status updated successfully.');
-        
-    }
-        
 
-  
+    }
+
+
+
 
 
     public function approvedStaffUpdateStatus(Request $request)
     {
-      
+
     $request->validate([
         'staff_id' => 'required|integer',
         'field' => 'required|string',
@@ -571,7 +571,7 @@ public function libraryupdate(Request $request, $id)
     //     // Update the attachment field
     //     $document->attachment = $fileName;
     // }
-    
+
     $fileNames = []; // Array to hold the filenames
 
         if ($request->hasFile('attachment')) {
@@ -582,7 +582,7 @@ public function libraryupdate(Request $request, $id)
                 $fileName = Str::uuid() . '.' . $docFile->getClientOriginalExtension();
 
                 // Define the storage path
-                $storagePath = public_path('assets/docs/');
+                $storagePath = ('public/assets/docs/');
 
                 // Check if the directory exists, if not create it
                 if (!File::exists($storagePath)) {
@@ -593,7 +593,7 @@ public function libraryupdate(Request $request, $id)
                 $docFile->move($storagePath, $fileName);
 
                 // Add the filename to the array
-                $fileNames[] = $fileName;
+                $fileNames[] = asset('public/assets/docs/')."/".$fileName;
             // }
         }
         // Convert array to a JSON string or comma-separated string
@@ -608,17 +608,17 @@ public function libraryupdate(Request $request, $id)
     $document->attachment = $fileNamesString;
     $document->edition_no = $request->input('edition_no');
 
-  
-    $document->updated_by = auth()->user()->name; // Assuming you want to store the user ID
-    $document->updated_at = now(); 
 
-   
+    $document->updated_by = auth()->user()->id; // Assuming you want to store the user ID
+    $document->updated_at = now();
+
+
     $document->read_sign = 1;
 
-   
+
     $document->save();
 
-   
+
     return redirect()->back()->with('success', 'Document updated successfully!');
 }
 
@@ -683,22 +683,22 @@ public function rulesStore(Request $request)
         ]);
 
         return redirect()->back()->with('success', 'Rules updated successfully.');
-        
+
     }
     public function fleetUpdateStatus($id, Request $request)
     {
         // Find the Fleet record by ID
         $fleet = Fleet::findOrFail($id);
-    
+
         // Toggle the status
         $fleet->status = ($fleet->status == 1) ? 2 : 1;
         $fleet->save();
-    
+
         // Return a JSON response for AJAX requests
         if ($request->ajax()) {
             return response()->json(['success' => true, 'status' => $fleet->status]);
         }
-    
+
         // Fallback for non-AJAX requests
         return redirect()->back()->with('success', 'Fleet status updated successfully.');
     }
@@ -708,16 +708,16 @@ public function rulesStore(Request $request)
 {
     $data = Aircraft::findOrFail($id);
 
-   
+
     $data->status = $data->status == 1 ? 2 : 1;
     $data->save();
 
-   
+
     if ($request->ajax()) {
         return response()->json(['success' => true, 'status' => $data->status]);
     }
 
-    
+
     return redirect()->back()->with('success', 'Status updated successfully.');
 }
 
@@ -760,8 +760,8 @@ public function rulesupdateStatus($id, Request $request)
 
 public function specialfaresupdateStatus($id, Request $request)
 {
-   
-        
+
+
     // Find the record by ID
     $specialFare = SpecialFare::findOrFail($id);
 
@@ -831,11 +831,11 @@ public function agreementsStore(Request $request)
             'incentive_description' => $request->input('incentive_description'),
             'term' => $request->input('term'),
             'agreement_status' => $request->input('agreement_status'),
-            
+
         ]);
 
         return redirect()->back()->with('success', 'Rules updated successfully.');
-        
+
     }
 
 
@@ -856,7 +856,7 @@ public function agreementsStore(Request $request)
             'valid_from' => 'required|string|max:255',
             'valid_till' => 'required|string|max:255',
         ]);
-    
+
         Agreement::create([
             'airline_id' => $request->input('airline_id'),
             'agent_id' => $request->input('agent_id'),
@@ -873,12 +873,12 @@ public function agreementsStore(Request $request)
             'valid_till' => $request->input('valid_till'),
             'type' => 'PLI',
 
-            
+
         ]);
-    
+
         return redirect()->back()->with('success', 'Rules updated successfully.');
     }
-    
+
 
 
 

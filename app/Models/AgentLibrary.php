@@ -20,4 +20,10 @@ class AgentLibrary extends Model
     {
         return $this->belongsTo(Admin::class,'uploaded_by','id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class,'uploaded_by','id');
+    }
+
 }
