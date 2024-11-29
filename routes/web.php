@@ -123,6 +123,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
     Route::get('leavetypes', [LeaveTypeController::class, 'leaveType'])->name('leave-type');
     Route::post('leavetypes/store', [LeaveTypeController::class, 'storeLeaveType'])->name('leave-type.store');
     Route::put('leavetypes/update/{id}', [LeaveTypeController::class, 'updateLeaveType'])->name('leave-type.update');
+    Route::delete('leavetypes/delete/{id}', [LeaveTypeController::class, 'deleteLeaveType'])->name('leave-type.delete');
     Route::post('/update-leavetype-status', [LeaveTypeController::class, 'updateStatus'])->name('leave-type.updateStatus');
     Route::get('dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
 

@@ -41,6 +41,12 @@ class LeaveTypeController extends Controller
         return redirect()->route('admin.leave-type')->with('success', 'Leave Type updated successfully.');
     }
 
+    public function deleteLeaveType(Request $request, $id){
+        $leave = LeaveType::find($id);
+        $leave->delete();
+        return redirect()->route('admin.leave-type')->with('success', 'Leave Type updated successfully.');
+    }
+
     public function updateStatus(Request $request)
     {
         $leave = LeaveType::find($request->id);

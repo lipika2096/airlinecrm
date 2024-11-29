@@ -350,6 +350,7 @@
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
                             <li><a class="" href="{{route('admin.departments')}}">Add Departments</a></li>
+                            <li><a class="" href="{{route('admin.designations')}}">Add Designations</a></li>
                             <li><a class="" href="{{route('admin.categories.view')}}">Add Category</a></li>
                             <li><a class="" href="{{route('admin.faretypes')}}">Add Fare Types</a></li>
 

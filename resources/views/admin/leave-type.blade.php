@@ -55,6 +55,7 @@
                                     <td class="text-end">
                                         <div class="dropdown-action">
                                             <a href="#" data-bs-toggle="modal" data-bs-target="#edit_leavetype{{$leave->id}}"><i class="fa fa-pencil m-r-5"></i></a>
+                                            <a href="#" data-bs-toggle="modal" data-bs-target="#delete_leavetype{{$leave->id}}"><i class="fa fa-trash m-r-5"></i></a>
                                         </div>
                                     </td>
                                 </tr>
@@ -89,6 +90,33 @@
                                     </div>
                                 </div>
                                 <!-- /Edit Leavetype Modal -->
+                                <!-- Edit Leavetype Modal -->
+                                <div id="delete_leavetype{{$leave->id}}" class="modal custom-modal fade" role="dialog">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Delete Leave Type</h5>
+                                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{route('admin.leave-type.delete',$leave->id)}}" method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <p>Are you sure you want to delete
+                                                        <strong>{{$leave->name}}</strong>  Leave Type?
+                                                    </p>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /Delete Leavetype Modal -->
                             @endforeach
                             </tbody>
                         </table>
@@ -129,7 +157,7 @@
         </div>
         <!-- /Add Leavetype Modal -->
 
-        
+
 
         <!-- Delete Leavetype Modal -->
         <div class="modal custom-modal fade" id="delete_leavetype" role="dialog">
@@ -176,7 +204,7 @@
                 },
                 success: function(response) {
                     //alert('Leave Type status updated successfully!');
-                    
+
                     window.location.reload();
                 },
                 error: function(response) {
