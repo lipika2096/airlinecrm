@@ -307,7 +307,7 @@
                                         class="la la-external-link-square"></i> <span>Resignation</span></a></li>
                         @endif
                         @if (auth()->user()->hasRole('admin'))
-                           <li><a class="" href="javascript:void(0);">Pending Approvals </a></li>
+                           <li><a class="" href="{{route('admin.leaves')}}">Pending Approvals </a></li>
                             <li><a class="" href="{{route('admin.employee.view-profile')}}">User Profiles</a></li>
                          {{-- <li><a class="" href="{{ route('admin.salary') }}"> Manage Staff Salary </a></li> --}}
                         @endif
