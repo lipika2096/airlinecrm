@@ -161,8 +161,13 @@
                                         </li>
                                         <li>
                                             <div class="title">Website</div>
-                                            <div class="text"><a href="{{ $agent->websites }}"
-                                                    target="_blank">{{ $agent->websites }}</a></div>
+                                            <div class="text">
+                                                <ul style="list-style: disc; margin-left: 20px;">
+                                                    @foreach (json_decode($agent->websites) as $websites)
+                                                        <li>{{ $websites }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
                                         </li>
                                         <li>
                                             <div class="title">Employees</div>
@@ -341,10 +346,15 @@
                                                         <li>
                                                             <div class="title">Website</div>
                                                             <div class="text">
-                                                                <input type="text" class="form-control"
-                                                                    name="websites" value="{{ $agent->websites }}"
-                                                                    placeholder="http://example.com">
+                                                                @foreach (json_decode($agent->websites) as $awebsites)
+                                                                    <input type="text" class="form-control"
+                                                                        name="websites[]"
+                                                                        value="{{ $awebsites }}">
+                                                                @endforeach
                                                             </div>
+                                                                {{-- <input type="text" class="form-control"
+                                                                    name="websites" value="{{ $agent->websites }}"
+                                                                    placeholder="http://example.com"> --}}
                                                         </li>
                                                         <li>
                                                             <div class="title">Employees</div>
@@ -1422,7 +1432,7 @@
                                             </thead>
                                             <tbody>
                                                 @php
-                                                    $balance = $agentAccountBal->balance;
+                                                    $balance = $agentAccountBal->balance?? 0;
                                                 @endphp
                                                 @foreach ($agentAccounts as $account)
                                                     @php

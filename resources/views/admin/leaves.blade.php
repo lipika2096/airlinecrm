@@ -121,6 +121,8 @@
                                             <th>From</th>
                                             <th>To</th>
                                             <th>No of Days</th>
+                                            <th  class="text-danger">Total Annual Leaves</th>
+                                            <th  class="text-danger">Available Leaves</th>
                                             <th>Reason</th>
                                             <th class="text-center">Status</th>
                                         </tr>
@@ -136,7 +138,15 @@
                                             <td>{{$data->leave_type}}</td>
                                             <td>{{$data->from}}</td>
                                             <td>{{$data->to}}</td>
-                                            <td>{{$data->no_of_days}}</td>
+                                            <td>{{$data->no_of_days}} days</td>
+                                            <td class="text-danger">{{$data->user->leave_count}} leaves</td>
+                                            @php
+                                            $annualLeave = $data->user->leave_count;
+                                                $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)->where('status',3)
+                                        ->count();
+                                                $remainingLeave = $annualLeave - $usedAnnualLeave;
+                                            @endphp
+                                            <td  class="text-danger">{{$remainingLeave}} leaves left</td>
                                             <td>{{$data->reason}}</td>
                                             <td class="text-center">
                                                 <div class="dropdown action-label">
@@ -218,9 +228,10 @@
                                         <label>Leave Type <span class="text-danger">*</span></label>
                                         <select class="select form-control" name="leave_type">
                                             <option>Select Leave Type</option>
-                                            <option>Casual Leave</option>
-                                            <option>Medical Leave</option>
-                                            <option>Loss of Pay</option>
+                                            @foreach ($leavetypes as $leavetype)
+                                                <option value="{{ $leavetype->name }}">
+                                                {{ $leavetype->name }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                     <div class="form-group">

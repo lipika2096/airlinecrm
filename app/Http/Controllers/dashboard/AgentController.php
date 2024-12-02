@@ -76,7 +76,8 @@ class AgentController extends Controller
         $agent->parent_company = $request->parent_company;
         $agent->headquarters = $request->headquarters;
         $agent->key_people = $request->key_people;
-        $agent->websites = $request->websites;
+        // $agent->websites = $request->websites;
+        $agent->websites = json_encode($request->websites);
         $agent->no_of_employees = $request->no_of_employees;
         $agent->iata = $request->iata;
         $agent->gds_type = $request->gds_type;
@@ -556,7 +557,8 @@ public function targetStore(Request $request)
         $agent->parent_company = $request->parent_company;
         $agent->headquarters = $request->headquarters;
         $agent->key_people = $request->key_people;
-        $agent->websites = $request->websites;
+        // $agent->websites = $request->websites;
+        $agent->websites = json_encode($request->websites);
         $agent->no_of_employees = $request->no_of_employees;
         $agent->iata = $request->iata;
         $agent->gds_type = $request->gds_type;

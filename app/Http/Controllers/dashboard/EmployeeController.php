@@ -301,7 +301,7 @@ class EmployeeController extends Controller
             ->whereYear('from', now()->year)
             ->count();
 
-        $leavetypes = LeaveType::all();
+        $leavetypes = LeaveType::where('status',1)->get();
         $employee_leaves_view = EmployeeLeave::where('employee_id',$id)->latest()->get();
         return view('admin.view-profile', compact(
             'employee',
@@ -545,7 +545,7 @@ public function leavesStaffStore(Request $request)
         // Number of present employees today
         $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
 
-        $leavetypes = LeaveType::all();
+        $leavetypes = LeaveType::where('status',1)->get();
 
         $departments = Department::get();
         $users = User::where('department', '!=', null)->get()->groupBy('department');
@@ -600,6 +600,8 @@ public function leavesStaffStore(Request $request)
 
     public function leavesAdmin()
     {
+
+        $leavetypes = LeaveType::where('status',1)->get();
         $total_employee = Client::count();
         $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
         ->get(['clients.*', 'users.*']);
@@ -615,7 +617,7 @@ public function leavesStaffStore(Request $request)
         // Number of present employees today
         $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
         // Add your logic for leaves admin view
-        return view('admin.leaves', compact('total_employee','employees','total_pending_leaves','total_leaves','employee_leaves','noofpresentemployeestoday')); // Example view path, adjust as per your structure
+        return view('admin.leaves', compact('total_employee','employees','total_pending_leaves','total_leaves','employee_leaves','leavetypes','noofpresentemployeestoday')); // Example view path, adjust as per your structure
     }
 
     public function leavesAdminStore(Request $request)
@@ -630,7 +632,7 @@ public function leavesStaffStore(Request $request)
             'status' => 1
             ]);
         // Add your logic for leaves admin view
-        return redirect()->route('admin.holidays')->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
+        return redirect()->route('admin.leaves')->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
     }
 
     public function leavesAdminUpdate(Request $request, $id)
@@ -640,7 +642,7 @@ public function leavesStaffStore(Request $request)
             'status' => $request->input('status')
         ]);
         // Add your logic for leaves admin view
-        return redirect()->route('admin.holidays')->with('success', 'Employee added successfully');
+        return redirect()->route('admin.leaves')->with('success', 'Employee added successfully');
     }
 
     public function leavesEmployee()

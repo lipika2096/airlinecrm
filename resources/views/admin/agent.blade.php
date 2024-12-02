@@ -241,9 +241,21 @@
                             </div>
 
                             <div class="col-sm-6">
-                                <div class="form-group">
+                                {{-- <div class="form-group">
                                     <label class="col-form-label">Website</label>
                                     <input class="form-control" type="url" name="websites">
+                                </div> --}}
+                                <div class="form-group">
+                                    <label class="col-form-label">Websites</label>
+                                    <div id="website-address-container">
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control" name="websites[]"
+                                                placeholder="Enter website address">
+                                            <button class="btn btn-danger remove-website-address"
+                                                type="button">Remove</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary" type="button" id="add-website-address">Add More</button>
                                 </div>
                             </div>
 
@@ -276,6 +288,22 @@
 
             // Add event listener to the remove button
             newInputGroup.querySelector('.remove-destination').addEventListener('click', function() {
+                container.removeChild(newInputGroup);
+            });
+        });
+
+        document.getElementById('add-website-address').addEventListener('click', function() {
+            const container = document.getElementById('website-address-container');
+            const newInputGroup = document.createElement('div');
+            newInputGroup.classList.add('input-group', 'mb-2');
+            newInputGroup.innerHTML = `
+                <input type="text" class="form-control" name="websites[]" placeholder="Enter Website address">
+                <button class="btn btn-danger remove-website-address" type="button">Remove</button>
+            `;
+            container.appendChild(newInputGroup);
+
+            // Add event listener to the remove button
+            newInputGroup.querySelector('.remove-website-address').addEventListener('click', function() {
                 container.removeChild(newInputGroup);
             });
         });
