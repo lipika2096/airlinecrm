@@ -28,7 +28,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="table-responsive">
-                    <table class="table table-striped custom-table mb-0">
+                    <table class="table table-striped custom-table mb-0 datatable">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -215,7 +215,7 @@
                                     <input type="text" name="ticket_no" class="form-control" placeholder="Ticket No" required />
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Add Initial Bal. <span class="text-danger">*</span></label>
@@ -233,7 +233,7 @@
     </div>
     <!-- /Add account Modal -->
 
-    
+
 </div>
 <!-- /Page Wrapper -->
 

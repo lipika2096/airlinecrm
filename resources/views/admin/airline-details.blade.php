@@ -36,6 +36,7 @@
                     <div class="table-responsive">
 
                         <table class="table table-striped custom-table mb-0 datatable">
+                            <thead>
                             <tr>
                                 <th>Airline Logo</th>
                                 <th>Airline Name</th>
@@ -83,176 +84,176 @@
                                                 </div>
                                                 <div class="modal-body">
                                                 <form action="{{ route('admin.airlines-details.update', ['airlineDetail' => $detail->id]) }}" method="POST" enctype="multipart/form-data">
-    @csrf
-    @method('PATCH')
+                                                    @csrf
+                                                    @method('PATCH')
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="airline_name">Airline Name</label>
-                <input type="text" class="form-control" id="airline_name" name="airline_name" value="{{ $detail->airline->airline_name }}" required>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="airline_code">Airline Code</label>
-                <input type="text" class="form-control" id="airline_code" name="airline_code"  value="{{ $detail->airline->airline_code }}"  required>
-            </div>
-        </div>
-    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="airline_name">Airline Name</label>
+                                                                <input type="text" class="form-control" id="airline_name" name="airline_name" value="{{ $detail->airline->airline_name }}" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="airline_code">Airline Code</label>
+                                                                <input type="text" class="form-control" id="airline_code" name="airline_code"  value="{{ $detail->airline->airline_code }}"  required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="country">Country</label>
-                <input type="text" class="form-control" id="country" name="country" value="{{ $detail->country }}" required>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="founded_on">Founded On</label>
-                <input type="date" class="form-control" id="founded_on" name="founded_on" value="{{ $detail->founded_on }}" required>
-            </div>
-        </div>
-    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="country">Country</label>
+                                                                <input type="text" class="form-control" id="country" name="country" value="{{ $detail->country }}" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="founded_on">Founded On</label>
+                                                                <input type="date" class="form-control" id="founded_on" name="founded_on" value="{{ $detail->founded_on }}" required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="commenced_on">Commenced On</label>
-                <input type="date" class="form-control" id="commenced_on" name="commenced_on" value="{{ $detail->commenced_on }}" required>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="hubs">Hubs</label>
-                <input type="text" class="form-control" id="hubs" name="hubs" value="{{ $detail->hubs }}" required>
-            </div>
-        </div>
-    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="commenced_on">Commenced On</label>
+                                                                <input type="date" class="form-control" id="commenced_on" name="commenced_on" value="{{ $detail->commenced_on }}" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="hubs">Hubs</label>
+                                                                <input type="text" class="form-control" id="hubs" name="hubs" value="{{ $detail->hubs }}" required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="secondary_hub">Secondary Hub</label>
-                <input type="text" class="form-control" id="secondary_hub" name="secondary_hub" value="{{ $detail->secondary_hubs }}">
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="focus_cities">Focus Cities</label>
-                <input type="text" class="form-control" id="focus_cities" name="focus_cities[]" value="@foreach (json_decode($detail->focus_cities) as $fc){{ $fc }}<br> @endforeach" placeholder="Enter focus cities separated by commas">
-            </div>
-        </div>
-    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="secondary_hub">Secondary Hub</label>
+                                                                <input type="text" class="form-control" id="secondary_hub" name="secondary_hub" value="{{ $detail->secondary_hubs }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="focus_cities">Focus Cities</label>
+                                                                <input type="text" class="form-control" id="focus_cities" name="focus_cities[]" value="@foreach (json_decode($detail->focus_cities) as $fc){{ $fc }}<br> @endforeach" placeholder="Enter focus cities separated by commas">
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="frequent_flyer_program">Frequent Flyer Program</label>
-                <input type="text" class="form-control" id="frequent_flyer_program" name="frequent_flyer_program" value="{{ $detail->frequent_flyer_program }}" required>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="alliance">Alliance</label>
-                <input type="text" class="form-control" id="alliance" name="alliance" value="{{ $detail->alliance }}" required>
-            </div>
-        </div>
-    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="frequent_flyer_program">Frequent Flyer Program</label>
+                                                                <input type="text" class="form-control" id="frequent_flyer_program" name="frequent_flyer_program" value="{{ $detail->frequent_flyer_program }}" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="alliance">Alliance</label>
+                                                                <input type="text" class="form-control" id="alliance" name="alliance" value="{{ $detail->alliance }}" required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="subsidiaries">Subsidiaries</label>
-                <input type="text" class="form-control" id="subsidiaries" name="subsidiaries" value="{{ $detail->subsidiaries }}">
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="fleet_size">Fleet Size</label>
-                <input type="number" class="form-control" id="fleet_size" name="fleet_size" value="{{ $detail->fleet_size }}" required>
-            </div>
-        </div>
-    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="subsidiaries">Subsidiaries</label>
+                                                                <input type="text" class="form-control" id="subsidiaries" name="subsidiaries" value="{{ $detail->subsidiaries }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="fleet_size">Fleet Size</label>
+                                                                <input type="number" class="form-control" id="fleet_size" name="fleet_size" value="{{ $detail->fleet_size }}" required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="destinations">Destinations</label>
-                <input type="text" class="form-control" id="destinations" name="destinations" value="{{ $detail->destinations }}" required>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="slogan">Slogan</label>
-                <input type="text" class="form-control" id="slogan" name="slogan" value="{{ $detail->slogan }}" required>
-            </div>
-        </div>
-    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="destinations">Destinations</label>
+                                                                <input type="text" class="form-control" id="destinations" name="destinations" value="{{ $detail->destinations }}" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="slogan">Slogan</label>
+                                                                <input type="text" class="form-control" id="slogan" name="slogan" value="{{ $detail->slogan }}" required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="logo">Logo</label>
-                <input type="file" class="form-control" id="logo" name="logo">
-                <img style="height:50px; width:50px;" src="{{ asset($detail->airline->logo_path) }}">
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="key_people">Key People</label>
-                <input type="text" class="form-control" id="key_people" name="key_people" value="{{ old('key_people', $detail->key_people) }}">
-            </div>
-        </div>
-    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="logo">Logo</label>
+                                                                <input type="file" class="form-control" id="logo" name="logo">
+                                                                <img style="height:50px; width:50px;" src="{{ asset($detail->airline->logo_path) }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="key_people">Key People</label>
+                                                                <input type="text" class="form-control" id="key_people" name="key_people" value="{{ old('key_people', $detail->key_people) }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="parent_company">Parent Company</label>
-                <input type="text" class="form-control" id="parent_company" name="parent_company" value="{{ old('parent_company', $detail->parent_company) }}">
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="head_quarters">Headquarters</label>
-                <input type="text" class="form-control" id="head_quarters" name="head_quarters" value="{{ old('head_quarters', $detail->head_quarters) }}">
-            </div>
-        </div>
-    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="parent_company">Parent Company</label>
+                                                                <input type="text" class="form-control" id="parent_company" name="parent_company" value="{{ old('parent_company', $detail->parent_company) }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="head_quarters">Headquarters</label>
+                                                                <input type="text" class="form-control" id="head_quarters" name="head_quarters" value="{{ old('head_quarters', $detail->head_quarters) }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="website">Website</label>
-                <input type="text" class="form-control" id="website" name="website" value="{{ old('website', $detail->website) }}">
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="IATA">IATA</label>
-                <input type="text" class="form-control" id="IATA" name="IATA" value="{{ old('IATA', $detail->IATA) }}">
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="ICAO">ICAO</label>
-                <input type="text" class="form-control" id="ICAO" name="ICAO" value="{{ old('ICAO', $detail->ICAO) }}">
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="callsign">Callsign</label>
-                <input type="text" class="form-control" id="callsign" name="callsign" value="{{ old('callsign', $detail->callsign) }}">
-            </div>
-        </div>
-    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="website">Website</label>
+                                                                <input type="text" class="form-control" id="website" name="website" value="{{ old('website', $detail->website) }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="IATA">IATA</label>
+                                                                <input type="text" class="form-control" id="IATA" name="IATA" value="{{ old('IATA', $detail->IATA) }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="ICAO">ICAO</label>
+                                                                <input type="text" class="form-control" id="ICAO" name="ICAO" value="{{ old('ICAO', $detail->ICAO) }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="callsign">Callsign</label>
+                                                                <input type="text" class="form-control" id="callsign" name="callsign" value="{{ old('callsign', $detail->callsign) }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-    <div class="submit-section">
-        <button class="btn btn-primary" type="submit">Submit</button>
-    </div>
-</form>
+                                                    <div class="submit-section">
+                                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                                    </div>
+                                                </form>
 
                                                 </div>
                                             </div>
@@ -425,7 +426,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="row">
 
         <div class="col-md-6">
@@ -441,7 +442,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="submit-section">
         <button class="btn btn-primary" type="submit">Submit</button>
     </div>
@@ -573,7 +574,7 @@
                                             name="routes_flown_to"
                                             value="{{ old('routes_flown_to', $detail->routes_flown_to) }}" required>
                                     </div>
-                                    
+
                             </div>
                             <div class="submit-section">
                                 <button class="btn btn-primary" type="submit">Update</button>

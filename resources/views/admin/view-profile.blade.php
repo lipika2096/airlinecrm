@@ -14,11 +14,12 @@
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-12">
-                        <h3 class="page-title">Profile</h3>
+                        <h3 class="page-title">Staff Profile</h3>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Profile</li>
+                            <li class="breadcrumb-item active">Staff Profile</li>
                         </ul>
+                        <p class="d-inline text-dark font-weight-bolder">Welcome to  <b class="d-inline text-capitalize">{{ $employee->first_name }} {{ $employee->last_name }}</b> profile</p>
                     </div>
                     <div class="card tab-box" style="margin-top: 20px;">
                         <div class="row user-tabs">

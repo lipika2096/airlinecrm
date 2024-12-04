@@ -111,7 +111,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-nowrap custom-table mb-0">
+                                <table class="table table-nowrap custom-table mb-0 datatable">
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -290,7 +290,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-nowrap custom-table mb-0">
+                                <table class="table table-nowrap custom-table mb-0 datatable">
                                     <thead>
                                         <tr>
                                             <th>#</th>

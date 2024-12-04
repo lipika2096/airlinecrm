@@ -1,5 +1,8 @@
 @extends('admin/layouts/head-main')
 @section('content')
+@php
+    use Carbon\Carbon;
+@endphp
     <!-- Page Wrapper -->
     <div class="page-wrapper">
 
@@ -13,7 +16,6 @@
                     <div class="col">
                         <h3 class="page-title"></h3>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
                             <li class="breadcrumb-item active">Holidays & Leaves</li>
                         </ul>
                     </div>
@@ -22,8 +24,10 @@
                         <div class="row user-tabs">
                             <div class="col-lg-12 col-md-12 col-sm-12 line-tabs">
                                 <ul class="nav nav-tabs nav-tabs-bottom">
+                                    <li class="nav-item"><a href="#overview" data-bs-toggle="tab" class="nav-link active">Overview</a>
+                                    </li>
                                     <li class="nav-item"><a href="#holidays" data-bs-toggle="tab"
-                                            class="nav-link active">Holidays</a>
+                                            class="nav-link ">Holidays</a>
                                     </li>
                                     <li class="nav-item"><a href="#leaves" data-bs-toggle="tab" class="nav-link">Leaves</a>
                                     </li>
@@ -38,7 +42,7 @@
 
             <div class="tab-content">
 
-                <div id="holidays" class="pro-overview tab-pane fade show active">
+                <div id="holidays" class="pro-overview tab-pane fade show">
                     <div class="row">
                         <div class="col-auto float-end ms-auto" style="margin-bottom: 10px;">
 
@@ -90,7 +94,7 @@
                                             </div>
                                             <div class="section">
                                                 <div class="section-header">
-                                                    <h2>Todo List</h2>
+                                                    <h2>Holiday List</h2>
 
                                                 </div>
                                                 <table class="table table-striped custom-table mb-0 datatable">
@@ -241,18 +245,12 @@
                 </div>
                 <div id="leaves" class="pro-overview tab-pane fade show ">
                     <!-- Page Content -->
-                    <!-- Page Content -->
                     <div class="content container-fluid">
 
                         <div class="page-header">
                             <div class="row align-items-center">
                                 <div class="col">
-
-                                    <h3 class="page-title">My Collegues</h3>
-                                    <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
-                                        <li class="breadcrumb-item active">Collegues</li>
-                                    </ul>
+                                    <h3 class="page-title">My Teams</h3>
                                 </div>
                                 <div class="col-auto float-end ms-auto">
 
@@ -499,7 +497,13 @@
                         <div class="row mt-5 mb-5">
                             <div class="col-md-4">
                                 <div class="input-group">
-                                    <input type="search" placeholder="Kollegen hinzufügen" class="form-control">
+                                    <select class="form-control" id="coworkerSelect"  aria-label="Add Coworker">
+                                        <option value="" disabled selected>Select Coworker</option>
+                                        @foreach ($employees as $data => $employee)
+                                            <option value="{{$employee->user->id}}">{{$employee->first_name}} {{$employee->last_name}}</option>
+                                        @endforeach
+                                        <!-- Add more coworker options as needed -->
+                                    </select>
                                     <span class="input-group-text">
                                         <i class="fa fa-plus"></i>
                                     </span>
@@ -507,7 +511,15 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="input-group">
-                                    <input type="search" placeholder="Add Team" class="form-control">
+                                    <select class="form-control"id="teamSelect"  aria-label="Add Team">
+                                        <option value="" disabled selected>Add Team</option>
+                                        @foreach ($users as $data => $user)
+                                            @foreach ($user as $dataUser)
+                                                <option value="{{$dataUser->department}}">{{$dataUser->department}}</option>
+                                            @endforeach
+                                        @endforeach
+                                        <!-- Add more coworker options as needed -->
+                                    </select>
                                     <span class="input-group-text">
                                         <i class="fa fa-plus"></i>
                                     </span>
@@ -515,257 +527,540 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="input-group">
-                                    <input type="search" placeholder="Browse List" class="form-control">
+                                    <select class="form-control" id="browseListSelect"  aria-label="Browse List">
+                                        <option value="" disabled selected>Browse List</option>
+                                        @foreach ($users as $data => $user)
+                                            @foreach ($user as $dataUser)
+                                                <option value="{{$dataUser->id}}">{{$dataUser->first_name}} {{$dataUser->first_name}} - {{$dataUser->department}}</option>
+                                            @endforeach
+                                        @endforeach
+                                        <!-- Add more coworker options as needed -->
+                                    </select>
                                     <span class="input-group-text">
                                         <i class="fa fa-plus"></i>
                                     </span>
                                 </div>
                             </div>
                         </div>
+                        <!-- Day numbers header -->
+                        <div class="row mb-3">
+                            <div id="calendarContainer"></div>
 
-
-                        </head>
-
-                        <body>
-
-
-
-                            <!-- Day numbers header -->
-                            <div class="row mb-3">
-                                @foreach ($users as $data => $value)
-                                    <div class="col-md-12 bg-white mb-3">
-                                        <div class="row" id="toggleCalendar{{ $data }}"
-                                            style="cursor: pointer;">
-                                            <div class="col-md-11 bg-white mt-2">
-                                                <h5 class="fw-bold mt-2">
-                                                    {{ $data }}
-                                                </h5>
+                            @foreach ($users as $data => $value)
+                                <div class="col-md-12 bg-secondary bg-gradient rounded-3 mainCalendarDiv">
+                                    <div class="row" id="toggleCalendar{{ $data }}"
+                                        style="cursor: pointer;">
+                                        <div class="col-md-10 bg-secondary bg-gradient mt-2 text-white rounded-3">
+                                            <h5 class="fw-bold">
+                                                {{ $data }}
+                                            </h5>
+                                        </div>
+                                        <div class="col-md-2 d-flex justify-content-end align-items-center">
+                                            <div class="bg-secondary bg-gradient text-white rounded-3 me-2 toggle-dropdown"
+                                                data-target="#calendarContent{{ $data }}">
+                                                <i class="fa fa-caret-down toggleIcon{{ $data }}"></i>
                                             </div>
-                                            <div class="col-md-1 bg-white">
-                                                <div class="ms-3">
-                                                    <i class="fa fa-caret-down ms-2 toggleIcon{{ $data }}"></i>
-                                                </div>
+                                            <div class="bg-secondary bg-gradient text-white rounded-3 toggle-close"
+                                                data-target="#calendarContent{{ $data }}" data-departtaget = "#toggleCalendar{{ $data }}">
+                                                <i class="fa fa-times"></i>
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="calendarContent{{ $data }}" class="d-none mt-3 mb-3">
-                                        <!-- Your calendar or content goes here -->
-                                        <div class="container">
-                                            <div class="row" style="border-left:15px solid #6c757d;">
-                                                @foreach ($value as $val)
-                                                    @php
-                                                        // Fetching leave dates for the employee
-                                                        $employeeLeaves = DB::table('employee_leaves')
-                                                            ->where('employee_id', $val->id)
-                                                            ->get();
+                                </div>
+                                <div id="calendarContent{{ $data }}" class="d-none mt-3 mb-3 mainCalendarContentDiv">
+                                    <!-- Your calendar or content goes here -->
+                                    <div class="container">
+                                        <div class="row">
+                                            @foreach ($value as $val)
+                                                @php
+                                                    // Fetching leave dates for the employee
+                                                    $employeeLeaves = DB::table('employee_leaves')
+                                                        ->where('employee_id', $val->id)
+                                                        ->get();
 
-                                                        // Create an array of leave days
-                                                        $leaveDays = [];
-                                                        $currentMonth = \Carbon\Carbon::now()->month; // Get the current month
+                                                    // Create an array of leave days
+                                                    $leaveDays = [];
+                                                    $currentMonth = \Carbon\Carbon::now()->month; // Get the current month
 
-                                                        foreach ($employeeLeaves as $leave) {
-                                                            $fromDate = \Carbon\Carbon::parse($leave->from);
-                                                            $toDate = \Carbon\Carbon::parse($leave->to);
+                                                    foreach ($employeeLeaves as $leave) {
+                                                        $fromDate = \Carbon\Carbon::parse($leave->from);
+                                                        $toDate = \Carbon\Carbon::parse($leave->to);
 
-                                                            // Check if the leave falls within the current month
-                                                            if (
-                                                                $fromDate->month === $currentMonth ||
-                                                                $toDate->month === $currentMonth
-                                                            ) {
-                                                                // Generate all days between from and to date
-                                                                while ($fromDate->lte($toDate)) {
-                                                                    $leaveDays[] = $fromDate->day;
-                                                                    $fromDate->addDay();
-                                                                }
+                                                        // Check if the leave falls within the current month
+                                                        if (
+                                                            $fromDate->month === $currentMonth ||
+                                                            $toDate->month === $currentMonth
+                                                        ) {
+                                                            // Generate all days between from and to date
+                                                            while ($fromDate->lte($toDate)) {
+                                                                $leaveDays[] = $fromDate->day;
+                                                                $fromDate->addDay();
                                                             }
                                                         }
-                                                    @endphp
+                                                    }
+                                                @endphp
 
-                                                    <div class="col-md-1" style="padding-left:20px;align-self:center;">
-                                                        <div
-                                                            class="employee-profile rounded-pill leave-card text-white fw-bold">
-                                                            {{ strtoupper(substr($val->first_name, 0, 1)) }}{{ strtoupper(substr($val->last_name, 0, 1)) }}
-                                                        </div>
+                                                <div class="col-md-2" style="margin-top:20px;">
+                                                    <div
+                                                        class="employee-profile rounded-pill leave-card text-white fw-bold">
+                                                        {{ strtoupper(substr($val->first_name, 0, 1)) }}{{ strtoupper(substr($val->last_name, 0, 1)) }}
                                                     </div>
-                                                    <div class="col-md-11 mb-2">
-                                                        <div class="employee-name">{{ $val->first_name }}
-                                                            {{ $val->last_name }}</div>
-                                                        <div class="calendar">
-                                                            @for ($i = 1; $i <= \Carbon\Carbon::now()->daysInMonth; $i++)
-                                                                @php
-                                                                    // Check if the current day is a leave day
-                                                                    $isLeaveDay = in_array($i, $leaveDays);
-                                                                @endphp
+                                                    <div class="employee-name text-capitalize" style="font-weight:600;">{{ $val->first_name }} {{ $val->last_name }}</div>
+                                                </div>
+                                                <div class="col-md-10 mb-2">
+                                                    <div class="calendar">
+                                                        @php
 
-                                                                <div class="day mb-2"
-                                                                    style="{{ $isLeaveDay ? 'background-color: black; color: white;' : '' }}">
-                                                                    {{ $i }}
+                                                            $now = Carbon::now();
+                                                            $daysInMonth = $now->daysInMonth;
+                                                            $firstDayOfMonth = $now->startOfMonth()->dayOfWeek; // 0 (Sunday) to 6 (Saturday)
+                                                            $leaveDays = $leaveDays ?? []; // Ensure $leaveDays is set
+                                                        @endphp
+
+                                                        <div class="week-days d-flex justify-content-between">
+                                                            @foreach (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day)
+                                                                <div class="day-header" style="width: 14.28%; text-align: center;">
+                                                                    {{ $day }}
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+
+                                                        <div class="month-weeks">
+                                                            @php
+                                                                $dayCounter = 1; // Start from the first day of the month
+                                                            @endphp
+
+                                                            @for ($week = 0; $week < ceil(($daysInMonth + $firstDayOfMonth) / 7); $week++)
+                                                                <div class="week d-flex">
+                                                                    {{-- Fill empty slots for days before the first of the month --}}
+                                                                    @for ($day = 0; $day < 7; $day++)
+                                                                        @php
+                                                                            $currentDay = ($week * 7 + $day) - $firstDayOfMonth + 1;
+                                                                            $isLeaveDay = $currentDay > 0 && $currentDay <= $daysInMonth && in_array($currentDay, $leaveDays);
+                                                                        @endphp
+
+                                                                        @if ($currentDay > 0 && $currentDay <= $daysInMonth)
+                                                                            {{-- Valid day --}}
+                                                                            <div class="day mb-2 ms-2"
+                                                                                style="width: 14.28%; height: 50px; text-align: center; line-height: 50px; {{ $isLeaveDay ? 'background-color: black; color: white;' : '' }}">
+                                                                                {{ $currentDay }}
+                                                                            </div>
+                                                                        @else
+                                                                            {{-- Empty slot --}}
+                                                                            <div class="day empty-day ms-2" style="width: 14.28%; height: 50px;"></div>
+                                                                        @endif
+                                                                    @endfor
                                                                 </div>
                                                             @endfor
                                                         </div>
                                                     </div>
-                                                @endforeach
+                                                </div>
+                                                <hr/>
 
-                                            </div>
+                                            @endforeach
+
                                         </div>
                                     </div>
-                                @endforeach
-                                <!-- Collapsible Calendar Section -->
-                            </div>
+                                </div>
+                            @endforeach
+                            <!-- Collapsible Calendar Section -->
+                        </div>
+                        
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                        <script>
+                            $(document).ready(function () {
+                                // Event listener for Coworker dropdown
+                                $('select[aria-label="Add Coworker"]').on('change', function () {
+                                    const selectedValue = $(this).val();
+                                    filterData('coworker', selectedValue);
+                                });
 
-                            <script>
-                                // JavaScript to toggle calendar visibility for each department
-                                document.querySelectorAll('[id^="toggleCalendar"]').forEach(function(toggleElement) {
-                                    toggleElement.addEventListener('click', function() {
-                                        const departmentId = toggleElement.id.replace('toggleCalendar', '');
-                                        const calendarContent = document.getElementById('calendarContent' + departmentId);
-                                        const toggleIcon = document.querySelector('.toggleIcon' + departmentId);
+                                // Event listener for Team dropdown
+                                $('select[aria-label="Add Team"]').on('change', function () {
+                                    const selectedValue = $(this).val();
+                                    filterData('team', selectedValue);
+                                });
 
-                                        // Toggle the visibility of the calendar content
-                                        calendarContent.classList.toggle('d-none');
+                                // Event listener for Browse List dropdown
+                                $('select[aria-label="Browse List"]').on('change', function () {
+                                    const selectedValue = $(this).val();
+                                    filterData('browse_list', selectedValue);
+                                });
 
-                                        // Change the icon direction
-                                        if (calendarContent.classList.contains('d-none')) {
-                                            toggleIcon.classList.remove('fa-caret-up');
-                                            toggleIcon.classList.add('fa-caret-down');
-                                        } else {
-                                            toggleIcon.classList.remove('fa-caret-down');
-                                            toggleIcon.classList.add('fa-caret-up');
+                                // AJAX function for filtering
+                                function filterData(type, value) {
+                                    $.ajax({
+                                        url: "{{ route('admin.holidays') }}", // Same route as the holidays view
+                                        method: "GET",
+                                        data: {
+                                            type: type,
+                                            value: value,
+                                            _token: "{{ csrf_token() }}"  // CSRF Token for security
+                                        },
+                                        success: function (response) {
+                                            // Process and display the filtered data
+                                            if (response.calendarData) {
+                                                updateCalendarUI(response.calendarData);
+                                            }
+                                        },
+                                        error: function (xhr) {
+                                            console.error(xhr.responseText);
                                         }
                                     });
+                                }
+
+                                // Function to update the UI with filtered data
+                                function updateCalendarUI(calendarData) {
+                                    let container = $('#calendarContainer');
+                                    container.empty();
+
+                                    calendarData.forEach(item => {
+                                        let leaveDays = item.leaveDays;
+                                        let employee = item.employee;
+
+                                        let employeeInitials = employee.first_name.charAt(0).toUpperCase() + employee.last_name.charAt(0).toUpperCase();
+                                        let employeeName = `${employee.first_name} ${employee.last_name}`;
+
+                                        let calendarHtml = `
+                                            <div class="row mb-3">
+                                                <div class="col-md-2" style="margin-top: 20px;">
+                                                    <div class="employee-profile rounded-pill leave-card text-white fw-bold">
+                                                        ${employeeInitials}
+                                                    </div>
+                                                    <div class="employee-name text-capitalize" style="font-weight:600;">
+                                                        ${employeeName}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-10 mb-2">
+                                                    <div class="calendar">
+                                                        <div class="week-days d-flex justify-content-between">
+                                                            ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => `
+                                                                <div class="day-header" style="width: 14.28%; text-align: center;">
+                                                                    ${day}
+                                                                </div>
+                                                            `).join('')}
+                                                        </div>
+
+                                                        <div class="month-weeks">
+                                                            ${renderWeeks(leaveDays)}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr/>
+                                        `;
+
+                                        container.append(calendarHtml);
+// Now we handle hiding the content properly
+const targetSelectors = document.getElementsByClassName('mainCalendarDiv');
+        const departmentSelectors = document.getElementsByClassName('mainCalendarContentDiv');
+
+        // Loop through and hide each element individually
+        Array.from(targetSelectors).forEach(element => {
+            element.style.display = 'none';
+        });
+
+        Array.from(departmentSelectors).forEach(element => {
+            element.style.display = 'none';
+        });
+                                    });
+                                }
+
+                                // Function to render the weeks and days in the calendar
+                                function renderWeeks(leaveDays) {
+                                    let now = moment();
+                                    let daysInMonth = now.daysInMonth();
+                                    let firstDayOfMonth = now.startOf('month').day(); // 0 (Sunday) to 6 (Saturday)
+
+                                    let weeksHtml = '';
+                                    let dayCounter = 1;
+
+                                    for (let week = 0; week < Math.ceil((daysInMonth + firstDayOfMonth) / 7); week++) {
+                                        weeksHtml += '<div class="week d-flex">';
+
+                                        for (let day = 0; day < 7; day++) {
+                                            let currentDay = dayCounter - firstDayOfMonth + 1;
+                                            let isLeaveDay = leaveDays.includes(currentDay);
+
+                                            if (currentDay > 0 && currentDay <= daysInMonth) {
+                                                weeksHtml += `
+                                                    <div class="day mb-2 ms-2" style="width: 14.28%; height: 50px; text-align: center; line-height: 50px; ${isLeaveDay ? 'background-color: black; color: white;' : ''}">
+                                                        ${currentDay}
+                                                    </div>
+                                                `;
+                                                dayCounter++;
+                                            } else {
+                                                weeksHtml += '<div class="day empty-day ms-2" style="width: 14.28%; height: 50px;"></div>';
+                                            }
+                                        }
+
+                                        weeksHtml += '</div>';
+                                    }
+
+                                    return weeksHtml;
+                                }
+                            });
+                        </script>
+
+                        <script>
+                            // JavaScript to toggle calendar visibility for each department
+                            document.querySelectorAll('.toggle-dropdown').forEach(function(toggleElement) {
+                                toggleElement.addEventListener('click', function() {
+                                    const targetSelector = toggleElement.getAttribute('data-target');
+                                    const calendarContent = document.querySelector(targetSelector);
+                                    const departmentId = targetSelector.replace('#calendarContent', '');
+                                    const toggleIcon = document.querySelector(`.toggleIcon${departmentId}`);
+
+                                    // Toggle the visibility of the calendar content
+                                    calendarContent.classList.toggle('d-none');
+
+                                    // Change the icon direction
+                                    if (calendarContent.classList.contains('d-none')) {
+                                        toggleIcon.classList.remove('fa-caret-up');
+                                        toggleIcon.classList.add('fa-caret-down');
+                                    } else {
+                                        toggleIcon.classList.remove('fa-caret-down');
+                                        toggleIcon.classList.add('fa-caret-up');
+                                    }
                                 });
-                            </script>
+                            });
+
+                            // JavaScript to handle the close button functionality
+                            document.querySelectorAll('.toggle-close').forEach(function(closeBtn) {
+                                closeBtn.addEventListener('click', function() {
+                                    const targetSelector = closeBtn.getAttribute('data-target');
+                                    const departmentSelector = closeBtn.getAttribute('data-departtaget');
+                                    const calendarContent = document.querySelector(targetSelector);
+                                    const toggleCalendar = document.querySelector(departmentSelector);
+
+                                    // Hide the calendar content
+                                    if (calendarContent) {
+                                        calendarContent.classList.add('d-none');
+                                    }
+
+                                    // Hide the toggleCalendar row
+                                    if (toggleCalendar) {
+                                        toggleCalendar.classList.add('d-none');
+                                    }
+                                });
+                            });
+                        </script>
 
 
-                            <style>
-                                /* Custom styles for the file input field */
-                                .custom-file-upload {
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    flex-direction: column;
-                                    border: 2px dashed #ccc;
-                                    border-radius: 5px;
-                                    padding: 30px;
-                                    text-align: center;
-                                    cursor: pointer;
-                                    position: relative;
-                                    transition: border-color 0.3s ease;
-                                }
 
-                                .custom-file-upload:hover {
-                                    border-color: #007bff;
-                                }
+                        <style>
+                            /* Custom styles for the file input field */
+                            .custom-file-upload {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                flex-direction: column;
+                                border: 2px dashed #ccc;
+                                border-radius: 5px;
+                                padding: 30px;
+                                text-align: center;
+                                cursor: pointer;
+                                position: relative;
+                                transition: border-color 0.3s ease;
+                            }
 
-                                .file-input {
-                                    position: absolute;
-                                    top: 0;
-                                    left: 0;
-                                    width: 100%;
-                                    height: 100%;
-                                    opacity: 0;
-                                    cursor: pointer;
-                                }
+                            .custom-file-upload:hover {
+                                border-color: #007bff;
+                            }
 
-                                .file-icon {
-                                    font-size: 40px;
-                                    color: #007bff;
-                                }
+                            .file-input {
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                width: 100%;
+                                height: 100%;
+                                opacity: 0;
+                                cursor: pointer;
+                            }
 
-                                .file-text {
-                                    margin-top: 10px;
-                                    font-size: 14px;
-                                    color: #666;
-                                }
+                            .file-icon {
+                                font-size: 40px;
+                                color: #007bff;
+                            }
 
-                                /* File upload text and icon on hover */
-                                .custom-file-upload:hover .file-text {
-                                    color: #007bff;
-                                }
-                            </style>
+                            .file-text {
+                                margin-top: 10px;
+                                font-size: 14px;
+                                color: #666;
+                            }
 
-                            <style>
-                                .rounded-circle {
-                                    border-radius: 50% !important;
-                                    width: 100%;
-                                    height: 100%;
-                                }
+                            /* File upload text and icon on hover */
+                            .custom-file-upload:hover .file-text {
+                                color: #007bff;
+                            }
 
-                                .leave-card {
+                            .rounded-circle {
+                                border-radius: 50% !important;
+                                width: 100%;
+                                height: 100%;
+                            }
 
-                                    width: 40px;
-                                    height: 40px;
-                                    padding: 9px;
-                                    top: 11px;
-                                }
+                            .leave-card {
 
-                                .employee-profile {
-                                    background: #ff9b44;
-                                }
+                                width: 40px;
+                                height: 40px;
+                                padding: 9px;
+                                top: 11px;
+                            }
 
-                                .day {
-                                    width: 25px;
-                                    height: 25px;
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    border-radius: 5px;
-                                    background-color: #e0e0e0;
-                                }
+                            .employee-profile {
+                                background: #ff9b44;
+                            }
 
-                                .day.present {
-                                    background-color: hsl(223.33deg 28.12% 87.45%);
-                                    color: black;
-                                }
+                            .day {
+                                width: 25px;
+                                height: 25px;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                border-radius: 5px;
+                                background-color: #e0e0e0;
+                            }
 
-                                .day.absent {
-                                    background-color: #f39c12;
-                                    color: white;
-                                }
+                            .day.present {
+                                background-color: hsl(223.33deg 28.12% 87.45%);
+                                color: black;
+                            }
 
-                                .day.sick {
-                                    border: 2px solid red;
-                                    color: red;
-                                }
+                            .day.absent {
+                                background-color: #f39c12;
+                                color: white;
+                            }
 
-                                .calendar-header {
-                                    display: grid;
-                                    grid-template-columns: repeat(30, 30px);
-                                    gap: 5px;
-                                    margin-bottom: 10px;
-                                }
+                            .day.sick {
+                                border: 2px solid red;
+                                color: red;
+                            }
 
-                                .day-header {
-                                    font-weight: bold;
-                                    text-align: center;
-                                }
+                            .calendar-header {
+                                display: grid;
+                                grid-template-columns: repeat(30, 30px);
+                                gap: 5px;
+                                margin-bottom: 10px;
+                            }
 
-                                .calendar {
-                                    display: flex;
-                                }
+                            .day-header {
+                                font-weight: bold;
+                                text-align: center;
+                            }
 
-                                .input-group-text {
+                            /* .calendar {
+                                display: flex;
+                            } */
 
-                                    border: none;
-                                    cursor: pointer;
-                                }
+                            .input-group-text {
 
-                                .input-group-text i {
-                                    color: #000;
-                                    /* Set the icon color */
-                                }
+                                border: none;
+                                cursor: pointer;
+                            }
 
-                                .form-control {
-                                    border-right: none;
-                                }
+                            .input-group-text i {
+                                color: #000;
+                                /* Set the icon color */
+                            }
 
-                                .input-group .form-control:focus {
-                                    box-shadow: none;
-                                }
-                            </style>
+                            .form-control {
+                                border-right: none;
+                            }
+
+                            .input-group .form-control:focus {
+                                box-shadow: none;
+                            }
+                        </style>
 
                     </div>
                     <!-- Page Content -->
+                </div>
+
+                <div id="overview" class="pro-overview tab-pane fade show active">
+
+                    <div class="content container-fluid">
+
+                        <div class="page-header">
+                                <h3 class="page-title">Staff Leave Overview</h3>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-striped custom-table mb-0 datatable">
+                                        <thead>
+                                            <tr>
+                                                <th>First Name</th>
+                                                <th>Last Name</th>
+                                                <th>Designation</th>
+                                                <th>Department</th>
+                                                <th>Contact</th>
+                                                <th>Leave Account</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($employees as $data)
+                                            <tr>
+                                                <td>{{$data->user->first_name}}</td>
+                                                <td>{{$data->user->last_name}}</td>
+                                                <td>{{$data->user->position}}</td>
+                                                <td>{{$data->user->department}}</td>
+                                                <td><b>Phone No.:</b> {{$data->user->phone}} <br/> <b>Email:</b> {{$data->user->email}}</td>
+                                                @php
+                                                $annualLeave = $data->user->leave_count;
+                                                    $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->user->id)->where('status',3)
+                                            ->count();
+                                                    $remainingLeave = $annualLeave - $usedAnnualLeave;
+                                                @endphp
+                                                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+                                                <script>
+                                                    document.addEventListener("DOMContentLoaded", function() {
+                                                        var ctx = document.getElementById('leaveProgress_'+{{$data->user->id}}).getContext('2d');
+
+                                                        // Get dynamic values
+                                                        var usedLeave = {{$usedAnnualLeave}};
+                                                        var totalLeave = {{$data->user->leave_count ?? 0}};
+                                                        var remainingLeave = totalLeave - usedLeave;
+
+                                                        // Create the chart
+                                                        new Chart(ctx, {
+                                                            type: 'doughnut',
+                                                            data: {
+                                                                labels: ['Used Leave', 'Remaining Leave'],
+                                                                datasets: [{
+                                                                    data: [usedLeave, remainingLeave > 0 ? remainingLeave : 0],
+                                                                    backgroundColor: ['#4CAF50', '#E0E0E0'], // Colors for used and remaining
+                                                                    borderWidth: 0
+                                                                }]
+                                                            },
+                                                            options: {
+                                                                responsive: true,
+                                                                cutout: '70%', // Creates the inner gap for text
+                                                                plugins: {
+                                                                    tooltip: { enabled: false },
+                                                                    legend: { display: false }
+                                                                }
+                                                            }
+                                                        });
+                                                    });
+                                                </script>
+                                                <td class="text-danger">
+                                                    <div style="position: relative; width: 100px; height: 100px;">
+                                                        <canvas id="leaveProgress_{{$data->user->id}}"></canvas>
+                                                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 14px;">
+                                                            {{$usedAnnualLeave}}/{{$data->user->leave_count ?? 0}}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -775,7 +1070,6 @@
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.7.0/main.min.js"></script>
             <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.7.0/main.min.css" rel="stylesheet">
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
             <script>
                 $(document).ready(function() {

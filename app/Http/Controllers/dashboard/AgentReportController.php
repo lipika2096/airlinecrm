@@ -16,14 +16,14 @@ class AgentReportController extends Controller
 {
     public function airlineReport(Request $request)
     {
-        $agents = Agent::all();
+        $agents = Agent::where('deleted_at', 'null')->get();
         $agent_id = $request->agent_id;
         $specialFares = SpecialFare::where('agent_id', $request->agent_id)
                         ->groupBy('airline_id')
                         ->get();
         $agent_account= AgentAccount::where('agent_id', $request->agent_id)->get();
         $agent_account_detail = AgentAccount::where('agent_id', $request->agent_id)->where('acc_no', '!=', "")->first();
-                        
+
         return view('admin.agent-reports', compact('agents','agent_id','specialFares','agent_account','agent_account_detail'));
     }
 

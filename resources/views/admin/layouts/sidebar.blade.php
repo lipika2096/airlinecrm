@@ -384,6 +384,9 @@
                             @if (auth()->user()->hasRole('admin'))
 
                                  <li><a class="" href="{{ route('admin.agents') }}">Travel Partners List</a></li>
+                                 <li>
+                                    <a class="" href="{{route('admin.deleted.agents')}}">Deleted Travel Agents</a>
+                                 </li>
                                 <li><a class="" href="{{ route('admin.agent-library') }}">Library</a></li>
                                 <li><a class="" href="{{ route('admin.agent-reports') }}">Reports</a></li>
                                 <!--<li><a class="" href="{{ route('admin.task-reports') }}">Reports</a></li>-->

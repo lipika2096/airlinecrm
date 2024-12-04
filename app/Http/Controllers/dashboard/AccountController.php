@@ -9,18 +9,18 @@ use Illuminate\Http\Request;
 
 class AccountController extends Controller
 {
-    
+
     public function account()
     {
         $accounts = AgentAccount::where('acc_no' ,'!=', NULL)->with('agent')->get();
-        $agents = Agent::all();
+        $agents = Agent::where('deleted_at', 'null')->get();
         return view('admin.add-account', compact('accounts','agents'));
     }
 
     public function viewAccount()
     {
         $accounts = AgentAccount::where('acc_no' ,'!=', NULL)->with('agent')->get();
-        $agents = Agent::all();
+        $agents = Agent::where('deleted_at', 'null')->get();
         return view('admin.view-accounts', compact('accounts','agents'));
     }
 
@@ -79,6 +79,6 @@ class AccountController extends Controller
         $newbalance = AgentAccount::where('agent_id', $account->agent_id)->latest()->first();
         return view('admin.account-invoice-view', compact('account', 'debitamount', 'creditamount', 'newbalance'));
     }
-    
+
 
 }

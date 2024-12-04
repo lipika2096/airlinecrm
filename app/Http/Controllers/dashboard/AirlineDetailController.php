@@ -21,17 +21,17 @@ class AirlineDetailController extends Controller
     // Store a newly created resource in storage
     public function store(Request $request)
     {
-        $request->validate([
-            'airline_id' => 'required|exists:airlines,id',
-            'airline_ticketing_code' => 'required|string|max:255',
-            'airline_contact_details' => 'required|string|max:255',
-            'rules_do' => 'required|string|max:255',
-            'rules_dont' => 'required|string|max:255',
-            'standard_cancellation_charges' => 'required|string|max:255',
-            'date_change_charges' => 'required|string|max:255',
-            'routes_flown_from' => 'required|string|max:255',
-            'routes_flown_to' => 'required|string|max:255',
-        ]);
+        // $request->validate([
+        //     'airline_id' => 'required|exists:airlines,id',
+        //     'airline_ticketing_code' => 'required|string|max:255',
+        //     'airline_contact_details' => 'required|string|max:255',
+        //     'rules_do' => 'required|string|max:255',
+        //     'rules_dont' => 'required|string|max:255',
+        //     'standard_cancellation_charges' => 'required|string|max:255',
+        //     'date_change_charges' => 'required|string|max:255',
+        //     'routes_flown_from' => 'required|string|max:255',
+        //     'routes_flown_to' => 'required|string|max:255',
+        // ]);
 
         AirlineDetail::create($request->all());
 
@@ -49,17 +49,17 @@ class AirlineDetailController extends Controller
     // Update the specified resource in storage
     public function update(Request $request, AirlineDetail $airlineDetail)
     {
-        $request->validate([
-            'airline_id' => 'required|exists:airlines,id',
-            'airline_ticketing_code' => 'required|string|max:255',
-            'airline_contact_details' => 'required|string|max:255',
-            'rules_do' => 'required|string|max:255',
-            'rules_dont' => 'required|string|max:255',
-            'standard_cancellation_charges' => 'required|string|max:255',
-            'date_change_charges' => 'required|string|max:255',
-            'routes_flown_from' => 'required|string|max:255',
-            'routes_flown_to' => 'required|string|max:255',
-        ]);
+        // $request->validate([
+        //     'airline_id' => 'required|exists:airlines,id',
+        //     'airline_ticketing_code' => 'required|string|max:255',
+        //     'airline_contact_details' => 'required|string|max:255',
+        //     'rules_do' => 'required|string|max:255',
+        //     'rules_dont' => 'required|string|max:255',
+        //     'standard_cancellation_charges' => 'required|string|max:255',
+        //     'date_change_charges' => 'required|string|max:255',
+        //     'routes_flown_from' => 'required|string|max:255',
+        //     'routes_flown_to' => 'required|string|max:255',
+        // ]);
 
         $airlineDetail->update($request->all());
 
@@ -78,5 +78,5 @@ class AirlineDetailController extends Controller
                 ->with('error', 'Deletion failed: ' . $e->getMessage());
         }
     }
-    
+
 }

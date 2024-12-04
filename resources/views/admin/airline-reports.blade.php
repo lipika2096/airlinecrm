@@ -51,7 +51,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="table-responsive">
-                        <table class="table table-striped custom-table mb-0">
+                        <table class="table table-striped custom-table mb-0 datatable">
                             <thead>
                                 <tr>
                                     <th>No.</th>
@@ -63,7 +63,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($specialFares as $index => $specialFare)
+                                @foreach($specialFares as $index => $specialFare)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $specialFare->airline->airline_name ?? 'Null' }}</td>
@@ -79,11 +79,7 @@
                                             </div>
                                         </td>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="11" class="text-center">No data available</td>
-                                    </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

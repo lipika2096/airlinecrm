@@ -236,6 +236,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
     Route::post('agent/conversation/store', [AgentController::class, 'conversationStore'])->name('agent.conversation.store');
 
     Route::get('agent/update/{id}', [AgentController::class, 'update'])->name('agent.update');
+    Route::delete('agent/delete/{id}', [AgentController::class, 'delete'])->name('agent.delete');
     Route::post('agent/target/update/{id}', [AgentController::class, 'targetUpdate'])->name('agent.target.update');
     Route::post('agent/product/update/{id}', [AgentController::class, 'productUpdate'])->name('agent.product.update');
     Route::post('agent/pli/update/{id}', [AgentController::class, 'pliUpdate'])->name('agent.pli.update');
@@ -266,6 +267,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
     Route::post('airlines/approved-staff/', [AirlineController::class, 'approvedStaffStore'])->name('airline.approvedstaff.store');
     Route::post('airlines/approved-staff/upadte/{id}', [AirlineController::class, 'approvedStaffUpdate'])->name('airline.approvedstaff.update');
     Route::get('agent', [AgentController::class, 'index'])->name('agents');
+    Route::get('deleted/agent', [AgentController::class, 'deletedAgent'])->name('deleted.agents');
 
     Route::patch('airlines/specialfares/update/{id}', [AirlineController::class, 'specialfaresUpdate'])->name('airline.specialfares.update');
 

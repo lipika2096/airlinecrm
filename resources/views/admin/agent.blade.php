@@ -23,10 +23,13 @@
                             <li class="breadcrumb-item active">Travel Agent List</li>
                         </ul>
                     </div>
+
+                    @if (!request()->is('deleted/agent'))
                     <div class="col-auto float-end ms-auto">
                         <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_agent"><i
                                 class="fa fa-plus"></i> Add Travel Agent</a>
                     </div>
+                    @endif
                 </div>
             </div>
             <!-- /Page Header -->
@@ -57,10 +60,9 @@
                                                     class="action-icon" style="margin-right: 10px;">
                                                     <i class="fa fa-eye"></i>
                                                 </a>
-                                                <!--<a href="{{ route('admin.agent.update', ['id' => $agent->id]) }}"-->
-                                                <!--    class="action-icon" style="margin-right: 10px;">-->
-                                                <!--    <i class="fa fa-edit"></i>-->
-                                                <!--</a>-->
+                                                @if (!request()->is('admin/deleted/agent'))
+                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#delete_agent{{$agent->id}}"><i class="fa fa-trash m-r-5"></i></a>
+                                                @endif
                                                 {{-- <form action="" method="POST" style="display:inline;">
                                                 <a class="action-icon" href="" data-bs-toggle="modal"
                                                 data-bs-target="#edit_agent{{ $agent->id }}"d
@@ -79,6 +81,34 @@
 
                                         </td>
                                     </tr>
+
+                                    <!-- Delete Agent Modal -->
+                                    <div id="delete_agent{{$agent->id}}" class="modal custom-modal fade" role="dialog">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Delete Leave Type</h5>
+                                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form action="{{route('admin.agent.delete',$agent->id)}}" method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <p>Are you sure you want to delete
+                                                            <strong>{{$agent->company_name}}</strong>  Agent?
+                                                        </p>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- /Delete Agent Modal -->
                                 @endforeach
                                 <!-- Repeat for other agents -->
                             </tbody>
@@ -153,6 +183,13 @@
                                 <div class="form-group">
                                     <label class="col-form-label">Country</label>
                                     <input class="form-control" type="text" name="country">
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-form-label">Company Registration No.</label>
+                                    <input class="form-control" type="text" name="company_registration_number">
                                 </div>
                             </div>
 

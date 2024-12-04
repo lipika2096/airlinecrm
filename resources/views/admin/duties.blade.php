@@ -30,7 +30,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="table-responsive">
-                                <table class="table table-striped custom-table mb-0">
+                                <table class="table table-striped custom-table mb-0 datatable">
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -77,7 +77,7 @@
                                                             <label>Duties Name <span class="text-danger">*</span></label>
                                                             <input class="form-control" name="name" type="text" value="{{$duty->name}}">
                                                         </div>
-                    
+
                                                         <div class="submit-section">
                                                             <button type="submit" class="btn btn-primary submit-btn">Submit</button>
                                                         </div>
@@ -143,7 +143,7 @@
                 },
                 success: function(response) {
                     //alert('Duty status updated successfully!');
-                    
+
                     window.location.reload();
                 },
                 error: function(response) {

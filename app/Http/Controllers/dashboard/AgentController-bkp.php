@@ -442,7 +442,7 @@ public function targetStore(Request $request)
         $fareConditions = FareCondition::where('agent_id', $id)->get();
         $group = Group::where('agent_id', $id)->get();
         $commissions = Commission::all();
-        $agents = Agent::all();
+        $agents = Agent::where('deleted_at', 'null')->get();
         $airlines = Airline::all();
 
 

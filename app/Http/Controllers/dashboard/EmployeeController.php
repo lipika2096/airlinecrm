@@ -116,7 +116,7 @@ class EmployeeController extends Controller
     }
 
     public function viewUserRights(){
-        $department_rights = DepartmentRight::get();
+        $department_rights = DepartmentRight::where('status',1)->get();
          $department = Department::latest()->get();
         $duties = Duty::latest()->get();
 
@@ -525,41 +525,124 @@ public function leavesStaffStore(Request $request)
         return view('admin.employee-profile', compact('employeeProfile'));
     }
 
-    public function holidays()
-    {
+    // public function holidays()
+    // {
 
 
-        $holidays = Holiday::latest()->get();
-        $total_employee = Client::count();
-        $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
+    //     $holidays = Holiday::latest()->get();
+    //     $total_employee = Client::count();
+    //     $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
+    //     ->get(['clients.*', 'users.*']);
+    //     $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
+    //                                              ->whereDate('to', '>=', now()->toDateString())->count();
+    //     $total_pending_leaves = EmployeeLeave::where('status', 2)->count();
+    //     //$employee_leaves = EmployeeLeave::latest()->get();
+    //     $employee_leaves = EmployeeLeave::latest()->get();
+    //     // Number of employees on leave today
+    //     $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
+    //                                              ->whereDate('to', '>=', now()->toDateString())
+    //                                              ->count();
+    //     // Number of present employees today
+    //     $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
+
+    //     $leavetypes = LeaveType::where('status',1)->get();
+
+    //     $departments = Department::get();
+    //     $users = User::where('department', '!=', null)->get()->groupBy('department');
+
+
+
+    //     if ($departments->isEmpty()) {
+    //         return response()->json(['error' => 'No departments found'], 404);
+    //     }
+    //     // Add your logic for leaves admin view
+    //     return view('admin.holidays', compact('total_employee','employees','total_pending_leaves','total_leaves','employee_leaves','noofpresentemployeestoday', 'holidays', 'leavetypes', 'departments', 'users')); // Example view path, adjust as per your structure
+
+
+    // }
+
+    public function holidays(Request $request)
+{
+    $holidays = Holiday::latest()->get();
+    $total_employee = Client::count();
+    $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
         ->get(['clients.*', 'users.*']);
-        $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
-                                                 ->whereDate('to', '>=', now()->toDateString())->count();
-        $total_pending_leaves = EmployeeLeave::where('status', 2)->count();
-        //$employee_leaves = EmployeeLeave::latest()->get();
-        $employee_leaves = EmployeeLeave::latest()->get();
-        // Number of employees on leave today
-        $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
-                                                 ->whereDate('to', '>=', now()->toDateString())
-                                                 ->count();
-        // Number of present employees today
-        $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
+    $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
+        ->whereDate('to', '>=', now()->toDateString())->count();
+    $total_pending_leaves = EmployeeLeave::where('status', 2)->count();
+    $employee_leaves = EmployeeLeave::latest()->get();
+    $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
+        ->whereDate('to', '>=', now()->toDateString())
+        ->count();
+    $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
+    $leavetypes = LeaveType::where('status', 1)->get();
+    $departments = Department::get();
+    $users = User::where('department', '!=', null)->get()->groupBy('department');
 
-        $leavetypes = LeaveType::where('status',1)->get();
+    // If this is an AJAX request
+    if ($request->ajax()) {
+        $type = $request->get('type'); // 'coworker', 'team', or 'browse_list'
+        $value = $request->get('value'); // Selected value from the dropdown
 
-        $departments = Department::get();
-        $users = User::where('department', '!=', null)->get()->groupBy('department');
+        $filteredData = [];
 
-
-
-        if ($departments->isEmpty()) {
-            return response()->json(['error' => 'No departments found'], 404);
+        if ($type === 'coworker') {
+            // Filter data based on coworker (employee ID)
+            $filteredData = User::where('id', $value)->get();
+        } elseif ($type === 'team') {
+            // Filter data based on team (department)
+            $filteredData = User::where('department', $value)->get();
+        } elseif ($type === 'browse_list') {
+            // Filter data based on browse list (user ID)
+            $filteredData = User::where('id', $value)->get();
         }
-        // Add your logic for leaves admin view
-        return view('admin.holidays', compact('total_employee','employees','total_pending_leaves','total_leaves','employee_leaves','noofpresentemployeestoday', 'holidays', 'leavetypes', 'departments', 'users')); // Example view path, adjust as per your structure
 
+        // Prepare filtered employee leave data for calendar display
+        $calendarData = [];
+        foreach ($filteredData as $employee) {
+            // Fetching leave dates for the employee
+            $employeeLeaves = DB::table('employee_leaves')
+                ->where('employee_id', $employee->id)
+                ->get();
 
+            // Create an array of leave days
+            $leaveDays = [];
+            $currentMonth = \Carbon\Carbon::now()->month; // Get the current month
+
+            foreach ($employeeLeaves as $leave) {
+                $fromDate = \Carbon\Carbon::parse($leave->from);
+                $toDate = \Carbon\Carbon::parse($leave->to);
+
+                // Check if the leave falls within the current month
+                if (
+                    $fromDate->month === $currentMonth ||
+                    $toDate->month === $currentMonth
+                ) {
+                    // Generate all days between from and to date
+                    while ($fromDate->lte($toDate)) {
+                        $leaveDays[] = $fromDate->day;
+                        $fromDate->addDay();
+                    }
+                }
+            }
+
+            $calendarData[] = [
+                'employee' => $employee,
+                'leaveDays' => $leaveDays,
+            ];
+        }
+
+        return response()->json(['calendarData' => $calendarData]);
     }
+
+    // For the normal view (non-AJAX request)
+    if ($departments->isEmpty()) {
+        return response()->json(['error' => 'No departments found'], 404);
+    }
+
+    return view('admin.holidays', compact('total_employee', 'employees', 'total_pending_leaves', 'total_leaves', 'employee_leaves', 'noofpresentemployeestoday', 'holidays', 'leavetypes', 'departments', 'users'));
+}
+
     public function holidayStore(Request $request)
     {
         // Validate the request

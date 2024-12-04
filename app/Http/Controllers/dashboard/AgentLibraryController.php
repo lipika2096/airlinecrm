@@ -17,7 +17,7 @@ class AgentLibraryController extends Controller
 {
     public function index()
     {
-        $agents = Agent::all();
+        $agents = Agent::where('deleted_at', 'null')->get();
         $libraries = AgentLibrary::with('agent')->get(); // Fetch libraries with related airlines
         return view('admin.agent-library', compact('agents', 'libraries'));
     }

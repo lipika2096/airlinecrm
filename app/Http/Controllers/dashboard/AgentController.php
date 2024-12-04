@@ -39,9 +39,17 @@ class AgentController extends Controller
     public function index()
     {
         $designation = Designation::latest()->get();
-        $agents = Agent::get();
+        $agents = Agent::where('deleted_at', 'null')->orWhere('deleted_at', null)->get();
         return view('admin.agent', compact('agents', 'designation'));
     }
+
+    public function deletedAgent()
+    {
+        $designation = Designation::latest()->get();
+        $agents = Agent::where('deleted_at', '!=', 'null') ->orWhere('deleted_at', '!=', null)->get();
+        return view('admin.agent', compact('agents', 'designation'));
+    }
+
 
     public function update($id)
     {
@@ -54,6 +62,18 @@ class AgentController extends Controller
         $agentProduct = AgentProductsType::latest()->where('agent_id', $id)->get();
         $agentConversation = AgentConversation::latest()->get();
         return view('admin.edit-agent', compact('agent', 'designation', 'agentAccounts','agentPli','agentProv','agentTarget','agentProduct','agentConversation'));
+    }
+
+
+    public function delete($id)
+    {
+        $designation = Designation::latest()->get();
+        $agents = Agent::find($id);
+        $agents->update([
+            'deleted_at' => now()
+        ]);
+
+        return redirect()->back();
     }
 
     public function store(Request $request)
@@ -86,19 +106,21 @@ class AgentController extends Controller
         $agent->discount = $request->discount;
         $agent->remarks = $request->remarks;
         $agent->account_code = $request->account_code;
-// dd($agent);
+        $agent->company_registration_no = $request->company_registration_number;
         $agent->save();
-        return redirect()->route('admin.agents')->with('success', 'Agent added successfully');
+        toastr()->success('Agent added successfully');
+        return redirect()->route('admin.agents');
     } catch (\Exception $e) {
         // Log the error message
         Log::error('Error adding agent: ' . $e->getMessage());
-        return redirect()->back()->with('error', 'There was an error adding the agent. Please try again.');
+        toastr()->error('There was an error adding the agent. Please try again.');
+        return redirect()->back();
     }
 }
 
 public function caseHistorySearch(Request $request)
     {
-        $agents = Agent::all();
+        $agents = Agent::where('deleted_at', 'null')->get();
 
         // Get input values from the request
         $caseId = $request->input('id');
@@ -610,7 +632,7 @@ public function targetStore(Request $request)
         $fareConditions = FareCondition::where('agent_id', $id)->get();
         $group = Group::where('agent_id', $id)->get();
         $commissions = Commission::all();
-        $agents = Agent::all();
+        $agents = Agent::where('deleted_at', 'null')->get();
         $airlines = Airline::all();
 
 

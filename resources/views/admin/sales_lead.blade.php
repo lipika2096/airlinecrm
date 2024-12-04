@@ -80,27 +80,27 @@
                                                     @csrf
 
                     <div class="form-group">
-                        <label>Name of Company<span class="text-danger">*</span></label>
+                        <label>Name of Company</label>
                         <input class="form-control" name="company_name" value="{{$data->company_name}}" type="text" required>
                     </div>
                     <div class="form-group">
-                        <label>Website<span class="text-danger">*</span></label>
+                        <label>Website</label>
                         <input class="form-control" name="website" value="{{$data->website}}" type="text" required>
                     </div>
                     <div class="form-group">
-                        <label>Email Id<span class="text-danger">*</span></label>
+                        <label>Email Id</label>
                         <input class="form-control" name="email" type="email" value="{{$data->email_id}}" required>
                     </div>
                     <div class="form-group">
-                        <label>Phone No.<span class="text-danger">*</span></label>
+                        <label>Phone No.</label>
                         <input class="form-control" name="phone" type="text" value="{{$data->phone}}" required>
                     </div>
                     <div class="form-group">
-                        <label>Contact Person<span class="text-danger">*</span></label>
+                        <label>Contact Person</label>
                         <input class="form-control" name="contact_person" value="{{$data->contact_person}}" type="text" required>
                     </div>
                     <div class="form-group">
-                        <label>Category<span class="text-danger">*</span></label>
+                        <label>Category</label>
                         <input class="form-control" name="category" value="{{$data->category}}"  type="text" required>
                     </div>
                                                     <div class="submit-section">
@@ -137,27 +137,27 @@
                     @csrf
 
                     <div class="form-group">
-                        <label>Name of Company<span class="text-danger">*</span></label>
+                        <label>Name of Company</label>
                         <input class="form-control" name="company_name" type="text" required>
                     </div>
                     <div class="form-group">
-                        <label>Website<span class="text-danger">*</span></label>
+                        <label>Website</label>
                         <input class="form-control" name="website" type="text" required>
                     </div>
                     <div class="form-group">
-                        <label>Email Id<span class="text-danger">*</span></label>
+                        <label>Email Id</label>
                         <input class="form-control" name="email" type="email" required>
                     </div>
                     <div class="form-group">
-                        <label>Phone No.<span class="text-danger">*</span></label>
+                        <label>Phone No.</label>
                         <input class="form-control" name="phone" type="text" required>
                     </div>
                     <div class="form-group">
-                        <label>Contact Person<span class="text-danger">*</span></label>
+                        <label>Contact Person</label>
                         <input class="form-control" name="contact_person" type="text" required>
                     </div>
                     <div class="form-group">
-                        <label>Category<span class="text-danger">*</span></label>
+                        <label>Category</label>
                         <input class="form-control" name="category" type="text" required>
                     </div>
 

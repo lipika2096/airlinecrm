@@ -20,6 +20,7 @@
                             <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
                             <li class="breadcrumb-item active">Profile</li>
                         </ul>
+                        <p class="d-inline text-dark font-weight-bolder">Welcome to  <b class="d-inline text-capitalize">{{ $agent->company_name }}</b> profile</p>
                     </div>
                 </div>
             </div>

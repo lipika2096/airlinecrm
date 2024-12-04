@@ -45,7 +45,7 @@
                                 <label for="to_date">To Date</label>
                                 <input type="date" name="to_date" id="to_date" class="form-control" value="{{ request('to_date') }}">
                             </div>
-                          
+
                         </div>
 
 
@@ -77,7 +77,7 @@
                             </div>
                                 </div>
                             </div>
-                           
+
                     </form>
                 </div>
             </div>
@@ -88,7 +88,7 @@
                 <div class="col-md-12">
                     <div class="table-responsive">
                         @if($reportType === 'Holidays')
-                            <table class="table table-striped custom-table mb-0">
+                            <table class="table table-striped custom-table mb-0 datatable">
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -98,22 +98,18 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($staffReports as $index => $report)
+                                    @foreach($staffReports as $index => $report)
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $report->title }}</td>
                                             <td>{{ $report->holiday_date }}</td>
                                             <td>{{ \Carbon\Carbon::parse($report->holiday_date)->format('l') }}</td>
                                         </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="4">No records found.</td>
-                                        </tr>
-                                    @endforelse
+                                    @endforeach
                                 </tbody>
                             </table>
                         @else
-                        <table class="table table-striped custom-table mb-0">
+                        <table class="table table-striped custom-table mb-0 datatable">
                                 <thead>
                                     <tr>
                                         <th>No.</th>
@@ -136,7 +132,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($staffReports as $index => $report)
+                                    @foreach($staffReports as $index => $report)
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
                                             @if($reportType === 'On Leave')
@@ -170,11 +166,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="11" class="text-center">No data available</td>
-                                        </tr>
-                                    @endforelse
+                                    @endforeach
                                 </tbody>
                             </table>
                         @endif

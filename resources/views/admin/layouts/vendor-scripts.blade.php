@@ -41,7 +41,7 @@ $routesWithSelect2 = [
     'admin.shortlist-candidates', 'admin.interview-questions', 'admin.offer-approvals',
     'admin.experience-level', 'admin.candidates', 'admin.schedule-timing', 'admin.aptitude-results',
     'admin.users', 'admin.settings', 'admin.profile', 'admin.subscribed-companies', 'admin.components',
-    'form-horizontal', 'form-vertical'
+    'form-horizontal', 'form-vertical', 'admin.groups','admin.employee.view-profile'
 ];
 @endphp
 @if (in_array($currentRoute, $routesWithSelect2))
@@ -108,7 +108,7 @@ $routesWithDatatable = [
     'admin.termination', 'admin.assets', 'admin.jobs', 'admin.job-applicants', 'admin.manage-resumes',
     'admin.shortlist-candidates', 'admin.interview-questions', 'admin.offer-approvals', 'admin.experience-level',
     'admin.candidates', 'admin.schedule-timing', 'admin.aptitude-results', 'admin.users', 'admin.leave-type',
-    'admin.subscribed-companies', 'data-tables','admin.holidays',  'admin.attendance','airlines.view'
+    'admin.subscribed-companies', 'data-tables','admin.holidays',  'admin.attendance','airlines.view', 'admin.agents', 'admin.airlines-details', 'admin.airline-library', 'admin.airline-reports', 'admin.deleted.agents', 'admin.agent-library', 'admin.agent-reports','admin.view.case-history', 'admin.saleslead', 'admin.air-tickets', 'admin.groups', 'admin.accounts.view','admin.accounts.all','admin.categories.view', 'admin.faretypes', 'admin.duties', 'admin.events.status','admin.events','admin.manage-staff','admin.employee.view-profile','admin.employee.rights','admin.staff-reports'
 ];
 @endphp
 @if (in_array($currentRoute, $routesWithDatatable))
@@ -147,4 +147,3 @@ $routesWithDatatable = [
             }
         }
     </script>
-              
