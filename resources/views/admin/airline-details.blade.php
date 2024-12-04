@@ -334,11 +334,20 @@
             </div>
         </div>
         <div class="col-md-6">
-            <div class="form-group">
+            {{-- <div class="form-group">
                 <label for="focus_cities">Focus Cities</label>
                 <input type="text" class="form-control" id="focus_cities" name="focus_cities[]"
                     placeholder="Enter focus cities separated by commas">
+            </div> --}}
+            <div id="focus-destinations-container">
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control" name="focus_cities[]"
+                        placeholder="Enter focus cities">
+                    <button class="btn btn-danger remove-destination"
+                        type="button">Remove</button>
+                </div>
             </div>
+            <button class="btn btn-primary" type="button" id="add-destination">Add More</button>
         </div>
     </div>
     <div class="row">
@@ -614,4 +623,24 @@
             </div>
         </div>
     @endforeach
+    
+
+<script>
+    document.getElementById('add-destination').addEventListener('click', function() {
+            const container = document.getElementById('focus-destinations-container');
+            const newInputGroup = document.createElement('div');
+            newInputGroup.classList.add('input-group', 'mb-2');
+            newInputGroup.innerHTML = `
+                <input type="text" class="form-control" name="focus_cities[]" placeholder="Enter focus cities separated by commas">
+                <button class="btn btn-danger remove-destination" type="button">Remove</button>
+            `;
+            container.appendChild(newInputGroup);
+
+            // Add event listener to the remove button
+            newInputGroup.querySelector('.remove-destination').addEventListener('click', function() {
+                container.removeChild(newInputGroup);
+            });
+        });
+
+</script>
 @endsection
