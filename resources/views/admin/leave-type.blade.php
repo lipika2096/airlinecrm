@@ -33,7 +33,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Leave Type</th>
-                                    {{-- <th>Leave Days</th> --}}
+                                    <th>Leave Days</th>
                                     <th>Status</th>
                                     <th class="text-end">Action</th>
                                 </tr>
@@ -45,7 +45,7 @@
                                         {{ $index + 1 }}
                                     </td>
                                     <td>{{$leave->name}}</td>
-                                    {{-- <td>{{$leave->days}}</td> --}}
+                                    <td>{{$leave->days}}</td>
                                     <td>
                                         <!-- Toggle Switch -->
                                         <div class="form-check form-switch">
@@ -78,8 +78,8 @@
                                                         <input class="form-control" name="name" type="text" value="{{$leave->name}}">
                                                     </div>
                                                     <div class="form-group">
-                                                        {{-- <label>Number of days <span class="text-danger">*</span></label> --}}
-                                                        <input class="form-control" name="days" type="hidden" value="0">
+                                                        <label>Number of days <span class="text-danger">*</span></label>
+                                                        <input class="form-control" name="days" type="text" value="{{$leave->days}}">
                                                     </div>
                                                     <div class="submit-section">
                                                         <button type="submit" class="btn btn-primary submit-btn">Save</button>
@@ -144,8 +144,8 @@
                                 <input class="form-control" name="name" type="text">
                             </div>
                             <div class="form-group">
-                                {{-- <label>Number of days <span class="text-danger">*</span></label> --}}
-                                <input class="form-control" name="days" type="hidden" value="0">
+                                <label>Number of days <span class="text-danger">*</span></label>
+                                <input class="form-control" name="days" type="text">
                             </div>
                             <div class="submit-section">
                                 <button type="submit" class="btn btn-primary submit-btn">Submit</button>
