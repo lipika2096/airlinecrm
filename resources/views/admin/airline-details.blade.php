@@ -623,7 +623,7 @@
             </div>
         </div>
     @endforeach
-    
+
 
 <script>
     document.getElementById('add-destination').addEventListener('click', function() {
