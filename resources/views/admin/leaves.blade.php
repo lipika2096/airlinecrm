@@ -143,7 +143,7 @@
                                             @php
                                             $annualLeave = $data->user->leave_count;
                                                 $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)->where('status',3)
-                                        ->count();
+                                        ->sum('no_of_days');
                                                 $remainingLeave = $annualLeave - $usedAnnualLeave;
                                             @endphp
                                             <td  class="text-danger">{{$remainingLeave}} leaves left</td>

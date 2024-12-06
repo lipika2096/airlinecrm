@@ -665,7 +665,7 @@
                             @endforeach
                             <!-- Collapsible Calendar Section -->
                         </div>
-                        
+
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
                         <script>
                             $(document).ready(function () {
@@ -1009,7 +1009,7 @@ const targetSelectors = document.getElementsByClassName('mainCalendarDiv');
                                                 @php
                                                 $annualLeave = $data->user->leave_count;
                                                     $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->user->id)->where('status',3)
-                                            ->count();
+                                            ->sum('no_of_days');
                                                     $remainingLeave = $annualLeave - $usedAnnualLeave;
                                                 @endphp
                                                 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

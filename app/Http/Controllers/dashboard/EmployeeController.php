@@ -270,9 +270,9 @@ class EmployeeController extends Controller
         $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
         ->whereDate('to', '>=', now()->toDateString())->count();
 
-        $approvedLeaves = EmployeeLeave::where('status', 3)->count();
-        $total_pending_leaves = EmployeeLeave::where('status', 2)->count();
-        $total_declined_leaves = EmployeeLeave::where('status', 4)->count();
+        $approvedLeaves = EmployeeLeave::where('employee_id',$id)->where('status', 3)->sum('no_of_days');
+        $total_pending_leaves = EmployeeLeave::where('employee_id',$id)->where('status', 2)->sum('no_of_days');
+        $total_declined_leaves = EmployeeLeave::where('employee_id',$id)->where('status', 4)->sum('no_of_days');
 
         $remaining_leaves = $eel->leave_count-$approvedLeaves;
         $leave_used_percentage = ($total_leaves > 0) ? ($total_leave_taken / $total_leaves) * 100 : 0;
