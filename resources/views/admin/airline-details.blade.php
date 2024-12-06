@@ -334,19 +334,18 @@
             </div>
         </div>
         <div class="col-md-6">
-            {{-- <div class="form-group">
+            <div class="form-group">
                 <label for="focus_cities">Focus Cities</label>
-                <input type="text" class="form-control" id="focus_cities" name="focus_cities[]"
-                    placeholder="Enter focus cities separated by commas">
-            </div> --}}
-            <div id="focus-destinations-container">
-                <div class="input-group mb-2">
-                    <input type="text" class="form-control" name="focus_cities[]"
-                        placeholder="Enter focus cities">
-                    <button class="btn btn-danger remove-destination"
-                        type="button">Remove</button>
+                <div id="focus-destinations-container">
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" name="focus_cities[]"
+                            placeholder="Enter focus cities">
+                        <button class="btn btn-danger remove-destination"
+                            type="button">Remove</button>
+                    </div>
                 </div>
             </div>
+
             <button class="btn btn-primary" type="button" id="add-destination">Add More</button>
         </div>
     </div>

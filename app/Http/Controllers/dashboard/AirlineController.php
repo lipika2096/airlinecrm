@@ -68,24 +68,7 @@ class AirlineController extends Controller
     public function store(Request $request)
     {
         // Validate the incoming request data
-        $validatedData = $request->validate([
-            'airline_name' => 'required|string|max:255',
-            'airline_code' => 'required|string|max:255',
-            'country' => 'required|string',
-            'founded_on' => 'required|date',
-            'commenced_on' => 'required|date',
-            'hubs' => 'required|string',
-            'secondary_hub' => 'string',
-            'focus_cities' => 'array',
-            'frequent_flyer_program' => 'required|string',
-            'alliance' => 'required|string',
-            'subsidiaries' => 'string',
-            'fleet_size' => 'required|integer',
-            'destinations' => 'required|string',
-            'slogan' => 'required|string',
-            'logo' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048' // Validate logo if present
-
-        ]);
+        $validatedData = $request->all();
 
         // Handle file upload
         if ($request->hasFile('logo')) {
@@ -143,29 +126,13 @@ class AirlineController extends Controller
 
         // Return a response
         return redirect()->route('admin.airlines-details')->with('success', 'Airline added successfully');
+
     }
 
     public function update(Request $request, $id)
     {
         // Validate the incoming request data
-        $validatedData = $request->validate([
-            'airline_name' => 'required|string|max:255',
-            'airline_code' => 'required|string|max:255',
-
-            'country' => 'required|string',
-            'founded_on' => 'required|date',
-            'commenced_on' => 'required|date',
-            'hubs' => 'required|string',
-            'secondary_hub' => 'string',
-            'focus_cities' => 'array',
-            'frequent_flyer_program' => 'required|string',
-            'alliance' => 'required|string',
-            'subsidiaries' => 'string',
-            'fleet_size' => 'required|integer',
-            'destinations' => 'required|string',
-            'slogan' => 'required|string',
-            'logo' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048' // Validate logo if present
-        ]);
+        $validatedData = $request->all();
 
         // Find the existing airline record
         $airline = Airline::findOrFail($id);
