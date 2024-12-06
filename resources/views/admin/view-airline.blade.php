@@ -1061,6 +1061,82 @@
                         </div>
                     </div>
                 </div>
+                <div id="add_approvedStaff" class="modal custom-modal fade" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Approved Staff</h5>
+                                <button type="button" class="close" data-bs-dismiss="modal"
+                                    aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('admin.airline.approvedstaff.store') }}" method="POST"
+                                    enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <input class="form-control" type="hidden" name="airline_id"
+                                                    value="{{ $airlineDetails->airline_id }}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-form-label">Select Staff <span
+                                                        class="text-danger">*</span></label>
+                                                <select class="select form-control" name="staff_id">
+                                                    <option>Select Staff</option>
+                                                    @foreach ($staff as $staff_data)
+                                                        <option value="{{ $staff_data->id }}">
+                                                            {{ $staff_data->first_name }}
+                                                            {{ $staff_data->last_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-form-label">Ticketing <span
+                                                        class="text-danger">*</span></label>
+                                                <select class="select form-control" name="ticketing">
+                                                    <option value="1">Approve</option>
+                                                    <option value="2">Dis-Approve</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-form-label">Sales<span
+                                                        class="text-danger">*</span></label>
+                                                <select class="select form-control" name="sales">
+                                                    <option value="1">Approve</option>
+                                                    <option value="2">Dis-Approve</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Marketing<span
+                                                        class="text-danger">*</span></label>
+                                                <select class="select form-control" name="marketing">
+                                                    <option value="1">Approve</option>
+                                                    <option value="2">Dis-Approve</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-form-label">Airport Operations<span
+                                                        class="text-danger">*</span></label>
+                                                <select class="select form-control" name="airport_operations">
+                                                    <option value="1">Approve</option>
+                                                    <option value="2">Dis-Approve</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="submit-section">
+                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div id="approved_staffs" class="pro-overview tab-pane fade show">
                     <div class="row">
                         <div class="col-auto float-end ms-auto mt-2 mx-4 mb-2">
