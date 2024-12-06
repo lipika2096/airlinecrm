@@ -91,13 +91,13 @@
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="airline_name">Airline Name</label>
-                                                                <input type="text" class="form-control" id="airline_name" name="airline_name" value="{{ $detail->airline->airline_name }}" required>
+                                                                <input type="text" class="form-control" id="airline_name" name="airline_name" value="{{ $detail->airline->airline_name }}" >
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="airline_code">Airline Code</label>
-                                                                <input type="text" class="form-control" id="airline_code" name="airline_code"  value="{{ $detail->airline->airline_code }}"  required>
+                                                                <input type="text" class="form-control" id="airline_code" name="airline_code"  value="{{ $detail->airline->airline_code }}"  >
                                                             </div>
                                                         </div>
                                                     </div>
@@ -106,13 +106,13 @@
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="country">Country</label>
-                                                                <input type="text" class="form-control" id="country" name="country" value="{{ $detail->country }}" required>
+                                                                <input type="text" class="form-control" id="country" name="country" value="{{ $detail->country }}" >
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="founded_on">Founded On</label>
-                                                                <input type="date" class="form-control" id="founded_on" name="founded_on" value="{{ $detail->founded_on }}" required>
+                                                                <input type="date" class="form-control" id="founded_on" name="founded_on" value="{{ $detail->founded_on }}" >
                                                             </div>
                                                         </div>
                                                     </div>
@@ -121,13 +121,13 @@
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="commenced_on">Commenced On</label>
-                                                                <input type="date" class="form-control" id="commenced_on" name="commenced_on" value="{{ $detail->commenced_on }}" required>
+                                                                <input type="date" class="form-control" id="commenced_on" name="commenced_on" value="{{ $detail->commenced_on }}" >
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="hubs">Hubs</label>
-                                                                <input type="text" class="form-control" id="hubs" name="hubs" value="{{ $detail->hubs }}" required>
+                                                                <input type="text" class="form-control" id="hubs" name="hubs" value="{{ $detail->hubs }}" >
                                                             </div>
                                                         </div>
                                                     </div>
@@ -151,13 +151,13 @@
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="frequent_flyer_program">Frequent Flyer Program</label>
-                                                                <input type="text" class="form-control" id="frequent_flyer_program" name="frequent_flyer_program" value="{{ $detail->frequent_flyer_program }}" required>
+                                                                <input type="text" class="form-control" id="frequent_flyer_program" name="frequent_flyer_program" value="{{ $detail->frequent_flyer_program }}" >
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="alliance">Alliance</label>
-                                                                <input type="text" class="form-control" id="alliance" name="alliance" value="{{ $detail->alliance }}" required>
+                                                                <input type="text" class="form-control" id="alliance" name="alliance" value="{{ $detail->alliance }}" >
                                                             </div>
                                                         </div>
                                                     </div>
@@ -172,7 +172,7 @@
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="fleet_size">Fleet Size</label>
-                                                                <input type="number" class="form-control" id="fleet_size" name="fleet_size" value="{{ $detail->fleet_size }}" required>
+                                                                <input type="number" class="form-control" id="fleet_size" name="fleet_size" value="{{ $detail->fleet_size }}" >
                                                             </div>
                                                         </div>
                                                     </div>
@@ -181,13 +181,13 @@
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="destinations">Destinations</label>
-                                                                <input type="text" class="form-control" id="destinations" name="destinations" value="{{ $detail->destinations }}" required>
+                                                                <input type="text" class="form-control" id="destinations" name="destinations" value="{{ $detail->destinations }}" >
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="slogan">Slogan</label>
-                                                                <input type="text" class="form-control" id="slogan" name="slogan" value="{{ $detail->slogan }}" required>
+                                                                <input type="text" class="form-control" id="slogan" name="slogan" value="{{ $detail->slogan }}" >
                                                             </div>
                                                         </div>
                                                     </div>
@@ -288,13 +288,13 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="airline_name">Airline Name</label>
-                <input type="text" class="form-control" id="airline_name" name="airline_name" required>
+                <input type="text" class="form-control" id="airline_name" name="airline_name" >
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label for="airline_code">Airline Code</label>
-                <input type="text" class="form-control" id="airline_code" name="airline_code" required>
+                <input type="text" class="form-control" id="airline_code" name="airline_code" >
             </div>
         </div>
     </div>
@@ -302,13 +302,13 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="country">Country</label>
-                <input type="text" class="form-control" id="country" name="country" required>
+                <input type="text" class="form-control" id="country" name="country" >
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label for="founded_on">Founded On</label>
-                <input type="date" class="form-control" id="founded_on" name="founded_on" required>
+                <input type="date" class="form-control" id="founded_on" name="founded_on" >
             </div>
         </div>
     </div>
@@ -316,13 +316,13 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="commenced_on">Commenced On</label>
-                <input type="date" class="form-control" id="commenced_on" name="commenced_on" required>
+                <input type="date" class="form-control" id="commenced_on" name="commenced_on" >
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label for="hubs">Hubs</label>
-                <input type="text" class="form-control" id="hubs" name="hubs" required>
+                <input type="text" class="form-control" id="hubs" name="hubs" >
             </div>
         </div>
     </div>
@@ -354,13 +354,13 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="frequent_flyer_program">Frequent Flyer Program</label>
-                <input type="text" class="form-control" id="frequent_flyer_program" name="frequent_flyer_program" required>
+                <input type="text" class="form-control" id="frequent_flyer_program" name="frequent_flyer_program" >
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label for="alliance">Alliance</label>
-                <input type="text" class="form-control" id="alliance" name="alliance" required>
+                <input type="text" class="form-control" id="alliance" name="alliance" >
             </div>
         </div>
     </div>
@@ -374,7 +374,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="fleet_size">Fleet Size</label>
-                <input type="number" class="form-control" id="fleet_size" name="fleet_size" required>
+                <input type="number" class="form-control" id="fleet_size" name="fleet_size" >
             </div>
         </div>
     </div>
@@ -382,13 +382,13 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="destinations">Destinations</label>
-                <input type="text" class="form-control" id="destinations" name="destinations" required>
+                <input type="text" class="form-control" id="destinations" name="destinations" >
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label for="slogan">Slogan</label>
-                <input type="text" class="form-control" id="slogan" name="slogan" required>
+                <input type="text" class="form-control" id="slogan" name="slogan" >
             </div>
         </div>
     </div>
@@ -520,7 +520,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="airline_id">Airline</label>
-                                        <select class="form-control" id="airline_id" name="airline_id" required>
+                                        <select class="form-control" id="airline_id" name="airline_id" >
                                             @foreach ($airlines as $airline)
                                                 <option value="{{ $airline->id }}"
                                                     {{ $detail->airline_id == $airline->id ? 'selected' : '' }}>
@@ -534,19 +534,19 @@
                                         <input type="text" class="form-control" id="airline_ticketing_code"
                                             name="airline_ticketing_code"
                                             value="{{ old('airline_ticketing_code', $detail->airline_ticketing_code) }}"
-                                            required>
+                                            >
                                     </div>
                                     <div class="form-group">
                                         <label for="airline_contact_details">Airline Contact Details</label>
                                         <input type="text" class="form-control" id="airline_contact_details"
                                             name="airline_contact_details"
                                             value="{{ old('airline_contact_details', $detail->airline_contact_details) }}"
-                                            required>
+                                            >
                                     </div>
                                     <div class="form-group">
                                         <label for="rules_do">Rules Do</label>
                                         <input type="text" class="form-control" id="rules_do" name="rules_do"
-                                            value="{{ old('rules_do', $detail->rules_do) }}" required>
+                                            value="{{ old('rules_do', $detail->rules_do) }}" >
                                     </div>
                                 </div>
                                 <!-- Column 2 -->
@@ -554,7 +554,7 @@
                                     <div class="form-group">
                                         <label for="rules_dont">Rules Don't</label>
                                         <input type="text" class="form-control" id="rules_dont" name="rules_dont"
-                                            value="{{ old('rules_dont', $detail->rules_dont) }}" required>
+                                            value="{{ old('rules_dont', $detail->rules_dont) }}" >
                                     </div>
                                     <div class="form-group">
                                         <label for="standard_cancellation_charges">Standard Cancellation
@@ -562,26 +562,26 @@
                                         <input type="text" class="form-control" id="standard_cancellation_charges"
                                             name="standard_cancellation_charges"
                                             value="{{ old('standard_cancellation_charges', $detail->standard_cancellation_charges) }}"
-                                            required>
+                                            >
                                     </div>
                                     <div class="form-group">
                                         <label for="date_change_charges">Date Change Charges</label>
                                         <input type="text" class="form-control" id="date_change_charges"
                                             name="date_change_charges"
                                             value="{{ old('date_change_charges', $detail->date_change_charges) }}"
-                                            required>
+                                            >
                                     </div>
                                     <div class="form-group">
                                         <label for="routes_flown_from">Routes Flown From</label>
                                         <input type="text" class="form-control" id="routes_flown_from"
                                             name="routes_flown_from"
-                                            value="{{ old('routes_flown_from', $detail->routes_flown_from) }}" required>
+                                            value="{{ old('routes_flown_from', $detail->routes_flown_from) }}" >
                                     </div>
                                     <div class="form-group">
                                         <label for="routes_flown_to">Routes Flown To</label>
                                         <input type="text" class="form-control" id="routes_flown_to"
                                             name="routes_flown_to"
-                                            value="{{ old('routes_flown_to', $detail->routes_flown_to) }}" required>
+                                            value="{{ old('routes_flown_to', $detail->routes_flown_to) }}" >
                                     </div>
 
                             </div>
