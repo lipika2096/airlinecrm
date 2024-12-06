@@ -1063,10 +1063,10 @@
                 </div>
                 <div id="approved_staffs" class="pro-overview tab-pane fade show">
                     <div class="row">
-                        <!--<div class="col-auto float-end ms-auto mt-2 mx-4 mb-2">-->
-                        <!--    <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_approvedStaff"><i-->
-                        <!--            class="fa fa-plus"></i> Add Approved Staff</a>-->
-                        <!--</div>-->
+                        <div class="col-auto float-end ms-auto mt-2 mx-4 mb-2">
+                        <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_approvedStaff"><i
+                         class="fa fa-plus"></i> Add Approved Staff</a>
+                        </div>
                         <div class="col-md-12">
                             <div class="table-responsive">
                                 <table class="table table-striped custom-table mb-0 datatable">

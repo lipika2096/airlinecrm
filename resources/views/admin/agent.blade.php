@@ -16,18 +16,27 @@
             <!-- Page Header -->
             <div class="page-header">
                 <div class="row align-items-center">
+                    @if (!request()->is('deleted/agent'))
+
                     <div class="col">
                         <h3 class="page-title">Travel Agent List</h3>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="">Dashboard</a></li>
                             <li class="breadcrumb-item active">Travel Agent List</li>
                         </ul>
                     </div>
-
-                    @if (!request()->is('deleted/agent'))
                     <div class="col-auto float-end ms-auto">
-                        <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_agent"><i
-                                class="fa fa-plus"></i> Add Travel Agent</a>
+                        <a href="#" class="btn add-btn btn btn-info mt-3" data-bs-toggle="modal" data-bs-target="#add_agent"><i
+                                class="fa fa-plus "></i> Add Travel Agent</a>
+                    </div>
+                    @else
+                    <div class="col">
+                        <h3 class="page-title">Travel Agent List</h3>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="">Dashboard</a></li>
+                            <li class="breadcrumb-item">Travel Agent List</li>
+                            <li class="breadcrumb-item active">Deleted Travel Agent List</li>
+                        </ul>
                     </div>
                     @endif
                 </div>
