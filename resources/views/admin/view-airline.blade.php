@@ -2239,149 +2239,212 @@
                 <div id="special_fares" class="pro-overview tab-pane fade show">
                     <div class="row">
                         <div class="col-auto float-end ms-auto mt-2 mx-4 mb-2">
-                            <!-- <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_sla"><i
-                       class="fa fa-plus"></i> Add SLA</a> -->
+                            <a class="btn btn-primary" data-bs-toggle="modal"
+                            style="border-radius:10px;" data-bs-target="#add_target"><i
+                                class="fa fa-plus"></i> Add / Edit
+                            Special Fares</a>
+
+                            <a class="btn btn-info text-white" data-bs-toggle="modal"
+                                style="margin-right:10px; border-radius:10px !important;"
+                                data-bs-target="#view_fares"><i class="fa fa-plus"></i> View
+                                Special Fares</a>
                         </div>
                         <div class="col-md-12">
                             <div class="table-responsive">
                                 <table class="table table-striped mb-0 datatable">
                                     <thead>
                                         <tr>
+                                            <th>Agent Company Name</th>
                                             <th>Private Fare Type</th>
                                             <th>Status</th>
-                                            <th>Agent</th>
                                             <th>IATA</th>
-                                            <th>PCC/Office ID</th>
+                                            <th>PCC/ Office Id</th>
                                             <th>Account Code</th>
                                             <th>Discount</th>
-                                            <th>Remarks</th>
-                                            <!--<th>Actions</th>-->
+                                            <th>remarks</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($agents as $agent)
+                                        @foreach ($specialFare as $fare)
                                             <tr>
-
-                                                                      <td>
-                                @if ($agent->specialFare)
-                                    {{ $agent->specialFare->fare_type }}
-                                @else
-
-                                @endif
-                                            </td>
-                                                </td>
+                                                <td>{{ $fare->agent->company_name }}</td>
+                                                <td>{{ $fare->fare_type }}</td>
                                                 <td>
-                                                    @if ($agent->specialFare && $agent->specialFare->status == 1)
+                                                    @if ($fare->status == 1)
                                                         Active
                                                     @else
                                                         Inactive
                                                     @endif
-                                                </td>
-                                                <td>{{ $agent->agency_name }}</td>
-                                                <td>{{ $agent->iata }}</td>
-                                                <td>{{ $agent->pcc_office_id }}</td>
-                                                <td>{{ $agent->account_code }}</td>
-                                                <td>{{ $agent->discount }}</td>
-                                                <td>{{ $agent->remarks }}</td>
 
-                                                <td>
-                                                    <div style="display:flex;">
-                                                        <!--<a class="btn" data-bs-toggle="modal"
-                                                            data-bs-target="#edit_specialfares{{ $agent->id }}">
-                                                            <i class="fa fa-edit"></i>
-                                                        </a>-->
-                                                        {{-- <form id="toggle-status-form7-{{ $agent->id }}"
-                                                            action="{{ route('admin.airline.specialfares.statusupdate', $agent->specialFare->id) }}"
-                                                            method="POST">
-                                                            @csrf
-                                                            @method('PATCH')
-                                                            <label class="switch">
-                                                                <input type="checkbox"
-                                                                    onchange="updateStatus7({{ $agent->specialFare->id }}, this)"
-                                                                    {{ $agent->specialFare->status == 1 ? 'checked' : '' }}>
-                                                                <span class="slider round"></span>
-                                                            </label>
-                                                        </form> --}}
-                                                    </div>
                                                 </td>
+                                                <td>{{ $fare->agent->iata }}</td>
+                                                <td>{{ $fare->agent->pcc_office_id }}</td>
+                                                <td>{{$fare->agent->account_code}}</td>
+                                                <td>{{ $fare->agent->discount }}</td>
+                                                <td>{{ $fare->agent->remarks }}</td>
                                             </tr>
-
-                                            <div id="edit_specialfares{{ $agent->id }}"
-                                                class="modal custom-modal fade" role="dialog">
-                                                <div class="modal-dialog modal-dialog-centered modal-lg"
-                                                    role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Edit Special Fares</h5>
-                                                            <button type="button" class="close"
-                                                                data-bs-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form
-                                                                action="{{ route('admin.airline.specialfares.update', $agent->id) }}#special_fares"
-                                                                method="POST" enctype="multipart/form-data">
-                                                                @csrf
-                                                                @method('PATCH')
-                                                                <div class="row">
-                                                                    <div class="col-md-12">
-                                                                        <div class="form-group">
-
-
-                                                                            <label for="ticket_authorization">Ticket
-                                                                                Authorization</label>
-                                                                            <input style="margin-left:20px;"
-                                                                                type="checkbox"
-                                                                                id="ticket_authorization"
-                                                                                name="ticket_authorization"
-                                                                                value="1"
-                                                                                {{ $agent->specialFare && $agent->specialFare->ticket_authorization ? 'checked' : '' }}>
-                                                                        </div>
-
-                                                                        <div class="form-group">
-                                                                            <label for="vfr_fares">VFR Fares</label>
-                                                                            <input style="margin-left:20px;"
-                                                                                type="checkbox" id="vfr_fares"
-                                                                                name="vfr_fares" value="1"
-                                                                                {{ $agent->specialFare && $agent->specialFare->vfr_fares ? 'checked' : '' }}>
-                                                                        </div>
-
-
-                                                                        <div class="form-group">
-                                                                            <label for="to_fares">TO Fares</label>
-                                                                            <input style="margin-left:20px;"
-                                                                                type="checkbox" id="to_fares"
-                                                                                name="to_fares" value="1"
-                                                                                {{ $agent->specialFare && $agent->specialFare->to_fares ? 'checked' : '' }}>
-                                                                        </div>
-
-
-                                                                        <div class="form-group">
-                                                                            <label for="sme_fares">SME Fares</label>
-                                                                            <input style="margin-left:20px;"
-                                                                                type="checkbox" id="sme_fares"
-                                                                                name="sme_fares" value="1"
-                                                                                {{ $agent->specialFare && $agent->specialFare->sme_fares ? 'checked' : '' }}>
-
-
-
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="submit-section">
-                                                                    <button class="btn btn-primary" type="submit">Save
-                                                                        Changes</button>
-                                                                </div>
-                                                        </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        @endforeach
+                                        <!-- Repeat for other agents -->
+                                    </tbody>
+                                </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="view_fares" class="modal custom-modal fade" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Target</h5>
+                                <button type="button" class="close"
+                                    data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
-                            @endforeach
-                            </tbody>
-                            </table>
+                            <div class="modal-body">
+                                {{-- <form action="{{ route('admin.agent.target.store') }}"
+                                    method="POST" enctype="multipart/form-data">
+                                    @csrf --}}
+                                <div class="table-responsive text-nowrap">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="fw-bold">
+                                                    Agent</th>
+                                                @foreach ($fareType as $ft)
+                                                    <th class="fw-bold">
+                                                        {{ $ft->fare_type }}
+                                                    </th>
+                                                @endforeach
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($agents as $air)
+                                                <tr>
+                                                    <div class="form-group">
+                                                        <input class="form-control"
+                                                            type="hidden" name="airline_id"
+                                                            value="{{ $airlineDetails->airline_id }}">
+                                                    </div>
+                                                    <th class="fw-bold">
+                                                        {{ $air->company_name }}
+                                                    </th>
+                                                    @foreach ($fareType as $ft)
+                                                        @php
+                                                            $status = DB::table(
+                                                                'special_fares',
+                                                            )
+                                                                ->where(
+                                                                    'agent_id',
+                                                                    $air->id,
+                                                                )
+                                                                ->where(
+                                                                    'fare_type',
+                                                                    $ft->fare_type_name,
+                                                                )
+                                                                ->where(
+                                                                    'airline_id',
+                                                                    $airlineDetails->airline_id,
+                                                                )
+                                                                ->value('status');
+                                                        @endphp
+                                                        <input type="hidden"
+                                                            name="agent[{{ $air->id }}][{{ $ft->fare_type_name }}]"
+                                                            value="2">
+                                                        <th>
+                                                            <input type="checkbox"
+                                                                name="agent[{{ $air->id }}][{{ $ft->fare_type_name }}]"
+                                                                value="1"
+                                                                {{ $status == 1 ? 'checked' : '' }}>
+                                                        </th>
+                                                    @endforeach
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {{-- </form> --}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="add_target" class="modal custom-modal fade" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Target</h5>
+                                <button type="button" class="close"
+                                    data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form
+                                    action="{{ route('admin.airline.target.store') }}#special_fares"
+                                    method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="table-responsive text-nowrap">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="fw-bold">Agent
+                                                    </th>
+                                                    @foreach ($fareType as $ft)
+                                                        <th class="fw-bold">
+                                                            {{ $ft->fare_type }}</th>
+                                                    @endforeach
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($agents as $air)
+                                                    <tr>
+                                                        <div class="form-group">
+                                                            <input class="form-control"
+                                                                type="hidden"
+                                                                name="airline_id"
+                                                                value="{{ $airlineDetails->airline_id }}">
+                                                        </div>
+                                                        <th class="fw-bold">
+                                                            {{ $air->company_name }}</th>
+                                                        @foreach ($fareType as $ft)
+                                                            @php
+                                                                $status = DB::table(
+                                                                    'special_fares',
+                                                                )
+                                                                    ->where(
+                                                                        'agent_id',
+                                                                        $air->id,
+                                                                    )
+                                                                    ->where(
+                                                                        'fare_type',
+                                                                        $ft->fare_type_name,
+                                                                    )
+                                                                    ->where(
+                                                                        'airline_id',
+                                                                        $airlineDetails->airline_id,
+                                                                    )
+                                                                    ->value('status');
+                                                            @endphp
+                                                            <input type="hidden"
+                                                                name="agent[{{ $air->id }}][{{ $ft->fare_type_name }}]"
+                                                                value="2">
+                                                            <th>
+                                                                <input type="checkbox"
+                                                                    name="agent[{{ $air->id }}][{{ $ft->fare_type_name }}]"
+                                                                    value="1"
+                                                                    {{ $status == 1 ? 'checked' : '' }}>
+                                                            </th>
+                                                        @endforeach
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="submit-section">
+                                        <button class="btn btn-primary"
+                                            type="submit">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>

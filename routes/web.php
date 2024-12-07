@@ -226,6 +226,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
     Route::post('agent/transaction/store', [AgentController::class, 'transactionStore'])->name('transaction.store');
     Route::post('agent/product/store', [AgentController::class, 'productStore'])->name('agent.product.store');
     Route::post('agent/target/store', [AgentController::class, 'targetStore'])->name('agent.target.store');
+    Route::post('airline/target/store', [AirlineController::class, 'targetStore'])->name('airline.target.store');
     Route::post('agent/address/store', [AgentController::class, 'AddressStore'])->name('agent.address.store');
     Route::post('agent/contact/store', [AgentController::class, 'ContactStore'])->name('agent.contact.store');
 

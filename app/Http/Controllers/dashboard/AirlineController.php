@@ -18,6 +18,7 @@ use App\Models\Rule;
 use App\Models\Agent;
 use App\Models\SpecialFare;
 use App\Models\Agreement;
+use App\Models\FareType;
 
 use App\Models\HeadOfficeContactDetail;
 use Illuminate\Support\Facades\Auth;
@@ -50,7 +51,7 @@ class AirlineController extends Controller
     public function view($id)
     {
         $rules = Rule::where('airline_id', $id)->get();
-        $agents = Agent::with('specialFare')->get();
+        $agents = Agent::where('deleted_at',null)->orWhere('deleted_at','null')->with('specialFare')->get();
         $airlineDetails = AirlineDetail::where('airline_id', $id)->with('airline')->first();
         $airlines = Airline::all();
         $aircrafts = Aircraft::where('airline_id', $id)->get();
@@ -62,8 +63,9 @@ class AirlineController extends Controller
         $headOffices = HeadOfficeContactDetail::where('airline_id', $id)->get();
         $Staffs = User::where('status', 'active')->get();
         $agreements = Agreement::with(['agent', 'airline'])->get();
-
-        return view('admin.view-airline', compact('airlines','airlineDetails','aircrafts', 'fleets', 'staff', 'approvedStaffs','library','slas', 'headOffices', 'Staffs', 'agents', 'rules', 'agreements'));
+        $fareType = FareType::get();
+        $specialFare = SpecialFare::where('airline_id', $id)->where('status',1)->get();
+        return view('admin.view-airline', compact('airlines','airlineDetails','aircrafts', 'fleets', 'staff', 'approvedStaffs','library','slas', 'headOffices', 'Staffs', 'agents', 'rules', 'agreements', 'fareType','specialFare'));
     }
     public function store(Request $request)
     {
@@ -588,7 +590,26 @@ public function libraryupdate(Request $request, $id)
 
     return redirect()->back()->with('success', 'Document updated successfully!');
 }
+public function targetStore(Request $request)
+{
+    foreach ($request->input('agent') as $agentId => $fareTypes) {
+        foreach ($fareTypes as $fareType => $status) {
 
+            SpecialFare::updateOrCreate(
+                [
+                    'airline_id' => $request->input('airline_id'),
+                    'fare_type' => $fareType,
+                    'agent_id' => $agentId
+                ],
+                [
+                    'status' => $status
+                ]
+            );
+        }
+    }
+
+    return redirect()->back()->with('success', 'Special fares updated successfully.');
+}
 public function specialfaresUpdate(Request $request, $id)
 {
     $request->validate([

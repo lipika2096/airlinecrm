@@ -10,6 +10,6 @@ class Agent extends Model
 
   public function specialFare()
   {
-      return $this->hasOne(SpecialFare::class, 'agent_id');
+      return $this->belongsTo(SpecialFare::class, 'agent_id');
   }
 }
