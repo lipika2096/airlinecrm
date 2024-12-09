@@ -211,19 +211,23 @@
                         <div class="col-md-12 d-flex">
                             <div class="card profile-box flex-fill">
                                 <div class="row headline" style="">
-                                    <div class="col-md-3 headlinetitle">
-                                        <div class="title">IATA</div>
+                                    <div class="col-md-2 headlinetitle">
+                                        <div class="title">IATA Code</div>
                                         <div class="bluetext">{{ $airlineDetails->IATA ?? Null }}</div>
                                     </div>
-                                    <div class="col-md-3 headlinetitle">
+                                    <div class="col-md-2 headlinetitle">
                                         <div class="title">ICAO</div>
                                         <div class="bluetext">{{ $airlineDetails->ICAO ?? Null }}</div>
                                     </div>
-                                    <div class="col-md-3 headlinetitle">
+                                    <div class="col-md-2 headlinetitle">
+                                        <div class="title">Numeric Code</div>
+                                        <div class="bluetext">{{ $airlineDetails->numeric_code ?? Null }}</div>
+                                    </div>
+                                    <div class="col-md-2 headlinetitle">
                                         <div class="title">Airline Code</div>
                                         <div class="skybluetext">{{ $airlineDetails->airline->airline_code ?? Null }}</div>
                                     </div>
-                                    <div class="col-md-3 headlinetitle">
+                                    <div class="col-md-2 headlinetitle">
                                         <div class="title">Callsign</div>
                                         <div class="bluetext">{{ $airlineDetails->callsign ?? Null }}</div>
                                     </div>

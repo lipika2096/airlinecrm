@@ -120,7 +120,8 @@ class AirlineController extends Controller
             'website' => $request->input('website'),
             'IATA' => $request->input('IATA'),
             'ICAO' => $request->input('ICAO'),
-            'callsign' => $request->input('callsign')
+            'callsign' => $request->input('callsign'),
+            'numeric_code' => $request->input('numeric_code')
         ];
 
         // Create a new airlineDetails record
@@ -193,7 +194,8 @@ class AirlineController extends Controller
             'website' => $request->input('website'),
             'IATA' => $request->input('IATA'),
             'ICAO' => $request->input('ICAO'),
-            'callsign' => $request->input('callsign')
+            'callsign' => $request->input('callsign'),
+            'numeric_code' => $request->input('numeric_code')
         ];
 
         // Update the airlineDetails record

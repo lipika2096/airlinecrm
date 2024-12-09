@@ -248,6 +248,12 @@
                                                                 <input type="text" class="form-control" id="callsign" name="callsign" value="{{ old('callsign', $detail->callsign) }}">
                                                             </div>
                                                         </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="numeric_code">Numeric Code</label>
+                                                                <input type="number" class="form-control" id="numeric_code" name="numeric_code"  value="{{ old('numeric_code', $detail->numeric_code) }}">
+                                                            </div>
+                                                        </div>
                                                     </div>
 
                                                     <div class="submit-section">
@@ -447,6 +453,12 @@
             <div class="form-group">
                 <label for="callsign">Callsign</label>
                 <input type="text" class="form-control" id="callsign" name="callsign">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="numeric_code">Numeric Code</label>
+                <input type="number" class="form-control" id="numeric_code" name="numeric_code">
             </div>
         </div>
     </div>
