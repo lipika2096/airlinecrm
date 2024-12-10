@@ -407,6 +407,9 @@
                         <ul style="display: none;">
                             @if (auth()->user()->hasRole('admin'))
                                 <li><a class="" href="{{ route('admin.airlines-details') }}">Airlines List</a></li>
+                                <li>
+                                   <a class="" href="{{route('admin.deleted.airlines')}}">Deleted Airlines List</a>
+                                </li>
                                 <li><a class="" href="{{ route('admin.airline-library') }}">Library</a></li>
                                 <li><a class="" href="{{ route('admin.airline-reports') }}">Reports</a></li>
                             @endif

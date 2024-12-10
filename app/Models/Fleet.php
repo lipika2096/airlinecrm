@@ -10,7 +10,7 @@ class Fleet extends Model
     use HasFactory;
     protected $table = 'fleets';
     protected $guarded = ['id'];
-    public function airline()
+    public function airlineData()
   {
       return $this->belongsTo(Airline::class, 'airline_id');
   }

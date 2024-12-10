@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,12 +11,8 @@ class SLA extends Model
     // Specify the table name
     protected $table = 'slas';
 
-    protected $fillable = [
-        'airline_id',
-        'title',
-        'category',
-        'content',
-        'document',
+    protected $guarded = [
+        'id'
     ];
 
     public function airline()

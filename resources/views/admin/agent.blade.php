@@ -16,7 +16,7 @@
             <!-- Page Header -->
             <div class="page-header">
                 <div class="row align-items-center">
-                    @if (!request()->is('deleted/agent'))
+                    @if (!request()->is('admin/deleted/agent'))
 
                     <div class="col">
                         <h3 class="page-title">Travel Agent List</h3>
@@ -70,7 +70,7 @@
                                                     <i class="fa fa-eye"></i>
                                                 </a>
                                                 @if (!request()->is('admin/deleted/agent'))
-                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#delete_agent{{$agent->id}}"><i class="fa fa-trash m-r-5"></i></a>
+                                                    <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_agent{{$agent->id}}"><i class="fa fa-trash m-r-5"></i></a>
                                                 @endif
                                                 {{-- <form action="" method="POST" style="display:inline;">
                                                 <a class="action-icon" href="" data-bs-toggle="modal"

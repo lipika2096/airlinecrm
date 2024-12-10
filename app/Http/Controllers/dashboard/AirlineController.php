@@ -29,7 +29,7 @@ class AirlineController extends Controller
     public function index()
     {
 
-        $airlineDetails = AirlineDetail::with('airline')->get();
+        $airlineDetails = AirlineDetail::where('deleted_at', NULL)->with('airline')->get();
         $airlines = Airline::all();
 
         return view('admin.airlines', compact('airlines','airlineDetails'));
@@ -60,12 +60,13 @@ class AirlineController extends Controller
         $library = AirlineLibrary::where('airline_id', $id)->get();
         $approvedStaffs = ApprovedStaff::where('airline_id', $id)->get();
         $slas = SLA::where('airline_id', $id)->get();
-        $headOffices = HeadOfficeContactDetail::where('airline_id', $id)->get();
+        $headOffices = HeadOfficeContactDetail::where('airline_id', $id)->where('deleted_at', NULL)->get();
+        $headOfficesDeleted = HeadOfficeContactDetail::where('airline_id', $id)->where('deleted_at','!=', NULL)->get();
         $Staffs = User::where('status', 'active')->get();
         $agreements = Agreement::with(['agent', 'airline'])->get();
         $fareType = FareType::get();
         $specialFare = SpecialFare::where('airline_id', $id)->where('status',1)->get();
-        return view('admin.view-airline', compact('airlines','airlineDetails','aircrafts', 'fleets', 'staff', 'approvedStaffs','library','slas', 'headOffices', 'Staffs', 'agents', 'rules', 'agreements', 'fareType','specialFare'));
+        return view('admin.view-airline', compact('airlines','airlineDetails','aircrafts', 'fleets', 'staff', 'approvedStaffs','library','slas', 'headOffices', 'Staffs', 'agents', 'rules', 'headOfficesDeleted', 'agreements', 'fareType','specialFare'));
     }
     public function store(Request $request)
     {
@@ -207,6 +208,22 @@ class AirlineController extends Controller
         return redirect()->route('admin.airlines-details')->with('success', 'Airline updated successfully');
     }
 
+    public function delete($id){
+        $airlines = AirlineDetail::find($id);
+        $airlines->update([
+            'deleted_at' => now()
+        ]);
+
+        return redirect()->back();
+    }
+
+
+    public function deletedAirline()
+    {
+        $airlineDetails = AirlineDetail::where('deleted_at', NULL)->with('airline')->get();
+        $airlines = Airline::all();
+        return view('admin.airline-details', compact('airlines', 'airlineDetails'));
+    }
 
 
 
@@ -250,47 +267,42 @@ class AirlineController extends Controller
         return redirect()->back();
     }
 
+    public function aircraftDelete($id, Request $request){
+        $flight = Aircraft::findOrFail($id);
+        $flight->update([
+            'deleted_at' => now(),
+            'remarks' => $request->input('remarks')
+        ]);
+        return redirect()->back()->with('success', 'Schedule deleted successfully');
+    }
+
     public function fleetStore(Request $request)
     {
-        $validated = $request->validate([
-            'aircraft_reg' => 'required|string|max:255',
-            'name' => 'required|string|max:255',
-            'iata' => 'required|string|max:10',
-            'icao' => 'required|string|max:10',
-            'number_of_aircraft' => 'required|integer',
-            'fleet_type' => 'required|string|max:255',
-            'configuration_f' => 'nullable|string|max:10',
-            'configuration_c' => 'nullable|string|max:10',
-            'configuration_w' => 'nullable|string|max:10',
-            'configuration_y' => 'nullable|string|max:10',
-            'airline_id' => 'required'
-        ]);
+        $validated = $request->all();
 
         Fleet::create($validated);
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Fleet Created Sucessfully');
     }
 
     // Update function
     public function fleetUpdate(Request $request, $id)
     {
-        $validated = $request->validate([
-            'aircraft_reg' => 'required|string|max:255',
-            'name' => 'required|string|max:255',
-            'iata' => 'required|string|max:10',
-            'icao' => 'required|string|max:10',
-            'number_of_aircraft' => 'required|integer',
-            'fleet_type' => 'required|string|max:255',
-            'configuration_f' => 'nullable|string|max:10',
-            'configuration_c' => 'nullable|string|max:10',
-            'configuration_w' => 'nullable|string|max:10',
-            'configuration_y' => 'nullable|string|max:10',
-        ]);
+        $validated = $request->all();
 
         $fleet = Fleet::findOrFail($id);
         $fleet->update($validated);
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Fleet Updated Sucessfully');
+    }
+
+    public function fleetDelete($id, Request $request){
+        $fleets = Fleet::findorFail($id);
+        $fleets->update([
+            'deleted_at' => now(),
+            'remarks' => $request->input('remarks')
+        ]);
+        return redirect()->back()->with('success','Fleet Deleted Sucessfully');
     }
 
     public function approvedStaffStore(Request $request){
@@ -322,40 +334,39 @@ class AirlineController extends Controller
 
     public function slaStore(Request $request)
     {
-        // Validate the request data
-        $validatedData = $request->validate([
-            'airline_id' => 'required|exists:airlines,id',
-            'title' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'content' => 'nullable|string',
-            'document' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-        ]);
+        try{
 
-        $fileName = null;
+            $fileName = null;
 
-        if ($request->hasFile('document')) {
+            if ($request->hasFile('document')) {
 
-            $docName = $request->file('document');
+                $docName = $request->file('document');
 
-            $fileName = uniqid() . '.' . $docName->getClientOriginalExtension();
+                $fileName = uniqid() . '.' . $docName->getClientOriginalExtension();
 
-            $mediaPath = $docName->move('public/assets/docs/', $fileName);
-            if (!$mediaPath) {
-            return back()->withErrors(['media' => 'Failed to upload banner image']);
+                $mediaPath = $docName->move('public/assets/docs/', $fileName);
+                if (!$mediaPath) {
+                return back()->with('error', 'Failed to upload sla documnt');
+                }
             }
+
+
+            // Create a new SLA record with validated data
+            SLA::create([
+                'airline_id' => $request->input('airline_id'),
+                'title' => $request->input('title'),
+                'category' => $request->input('category'),
+                'content' => $request->input('content'),
+                'document' => $fileName,
+                'updated_at' =>  $request->input('updated_at'),
+                'created_by' => Auth()->user()->name
+            ]);
+
+            return redirect()->back()->with('success', 'SLA added successfully.');
         }
-
-
-        // Create a new SLA record with validated data
-        SLA::create([
-            'airline_id' => $request->input('airline_id'),
-            'title' => $request->input('title'),
-            'category' => $request->input('category'),
-            'content' => $request->input('content'),
-            'document' => $fileName,
-        ]);
-
-        return redirect()->back()->with('success', 'SLA added successfully.');
+        catch(Exception $e){
+            dd($e);
+        }
     }
 
 
@@ -363,15 +374,6 @@ class AirlineController extends Controller
 
     public function slaUpdate(Request $request, $id)
     {
-
-        $validatedData = $request->validate([
-            'airline_id' => 'required|exists:airlines,id',
-            'title' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'content' => 'nullable|string',
-            'document' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-        ]);
-
 
         $sla = SLA::findOrFail($id);
 
@@ -386,7 +388,7 @@ class AirlineController extends Controller
 
             $mediaPath = $docName->move('public/assets/docs/', $fileName);
             if (!$mediaPath) {
-            return back()->withErrors(['media' => 'Failed to upload banner image']);
+            return back()->with(['error' => 'Failed to upload document']);
             }
         }
 
@@ -397,11 +399,24 @@ class AirlineController extends Controller
             'category' => $request->input('category'),
             'content' => $request->input('content'),
             'document' => $fileName,
+            'updated_by' => Auth()->user()->name
         ]);
 
         return redirect()->back()->with('success', 'SLA updated successfully.');
     }
 
+
+
+
+    public function slaDestroy($id, Request $request){
+        $sla = SLA::findOrFail($id);
+        $sla->update([
+            'deleted_at' => now(),
+            'remarks' => $request->input('remarks')
+        ]);
+
+        return redirect()->back();
+    }
 
 
     public function slaUpdateStatus($id, Request $request)
@@ -438,16 +453,7 @@ class AirlineController extends Controller
     public function headOfficeStore(Request $request)
     {
 
-        $validated = $request->validate([
-            'airline_id' => 'required|exists:airlines,id',
-            'title' => 'required|string|max:255',
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'position' => 'required|string|max:255',
-            'department' => 'required|string|max:255',
-            'email_address' => 'required|email|max:255',
-            'phone_number' => 'required|string|max:20',
-        ]);
+        $validated = $request->all();
 
        HeadOfficeContactDetail::create($validated);
        //dd($validated);
@@ -499,6 +505,16 @@ class AirlineController extends Controller
 
     }
 
+
+    public function headOfficeDestroy($id, Request $request){
+        $headOffice = HeadOfficeContactDetail::findOrFail($id);
+        $headOffice->update([
+            'deleted_at' => now(),
+            'remarks' => $request->input('remarks')
+        ]);
+
+        return redirect()->back();
+    }
 
 
 
@@ -592,12 +608,22 @@ public function libraryupdate(Request $request, $id)
 
     return redirect()->back()->with('success', 'Document updated successfully!');
 }
+
+public function libraryDelete($id, Request $request){
+    $library = AirlineLibrary::findOrFail($id);
+    $library->update([
+        'deleted_at' => now(),
+        'remarks' => $request->input('remarks')
+    ]);
+    return redirect()->back()->with('success', 'Library deleted successfully');
+}
+
 public function targetStore(Request $request)
 {
     foreach ($request->input('agent') as $agentId => $fareTypes) {
         foreach ($fareTypes as $fareType => $status) {
 
-            SpecialFare::updateOrCreate(
+           $specialFare=  SpecialFare::updateOrCreate(
                 [
                     'airline_id' => $request->input('airline_id'),
                     'fare_type' => $fareType,
@@ -607,6 +633,16 @@ public function targetStore(Request $request)
                     'status' => $status
                 ]
             );
+
+            if ($specialFare->wasRecentlyCreated) {
+                $specialFare->created_by = Auth()->user()->name;
+                $specialFare->updated_at = $request->input('updated_at'); // Assuming user authentication is used
+            } else {
+                $specialFare->updated_by = auth()->user()->name;
+            }
+
+            // Save the changes
+            $specialFare->save();
         }
     }
 
@@ -801,6 +837,8 @@ public function agreementsStore(Request $request)
         'term' => $request->input('term'),
         'agreement_status' => $request->input('agreement_status'),
         'type' => 'Agreement',
+        'updated_at' => $request->input('updated_at'),
+        'created_by' => Auth()->user()->name
      ]);
 
     return redirect()->back()->with('success', 'Rules updated successfully.');
@@ -821,6 +859,7 @@ public function agreementsStore(Request $request)
             'incentive_description' => $request->input('incentive_description'),
             'term' => $request->input('term'),
             'agreement_status' => $request->input('agreement_status'),
+            'updated_by' => Auth()->user()->name
 
         ]);
 
@@ -828,6 +867,16 @@ public function agreementsStore(Request $request)
 
     }
 
+    public function agreementsDestroy(){
+
+        $agreement = Agreement::findOrFail($id);
+        $agreement->update([
+            'deleted_at' => now(),
+            'remarks' => $request->input('remarks')
+        ]);
+
+        return redirect()->back();
+    }
 
     public function pliStore(Request $request)
     {
@@ -862,7 +911,8 @@ public function agreementsStore(Request $request)
             'valid_from' => $request->input('valid_from'),
             'valid_till' => $request->input('valid_till'),
             'type' => 'PLI',
-
+            'updated_at' => $request->input('updated_at'),
+            'created_by' => Auth()->user()->name
 
         ]);
 

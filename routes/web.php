@@ -145,6 +145,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
 	Route::get('airlines-details', [AirlineDetailController::class, 'index'])->name('airlines-details');
     Route::post('airlines-details/store', [AirlineController::class, 'store'])->name('airlines-details.store');
     Route::patch('/admin/airline-details/{airlineDetail}', [AirlineController::class, 'update'])->name('airlines-details.update');
+    Route::delete('/admin/airline-details/delete/{airlineDetail}', [AirlineController::class, 'delete'])->name('airlines-details.delete');
     Route::delete('/admin/airline-details/{airlineDetail}', [AirlineDetailController::class, 'destroy'])->name('airlines-details.destroy');
 
 
@@ -264,7 +265,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
     Route::post('airlines/aircraft/', [AirlineController::class, 'aircraftStore'])->name('airline.aircraft.store');
     Route::post('airlines/fleet/', [AirlineController::class, 'fleetStore'])->name('airline.fleet.store');
     Route::patch('airlines/aircraft/update/{id}', [AirlineController::class, 'aircraftUpdate'])->name('airline.aircraft.update');
+    Route::delete('airlines/aircraft/delete/{id}', [AirlineController::class, 'aircraftDelete'])->name('airline.aircraft.destroy');
     Route::post('airlines/fleet/update/{id}', [AirlineController::class, 'fleetUpdate'])->name('airline.fleet.update');
+    Route::delete('airlines/fleet/delete/{id}', [AirlineController::class, 'fleetDelete'])->name('airline.fleet.destroy');
     Route::post('airlines/approved-staff/', [AirlineController::class, 'approvedStaffStore'])->name('airline.approvedstaff.store');
     Route::post('airlines/approved-staff/upadte/{id}', [AirlineController::class, 'approvedStaffUpdate'])->name('airline.approvedstaff.update');
     Route::get('agent', [AgentController::class, 'index'])->name('agents');
@@ -272,15 +275,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
 
     Route::patch('airlines/specialfares/update/{id}', [AirlineController::class, 'specialfaresUpdate'])->name('airline.specialfares.update');
 
+    Route::get('deleted/airlines', [AirlineController::class, 'deletedAirline'])->name('deleted.airlines');
 
     Route::post('airlines/SLA/store', [AirlineController::class, 'slaStore'])->name('airline.sla.store');
     Route::patch('airlines/SLA/{id}/update', [AirlineController::class, 'slaUpdate'])->name('airline.sla.update');
     Route::patch('airline/sla/toggle-status/{id}', [AirlineController::class, 'slaUpdateStatus']);
+    Route::delete('airlines/SLA/{id}/destroy', [AirlineController::class, 'slaDestroy'])->name('airline.sla.destroy');
     Route::post('airlines/approved-staff/update-status', [AirlineController::class, 'approvedStaffUpdateStatus'])->name('airline.approvedstaff.updatestatus');
 
     Route::post('airlines/head_office/store', [AirlineController::class, 'headOfficeStore'])->name('airline.head_office.store');
     Route::patch('airlines/head_office/{id}/update', [AirlineController::class, 'headOfficeUpdate'])->name('airline.head_office.update');
-    Route::delete('airlines/head_office/{id}/destroy', [AirlineController::class, 'headofficdestroy'])->name('airline.head_office.destroy');
+    Route::delete('airlines/head_office/{id}/destroy', [AirlineController::class, 'headOfficeDestroy'])->name('airline.head_office.destroy');
 
 
 
@@ -411,9 +416,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
     Route::patch('admin/agreements/statusupdate/{id}', [AirlineController::class, 'agreemenstStatusUpdate'])->name('airline.agreements.statusupdate');
     Route::post('airlines/agreements/store', [AirlineController::class, 'agreementsStore'])->name('airline.agreements.store');
     Route::patch('airlines/agreements/{id}/update', [AirlineController::class, 'agreementsUpdate'])->name('airline.agreements.update');
+    Route::patch('airlines/agreements/{id}/destroy', [AirlineController::class, 'agreementsDestroy'])->name('airline.agreements.destroy');
     Route::post('airlines/pli/store', [AirlineController::class, 'pliStore'])->name('airline.pli.store');
 
     Route::patch('airlines/library/{id}', [AirlineController::class, 'libraryupdate'])->name('airline.library.update');
+    Route::delete('airlines/library/delete/{id}', [AirlineController::class, 'libraryDelete'])->name('airline.library.destroy');
     Route::post('airlines/rules/store', [AirlineController::class, 'rulesStore'])->name('airline.rules.store');
     Route::patch('airlines/rules/update/{id}', [AirlineController::class, 'rulesUpdate'])->name('airline.rules.update');
 
