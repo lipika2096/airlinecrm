@@ -7,6 +7,7 @@
     <!-- Page Wrapper -->
     <div class="page-wrapper">
         <style>
+            .fw-bold{120px;}    
         </style>
         <!-- Page Content -->
         <div class="content container-fluid">
@@ -38,12 +39,94 @@
             <!-- /Page Header -->
             <div class="tab-content" style="margin-top:-30px;">
                 <div id="general" class="pro-overview tab-pane fade show active">
-                    <div class="row">
+                 <div class="row">
                         <div class="col-md-12">
                             <div class="card mt-3" style="padding: 3pc;margin-right: 33px;">
                                 <div class="row">
-                                    <div class="col-9">
-                                <div class="row">
+                                    <div class="col-7">
+                                    <table class="table table-bordered table-striped">
+                                        
+                    <tbody>
+                        <tr>
+                            <td class="fw-bold">Employee ID</td>
+                            <td>{{$employees->unique_id}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">First Name</td>
+                            <td>{{$employees->first_name}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Last Name</td>
+                            <td>{{$employees->last_name}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Email</td>
+                            <td>{{$employees->email}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">DOB </td>
+                            <td>{{$employees->dob}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">DOJ</td>
+                            <td>{{$employees->joining_date}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Branch</td>
+                            <td>{{$employees->branch}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Department</td>
+                            <td>{{$employees->department}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Position</td>
+                            <td>{{$employees->position}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Work Type</td>
+                            <td>{{$employees->work_type}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Phone</td>
+                            <td>{{$employees->phone}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Mobile(Personal)</td>
+                            <td>{{$employees->personal_phone}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Mobile(Company)</td>
+                            <td>{{$employees->company_mobile}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Company</td>
+                            <td>{{$employees->client_company_name}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Min Hrs</td>
+                            <td>{{$employees->min_hrs}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Max Hrs</td>
+                            <td>{{$employees->max_hrs}}</td>
+                        </tr>
+
+
+                    </tbody>
+                </table>
+            
+
+
+
+
+
+
+
+
+
+
+                                <!-- <div class="row">
                                     <div class="col-md-4 fw-bold">
                                         <p>Employee ID</p>
                                     </div>
@@ -171,10 +254,10 @@
                                         <p>{{$employees->max_hrs}}</p>
                                     </div>
                                 </div>
-
+ -->
                                     </div>
 
-                                <div class="col-3">
+                                <div class="col-5" style= "padding-left:90px;">
                                     @if (!empty($employees->avatar_filename))
                                         <img src="{{ asset('staff/storage/avatars/' . $employees->avatar_directory . '/' . $employees->avatar_filename) }}"
                                             alt=""  width="60%" style="width: 150px;border-radius: 85px;margin-top:20px;height: 150px!important;" class="ms-5">

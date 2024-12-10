@@ -145,106 +145,94 @@
                 <div class="modal-body">
                     <form action="{{ route('admin.agent.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group">
+                        <div class="row form-group">
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">Company Name <span class="text-danger">*</span></label>
                                     <input class="form-control" type="text" name="company_name" required>
                                 </div>
-                            </div>
+                            <!-- </div> -->
 
-                            <div class="col-sm-6">
-                                <div class="form-group">
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">Group <span class="text-danger">*</span></label>
                                     <input class="form-control" type="text" name="agency_name" required>
                                 </div>
-                            </div>
+                            <!-- </div> -->
 
-                            <div class="col-sm-6">
-                                <div class="form-group">
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">Brand Name <span class="text-danger">*</span></label>
                                     <input class="form-control" type="text" name="owner_name" required>
                                 </div>
-                            </div>
+                            <!-- </div> -->
 
-                            <div class="col-sm-6">
-                                <div class="form-group">
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">Street</label>
                                     <input class="form-control" type="text" name="address">
                                 </div>
-                            </div>
+                            <!-- </div> -->
 
-                            <div class="col-sm-6">
-                                <div class="form-group">
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">City</label>
                                     <input class="form-control" type="text" name="city">
                                 </div>
-                            </div>
+                            <!-- </div> -->
 
-                            <div class="col-sm-6">
-                                <div class="form-group">
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">Pincode</label>
                                     <input class="form-control" type="text" name="pincode">
                                 </div>
-                            </div>
+                            <!-- </div> -->
 
-                            <div class="col-sm-6">
-                                <div class="form-group">
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">Country</label>
                                     <input class="form-control" type="text" name="country">
                                 </div>
-                            </div>
+                            <!-- </div> -->
 
-                            <div class="col-sm-6">
-                                <div class="form-group">
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">Company Registration No.</label>
                                     <input class="form-control" type="text" name="company_registration_number">
                                 </div>
-                            </div>
+                            <!-- </div> -->
 
-                            <div class="col-sm-6">
-                                <div class="form-group">
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">IATA Number</label>
                                     <input class="form-control" type="text" name="iata">
                                 </div>
-                            </div>
+                            <!-- </div> -->
 
-                            <div class="col-sm-6">
-                                <div class="form-group">
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">GDS Type</label>
                                     <input class="form-control" type="text" name="gds_type">
                                 </div>
-                            </div>
+                            <!-- </div> -->
 
-                            <div class="col-sm-6">
-                                <div class="form-group">
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">PCC/Office ID</label>
                                     <input class="form-control" type="text" name="pcc_office_id">
                                 </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
+                            <!-- </div> -->
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">Account Code</label>
                                     <input class="form-control" type="text" name="account_code">
                                 </div>
-                            </div>
+                            <!-- </div> -->
 
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label class="col-form-label">Discount</label>
-                                    <input class="form-control" type="text" name="discount">
-                                </div>
-                            </div>
+                           
 
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label class="col-form-label">Remarks</label>
-                                    <input class="form-control" type="text" name="remarks">
-                                </div>
-                            </div>
-
-                            <div class="col-sm-12">
-                                <div class="form-group">
+                            <div class="col-sm-8">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">Focus Destinations</label>
                                     <div id="focus-destinations-container">
                                         <div class="input-group mb-2">
@@ -256,42 +244,59 @@
                                     </div>
                                     <button class="btn btn-primary" type="button" id="add-destination">Add More</button>
                                 </div>
-                            </div>
+                            <!-- </div> -->
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
+                                    <label class="col-form-label">Discount</label>
+                                    <input class="form-control" type="text" name="discount">
+                                </div>
+                            <!-- </div> -->
 
-                            <div class="col-sm-6">
-                                <div class="form-group">
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
+                                    <label class="col-form-label">Remarks</label>
+                                    <input class="form-control" type="text" name="remarks">
+                                </div>
+                            <!-- </div> -->
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">Business Mode</label>
                                     <input class="form-control" type="text" name="business_mode">
                                 </div>
-                            </div>
+                            <!-- </div> -->
 
-                            <div class="col-sm-6">
-                                <div class="form-group">
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">Key People</label>
                                     <input class="form-control" type="text" name="key_people">
                                 </div>
-                            </div>
+                            <!-- </div> -->
 
-                            <div class="col-sm-6">
-                                <div class="form-group">
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">Parent Company</label>
                                     <input class="form-control" type="text" name="parent_company">
                                 </div>
-                            </div>
+                            <!-- </div> -->
 
-                            <div class="col-sm-6">
-                                <div class="form-group">
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">Headquarters</label>
                                     <input class="form-control" type="text" name="headquarters">
                                 </div>
-                            </div>
+                            <!-- </div> -->
 
-                            <div class="col-sm-6">
-                                {{-- <div class="form-group">
+                            <!-- <div class="col-sm-4">
+                                <div class="form-group">
                                     <label class="col-form-label">Website</label>
                                     <input class="form-control" type="url" name="websites">
-                                </div> --}}
-                                <div class="form-group">
+                                </div> -->
+                                <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
+                                    <label class="col-form-label">Number of Employees</label>
+                                    <input class="form-control" type="number" name="no_of_employees">
+                                </div>
+                                <div class="col-sm-12">
                                     <label class="col-form-label">Websites</label>
                                     <div id="website-address-container">
                                         <div class="input-group mb-2">
@@ -303,18 +308,13 @@
                                     </div>
                                     <button class="btn btn-primary" type="button" id="add-website-address">Add More</button>
                                 </div>
-                            </div>
-
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label class="col-form-label">Number of Employees</label>
-                                    <input class="form-control" type="number" name="no_of_employees">
-                                </div>
-                            </div>
-                        </div>
+                            <!-- </div> -->
+                        <!-- </div> -->
                         <div class="submit-section">
                             <button class="btn btn-primary" type="submit">Submit</button>
                         </div>
+                        </div>
+                      </div>
                     </form>
                 </div>
             </div>

@@ -198,215 +198,179 @@
                                                 <form
                                                     action="{{ route('admin.agent.edit', ['id' => $agent->id]) }}#general"
                                                     method="POST" enctype="multipart/form-data">@csrf
-                                                    <!-- <ul class="personal-info">
-                                                        <li> -->
-                                                            <div class= "row form-group">
-                                                            <!-- <div class="title">Company Name</div> -->
-                                                            <div class="col-sm-4">
-                                                                <lable class="form-lable">Company Name</lable>
+                                                    <ul class="personal-info">
+                                                        <li>
+                                                            <div class="title">Company Name</div>
+                                                            <div class="text">
                                                                 <input type="text" class="form-control"
                                                                     name="company_name"
                                                                     value="{{ $agent->company_name }}">
                                                             </div>
-                            <!-- </div> -->
-                                                        <!-- </li> -->
+                                                        </li>
 
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Brand Name</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Brand Name</lable>
+                                                        <li>
+                                                            <div class="title">Brand Name</div>
+                                                            <div class="text">
                                                                 <input type="text" class="form-control"
                                                                     name="owner_name" value="{{ $agent->owner_name }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Group</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Group</lable>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Group</div>
+                                                            <div class="text">
                                                                 <input type="text" class="form-control"
                                                                     name="agency_name" value="{{ $agent->agency_name }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Street</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">street</lable>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Street</div>
+                                                            <div class="text">
                                                                 <input type="text" class="form-control" name="address"
                                                                     value="{{ $agent->address }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">City</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">City</lable>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">City</div>
+                                                            <div class="text">
                                                                 <input type="text" class="form-control" name="city"
                                                                     value="{{ $agent->city }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Pincode</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Pincode</lable>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Pincode</div>
+                                                            <div class="text">
                                                                 <input type="text" class="form-control" name="pincode"
                                                                     value="{{ $agent->pincode }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Country</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Country</lable>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Country</div>
+                                                            <div class="text">
                                                                 <input type="text" class="form-control" name="country"
                                                                     value="{{ $agent->country }}">
                                                             </div>
                                                         </li>
-                                                        <!-- <ul id="field-list" class="list-unstyled"> -->
-                                                            <!-- <li class="col-md-12 field-item"> -->
-                                                                <!-- <div class="row"> -->
-                                                                    <!-- <div class="col-md-4"> -->
-                                                                        <!-- <div class="title">IATA Number:</div> -->
-                                                                        <div class="col-sm-4">
-                                                                <lable class="form-lable">IATA Number</lable>
+                                                        <ul id="field-list" class="list-unstyled">
+                                                            <li class="col-md-12 field-item">
+                                                                <div class="row">
+                                                                    <div class="col-md-4">
+                                                                        <div class="title">IATA Number:</div>
+                                                                        <div class="text">
                                                                             <input type="text" class="form-control"
                                                                                 name="iata"
                                                                                 value="{{ $agent->iata }}">
                                                                         </div>
-                                                                    <!-- </div> -->
-                                                                    <!-- <div class="col-md-4"> -->
-                                                                        <!-- <div class="title">GDS Type:</div> -->
-                                                                        <div class="col-sm-4">
-                                                                <lable class="form-lable">GDS Type</lable>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <div class="title">GDS Type:</div>
+                                                                        <div class="text">
                                                                             <input type="text" class="form-control"
                                                                                 name="gds_type"
                                                                                 value="{{ $agent->gds_type }}">
                                                                         </div>
-                                                                    <!-- </div> -->
-                                                                    <!-- <div class="col-md-4"> -->
-                                                                        <!-- <div class="title">PCC/Office ID:</div> -->
-                                                                        <div class="col-sm-4">
-                                                                <lable class="form-lable">PCC/Office ID:</lable>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <div class="title">PCC/Office ID:</div>
+                                                                        <div class="text">
                                                                             <input type="text" class="form-control"
                                                                                 name="pcc_office_id"
                                                                                 value="{{ $agent->pcc_office_id }}">
                                                                         </div>
-                                                                    <!-- </div> -->
-                                                                <!-- </div> -->
-                                                            <!-- </li> -->
-                                                        <!-- </ul> -->
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                        </ul>
 
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Account Code</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Account Code</lable>
+                                                        <li>
+                                                            <div class="title">Account Code</div>
+                                                            <div class="text">
                                                                 <input type="text" class="form-control"
                                                                     name="account_code"
                                                                     value="{{ $agent->account_code }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Discount</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Discount</lable>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Discount</div>
+                                                            <div class="text">
                                                                 <input type="text" class="form-control"
                                                                     name="discount" value="{{ $agent->discount }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Remarks</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Remarks</lable>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Remarks</div>
+                                                            <div class="text">
                                                                 <input type="text" class="form-control" name="remarks"
                                                                     value="{{ $agent->remarks }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Business Model:</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Business Model</lable>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Business Model:</div>
+                                                            <div class="text">
                                                                 <input type="text" class="form-control"
                                                                     name="business_mode"
                                                                     value="{{ $agent->business_mode }}">
                                                             </div>
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Parent Company</lable>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Focused Destinations</div>
+                                                            <div class="text">
+                                                                @foreach (json_decode($agent->focus_destinations) as $destination)
+                                                                    <input type="text" class="form-control"
+                                                                        name="focus_destinations[]"
+                                                                        value="{{ $destination }}">
+                                                                @endforeach
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Key People</div>
+                                                            <div class="text">
+                                                                <input type="text" class="form-control"
+                                                                    name="key_people" value="{{ $agent->key_people }}">
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Parent Company</div>
+                                                            <div class="text">
                                                                 <input type="text" class="form-control"
                                                                     name="parent_company"
                                                                     value="{{ $agent->parent_company }}">
                                                             </div>
-                            </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Focused Destinations</div> -->
-                                                            <div class="row form-group">
-                                                            <lable class="form-lable">Focused Destinations</lable>
-                                                                @foreach (json_decode($agent->focus_destinations) as $destination)
-                                                                <div class=col-sm-4>
-                                                                <input type="text" class="form-control"
-                                                                        name="focus_destinations[]"
-                                                                        value="{{ $destination }}">
-                                                                        </div>
-                                                                @endforeach
-                                                            </div>
-                            <!-- </div> -->
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <div class="row form-group">
-                                                            <!-- <div class="title">Key People</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Key People</lable>
-                                                                <input type="text" class="form-control"
-                                                                    name="key_people" value="{{ $agent->key_people }}">
-                                                            </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Parent Company</div> -->
-
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Headquarters</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Headquarters</lable>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Headquarters</div>
+                                                            <div class="text">
                                                                 <input type="text" class="form-control"
                                                                     name="headquarters"
                                                                     value="{{ $agent->headquarters }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                        <!-- <div class="title">Employees</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Employees</lable>
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Website</div>
+                                                            <div class="text">
+                                                                @foreach (json_decode($agent->websites) as $awebsites)
+                                                                    <input type="text" class="form-control"
+                                                                        name="websites[]"
+                                                                        value="{{ $awebsites }}">
+                                                                @endforeach
+                                                            </div>
+                                                                {{-- <input type="text" class="form-control"
+                                                                    name="websites" value="{{ $agent->websites }}"
+                                                                    placeholder="http://example.com"> --}}
+                                                        </li>
+                                                        <li>
+                                                            <div class="title">Employees</div>
+                                                            <div class="text">
                                                                 <input type="text" class="form-control"
                                                                     name="no_of_employees"
                                                                     value="{{ $agent->no_of_employees }}">
                                                             </div>
-                            </div>
-                            <div class="row form-group">
-                                                            <!-- <div class="title">Website</div> -->
-                                                            <!-- <div class="row"> -->
-                                                            <lable class="form-lable">Website</lable>
-
-                                                                @foreach (json_decode($agent->websites) as $awebsites)
-                                                                <div class="col-sm-4">
-                                                                    <input type="text" class="form-control"
-                                                                        name="websites[]"
-                                                                        value="{{ $awebsites }}">
-                                                                        </div>
-                                                                @endforeach
-                                                           
-                                                                <!-- {{-- <input type="text" class="form-control"
-                                                                    name="websites" value="{{ $agent->websites }}"
-                                                                    placeholder="http://example.com"> --}} -->
-                                                                    <!-- </div> -->
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title"></div> -->
-                                                            <div class="submit-section"><button class="btn btn-primary"
+                                                        </li>
+                                                        <li>
+                                                            <div class="title"></div>
+                                                            <div class="text"><button class="btn btn-primary"
                                                                     type="submit">Update</button></div>
-                                                                    </div>
-                                                        <!-- </li> -->
-                                                    <!-- </ul> -->
+                                                        </li>
+                                                    </ul>
 
                                                 </form>
                                             </div>
