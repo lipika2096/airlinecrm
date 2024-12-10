@@ -59,13 +59,13 @@ class AirlineController extends Controller
         $staff = User::where('role_id', 2)->get();
         $library = AirlineLibrary::where('deleted_at',null)->orWhere('deleted_at','null')->where('airline_id', $id)->get();
         $approvedStaffs = ApprovedStaff::where('airline_id', $id)->get();
-        $slas = SLA::where('airline_id', $id)->get();
+        $slas = SLA::where('deleted_at',null)->orWhere('deleted_at','null')->where('airline_id', $id)->get();
         $headOffices = HeadOfficeContactDetail::where('airline_id', $id)->where('deleted_at', NULL)->get();
         $headOfficesDeleted = HeadOfficeContactDetail::where('airline_id', $id)->where('deleted_at','!=', NULL)->get();
         $Staffs = User::where('status', 'active')->get();
         $agreements = Agreement::where('deleted_at',null)->orWhere('deleted_at','null')->with(['agent', 'airline'])->get();
         $fareType = FareType::get();
-        $specialFare = SpecialFare::where('deleted_at',null)->orWhere('deleted_at','null')->where('airline_id', $id)->where('status',1)->get();
+        $specialFare = SpecialFare::where('airline_id', $id)->where('status',1)->get();
         return view('admin.view-airline', compact('airlines','airlineDetails','aircrafts', 'fleets', 'staff', 'approvedStaffs','library','slas', 'headOffices', 'Staffs', 'agents', 'rules', 'headOfficesDeleted', 'agreements', 'fareType','specialFare'));
     }
     public function store(Request $request)
