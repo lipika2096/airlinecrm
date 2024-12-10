@@ -19,6 +19,7 @@ use App\Models\Agent;
 use App\Models\SpecialFare;
 use App\Models\Agreement;
 use App\Models\FareType;
+use App\Models\Duty;
 
 use App\Models\HeadOfficeContactDetail;
 use Illuminate\Support\Facades\Auth;
@@ -58,15 +59,16 @@ class AirlineController extends Controller
         $fleets = Fleet::where('deleted_at',null)->orWhere('deleted_at','null')->where('airline_id', $id)->get();
         $staff = User::where('role_id', 2)->get();
         $library = AirlineLibrary::where('deleted_at',null)->orWhere('deleted_at','null')->where('airline_id', $id)->get();
-        $approvedStaffs = ApprovedStaff::where('airline_id', $id)->get();
+        $approvedStaffs = ApprovedStaff::where('status',1)->where('airline_id', $id)->get();
         $slas = SLA::where('deleted_at',null)->orWhere('deleted_at','null')->where('airline_id', $id)->get();
         $headOffices = HeadOfficeContactDetail::where('airline_id', $id)->where('deleted_at', NULL)->get();
         $headOfficesDeleted = HeadOfficeContactDetail::where('airline_id', $id)->where('deleted_at','!=', NULL)->get();
         $Staffs = User::where('status', 'active')->get();
         $agreements = Agreement::where('deleted_at',null)->orWhere('deleted_at','null')->with(['agent', 'airline'])->get();
         $fareType = FareType::get();
+        $duty = Duty::where('status',1)->get();
         $specialFare = SpecialFare::where('airline_id', $id)->where('status',1)->get();
-        return view('admin.view-airline', compact('airlines','airlineDetails','aircrafts', 'fleets', 'staff', 'approvedStaffs','library','slas', 'headOffices', 'Staffs', 'agents', 'rules', 'headOfficesDeleted', 'agreements', 'fareType','specialFare'));
+        return view('admin.view-airline', compact('airlines','airlineDetails','aircrafts', 'fleets', 'staff', 'approvedStaffs','library','slas', 'headOffices', 'Staffs', 'agents', 'rules', 'headOfficesDeleted', 'agreements', 'fareType','specialFare','duty'));
     }
     public function store(Request $request)
     {
@@ -628,6 +630,38 @@ public function targetStore(Request $request)
                     'airline_id' => $request->input('airline_id'),
                     'fare_type' => $fareType,
                     'agent_id' => $agentId
+                ],
+                [
+                    'status' => $status
+                ]
+            );
+
+            if ($specialFare->wasRecentlyCreated) {
+                $specialFare->created_by = Auth()->user()->name;
+                $specialFare->updated_at = $request->input('updated_at'); // Assuming user authentication is used
+            } else {
+                $specialFare->updated_by = auth()->user()->name;
+            }
+
+            // Save the changes
+            $specialFare->save();
+        }
+    }
+
+    return redirect()->back()->with('success', 'Special fares updated successfully.');
+}
+
+
+public function approvedStaffRightsStore(Request $request)
+{
+    foreach ($request->input('staff') as $satffId => $duties) {
+        foreach ($duties as $duty => $status) {
+
+           $specialFare=  ApprovedStaff::updateOrCreate(
+                [
+                    'airline_id' => $request->input('airline_id'),
+                    'duties' => $duty,
+                    'staff_id' => $satffId
                 ],
                 [
                     'status' => $status

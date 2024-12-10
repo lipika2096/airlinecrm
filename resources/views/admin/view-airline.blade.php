@@ -1219,67 +1219,154 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="{{ route('admin.airline.approvedstaff.store') }}" method="POST"
-                                    enctype="multipart/form-data">
+                                <form
+                                    action="{{ route('admin.airline.approved-staff-rights.store') }}#approved_staffs"
+                                    method="POST" enctype="multipart/form-data">
                                     @csrf
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <input class="form-control" type="hidden" name="airline_id"
-                                                    value="{{ $airlineDetails->airline_id }}">
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-form-label">Select Staff <span
-                                                        class="text-danger">*</span></label>
-                                                <select class="select form-control" name="staff_id">
-                                                    <option>Select Staff</option>
-                                                    @foreach ($staff as $staff_data)
-                                                        <option value="{{ $staff_data->id }}">
-                                                            {{ $staff_data->first_name }}
-                                                            {{ $staff_data->last_name }}</option>
+                                    <div class="table-responsive text-nowrap">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="fw-bold">Staff
+                                                    </th>
+                                                    @foreach ($duty as $ft)
+                                                        <th class="fw-bold">
+                                                            {{ $ft->name }}</th>
                                                     @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-form-label">Ticketing <span
-                                                        class="text-danger">*</span></label>
-                                                <select class="select form-control" name="ticketing">
-                                                    <option value="1">Approve</option>
-                                                    <option value="2">Dis-Approve</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-form-label">Sales<span
-                                                        class="text-danger">*</span></label>
-                                                <select class="select form-control" name="sales">
-                                                    <option value="1">Approve</option>
-                                                    <option value="2">Dis-Approve</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="col-form-label">Marketing<span
-                                                        class="text-danger">*</span></label>
-                                                <select class="select form-control" name="marketing">
-                                                    <option value="1">Approve</option>
-                                                    <option value="2">Dis-Approve</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="col-form-label">Airport Operations<span
-                                                        class="text-danger">*</span></label>
-                                                <select class="select form-control" name="airport_operations">
-                                                    <option value="1">Approve</option>
-                                                    <option value="2">Dis-Approve</option>
-                                                </select>
-                                            </div>
-                                        </div>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($Staffs as $air)
+                                                    <tr>
+                                                        <div class="form-group">
+                                                            <input class="form-control"
+                                                                type="hidden"
+                                                                name="airline_id"
+                                                                value="{{ $airlineDetails->airline_id }}">
+
+                                                                <input class="form-control"
+                                                                type="hidden"
+                                                                name="updated_at"
+                                                                value="  ">
+                                                        </div>
+                                                        <th class="fw-bold">
+                                                            {{ $air->first_name }}</th>
+                                                        @foreach ($duty as $ft)
+                                                            @php
+                                                                $status = DB::table(
+                                                                    'approved_staffs',
+                                                                )
+                                                                    ->where(
+                                                                        'staff_id',
+                                                                        $air->id,
+                                                                    )
+                                                                    ->where(
+                                                                        'duties',
+                                                                        $ft->name,
+                                                                    )
+                                                                    ->where(
+                                                                        'airline_id',
+                                                                        $airlineDetails->airline_id,
+                                                                    )
+                                                                    ->value('status');
+                                                            @endphp
+                                                            <input type="hidden"
+                                                                name="staff[{{ $air->id }}][{{ $ft->name }}]"
+                                                                value="2">
+                                                            <th>
+                                                                <input type="checkbox"
+                                                                    name="staff[{{ $air->id }}][{{ $ft->name }}]"
+                                                                    value="1"
+                                                                    {{ $status == 1 ? 'checked' : '' }}>
+                                                            </th>
+                                                        @endforeach
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
                                     <div class="submit-section">
-                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                        <button class="btn btn-primary"
+                                            type="submit">Submit</button>
                                     </div>
                                 </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="view_approvedStaff" class="modal custom-modal fade" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">View Approved Staff</h5>
+                                <button type="button" class="close" data-bs-dismiss="modal"
+                                    aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                    <div class="table-responsive text-nowrap">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="fw-bold">Staff
+                                                    </th>
+                                                    @foreach ($duty as $ft)
+                                                        <th class="fw-bold">
+                                                            {{ $ft->name }}</th>
+                                                    @endforeach
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($Staffs as $air)
+                                                    <tr>
+                                                        <div class="form-group">
+                                                            <input class="form-control"
+                                                                type="hidden"
+                                                                name="airline_id"
+                                                                value="{{ $airlineDetails->airline_id }}">
+
+                                                                <input class="form-control"
+                                                                type="hidden"
+                                                                name="updated_at"
+                                                                value="  ">
+                                                        </div>
+                                                        <th class="fw-bold">
+                                                            {{ $air->first_name }}</th>
+                                                        @foreach ($duty as $ft)
+                                                            @php
+                                                                $status = DB::table(
+                                                                    'approved_staffs',
+                                                                )
+                                                                    ->where(
+                                                                        'staff_id',
+                                                                        $air->id,
+                                                                    )
+                                                                    ->where(
+                                                                        'duties',
+                                                                        $ft->name,
+                                                                    )
+                                                                    ->where(
+                                                                        'airline_id',
+                                                                        $airlineDetails->airline_id,
+                                                                    )
+                                                                    ->value('status');
+                                                            @endphp
+                                                            <input type="hidden"
+                                                                name="staff[{{ $air->id }}][{{ $ft->name }}]"
+                                                                value="2">
+                                                            <th>
+                                                                <input type="checkbox"
+                                                                    name="staff[{{ $air->id }}][{{ $ft->name }}]"
+                                                                    value="1"
+                                                                    {{ $status == 1 ? 'checked' : '' }}>
+                                                            </th>
+                                                        @endforeach
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                             </div>
                         </div>
                     </div>
@@ -1287,8 +1374,10 @@
                 <div id="approved_staffs" class="pro-overview tab-pane fade show">
                     <div class="row">
                         <div class="col-auto float-end ms-auto mt-2 mx-4 mb-2">
-                        <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_approvedStaff"><i
-                        class="fa fa-plus"></i> Add Approved Staff</a>
+                        <a class="btn add-btn"   style="margin-right:10px; border-radius:10px !important;" data-bs-toggle="modal" data-bs-target="#add_approvedStaff"><i
+                        class="fa fa-plus"></i> Add/Edit Approved Staff</a>
+                        <a class="btn btn-info text-white"   style="margin-right:10px; border-radius:10px !important;" data-bs-toggle="modal" data-bs-target="#view_approvedStaff"><i
+                        class="fa fa-eye"></i> View Approved Staff</a>
                         </div>
                         <div class="col-md-12">
                             <div class="table-responsive">
@@ -1300,10 +1389,12 @@
                                             <th>First Name</th>
                                             <th>Last Name</th>
                                             <th>Department</th>
-                                            <th>Ticketing</th>
-                                            <th>Sales</th>
-                                            <th>Marketing</th>
-                                            <th>Airport Operations</th>
+                                            <th>Duties</th>
+                                            <th>Status</th>
+                                            <th>Created On</th>
+                                            <th>Created By</th>
+                                            <th>Updated On</th>
+                                            <th>Updated By</th>
                                             <!-- <th>Actions</th> -->
                                         </tr>
                                     </thead>
@@ -1315,24 +1406,26 @@
                                                 <td>{{ $data->staff->first_name }}</td>
                                                 <td>{{ $data->staff->last_name }}</td>
                                                 <td>{{ $data->staff->department }}</td>
+                                                <td>{{$data->duties}}</td>
                                                 <td>
-                                                    <i class="status-icon fas {{ $data->ticketing == 1 ? 'fa-check' : 'fa-times' }}"
-                                                        data-field="ticketing"
-                                                        data-staff-id="{{ $data->staff_id }}"></i>
+                                                    @if ($data->status == 1)
+                                                        Active
+                                                    @else
+                                                        Inactive
+                                                    @endif
+
                                                 </td>
                                                 <td>
-                                                    <i class="status-icon fas {{ $data->sales == 1 ? 'fa-check' : 'fa-times' }}"
-                                                        data-field="sales" data-staff-id="{{ $data->staff_id }}"></i>
+                                                    {{$data->created_at}}
                                                 </td>
                                                 <td>
-                                                    <i class="status-icon fas {{ $data->marketing == 1 ? 'fa-check' : 'fa-times' }}"
-                                                        data-field="marketing"
-                                                        data-staff-id="{{ $data->staff_id }}"></i>
+                                                    {{$data->created_by}}
                                                 </td>
                                                 <td>
-                                                    <i class="status-icon fas {{ $data->airport_operations == 1 ? 'fa-check' : 'fa-times' }}"
-                                                        data-field="airport_operations"
-                                                        data-staff-id="{{ $data->staff_id }}"></i>
+                                                    {{$data->updated_at}}
+                                                </td>
+                                                <td>
+                                                    {{$data->updated_by}}
                                                 </td>
                                                 <!-- <td>
                         <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add_approvedStaff">
