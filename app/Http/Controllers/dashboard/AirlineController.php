@@ -67,7 +67,7 @@ class AirlineController extends Controller
         $agreements = Agreement::where('deleted_at',null)->orWhere('deleted_at','null')->with(['agent', 'airline'])->get();
         $fareType = FareType::get();
         $duty = Duty::where('status',1)->get();
-        $specialFare = SpecialFare::where('airline_id', $id)->where('status',1)->get();
+        $specialFare = SpecialFare::where('airline_id', $id)->where('status',1)->with('fareDiscount')->get();
         return view('admin.view-airline', compact('airlines','airlineDetails','aircrafts', 'fleets', 'staff', 'approvedStaffs','library','slas', 'headOffices', 'Staffs', 'agents', 'rules', 'headOfficesDeleted', 'agreements', 'fareType','specialFare','duty'));
     }
     public function store(Request $request)
@@ -481,6 +481,7 @@ class AirlineController extends Controller
 
         $validated['last_updated_by'] = auth()->user()->name;
         $validated['last_updated_on'] = now();
+        $validated['add_to_mail_list'] = $request->input('add_to_mail_list') == '1' ? 1 : 0;
         $headOffice->update($validated);
 
         return redirect()->back()->with('success', 'Head Office Contact Details updated successfully.');

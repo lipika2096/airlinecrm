@@ -53,7 +53,8 @@ use App\Http\Controllers\dashboard\{
     FlightController,
     LicenseApprovalController,
     AgentLibraryController,
-    FareTypeController
+    FareTypeController,
+    DiscountController
 };
 
 /*
@@ -118,6 +119,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
     Route::post('fare-types/store', [FareTypeController::class, 'store'])->name('faretypes.store');
     Route::put('fare-types/update/{id}', [FareTypeController::class, 'update'])->name('faretypes.update');
     Route::delete('fare-types/delete/{id}', [FareTypeController::class, 'delete'])->name('faretypes.delete');
+    Route::get('discounts', [DiscountController::class, 'index'])->name('discounts');
+    Route::post('discounts/store', [DiscountController::class, 'discountStore'])->name('discounts.store');
+    Route::put('discounts/update/{id}', [DiscountController::class, 'discountUpdate'])->name('discounts.update');
+    Route::delete('discounts/delete/{id}', [DiscountController::class, 'discountDelete'])->name('discounts.delete');
 
     //LeaveType rotes
     Route::get('leavetypes', [LeaveTypeController::class, 'leaveType'])->name('leave-type');

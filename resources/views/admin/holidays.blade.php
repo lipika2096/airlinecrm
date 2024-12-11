@@ -250,7 +250,7 @@
                         <div class="page-header">
                             <div class="row align-items-center">
                                 <div class="col">
-                                    <h3 class="page-title">My Teams</h3>
+                                    <h3 class="page-title">My Leaves    </h3>
                                 </div>
                                 <div class="col-auto float-end ms-auto">
 
@@ -572,6 +572,9 @@
                                     <div class="container">
                                         <div class="row">
                                             @foreach ($value as $val)
+                                            <div class="col-sm-6">
+                                            <div class="card pe-3 ps-2">
+
                                                 @php
                                                     // Fetching leave dates for the employee
                                                     $employeeLeaves = DB::table('employee_leaves')
@@ -600,14 +603,20 @@
                                                     }
                                                 @endphp
 
-                                                <div class="col-md-2" style="margin-top:20px;">
+
+
+                                                <div style="margin-top:20px;">
+                                                <div class="row">
+                                                    <!-- <div class="col-sm-1"></div> -->
                                                     <div
-                                                        class="employee-profile rounded-pill leave-card text-white fw-bold">
+                                                        class="col-sm-2 ms-4 employee-profile rounded-pill d-flex  leave-card text-white fw-bold">
                                                         {{ strtoupper(substr($val->first_name, 0, 1)) }}{{ strtoupper(substr($val->last_name, 0, 1)) }}
                                                     </div>
-                                                    <div class="employee-name text-capitalize" style="font-weight:600;">{{ $val->first_name }} {{ $val->last_name }}</div>
+
+                                                    <div class="col-sm-8 mt-2 employee-name text-capitalize" style="font-weight:600;"> {{ $val->first_name }} {{ $val->last_name }}</div>
                                                 </div>
-                                                <div class="col-md-10 mb-2">
+                                                </div>
+                                                <div class="col-sm-12 mb-2">
                                                     <div class="calendar">
                                                         @php
 
@@ -617,9 +626,9 @@
                                                             $leaveDays = $leaveDays ?? []; // Ensure $leaveDays is set
                                                         @endphp
 
-                                                        <div class="week-days d-flex justify-content-between">
+                                                        <div class="week-days my-2 d-flex justify-content-between">
                                                             @foreach (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day)
-                                                                <div class="day-header" style="width: 14.28%; text-align: center;">
+                                                                <div class="day-header" style="width: 15%; font-weight:bold; text-align: center;">
                                                                     {{ $day }}
                                                                 </div>
                                                             @endforeach
@@ -642,12 +651,12 @@
                                                                         @if ($currentDay > 0 && $currentDay <= $daysInMonth)
                                                                             {{-- Valid day --}}
                                                                             <div class="day mb-2 ms-2"
-                                                                                style="width: 14.28%; height: 50px; text-align: center; line-height: 50px; {{ $isLeaveDay ? 'background-color: black; color: white;' : '' }}">
+                                                                                style="width: 15%; height: 40px; text-align: center; line-height: 50px; {{ $isLeaveDay ? 'background-color: black; font-weight:bold; color: white;' : '' }}">
                                                                                 {{ $currentDay }}
                                                                             </div>
                                                                         @else
                                                                             {{-- Empty slot --}}
-                                                                            <div class="day empty-day ms-2" style="width: 14.28%; height: 50px;"></div>
+                                                                            <div class="day empty-day mb-2 ms-2" style="width: 15%; height: 40px;"></div>
                                                                         @endif
                                                                     @endfor
                                                                 </div>
@@ -655,8 +664,9 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <hr/>
-
+                                                <!-- <hr/> -->
+                                                </div>
+                                            </div>
                                             @endforeach
 
                                         </div>
@@ -919,7 +929,8 @@ const targetSelectors = document.getElementsByClassName('mainCalendarDiv');
                                 justify-content: center;
                                 align-items: center;
                                 border-radius: 5px;
-                                background-color: #e0e0e0;
+                                border: 1px outset ;
+                                /* background-color: #e3e3e3; */
                             }
 
                             .day.present {

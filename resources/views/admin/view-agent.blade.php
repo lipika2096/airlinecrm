@@ -391,7 +391,7 @@
                                                                         value="{{ $awebsites }}">
                                                                         </div>
                                                                 @endforeach
-                                                           
+
                                                                 <!-- {{-- <input type="text" class="form-control"
                                                                     name="websites" value="{{ $agent->websites }}"
                                                                     placeholder="http://example.com"> --}} -->
@@ -559,6 +559,9 @@
                                                 <th>Position</th>
                                                 <th>Email Address</th>
                                                 <th>Phone Number</th>
+                                                <th>Add To Mail List</th>
+                                                <th>Created On</th>
+                                                <th>Created By</th>
                                                 <th>Last Updated on</th>
                                                 <th>Last Updated by</th>
                                                 <th>Action</th>
@@ -573,6 +576,12 @@
                                                     <td>{{ $contact->position }}</td>
                                                     <td>{{ $contact->email_address }}</td>
                                                     <td>{{ $contact->phone_number }}</td>
+                                                    <td>
+                                                        <input type="checkbox" disabled {{ $contact->add_to_mail_list == 1 ? 'checked' : '' }}>
+                                                    </td>
+
+                                                    <td>{{ $contact->created_at }}</td>
+                                                    <td>{{ $contact->created_by }}</td>
                                                     <td>{{ $contact->updated_at }}</td>
                                                     <td>{{ $contact->updated_by }}</td><!-- Edit Icon -->
                                                     <td>
@@ -656,6 +665,16 @@
                                                                                 <input class="form-control"
                                                                                     value="{{ $contact->position }}"
                                                                                     type="text" name="position">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Add to mail List
+                                                                                    <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                        <input type="hidden" name="add_to_mail_list" value="0">
+                                                                                        <input type="checkbox" name="add_to_mail_list" value="1"
+                                                                                            {{ $contact->add_to_mail_list == 1 ? 'checked' : '' }}>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -1106,7 +1125,7 @@
                                             <div class="conversation-description">
                                                 {{ $conversation->description }}
                                             </div>
-                                            <div class="conversation-author">added by {{ $conversation->from }}</div>
+                                            <div class="conversation-author">added by {{ $conversation->from}}</div>
                                         </div>
                                     @endforeach
                                 </div>
@@ -1124,24 +1143,46 @@
                                                 <form action="{{ route('admin.agent.conversation.store') }}#conversation"
                                                     method="POST" enctype="multipart/form-data">
                                                     @csrf
+                                                    <input class="form-control" type="hidden" name="from"
+                                                        value="{{ Auth()->user()->name }}">
                                                     <div class="row">
                                                         <div class="col-sm-6">
                                                             <div class="form-group">
-                                                                <input class="form-control" type="hidden" name="from"
-                                                                    value="{{ $agent->id }}">
                                                             </div>
                                                             <div class="form-group">
-                                                                <label class="col-form-label">Title <span
+                                                                <label class="col-form-label">Airlines <span
                                                                         class="text-danger">*</span></label>
-                                                                <input class="form-control" type="text" required
-                                                                    name="title">
+                                                                <select class="form-control" required
+                                                                    name="airline_id">
+                                                                    <option>Select Airline</option>
+                                                                    @foreach ($airlineDetailData as $data )
+                                                                        <option value="{{$data->airline_id}}">{{$data->airline->airline_name}}</option>
+                                                                    @endforeach
+                                                                </select>
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-6">
                                                             <div class="form-group">
-                                                                <label class="col-form-label">Description</label>
+                                                                <label class="col-form-label">Subject <span
+                                                                        class="text-danger">*</span></label>
                                                                 <input class="form-control" type="text" required
-                                                                    name="description">
+                                                                    name="title">
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Date of Contact <span
+                                                                        class="text-danger">*</span></label>
+                                                                <input class="form-control" type="date" required
+                                                                    name="date_of_contact">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-12">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Remarks</label>
+                                                                <textarea class="form-control"  required
+                                                                    name="description"></textarea>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -2264,6 +2305,7 @@
                                             <div class="form-group">
                                                 <input class="form-control" type="hidden" name="agent_id"
                                                     value="{{ $agent->id }}">
+                                                    <input class="form-control" type="hidden" required name="updated_at" value=" ">
                                             </div>
                                             <div class="form-group">
                                                 <label class="col-form-label">First Name <span
@@ -2296,6 +2338,14 @@
                                             <div class="form-group">
                                                 <label class="col-form-label">Position</label>
                                                 <input class="form-control" type="text" required name="position">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Add to mail List
+                                                    <span
+                                                        class="text-danger">*</span></label>
+                                                        <input type="checkbox" name="add_to_mail_list" value="1">
                                             </div>
                                         </div>
                                     </div>

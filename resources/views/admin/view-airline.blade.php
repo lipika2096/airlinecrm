@@ -597,6 +597,7 @@
                                                 <th>Department</th>
                                                 <th>Email Address</th>
                                                 <th>Phone Number</th>
+                                                <th>Add To Mail List</th>
                                                 <th>Created On</th>
                                                 <th>Created By</th>
                                                 <th>Last Updated on</th>
@@ -615,6 +616,9 @@
                                                     <td>{{ $headOffice->department }}</td>
                                                     <td>{{ $headOffice->email_address }}</td>
                                                     <td>{{ $headOffice->phone_number }}</td>
+                                                    <td>
+                                                        <input type="checkbox" disabled {{ $headOffice->add_to_mail_list == 1 ? 'checked' : '' }}>
+                                                    </td>
                                                     <td>{{ $headOffice->created_at }}</td>
                                                     <td>{{ $headOffice->created_by }}</td>
                                                     <td>{{ $headOffice->last_updated_on }}</td>
@@ -755,6 +759,16 @@
                                                                                     required>
                                                                             </div>
                                                                         </div>
+                                                                        <div class="col-sm-6">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label">Add to mail List
+                                                                                    <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                        <input type="hidden" name="add_to_mail_list" value="0">
+                                                                                        <input type="checkbox" name="add_to_mail_list" value="1"
+                                                                                            {{ $headOffice->add_to_mail_list == 1 ? 'checked' : '' }}>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                     <div class="submit-section">
                                                                         <button class="btn btn-primary"
@@ -811,6 +825,12 @@
                                                         <label for="emailAddress">Email Address</label>
                                                         <input type="email" class="form-control" id="emailAddress"
                                                             name="email_address">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Add to mail List
+                                                            <span
+                                                                class="text-danger">*</span></label>
+                                                                <input type="checkbox" name="add_to_mail_list" value="1" >
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-6">
@@ -2658,7 +2678,7 @@
                                                 <td>{{ $fare->agent->iata }}</td>
                                                 <td>{{ $fare->agent->pcc_office_id }}</td>
                                                 <td>{{$fare->agent->account_code}}</td>
-                                                <td>{{ $fare->agent->discount }}</td>
+                                                <td> {{ $fare->fareDiscount ? $fare->fareDiscount->discount : 'N/A' }}</td>
                                                 <td>{{ $fare->agent->remarks }}</td>
                                                 <td>{{$fare->created_at}}</td>
                                                     <td>{{$fare->created_by}}</td>

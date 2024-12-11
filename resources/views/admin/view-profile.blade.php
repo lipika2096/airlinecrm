@@ -7,7 +7,7 @@
     <!-- Page Wrapper -->
     <div class="page-wrapper">
         <style>
-            .fw-bold{120px;}    
+            .fw-bold{120px;}
         </style>
         <!-- Page Content -->
         <div class="content container-fluid">
@@ -45,7 +45,7 @@
                                 <div class="row">
                                     <div class="col-7">
                                     <table class="table table-bordered table-striped">
-                                        
+
                     <tbody>
                         <tr>
                             <td class="fw-bold">Employee ID</td>
@@ -115,7 +115,7 @@
 
                     </tbody>
                 </table>
-            
+
 
 
 

@@ -353,6 +353,7 @@
                             <li><a class="" href="{{route('admin.designations')}}">Add Designations</a></li>
                             <li><a class="" href="{{route('admin.categories.view')}}">Add Category</a></li>
                             <li><a class="" href="{{route('admin.faretypes')}}">Add Fare Types</a></li>
+                            <li><a class="" href="{{route('admin.discounts')}}">Add Dsicounts</a></li>
 
                             <li><a class="" href="{{route('admin.duties')}}">Add Duties</a></li>
                             <!-- <li><a class="" href="javascript:void(0);">Add Public Holidays</a></li> -->
@@ -366,6 +367,18 @@
                                     </li>
                                     <li><a class="" href="{{ route('admin.events') }}">Calendar</a></li>
                                 </ul> -->
+                            </li>
+                            <li class="submenu">
+                                <a href="javascript:void(0);"><span>Deleted Data</span> <span
+                                        class="menu-arrow"></span></a>
+                                <ul style="display: none;">
+                                    <li>
+                                        <a class="" href="{{route('admin.deleted.agents')}}">Deleted Travel Agents</a>
+                                    </li>
+                                    <li>
+                                       <a class="" href="{{route('admin.deleted.airlines')}}">Deleted Airlines List</a>
+                                    </li>
+                                </ul>
                             </li>
                         </ul>
                     </li>
@@ -384,9 +397,6 @@
                             @if (auth()->user()->hasRole('admin'))
 
                                  <li><a class="" href="{{ route('admin.agents') }}">Travel Partners List</a></li>
-                                 <li>
-                                    <a class="" href="{{route('admin.deleted.agents')}}">Deleted Travel Agents</a>
-                                 </li>
                                 <li><a class="" href="{{ route('admin.agent-library') }}">Library</a></li>
                                 <li><a class="" href="{{ route('admin.agent-reports') }}">Reports</a></li>
                                 <!--<li><a class="" href="{{ route('admin.task-reports') }}">Reports</a></li>-->
@@ -407,9 +417,6 @@
                         <ul style="display: none;">
                             @if (auth()->user()->hasRole('admin'))
                                 <li><a class="" href="{{ route('admin.airlines-details') }}">Airlines List</a></li>
-                                <li>
-                                   <a class="" href="{{route('admin.deleted.airlines')}}">Deleted Airlines List</a>
-                                </li>
                                 <li><a class="" href="{{ route('admin.airline-library') }}">Library</a></li>
                                 <li><a class="" href="{{ route('admin.airline-reports') }}">Reports</a></li>
                             @endif

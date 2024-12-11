@@ -32,6 +32,7 @@ use App\Models\CaseHistory;
 use App\Models\CaseUpdate;
 use App\Models\Agreement;
 use Carbon\Carbon;
+use App\Models\AirlineDetail;
 
 
 class AgentController extends Controller
@@ -428,6 +429,8 @@ public function targetStore(Request $request)
             'email_address' => $request->input('email_address'),
             'phone_number' => $request->input('phone_number'),
             'position' => $request->input('position'),
+            'add_to_mail_list' => $request->input('add_to_mail_list') == '1' ? 1 : 0,
+            'updated_by' => Auth()->user()->name
         ]);
         return redirect()->back();
 
@@ -441,6 +444,9 @@ public function targetStore(Request $request)
             'phone_number' => $request->input('phone_number'),
             'position' => $request->input('position'),
             'agent_id' => $request->input('agent_id'),
+            'add_to_mail_list' => $request->input('add_to_mail_list'),
+            'updated_at' => $request->input('updated_at'),
+            'created_by' => Auth()->user()->name
         ]);
         return redirect()->back();
 
@@ -499,7 +505,9 @@ public function targetStore(Request $request)
             'from' => $request->input('from'),
             'title' => $request->input('title'),
             'description' => $request->input('description'),
-            'c_date' => now()
+            'c_date' => now(),
+            'airline_id' => $request->input('airline_id'),
+            'date_of_contact' => $request->input('date_of_contact')
         ]);
         return redirect()->back();
 
@@ -634,7 +642,7 @@ public function targetStore(Request $request)
         $commissions = Commission::all();
         $agents = Agent::where('deleted_at', 'null')->get();
         $airlines = Airline::all();
-
+        $airlineDetailData = AirlineDetail::where('deleted_at',NULL)->orWhere('deleted_at', 'null')->with('airline')->get();
 
         $wallets = Wallet::where('agent_id', $id)->get();
 
@@ -645,7 +653,7 @@ public function targetStore(Request $request)
         $tickets = Ticket::where('ticket_clientid', $id)->get();
         $airtickets = AirTicket::where('agent_id', $id)->get();
 
-        return view('admin.view-agent', compact('agentAccountBal','agent', 'client', 'designation', 'group', 'airline', 'fareConditions', 'agents', 'airlines', 'commissions', 'wallets', 'walletRequests', 'tickets', 'airtickets','agentAccounts', 'agentProv', 'agentPli', 'agentTarget','agentConversation','agentProduct', 'agentAddress','agentContact','specialFare','fareType','caseData'));
+        return view('admin.view-agent', compact('agentAccountBal','agent', 'client', 'designation', 'group', 'airline', 'fareConditions', 'agents', 'airlines', 'commissions', 'wallets', 'walletRequests', 'tickets', 'airtickets','agentAccounts', 'agentProv', 'agentPli', 'agentTarget','agentConversation','agentProduct', 'agentAddress','agentContact','specialFare','fareType','caseData', 'airlineDetailData'));
     }
 
     public function storeWallet(Request $request)

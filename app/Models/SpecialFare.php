@@ -11,7 +11,10 @@ class SpecialFare extends Model
 
     protected $guarded = ['id'];
 
-
+    public function fareDiscount(){
+        return $this->belongsTo(AirlineDiscount::class, 'fare_type', 'fare_type')
+        ->whereColumn('airline_id', 'airline_id');
+    }
 
     public function airline()
     {
