@@ -53,7 +53,7 @@ class AirlineController extends Controller
     {
         $rules = Rule::where('airline_id', $id)->get();
         $agents = Agent::where('deleted_at',null)->orWhere('deleted_at','null')->with('specialFare')->get();
-        $airlineDetails = AirlineDetail::where('deleted_at',null)->orWhere('deleted_at','null')->where('airline_id', $id)->with('airline')->first();
+        $airlineDetails = AirlineDetail::where('airline_id', $id)->where('deleted_at',null)->orWhere('deleted_at','null')->first();
         $airlines = Airline::all();
         $aircrafts = Aircraft::where('deleted_at',null)->orWhere('deleted_at','null')->where('airline_id', $id)->get();
         $fleets = Fleet::where('deleted_at',null)->orWhere('deleted_at','null')->where('airline_id', $id)->get();
