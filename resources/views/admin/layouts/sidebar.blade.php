@@ -258,7 +258,7 @@
                             class="menu-arrow"></span></a>
                     <ul style="display: none;">
                         @if (auth()->user()->hasRole('admin'))
-                            <li><a class="" href="{{ route('admin.dashboard') }}">Admin Dashboard</a></li>
+                            <li><a class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Admin Dashboard</a></li>
                         @endif
                         @if (auth()->user()->hasRole('employee'))
                             <li><a class="" href="{{ route('employee.dashboard') }}">Employee
@@ -286,9 +286,9 @@
                     <ul style="display: none;">
                         @if (auth()->user()->hasRole('admin'))
                             <!--<li><a class="" href="{{ route('admin.employees') }}">All Staff(s)</a></li>-->
-                            <li><a class="" href="{{ route('admin.employees') }}">Staff List</a></li>
-                            <li><a class="" href="{{ route('admin.manage-staff') }}">Manage Staff</a></li>
-                            <li><a class="" href="{{ route('admin.holidays') }}">Holidays & Leaves</a></li>
+                            <li><a class="{{ request()->routeIs('admin.employees') ? 'active' : '' }}" href="{{ route('admin.employees') }}">Staff List</a></li>
+                            <li><a class="{{ request()->routeIs('admin.manage-staff') ? 'active' : '' }}" href="{{ route('admin.manage-staff') }}">Manage Staff</a></li>
+                            <li><a class="{{ request()->routeIs('admin.holidays') ? 'active' : '' }}" href="{{ route('admin.holidays') }}">Holidays & Leaves</a></li>
                             <!--<li><a class="" href="{{ route('admin.leaves') }}">Manage Staff Leaves</a></li>-->
                         @endif
                         @if (auth()->user()->hasRole('employee'))
@@ -304,21 +304,21 @@
                                     (Employee)</a></li>
 
                             <li class=""><a href="{{ route('employee.resignation') }}"><i
-                                        class="la la-external-link-square"></i> <span>Resignation</span></a></li>
+                                        class="la la-external-link-square "></i> <span>Resignation</span></a></li>
                         @endif
                         @if (auth()->user()->hasRole('admin'))
-                           <li><a class="" href="{{route('admin.leaves')}}">Pending Approvals </a></li>
-                            <li><a class="" href="{{route('admin.employee.view-profile')}}">User Profiles</a></li>
+                           <li><a class="{{ request()->routeIs('admin.leaves') ? 'active' : '' }}" href="{{route('admin.leaves')}}">Pending Approvals </a></li>
+                            <li><a class="{{ request()->routeIs('admin.employee.view-profile') ? 'active' : '' }}" href="{{route('admin.employee.view-profile')}}">User Profiles</a></li>
                          {{-- <li><a class="" href="{{ route('admin.salary') }}"> Manage Staff Salary </a></li> --}}
                         @endif
                         @if (auth()->user()->hasRole('admin'))
                         <li>
-                        <a class="" href="{{route('admin.employee.rights')}}" >User Rights</a>
+                        <a class="{{ request()->routeIs('admin.employee.rights') ? 'active' : '' }}" href="{{route('admin.employee.rights')}}" >User Rights</a>
                         </li>
                          @endif
                          @if (auth()->user()->hasRole('admin'))
                         <li>
-                            <a style="margin-left: 0px;" class="" href="{{ route('admin.staff-reports') }}">Reports</a>
+                            <a style="margin-left: 0px;" class="{{ request()->routeIs('admin.staff-reports') ? 'active' : '' }}" href="{{ route('admin.staff-reports') }}">Reports</a>
                         </li>
                          @endif
                     </ul>
@@ -349,19 +349,19 @@
                         <a href="javascript:void(0);"><i class="la la-cube"></i> <span>Admin</span> <span
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
-                            <li><a class="" href="{{route('admin.departments')}}">Add Departments</a></li>
-                            <li><a class="" href="{{route('admin.designations')}}">Add Designations</a></li>
-                            <li><a class="" href="{{route('admin.categories.view')}}">Add Category</a></li>
-                            <li><a class="" href="{{route('admin.faretypes')}}">Add Fare Types</a></li>
-                            <li><a class="" href="{{route('admin.discounts')}}">Add Dsicounts</a></li>
+                            <li><a class="{{ request()->routeIs('admin.departments') ? 'active' : '' }}" href="{{route('admin.departments')}}">Add Departments</a></li>
+                            <li><a class="{{ request()->routeIs('admin.designations') ? 'active' : '' }}" href="{{route('admin.designations')}}">Add Designations</a></li>
+                            <li><a class="{{ request()->routeIs('admin.categories.view') ? 'active' : '' }}" href="{{route('admin.categories.view')}}">Add Category</a></li>
+                            <li><a class="{{ request()->routeIs('admin.faretypes') ? 'active' : '' }}" href="{{route('admin.faretypes')}}">Add Fare Types</a></li>
+                            <li><a class="{{ request()->routeIs('admin.discounts') ? 'active' : '' }}" href="{{route('admin.discounts')}}">Add Dsicounts</a></li>
 
-                            <li><a class="" href="{{route('admin.duties')}}">Add Duties</a></li>
+                            <li><a class="{{ request()->routeIs('admin.duties') ? 'active' : '' }}" href="{{route('admin.duties')}}">Add Duties</a></li>
                             <!-- <li><a class="" href="javascript:void(0);">Add Public Holidays</a></li> -->
-                            <li><a class="" href="{{ route('admin.events.status') }}">Add Status</a></li>
-                            <li><a class="" href="{{ route('admin.leave-type') }}">Add Leave Types</a></li>
-                            <li><a class="" href="{{ route('admin.comingSoon') }}">Add Agent Types</a></li>
-                            <li><a class="" href="{{ route('admin.comingSoon') }}">Add Report Types</a></li>
-                            <li><a class="" href="{{ route('admin.events') }}">My Todo(s)</a>
+                            <li><a class="{{ request()->routeIs('admin.events.status') ? 'active' : '' }}" href="{{ route('admin.events.status') }}">Add Status</a></li>
+                            <li><a class="{{ request()->routeIs('admin.leave-type') ? 'active' : '' }}" href="{{ route('admin.leave-type') }}">Add Leave Types</a></li>
+                            <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{ route('admin.comingSoon') }}">Add Agent Types</a></li>
+                            <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{ route('admin.comingSoon') }}">Add Report Types</a></li>
+                            <li><a class="{{ request()->routeIs('admin.events') ? 'active' : '' }}" href="{{ route('admin.events') }}">My Todo(s)</a>
                                 <!-- <ul style="display: none;">
                                     <li><a class="" href="{{ route('admin.events.status') }}">Custom Event Status</a>
                                     </li>
@@ -373,10 +373,10 @@
                                         class="menu-arrow"></span></a>
                                 <ul style="display: none;">
                                     <li>
-                                        <a class="" href="{{route('admin.deleted.agents')}}">Deleted Travel Agents</a>
+                                        <a class="{{ request()->routeIs('admin.deleted.agents') ? 'active' : '' }}" href="{{route('admin.deleted.agents')}}">Deleted Travel Agents</a>
                                     </li>
                                     <li>
-                                       <a class="" href="{{route('admin.deleted.airlines')}}">Deleted Airlines List</a>
+                                       <a class="{{ request()->routeIs('admin.deleted.airlines') ? 'active' : '' }}" href="{{route('admin.deleted.airlines')}}">Deleted Airlines List</a>
                                     </li>
                                 </ul>
                             </li>
@@ -396,11 +396,11 @@
                         <ul style="display: none;">
                             @if (auth()->user()->hasRole('admin'))
 
-                                 <li><a class="" href="{{ route('admin.agents') }}">Travel Partners List</a></li>
-                                <li><a class="" href="{{ route('admin.agent-library') }}">Library</a></li>
-                                <li><a class="" href="{{ route('admin.agent-reports') }}">Reports</a></li>
+                                 <li><a class="{{ request()->routeIs('admin.agents') ? 'active' : '' }}" href="{{ route('admin.agents') }}">Travel Partners List</a></li>
+                                <li><a class="{{ request()->routeIs('admin.agent-library') ? 'active' : '' }}" href="{{ route('admin.agent-library') }}">Library</a></li>
+                                <li><a class="{{ request()->routeIs('admin.agent-reports') ? 'active' : '' }}" href="{{ route('admin.agent-reports') }}">Reports</a></li>
                                 <!--<li><a class="" href="{{ route('admin.task-reports') }}">Reports</a></li>-->
-                                 <li><a class="" href="{{ route('admin.view.case-history') }}">Case History</a></li>
+                                 <li><a class="{{ request()->routeIs('admin.view.case-history') ? 'active' : '' }}" href="{{ route('admin.view.case-history') }}">Case History</a></li>
                                 {{-- <li>
                                     <a href="{{ route('admin.walletrequest') }}"><span>Agent Wallet
                                             Requests</span></a>
@@ -416,9 +416,9 @@
                             <span class="menu-arrow"></span></a>
                         <ul style="display: none;">
                             @if (auth()->user()->hasRole('admin'))
-                                <li><a class="" href="{{ route('admin.airlines-details') }}">Airlines List</a></li>
-                                <li><a class="" href="{{ route('admin.airline-library') }}">Library</a></li>
-                                <li><a class="" href="{{ route('admin.airline-reports') }}">Reports</a></li>
+                                <li><a class="{{ request()->routeIs('admin.airlines-details') ? 'active' : '' }}" href="{{ route('admin.airlines-details') }}">Airlines List</a></li>
+                                <li><a class="{{ request()->routeIs('admin.airline-library') ? 'active' : '' }}" href="{{ route('admin.airline-library') }}">Library</a></li>
+                                <li><a class="{{ request()->routeIs('admin.airline-reports') ? 'active' : '' }}" href="{{ route('admin.airline-reports') }}">Reports</a></li>
                             @endif
                         </ul>
                     </li>
@@ -439,8 +439,8 @@
                         <a href="#"><i class="la la-files-o"></i> <span>Sales & Marketing</span> <span
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
-                            <li><a class="" href="{{ route('admin.saleslead') }}">Add Sales Lead</a></li>
-                            <li><a class="" href="{{url('/admin/coming-soon')}}">Record Sales call/Visit</a></li>
+                            <li><a class="{{ request()->routeIs('admin.saleslead') ? 'active' : '' }}" href="{{ route('admin.saleslead') }}">Add Sales Lead</a></li>
+                            <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{url('/admin/coming-soon')}}">Record Sales call/Visit</a></li>
                         </ul>
                     </li>
 
@@ -451,11 +451,11 @@
                         <a href="#"><i class="la la-ticket"></i> <span>Reservations</span> <span
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
-                            <li><a class="" href="{{ route('admin.air-tickets') }}">Manage Reservations</a></li>
-                            <li><a class="" href="{{url('/admin/coming-soon')}}">New Sale</a></li>
-                            <li><a class="" href="{{url('/admin/coming-soon')}}">Modify Booking</a></li>
-                            <li><a class="" href="{{url('/admin/coming-soon')}}">Refunds</a></li>
-                            <li><a class="" href="{{ route('admin.groups') }}">Groups</a></li>
+                            <li><a class="{{ request()->routeIs('admin.air-tickets') ? 'active' : '' }}" href="{{ route('admin.air-tickets') }}">Manage Reservations</a></li>
+                            <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{url('/admin/coming-soon')}}">New Sale</a></li>
+                            <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{url('/admin/coming-soon')}}">Modify Booking</a></li>
+                            <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{url('/admin/coming-soon')}}">Refunds</a></li>
+                            <li><a class="{{ request()->routeIs('admin.groups') ? 'active' : '' }}" href="{{ route('admin.groups') }}">Groups</a></li>
                         </ul>
                     </li>
                     <li class="menu-title">
@@ -465,11 +465,11 @@
                         <a href="#"><i class="la la-money"></i> <span>Accounts</span> <span
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
-                            <li><a class="" href="{{route('admin.accounts.view')}}">Add account</a></li>
-                            <li><a class="" href="{{route('admin.accounts.all')}}">View accounts </a></li>
-                            <li><a class="" href="{{url('/admin/coming-soon')}}">Add Payment to Pool </a></li>
-                            <li><a class="" href="{{url('/admin/coming-soon')}}">View Invoice</a></li>
-                            <li><a class="" href="{{url('/admin/coming-soon')}}">View Booking Accounts </a></li>
+                            <li><a class="{{ request()->routeIs('admin.accounts.view') ? 'active' : '' }}" href="{{route('admin.accounts.view')}}">Add account</a></li>
+                            <li><a class="{{ request()->routeIs('admin.accounts.all') ? 'active' : '' }}" href="{{route('admin.accounts.all')}}">View accounts </a></li>
+                            <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{url('/admin/coming-soon')}}">Add Payment to Pool </a></li>
+                            <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{url('/admin/coming-soon')}}">View Invoice</a></li>
+                            <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{url('/admin/coming-soon')}}">View Booking Accounts </a></li>
                         </ul>
                     </li>
 
