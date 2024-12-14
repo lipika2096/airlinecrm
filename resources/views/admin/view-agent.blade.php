@@ -258,6 +258,11 @@
                                                                 <input type="text" class="form-control" name="country"
                                                                     value="{{ $agent->country }}">
                                                             </div>
+                                                            <div class="col-sm-4">
+                                                                <!-- <div class="form-group"> -->
+                                                                    <label class="col-form-label">Company Registration No.</label>
+                                                                    <input class="form-control" type="text" name="company_registration_number" value="{{ $agent->company_registration_no }}">
+                                                                </div>
                                                         </li>
                                                         <!-- <ul id="field-list" class="list-unstyled"> -->
                                                             <!-- <li class="col-md-12 field-item"> -->

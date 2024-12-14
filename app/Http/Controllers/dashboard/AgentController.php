@@ -597,6 +597,7 @@ public function targetStore(Request $request)
         $agent->discount = $request->discount;
         $agent->remarks = $request->remarks;
         $agent->account_code = $request->account_code;
+        $agent->company_registration_no = $request->company_registration_number;
             $agent->save();
 
             return redirect()->back()->with('success', 'Agent updated successfully');
