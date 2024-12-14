@@ -102,6 +102,10 @@
                                             <div class="title">Country</div>
                                             <div class="text">{{ $agent->country }}</div>
                                         </li>
+                                        <li>
+                                            <div class="title">Company Registration No</div>
+                                            <div class="text">{{ $agent->company_registration_no }}</div>
+                                        </li>
                                         <ul id="field-list" class="list-unstyled">
                                             <li class="col-md-12 field-item">
                                                 <div class="row">
