@@ -29,7 +29,7 @@
                                     <li class="nav-item"><a href="#holidays" data-bs-toggle="tab"
                                             class="nav-link ">Holidays</a>
                                     </li>
-                                    <li class="nav-item"><a href="#leaves" data-bs-toggle="tab" class="nav-link">Leaves</a>
+                                    <li class="nav-item"><a href="#teams" data-bs-toggle="tab" class="nav-link">Teams</a>
                                     </li>
                                 </ul>
                             </div>
@@ -243,14 +243,14 @@
                     </div>
                     <!-- /Add Category Modal-->
                 </div>
-                <div id="leaves" class="pro-overview tab-pane fade show ">
+                <div id="teams" class="pro-overview tab-pane fade show ">
                     <!-- Page Content -->
                     <div class="content container-fluid">
 
                         <div class="page-header">
                             <div class="row align-items-center">
                                 <div class="col">
-                                    <h3 class="page-title">My Leaves    </h3>
+                                    <h3 class="page-title">My Teams    </h3>
                                 </div>
                                 <div class="col-auto float-end ms-auto">
 
@@ -544,7 +544,7 @@
                         </div>
                         <!-- Day numbers header -->
                         <div class="row mb-3">
-                            <div id="calendarContainer"></div>
+                            <div class="row" id="calendarContainer"></div>
 
                             @foreach ($users as $data => $value)
                                 <div class="col-md-12 bg-secondary bg-gradient rounded-3 mainCalendarDiv">
@@ -732,16 +732,18 @@
                                         let employeeName = `${employee.first_name} ${employee.last_name}`;
 
                                         let calendarHtml = `
-                                            <div class="row mb-3">
-                                                <div class="col-md-2" style="margin-top: 20px;">
-                                                    <div class="employee-profile rounded-pill leave-card text-white fw-bold">
+
+                                            <div class="col-sm-6">
+                                                <div class="card pe-3 ps-2">
+                                                <div class="row" style="margin-top: 20px;">
+                                                    <div class="col-sm-2 ms-4 employee-profile rounded-pill leave-card text-white fw-bold">
                                                         ${employeeInitials}
                                                     </div>
-                                                    <div class="employee-name text-capitalize" style="font-weight:600;">
+                                                    <div class="col-sm-5 mt-2 employee-name text-capitalize" style="font-weight:600;">
                                                         ${employeeName}
                                                     </div>
                                                 </div>
-                                                <div class="col-md-10 mb-2">
+                                                <div class="col-md-12 mb-2">
                                                     <div class="calendar">
                                                         <div class="week-days d-flex justify-content-between">
                                                             ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => `
@@ -757,7 +759,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <hr/>
+                                            </div>
+
                                         `;
 
                                         container.append(calendarHtml);
