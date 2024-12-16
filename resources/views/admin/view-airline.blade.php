@@ -878,9 +878,9 @@
                                     <thead>
                                         <tr>
                                             <th>No.</th>
-                                            <th>Name</th>
+                                            {{-- <th>Name</th> --}}
                                             <th>Aircraft reg.</th>
-                                            <th>Number of aircraft</th>
+                                            {{-- <th>Number of aircraft</th> --}}
                                             <th style="text-align:center" colspan="3">Airline</th>
                                             <th>Fleet Type</th>
                                             <th style="text-align:center" colspan="4">Configuration</th>
@@ -893,7 +893,7 @@
                                         <tr>
                                             <!-- Empty cells to align the F, C, W, Y headers under the Configuration header -->
                                             <th></th>
-                                            <th></th>
+                                            {{-- <th></th> --}}
                                             <th></th>
                                             <th>Name</th>
                                             <th>IATA</th>
@@ -915,10 +915,10 @@
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ $fleet->aircraft_reg }}</td>
-                                                <td>{{ $fleet->name }}</td>
+                                                {{-- <td>{{ $fleet->name }}</td> --}}
                                                 {{-- <td>{{ $fleet->iata }}</td>
                                                 <td>{{ $fleet->icao }}</td> --}}
-                                                <td>{{ $fleet->number_of_aircraft }}</td>
+                                                {{-- <td>{{ $fleet->number_of_aircraft }}</td> --}}
                                                 <td>{{ $fleet->airlineData->airline_name }}</td>
                                                 <td>{{ $fleet->airlineData->iata }}</td>
                                                 <td>{{ $fleet->airlineData->icao }}</td>
@@ -994,14 +994,14 @@
                                                                 method="POST" enctype="multipart/form-data">
                                                                 @csrf
                                                                 <div class="row">
-                                                                    <div class="col-sm-6">
+                                                                    <div class="col-sm-12">
                                                                         <input class="form-control" type="hidden"
                                                                             name="airline_id"
                                                                             value="{{ $airlineDetails->airline_id }}">
                                                                         <input class="form-control" type="hidden"
                                                                             name="fleet_id"
                                                                             value="{{ $fleet->id ?? '' }}">
-                                                                        <div class="form-group">
+                                                                        <div class="col-sm-6 form-group">
                                                                             <label class="col-form-label">Aircraft reg.
                                                                                 <span class="text-danger">*</span></label>
                                                                             <input class="form-control" type="text"
@@ -1009,39 +1009,29 @@
                                                                                 value="{{ $fleet->aircraft_reg ?? '' }}"
                                                                                 required>
                                                                         </div>
-                                                                        <div class="form-group">
-                                                                            <label class="col-form-label">Name <span
-                                                                                    class="text-danger">*</span></label>
-                                                                            <input class="form-control" type="text"
+                                                                            {{-- <label class="col-form-label">Name <span
+                                                                                    class="text-danger">*</span></label> --}}
+                                                                            <input class="form-control" type="hidden"
                                                                                 name="name"
-                                                                                value="{{ $fleet->name ?? '' }}" required>
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label class="col-form-label">IATA <span
-                                                                                    class="text-danger">*</span></label>
-                                                                            <input class="form-control" type="text"
+                                                                                value="null" required>
+                                                                            {{-- <label class="col-form-label">IATA <span
+                                                                                    class="text-danger">*</span></label> --}}
+                                                                            <input class="form-control" type="hidden"
                                                                                 name="iata"
                                                                                 value="{{ $fleet->iata ?? '' }}" required>
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label class="col-form-label">ICAO <span
-                                                                                    class="text-danger">*</span></label>
-                                                                            <input class="form-control" type="text"
+                                                                            {{-- <label class="col-form-label">ICAO <span
+                                                                                    class="text-danger">*</span></label> --}}
+                                                                            <input class="form-control" type="hidden"
                                                                                 name="icao"
                                                                                 value="{{ $fleet->icao ?? '' }}" required>
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label class="col-form-label">Number of
+                                                                            {{-- <label class="col-form-label">Number of
                                                                                 Aircraft <span
-                                                                                    class="text-danger">*</span></label>
-                                                                            <input class="form-control" type="number"
+                                                                                    class="text-danger">*</span></label> --}}
+                                                                            <input class="form-control" type="hidden"
                                                                                 name="number_of_aircraft"
-                                                                                value="{{ $fleet->number_of_aircraft ?? '' }}"
+                                                                                value="1"
                                                                                 required>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-6">
-                                                                        <div class="form-group">
+                                                                        <div class="col-sm-6 form-group">
                                                                             <label class="col-form-label">Fleet Type <span
                                                                                     class="text-danger">*</span></label>
                                                                             <input class="form-control" type="text"
@@ -1049,28 +1039,28 @@
                                                                                 value="{{ $fleet->fleet_type ?? '' }}"
                                                                                 required>
                                                                         </div>
-                                                                        <div class="form-group">
+                                                                        <div class="col-sm-6 form-group">
                                                                             <label class="col-form-label">Configuration
                                                                                 F</label>
                                                                             <input class="form-control" type="text"
                                                                                 name="configuration_f"
                                                                                 value="{{ $fleet->configuration_f ?? '' }}">
                                                                         </div>
-                                                                        <div class="form-group">
+                                                                        <div class=" col-sm-6 form-group">
                                                                             <label class="col-form-label">Configuration
                                                                                 C</label>
                                                                             <input class="form-control" type="text"
                                                                                 name="configuration_c"
                                                                                 value="{{ $fleet->configuration_c ?? '' }}">
                                                                         </div>
-                                                                        <div class="form-group">
+                                                                        <div class=" col-sm-6 form-group">
                                                                             <label class="col-form-label">Configuration
                                                                                 W</label>
                                                                             <input class="form-control" type="text"
                                                                                 name="configuration_w"
                                                                                 value="{{ $fleet->configuration_w ?? '' }}">
                                                                         </div>
-                                                                        <div class="form-group">
+                                                                        <div class="col-sm-6 form-group">
                                                                             <label class="col-form-label">Configuration
                                                                                 Y</label>
                                                                             <input class="form-control" type="text"
@@ -1126,47 +1116,28 @@
                                                             value="" required>
                                                     </div>
                                                 </div>
-                                                    <div class="col-sm-6">
-                                                        <div class="form-group">
-                                                            <label class="col-form-label">Name <span
-                                                                    class="text-danger">*</span></label>
-                                                            <input class="form-control" type="text" name="name"
-                                                                value=" " required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-6">
-                                                        <div class="form-group">
+                                                    {{-- <div class="col-sm-6">
+                                                        <div class="form-group"> --}}
+                                                            {{-- <label class="col-form-label">Name <span
+                                                                    class="text-danger">*</span></label> --}}
+                                                            <input class="form-control" type="hidden" name="name"
+                                                                value="null" required>
                                                             {{-- <label class="col-form-label">IATA <span
                                                                     class="text-danger">*</span></label> --}}
                                                             <input class="form-control" type="hidden" name="iata"
                                                                 value="null" required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-6">
-                                                        <div class="form-group">
                                                             {{-- <label class="col-form-label">ICAO <span
                                                                     class="text-danger">*</span></label> --}}
                                                             <input class="form-control" type="hidden" name="icao"
                                                                 value="null" required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-6">
-                                                        <div class="form-group">
-                                                            <label class="col-form-label">Number of Aircraft <span
-                                                                    class="text-danger">*</span></label>
-                                                            <input class="form-control" type="number"
-                                                                name="number_of_aircraft" value="" required>
-                                                        </div>
-                                                    </div>
+
+                                                            {{-- <label class="col-form-label">Number of Aircraft <span
+                                                                    class="text-danger">*</span></label> --}}
+                                                            <input class="form-control" type="hidden"
+                                                                name="number_of_aircraft" value="1" required>
+                                                        {{-- </div>
+                                                    </div> --}}
                                                 <div class="col-sm-6">
-                                                    {{--
-                                                <div class="form-group">
-                                                    <label class="col-form-label">Airline <span
-                                                        class="text-danger">*</span></label>
-                                                    <input class="form-control" type="text" name="airline"
-                                                        value="" required>
-                                                </div>
-                                                --}}
                                                     <div class="form-group">
                                                         <label class="col-form-label">Fleet Type <span
                                                                 class="text-danger">*</span></label>

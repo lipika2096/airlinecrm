@@ -498,7 +498,7 @@
                             <div class="col-md-4">
                                 <div class="input-group">
                                     <select class="form-control" id="coworkerSelect"  aria-label="Add Coworker">
-                                        <option value="" disabled selected>Select Coworker</option>
+                                        <option value="" disabled selected>Add Colleagues</option>
                                         @foreach ($employees as $data => $employee)
                                             <option value="{{$employee->user->id}}">{{$employee->first_name}} {{$employee->last_name}}</option>
                                         @endforeach
@@ -514,9 +514,7 @@
                                     <select class="form-control"id="teamSelect"  aria-label="Add Team">
                                         <option value="" disabled selected>Add Team</option>
                                         @foreach ($users as $data => $user)
-                                            @foreach ($user as $dataUser)
-                                                <option value="{{$dataUser->department}}">{{$dataUser->department}}</option>
-                                            @endforeach
+                                                <option value="{{$data}}">{{$data}}</option>
                                         @endforeach
                                         <!-- Add more coworker options as needed -->
                                     </select>
@@ -561,7 +559,7 @@
                                                 <i class="fa fa-caret-down toggleIcon{{ $data }}"></i>
                                             </div>
                                             <div class="bg-secondary bg-gradient text-white rounded-3 toggle-close"
-                                                data-target="#calendarContent{{ $data }}" data-departtaget = "#toggleCalendar{{ $data }}">
+                                                data-target="#calendarContent{{ $data }}" data-departtaget = "#toggleCalendar{{ $data }}" data-department-dismiss="{{$data}}">
                                                 <i class="fa fa-times"></i>
                                             </div>
                                         </div>
@@ -676,7 +674,7 @@
                             <!-- Collapsible Calendar Section -->
                         </div>
 
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
                         <script>
                             $(document).ready(function () {
                                 // Event listener for Coworker dropdown
@@ -764,18 +762,18 @@
                                         `;
 
                                         container.append(calendarHtml);
-// Now we handle hiding the content properly
-const targetSelectors = document.getElementsByClassName('mainCalendarDiv');
-        const departmentSelectors = document.getElementsByClassName('mainCalendarContentDiv');
+                                        // Now we handle hiding the content properly
+                                        const targetSelectors = document.getElementsByClassName('mainCalendarDiv');
+                                        const departmentSelectors = document.getElementsByClassName('mainCalendarContentDiv');
 
-        // Loop through and hide each element individually
-        Array.from(targetSelectors).forEach(element => {
-            element.style.display = 'none';
-        });
+                                        // Loop through and hide each element individually
+                                        Array.from(targetSelectors).forEach(element => {
+                                            element.style.display = 'none';
+                                        });
 
-        Array.from(departmentSelectors).forEach(element => {
-            element.style.display = 'none';
-        });
+                                        Array.from(departmentSelectors).forEach(element => {
+                                            element.style.display = 'none';
+                                        });
                                     });
                                 }
 
@@ -845,7 +843,8 @@ const targetSelectors = document.getElementsByClassName('mainCalendarDiv');
                                     const departmentSelector = closeBtn.getAttribute('data-departtaget');
                                     const calendarContent = document.querySelector(targetSelector);
                                     const toggleCalendar = document.querySelector(departmentSelector);
-
+                                    const dataDismissData = closeBtn.getAttribute('data-department-dismiss');
+                                    console.log(dataDismissData);
                                     // Hide the calendar content
                                     if (calendarContent) {
                                         calendarContent.classList.add('d-none');

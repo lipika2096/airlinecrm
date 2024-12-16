@@ -185,6 +185,9 @@ public function caseStore(Request $request)
             'case_closed_by' => 'nullable|string|max:255',
             'case_closing_date' => 'nullable|date',
             'agent_id' => 'required|integer',
+            'remarks' => 'required|string',
+            'ticket_no' => 'required|string',
+            'airline_id'=> 'required|string'
         ]);
 
         $airline = CaseHistory::create($validatedData);

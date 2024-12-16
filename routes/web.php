@@ -323,6 +323,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
     Route::get('view-staff/{id}', [EmployeeController::class, 'viewEmployee'])->name('view-staff');
     Route::post('view-staff/leaves/store', [EmployeeController::class, 'leavesEmployeeViewStore'])->name('view-staff.leaves.store');
     Route::patch('view-staff/leaves/edit/{id}', [EmployeeController::class, 'leavesEmployeeViewUpdate'])->name('view-staff.leaves.update');
+    Route::post('view-staff/read-doc/store', [EmployeeController::class, 'EmployeeReadSignStore'])->name('view-staff.readsign.store');
+    Route::patch('view-staff/read-doc/edit/{id}', [EmployeeController::class, 'EmployeeReadSignUpdate'])->name('view-staff.readsign.update');
+
+    Route::post('view-staff/library', [EmployeeController::class, 'storeLibrary'])->name('view-staff.library.store');
+    Route::patch('view-staff/library/{id}', [EmployeeController::class, 'libraryupdate'])->name('view-staff.library.update');
+    Route::delete('view-staff/library/delete/{id}', [EmployeeController::class, 'libraryDelete'])->name('view-staff.library.destroy');
     // Route to store the employee's leave request
     Route::post('view-staff/store', [EmployeeController::class, 'leavesStaffStore'])->name('view-staff.store');
 

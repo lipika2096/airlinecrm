@@ -17,9 +17,14 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Calender;
 use App\Models\LeaveType;
 use Carbon\Carbon;
-
+use App\Models\StaffReadSign;
 use App\Models\Duty;
 use App\Models\SpecialFare;
+use App\Models\Airline;
+use App\Models\AirlineDetail;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+use App\Models\AirlineLibrary;
 
 
 use App\Models\FareType;
@@ -27,6 +32,131 @@ use Illuminate\Support\Facades\Auth;
 
 class EmployeeController extends Controller
 {
+    public function libraryupdate(Request $request, $id)
+    {
+        // Find the document by its ID
+        $document = AirlineLibrary::findOrFail($id);
+
+        // Handle the attachment file upload
+        // if ($request->hasFile('attachment')) {
+        //     $docName = $request->file('attachment');
+        //     $fileName = uniqid() . '.' . $docName->getClientOriginalExtension();
+        //     $mediaPath = $docName->move(public_path('public/assets/docs/'), $fileName);
+
+        //     if (!$mediaPath) {
+        //         return back()->withErrors(['media' => 'Failed to upload document']);
+        //     }
+
+        //     // Update the attachment field
+        //     $document->attachment = $fileName;
+        // }
+
+        $fileNames = []; // Array to hold the filenames
+
+            if ($request->hasFile('attachment')) {
+                $docFile = $request->file('attachment');
+
+                // foreach ($docFiles as $docFile) {
+                    // Generate a unique file name with extension
+                    $fileName = Str::uuid() . '.' . $docFile->getClientOriginalExtension();
+
+                    // Define the storage path
+                    $storagePath = ('public/assets/docs/');
+
+                    // Check if the directory exists, if not create it
+                    if (!File::exists($storagePath)) {
+                        File::makeDirectory($storagePath, 0755, true, true);
+                    }
+
+                    // Move the file to the defined path
+                    $docFile->move($storagePath, $fileName);
+
+                    // Add the filename to the array
+                    $fileNames[] = asset('public/assets/docs/')."/".$fileName;
+                // }
+            }
+            // Convert array to a JSON string or comma-separated string
+            $fileNamesString = json_encode($fileNames); // Use this if you prefer JSON format
+
+
+        // Update other fields
+        $document->airline_id = $request->input('airline_id');
+        $document->staff_id = $request->input('staff_id');
+        $document->doc_name = $request->input('doc_name');
+        $document->issue_date = $request->input('issue_date');
+        $document->effective_date = now();
+        $document->attachment = $fileNamesString;
+        $document->edition_no = $request->input('edition_no');
+
+
+        $document->updated_by = auth()->user()->name; // Assuming you want to store the user ID
+        $document->updated_at = now();
+
+
+        $document->read_sign = 1;
+
+
+        $document->save();
+
+
+        return redirect()->back()->with('success', 'Document updated successfully!');
+    }
+
+    public function libraryDelete($id, Request $request){
+        $library = AirlineLibrary::findOrFail($id);
+        $library->update([
+            'deleted_at' => now(),
+            'remarks' => $request->input('remarks')
+        ]);
+        return redirect()->back()->with('success', 'Library deleted successfully');
+    }
+    public function storeLibrary(Request $request)
+    {
+        $request->validate([
+            'airline_id' => 'required|exists:airlines,id',
+        ]);
+
+
+        $fileNames = []; // Array to hold the filenames
+
+        if ($request->hasFile('documents')) {
+            $docFile = $request->file('documents');
+
+            // foreach ($docFiles as $docFile) {
+                // Generate a unique file name with extension
+                $fileName = Str::uuid() . '.' . $docFile->getClientOriginalExtension();
+
+                // Define the storage path
+                $storagePath = ('public/assets/docs/');
+
+                // Check if the directory exists, if not create it
+                if (!File::exists($storagePath)) {
+                    File::makeDirectory($storagePath, 0755, true, true);
+                }
+
+                // Move the file to the defined path
+                $docFile->move($storagePath, $fileName);
+
+                // Add the filename to the array
+                $fileNames[] = asset('public/assets/docs/')."/".$fileName;
+            // }
+        }
+        // Convert array to a JSON string or comma-separated string
+        $fileNamesString = json_encode($fileNames); // Use this if you prefer JSON format
+
+        $library = AirlineLibrary::create([
+            'airline_id' => $request->input('airline_id'),
+            'staff_id' => $request->input('staff_id'),
+            'doc_name' => $request->input('doc_name'),
+            'edition_no' => $request->input('edition_no'),
+            'issue_date' => $request->input('issue_date'),
+            'attachment' => $fileNamesString,
+            'uploaded_by' => auth()->user()->id,
+        ]);
+
+
+        return redirect()->back();
+    }
 
     public function PemployeeProfile($id){
         $employees = User::find($id);
@@ -148,31 +278,6 @@ class EmployeeController extends Controller
         return redirect()->back()->with('success', 'User Rights by department added successfully');
     }
 
-
-    // public function updateUserRights(Request $request, $id)
-    // {
-    //     // // Handle image upload
-    //     // $image = $request->file('image');
-    //     // $imageName = null;
-    //     // if ($image) {
-    //     //     $imageName = uniqid() . '.' . $image->getClientOriginalExtension();
-    //     //     $imagePath = $image->move('pubilc/assets/upload', $imageName);
-    //     //     if (!$imagePath) {
-    //     //         return back()->with('error', 'Failed to upload image');
-    //     //     }
-    //     // }
-
-    //     // Create a new employee
-    //     $rights =  DepartmentRight::find($id);
-    //     $rights->update([
-    //          'view_accounts' => $request->input('view_accounts'),
-    //         'view_sales_leads' => $request->input('view_sales_leads'),
-    //         'approve_holidays' => $request->input('approve_holidays'),
-    //         'approve_overtime' => $request->input('approve_overtime'),
-    //         ]);
-    //     return redirect()->back()->with('success', 'Employee added successfully');
-    // }
-
     public function punchIn(Request $request)
     {
         $email = session('email');
@@ -249,6 +354,10 @@ class EmployeeController extends Controller
 
     public function viewEmployee($id)
     {
+        $usedAnnualLeave = EmployeeLeave::where('employee_id', $id)->where('status',3)->where('leave_type','Annual Leave')
+                                        ->sum('no_of_days');
+        $library = AirlineLibrary::where('deleted_at',null)->orWhere('deleted_at','null')->where('staff_id', $id)->get();
+        $airline = AirlineDetail::where('deleted_at', NULL)->with('airline')->get();
         $employee = Client::join('users', 'users.clientid', '=', 'clients.client_id')
             ->where('users.id', $id)
             ->first(['clients.*', 'users.*']);
@@ -270,7 +379,7 @@ class EmployeeController extends Controller
         $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
         ->whereDate('to', '>=', now()->toDateString())->count();
 
-        $approvedLeaves = EmployeeLeave::where('employee_id',$id)->where('status', 3)->sum('no_of_days');
+        $approvedLeaves = EmployeeLeave::where('employee_id',$id)->where('leave_type','Annual Leave')->where('status', 3)->sum('no_of_days');
         $total_pending_leaves = EmployeeLeave::where('employee_id',$id)->where('status', 2)->sum('no_of_days');
         $total_declined_leaves = EmployeeLeave::where('employee_id',$id)->where('status', 4)->sum('no_of_days');
 
@@ -294,16 +403,36 @@ class EmployeeController extends Controller
                                                      ->count();
         $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
 
+        $holidays = Holiday::select('holiday_date')->get();
+
         // Calculate approved leaves for the current month
+
+        // Fetch leaves by type for the authenticated user
+        $leaveData = EmployeeLeave::where('employee_id', $id)->where('status',3)
+        ->get();
+        $userData = User::where('id', $id)->first();
+                $annualLeave = $userData->leave_count ?? 0;
         $absencePerMonth = EmployeeLeave::where('employee_id', $id)
             ->where('status', 3) // Approved status
             ->whereMonth('from', now()->month)
             ->whereYear('from', now()->year)
             ->count();
 
+        $remainingLeave = $annualLeave - $usedAnnualLeave;
+        $total_holidays=$usedAnnualLeave +  $remainingLeave;
+
         $leavetypes = LeaveType::where('status',1)->get();
+        $staffReadSign = StaffReadSign::where('staff_id', $id)->get();
         $employee_leaves_view = EmployeeLeave::where('employee_id',$id)->latest()->get();
         return view('admin.view-profile', compact(
+            'holidays',
+            'leaveData',
+            'total_holidays',
+            'remainingLeave',
+            'usedAnnualLeave',
+            'library',
+            'airline',
+            'staffReadSign',
             'employee',
             'employees',
             'currentDate',
@@ -359,34 +488,6 @@ public function leavesStaffStore(Request $request)
 
     public function store(Request $request)
     {
-        // // Validate the request
-        // $request->validate([
-        //     'first_name' => 'required|string|max:255',
-        //     'last_name' => 'nullable|string|max:255',
-        //     'username' => 'required|string|max:255|unique:employees,username',
-        //     'email' => 'required|string|email|max:255|unique:employees,email',
-        //     'password' => 'required|string|min:8|',
-        //     'employee_id' => 'required|string|max:255|unique:employees,employee_id',
-        //     'phone' => 'nullable|string|max:255',
-        //     'department' => 'required|string|max:255',
-        //     'designation' => 'required|string|max:255',
-        //     // Add validation for permissions if needed
-        // ]);
-        // Create a new employee
-        // $employee = new Employee();
-        // $employee->first_name = $request->first_name;
-        // $employee->last_name = $request->last_name;
-        // $employee->email = $request->email;
-        // $employee->password = Hash::make($request->password);
-        // $employee->employee_id = $request->employee_id;
-        // $employee->joining_date = $request->joining_date;
-        // $employee->phone = $request->phone;
-        // $employee->department_id = $request->department;
-        // $employee->designation_id = $request->designation;
-        // $employee->leave_count = $request->input('leave_count');
-
-        // $employee->save();
-
         // Create a new client record
         $client = new Client();
         $client->client_creatorid = 0;
@@ -419,32 +520,12 @@ public function leavesStaffStore(Request $request)
         $user->branch = $request->branch;
         $user->company_mobile = $request->company_mobile;
 
-        // // Handle image uploadsrc="{{ asset('staff/storage/avatars/'.$agent->avatar_directory."/" . $agent->avatar_filename) }}"
-        // if ($request->hasFile('avatar_filename')) {
-        //     $image = $request->file('avatar_filename');
-        //     $imageName = Str::random(20) . '.' . $image->getClientOriginalExtension();
-        //     $directory = "NJj0UmpChhzd3BkXrQlWlACfoeecqzlerZgdR5rs";
-        //     $imagePath = $image->move('staff/storage/avatars/NJj0UmpChhzd3BkXrQlWlACfoeecqzlerZgdR5rs/', $imageName);
-        //     $user->avatar_filename = $imageName;
-        // }
-
         $user->save();
 
         return redirect()->route('admin.employees')->with('success', 'Employee added successfully');
     }
     public function edit(Request $request, $id)
     {
-        // // Handle image upload
-        // $image = $request->file('image');
-        // $imageName = null;
-        // if ($image) {
-        //     $imageName = uniqid() . '.' . $image->getClientOriginalExtension();
-        //     $imagePath = $image->move('pubilc/assets/upload', $imageName);
-        //     if (!$imagePath) {
-        //         return back()->with('error', 'Failed to upload image');
-        //     }
-        // }
-
         // Create a new employee
         $employee =  User::find($id);
         $employee->update([
@@ -689,13 +770,13 @@ public function leavesStaffStore(Request $request)
         $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
         ->get(['clients.*', 'users.*']);
         $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
-                                                 ->whereDate('to', '>=', now()->toDateString())->count();
-        $total_pending_leaves = EmployeeLeave::where('status', 2)->count();
+                                                 ->whereDate('to', '>=', now()->toDateString())->where('leave_type','Annual Leave')->count();
+        $total_pending_leaves = EmployeeLeave::where('status', 2)->where('leave_type','Annual Leave')->count();
         //$employee_leaves = EmployeeLeave::latest()->get();
         $employee_leaves = EmployeeLeave::latest()->get();
         // Number of employees on leave today
         $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
-                                                 ->whereDate('to', '>=', now()->toDateString())
+                                                 ->whereDate('to', '>=', now()->toDateString())->where('leave_type','Annual Leave')
                                                  ->count();
         // Number of present employees today
         $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
@@ -733,12 +814,12 @@ public function leavesStaffStore(Request $request)
         // Add your logic for leaves employee view
         $email = session('email');
         $employee = Employee::where('email', $email)->first();
-        $total_leaves = Employee::where('id',$employee->id)->pluck('leave_count')->first();
+        $total_leaves = Employee::where('id',$employee->id)->where('leave_type','Annual Leave')->pluck('leave_count')->first();
         $medical_leave = EmployeeLeave::where('employee_id',$employee->id)->where('leave_type','Medical Leave')->count();
         $other_leave = EmployeeLeave::where('employee_id', $employee->id)
         ->where('leave_type', '!=', 'Medical Leave')
         ->count();
-        $total_taken = EmployeeLeave::where('employee_id',$employee->id)->count();
+        $total_taken = EmployeeLeave::where('employee_id',$employee->id)->where('leave_type','Annual Leave')->count();
         $remaining_leave = $total_leaves - $total_taken;
         $leaves = EmployeeLeave::where('employee_id',$employee->id)->get();
         return view('admin.leaves-employee', compact('total_leaves', 'medical_leave', 'other_leave', 'remaining_leave','leaves')); // Example view path, adjust as per your structure
@@ -758,6 +839,45 @@ public function leavesStaffStore(Request $request)
             ]);
         // Add your logic for leaves admin view
         return redirect()->route('employee.leaves')->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
+    }
+
+    public function EmployeeReadSignStore(Request $request){
+        // Get the file
+        // if ($request->hasFile('attachment')) {
+        //     $file = $request->file('attachment');
+
+        //     // Generate a unique file name
+        //     $fileName = $file. '.' . $file->getClientOriginalExtension();
+
+        //     // Log file details
+        //     logger("File details: ", [
+        //         'original_name' => $file->getClientOriginalName(),
+        //         'mime_type' => $file->getMimeType(),
+        //         'size' => $file->getSize(),
+        //     ]);
+
+        //     $storagePath = public_path('assets/docs');
+
+        //     // Ensure the directory exists
+        //     if (!File::exists($storagePath)) {
+        //         File::makeDirectory($storagePath, 0755, true, true);
+        //     }
+
+        //     // Move the file
+        //     $file->move($storagePath, $fileName);
+        // } else {
+        //     logger('No file was uploaded.');
+        // }
+        StaffReadSign::create([
+            'airline_id' => $request->input('airline_id'),
+            'staff_id' => $request->input('staff_id'),
+            'doc_name' => $request->input('doc_name'),
+            'attachment' => 'null',
+            'created_by' => Auth()->user()->name,
+            'updated_at' => $request->input('updated_at'),
+
+        ]);
+        return redirect()->back()->with('success',' Document Uploaded successfully');
     }
 
     public function leavesEmployeeViewStore(Request $request)
@@ -784,6 +904,15 @@ public function leavesStaffStore(Request $request)
         // Add your logic for leaves admin view
         return redirect()->back()->with('success', 'Employee added successfully');
     }
+   public function EmployeeReadSignUpdate($id, Request $request){
+    $read =  StaffReadSign::find($id);
+    $read->update([
+        'sign_doc' => $request->input('sign_document'),
+        'updated_by' => Auth()->user()->name
+    ]);
+    // Add your logic for leaves admin view
+    return redirect()->back()->with('success', 'Signed Successfully added successfully');
+   }
 
     public function leaveSettings()
     {

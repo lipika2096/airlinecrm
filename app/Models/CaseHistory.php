@@ -12,4 +12,8 @@ class CaseHistory extends Model
   {
       return $this->hasMany(CaseUpdate::class,'case_id', 'id');
   }
+  public function airline()
+  {
+    return $this->belongsTo(Airline::class,'airline_id', 'id');
+  }
 }

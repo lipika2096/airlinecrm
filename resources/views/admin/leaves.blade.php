@@ -142,7 +142,7 @@
                                             <td class="text-danger">{{$data->user->leave_count}} leaves</td>
                                             @php
                                             $annualLeave = $data->user->leave_count;
-                                                $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)->where('status',3)
+                                                $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)->where('status',3)->where('leave_type','Annual Leave')
                                         ->sum('no_of_days');
                                                 $remainingLeave = $annualLeave - $usedAnnualLeave;
                                             @endphp
@@ -314,7 +314,7 @@
                 const timeDifference = to - from;
                 const daysDifference = timeDifference / (1000 * 3600 * 24);
 
-                noOfDaysInput.value = daysDifference >= 0 ? daysDifference : 0;
+                noOfDaysInput.value = daysDifference >= 0 ? daysDifference + 1 : 0;
             } else {
                 noOfDaysInput.value = '';
             }

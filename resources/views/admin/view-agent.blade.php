@@ -1228,9 +1228,12 @@
                                             <thead>
                                                 <tr>
                                                     <th class="fw-bold">Case Opening Date</th>
+                                                    <th class="fw-bold">Airline</th>
                                                     <th class="fw-bold">Case Id</th>
                                                     <th class="fw-bold">Opened By</th>
+                                                    <th class="fw-bold">Ticket No</th>
                                                     <th class="fw-bold">PNR</th>
+                                                    <th class="fw-bold">Remarks</th>
                                                     <th class="fw-bold">Case Status</th>
                                                     <th class="fw-bold">Case Closed by</th>
                                                     <th class="fw-bold">Case Closing Date</th>
@@ -1243,9 +1246,12 @@
                                                 @foreach ($caseData as $data)
                                                     <tr>
                                                         <td>{{ $data->case_opening_date }}</td>
+                                                        <td>{{ $data->airline->airline_name?? '' }}</td>
                                                         <td>{{ $data->id }}</td>
                                                         <td>{{ $data->opened_by }}</td>
+                                                        <td>{{ $data->ticket_no }}</td>
                                                         <td>{{ $data->pnr }}</td>
+                                                        <td>{{ $data->remarks }}</td>
                                                         <td>{{ $data->case_status }}</td>
                                                         <td>{{ $data->case_closed_by }}</td>
                                                         <td>{{ $data->case_closing_date }}</td>
@@ -1421,6 +1427,19 @@
                                                         <div class="row">
                                                             <div class="col-sm-6">
                                                                 <div class="form-group">
+                                                                    <label class="col-form-label">Airline Id <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <select class="form-control"
+                                                                        name="airline_id" required>
+                                                                        <option>Select Airline</option>
+                                                                        @foreach ($airlineDetailData as $airData)
+                                                                            <option value="{{$airData->airline_id}}">{{$airData->airline->airline_name}}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <div class="form-group">
                                                                     <label class="col-form-label">Case Opening Date <span
                                                                             class="text-danger">*</span></label>
                                                                     <input class="form-control" type="date"
@@ -1434,6 +1453,15 @@
                                                                             class="text-danger">*</span></label>
                                                                     <input class="form-control" type="text" required
                                                                         name="opened_by" required>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-sm-6">
+                                                                <div class="form-group">
+                                                                    <label class="col-form-label">Ticket No <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <input class="form-control" type="text" required
+                                                                        name="ticket_no" required>
                                                                 </div>
                                                             </div>
 
@@ -1453,14 +1481,14 @@
                                                                     <select class="form-control" name="case_status">
                                                                         <option value="" disabled>Select status
                                                                         </option>
-                                                                        <option name="opened">Opened</option>
+                                                                        <option name="opened" selected>Opened</option>
                                                                         <option name="updated">Updated</option>
                                                                         <option name="closed">Closed</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
 
-                                                            <div class="col-sm-6">
+                                                            {{-- <div class="col-sm-6">
                                                                 <div class="form-group">
                                                                     <label class="col-form-label">Case Closed By</label>
                                                                     <input class="form-control" type="text" required
@@ -1474,8 +1502,16 @@
                                                                     <input class="form-control" type="date"
                                                                         name="case_closing_date">
                                                                 </div>
-                                                            </div>
+                                                            </div> --}}
 
+                                                            <div class="col-sm-12">
+                                                                <div class="form-group">
+                                                                    <label class="col-form-label">Remarks <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <textarea class="form-control"
+                                                                        required name="remarks" required></textarea>
+                                                                </div>
+                                                            </div>
                                                             <div class="col-sm-6">
                                                                 <div class="form-group">
                                                                     <input class="form-control" type="hidden"
