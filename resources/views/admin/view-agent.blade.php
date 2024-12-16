@@ -438,6 +438,33 @@
                                     <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_address"><i
                                             class="fa fa-plus"></i> Add Address</a>
                                 </div>
+                                
+                                <div class="card profile-box flex-fill">
+                                    <div class="card-body">
+                                        <ul class="personal-info">
+                                            <li>
+                                                <div class="title">Street Address</div>
+                                                <div class="text">{{ $agent->address ?? 'null' }}</div>
+                                            </li>
+                                            <li>
+                                                <div class="title">City</div>
+                                                <div class="text">{{ $agent->city ?? 'null' }}</div>
+                                            </li>
+                                            <li>
+                                                <div class="title">State</div>
+                                                <div class="text">{{ $agent->state?? 'null' }}</div>
+                                            </li>
+                                            <li>
+                                                <div class="title">Country</div>
+                                                <div class="text">{{ $agent->country ?? 'null' }}</div>
+                                            </li>
+                                            <li>
+                                                <div class="title">Pincode</div>
+                                                <div class="text">{{ $agent->pincode ?? 'null' }}</div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                                 @foreach ($agentAddress as $address)
                                     <div class="card profile-box flex-fill">
                                         <div class="card-body">
