@@ -23,7 +23,7 @@
                             <li class="breadcrumb-item active">Staff Profile</li>
                         </ul>
                         <p class="d-inline text-dark font-weight-bolder">Welcome to <b
-                                class="d-inline text-capitalize">{{ $employee->first_name }} {{ $employee->last_name }}</b>
+                                class="d-inline text-capitalize">{{ $employees->first_name }} {{ $employees->last_name }}</b>
                             profile</p>
                     </div>
                     <div class="card tab-box" style="margin-top: 20px;">
