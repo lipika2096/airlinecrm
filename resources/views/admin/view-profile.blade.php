@@ -687,14 +687,14 @@
                                         <div class="form-group">
                                             <label>From <span class="text-danger">*</span></label>
                                             <div class="">
-                                                <input class="form-control " type="date" name="from"
+                                                <input class="form-control " type="date" name="from" id="from"
                                                     onchange="calculateDays()">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label>To <span class="text-danger">*</span></label>
                                             <div class="">
-                                                <input class="form-control" type="date" name="to"
+                                                <input class="form-control" type="date" name="to" id="to"
                                                     onchange="calculateDays()">
                                             </div>
                                         </div>
@@ -1313,14 +1313,14 @@
                                         <div class="form-group">
                                             <label>From <span class="text-danger">*</span></label>
                                             <div class="">
-                                                <input class="form-control " type="date" name="from"
+                                                <input class="form-control " type="date" name="from" id="from"
                                                     onchange="calculateDays()">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label>To <span class="text-danger">*</span></label>
                                             <div class="">
-                                                <input class="form-control" type="date" name="to"
+                                                <input class="form-control" type="date" name="to" id="to"
                                                     onchange="calculateDays()">
                                             </div>
                                         </div>
@@ -1417,5 +1417,41 @@
                     });
                 });
             });
+
+     // Function to ensure the date input meets the requirements
+  document.getElementById('from').addEventListener('input', function () {
+    const dateInput = this;
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentDate = today.toISOString().split('T')[0]; // Gets current date in YYYY-MM-DD format
+
+    // Set the minimum date to today's date
+    dateInput.setAttribute('min', currentDate);
+
+    // Check if the entered date has a valid year
+    const enteredDate = new Date(dateInput.value);
+    if (enteredDate.getFullYear() > currentYear || enteredDate.getFullYear() < 1000) {
+      alert("Please enter a valid year between 1000 and the current year.");
+      dateInput.value = ''; // Clear the invalid input
+    }
+  });
+
+   // Function to ensure the date input meets the requirements
+   document.getElementById('to').addEventListener('input', function () {
+    const dateInput = this;
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentDate = today.toISOString().split('T')[0]; // Gets current date in YYYY-MM-DD format
+
+    // Set the minimum date to today's date
+    dateInput.setAttribute('min', currentDate);
+
+    // Check if the entered date has a valid year
+    const enteredDate = new Date(dateInput.value);
+    if (enteredDate.getFullYear() > currentYear || enteredDate.getFullYear() < 1000) {
+      alert("Please enter a valid year between 1000 and the current year.");
+      dateInput.value = ''; // Clear the invalid input
+    }
+  });
         </script>
     @endsection
