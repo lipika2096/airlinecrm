@@ -1183,10 +1183,10 @@
                                 <div class="col">
 
                                 </div>
-                                <div class="col-auto float-end ms-auto">
+                                {{-- <div class="col-auto float-end ms-auto">
                                     <a href="#" class="btn add-btn" data-bs-toggle="modal"
                                         data-bs-target="#add_leave"><i class="fa fa-plus"></i> Add Leave</a>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                         <!-- /Page Header -->
