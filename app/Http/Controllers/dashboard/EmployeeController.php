@@ -392,9 +392,10 @@ class EmployeeController extends Controller
             ->get();
 
         $approvedLeaves = EmployeeLeave::where('status', 3)->count();
-        $total_min_hrs = User::where('id', $id)->pluck('min_hrs')->first();
-        $total_max_hrs = User::where('id', $id)->pluck('max_hrs')->first();
-        $total_overtime = $total_max_hrs - $total_min_hrs;
+        $total_min_hrs = User::where('id', $id)->first();
+        $total_max_hrs = User::where('id', $id)->first();
+        $total_overtime = (float)$total_max_hrs->max_hrs - (float)$total_min_hrs->max_hrs;
+
 
         $total_employee = Client::count();
 

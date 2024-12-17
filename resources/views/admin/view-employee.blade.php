@@ -85,7 +85,7 @@
                                         <td>{{ $data->min_hrs }}</td>
                                         <td>{{ $data->max_hrs }}</td>
                                         <td>
-                                            <a href="{{ route('admin.employee.list-profile', ['id' => $data->id]) }}"
+                                            <a href="{{ route('admin.view-staff', ['id' => $data->id]) }}"
                                              ><i class="fa fa-eye"></i></a>
                                                 <a  data-bs-toggle="modal" data-bs-target="#edit_employee{{$data->id}}"><i class="fa fa-pencil m-r-5"></i></a>
                                         </td>
@@ -154,21 +154,21 @@
                                                 <input class="form-control" value="{{$data->company_mobile}}" name="company_mobile" type="text">
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Work Type </label>
                                                 <input class="form-control" value="{{$data->work_type}}" name="work_type" type="text">
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Branch </label>
                                                 <input class="form-control" value="{{$data->branch}}" name="branch" type="text">
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Date of Birth </label>
@@ -301,21 +301,21 @@
                                                 <input class="form-control" name="company_mobile" type="text">
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Work Type </label>
                                                 <input class="form-control" name="work_type" type="text">
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Branch </label>
                                                 <input class="form-control" name="branch" type="text">
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Date of Birth </label>
