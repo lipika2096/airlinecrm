@@ -1,7 +1,10 @@
 @extends('admin/layouts/head-main')
 @section('content')
     <title>Salary</title>
+    <style>
+.form-control {height:35px;}
 
+</style>
 
     <!-- Page Wrapper -->
     <div class="page-wrapper">
@@ -183,7 +186,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                               
+
 
                                 <div class="col-sm-6">
                                     <label>Salary Doc.</label>

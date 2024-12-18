@@ -9,6 +9,8 @@
                 color: #333333;
                 margin-top: 30px !important;
             }
+            .submit-section{                margin-top:10px !important;
+            }
         </style>
         <!-- Page Content -->
         <div class="content container-fluid">
@@ -229,7 +231,7 @@
                                 </div>
                             <!-- </div> -->
 
-                           
+
 
                             <div class="col-sm-8">
                                 <!-- <div class="form-group"> -->

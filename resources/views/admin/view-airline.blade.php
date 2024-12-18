@@ -150,6 +150,13 @@
             .padding-custom{
                 padding: 0px 150px 0px 150px;
             }
+            .submit-section{
+                margin-top:10px;
+            }
+            .modal-header{
+                margin-bottom:-25px;
+            }
+
         </style>
         <!-- Page Content -->
         <div class="content container-fluid">
@@ -402,7 +409,7 @@
                                                                 <strong>{{$sla->title}}</strong>?
                                                             </p>
                                                             <div class="row">
-                                                                <div class="col-sm-6">
+                                                                <div class="col-sm-12">
                                                                     <div class="form-group">
                                                                         <textarea class="form-control" name="remarks" col="1"></textarea>
                                                                     </div>
@@ -419,12 +426,12 @@
                                         </div>
                                         <!-- /Delete sla Modal -->
                                             <!-- Edit Modal -->
-                                            <div id="edit_sla{{ $sla->id }}" class="modal fade" tabindex="-1"
+                                            <div id="edit_sla{{ $sla->id }}" class="modal custom-modal fade" tabindex="-1"
                                                 role="dialog">
-                                                <div class="modal-dialog modal-lg" role="document">
+                                                <div class="modal-dialog modal-dialog-centered  modal-lg" role="document">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
-                                                            <h5 class="modal-title">Edit SLA</h5>
+                                                            <h5 class="modal-title text-dark" style="font-size: 22px !important;    ">Edit SLA</h5>
                                                             <button type="button" class="close" data-bs-dismiss="modal"
                                                                 aria-label="Close">
                                                                 <span aria-hidden="true">&times;</span>
@@ -443,13 +450,13 @@
                                                                         value="{{ $sla->id }}">
                                                                 </div>
                                                                 <div class="row">
-                                                                    <div class="col-md-3 form-group">
+                                                                    <div class="col-sm-6 form-group">
                                                                         <label>Title</label>
                                                                         <input type="text" class="form-control"
                                                                             placeholder="title" name="title"
                                                                             value="{{ $sla->title }}">
                                                                     </div>
-                                                                    <div class="col-md-3 form-group">
+                                                                    <div class="col-sm-6 form-group">
                                                                         <label>Category</label>
                                                                         <input type="text" class="form-control"
                                                                             placeholder="category" name="category"
@@ -641,7 +648,7 @@
                                         <div id="delete_headoffice{{$headOffice->id}}" class="modal custom-modal fade" role="dialog">
                                             <div class="modal-dialog modal-dialog-centered" role="document">
                                                 <div class="modal-content">
-                                                    <div class="modal-header">
+                                                    <div class="modal-header mb-1">
                                                         <h5 class="modal-title">Delete head office contact details</h5>
                                                         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
@@ -655,7 +662,7 @@
                                                                 <strong>{{$headOffice->first_name}} {{$headOffice->last_name}}'s</strong>contact detail?
                                                             </p>
                                                             <div class="row">
-                                                                <div class="col-sm-6">
+                                                                <div class="col-sm-12">
                                                                     <div class="form-group">
                                                                         <textarea class="form-control" name="remarks" col="1"></textarea>
                                                                     </div>
@@ -690,12 +697,12 @@
                                                                     @csrf
                                                                     @method('PATCH')
                                                                     <div class="row">
-                                                                        <div class="col-sm-6">
                                                                             <div class="form-group">
                                                                                 <input class="form-control" type="hidden"
                                                                                     name="airline_id"
                                                                                     value="{{ $airlineDetails->airline_id }}">
                                                                             </div>
+                                                                            <div class="col-sm-6">
                                                                             <div class="form-group">
                                                                                 <label class="col-form-label">Title
                                                                                     <span
@@ -704,25 +711,8 @@
                                                                                     value="{{ $headOffice->title }}"
                                                                                     type="text" name="title">
                                                                             </div>
-                                                                            <div class="form-group">
-                                                                                <label class="col-form-label">Department
-                                                                                    <span
-                                                                                        class="text-danger">*</span></label>
-                                                                                <input class="form-control" type="text"
-                                                                                    name="department"
-                                                                                    value="{{ $headOffice->department }}"
-                                                                                    required>
                                                                             </div>
-                                                                            <div class="form-group">
-                                                                                <label class="col-form-label">Last Name
-                                                                                    <span
-                                                                                        class="text-danger">*</span></label>
-                                                                                <input class="form-control" type="text"
-                                                                                    name="last_name"
-                                                                                    value="{{ $headOffice->last_name }}">
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-sm-6">
+                                                                            <div class="col-sm-6">
                                                                             <div class="form-group">
                                                                                 <label class="col-form-label">Position
                                                                                     <span
@@ -731,7 +721,17 @@
                                                                                     value="{{ $headOffice->position }}"
                                                                                     name="position" required>
                                                                             </div>
-                                                                            <div class="form-group">
+                                                                            </div>
+                                                                            <div class="form-group col-sm-6">
+                                                                                <label class="col-form-label">Department
+                                                                                    <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <input class="form-control" type="text"
+                                                                                    name="department"
+                                                                                    value="{{ $headOffice->department }}"
+                                                                                    required>
+                                                                            </div>
+                                                                            <div class="col-sm-6 form-group">
                                                                                 <label class="col-form-label">First Name
                                                                                     <span
                                                                                         class="text-danger">*</span></label>
@@ -739,7 +739,18 @@
                                                                                     name="first_name"
                                                                                     value="{{ $headOffice->first_name }}">
                                                                             </div>
-                                                                            <div class="form-group">
+                                                                            <div class="col-sm-6 form-group">
+                                                                                <label class="col-form-label">Last Name
+                                                                                    <span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <input class="form-control" type="text"
+                                                                                    name="last_name"
+                                                                                    value="{{ $headOffice->last_name }}">
+                                                                            </div>
+
+
+
+                                                                            <div class="col-sm-6 form-group">
                                                                                 <label class="col-form-label">Phone Number
                                                                                     <span
                                                                                         class="text-danger">*</span></label>
@@ -747,8 +758,8 @@
                                                                                     name="phone_number"
                                                                                     value="{{ $headOffice->phone_number }}">
                                                                             </div>
-                                                                        </div>
-                                                                        <div class="col-sm-6">
+
+                                                                        <div class="col-sm-12">
                                                                             <div class="form-group">
                                                                                 <label class="col-form-label">Email Address
                                                                                     <span
@@ -759,20 +770,20 @@
                                                                                     required>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="col-sm-6">
-                                                                            <div class="form-group">
-                                                                                <label class="col-form-label">Add to mail List
+                                                                        <div class="col-sm-12">
+                                                                            <div class="form-group " >
+                                                                                <label class="col-form-label " style="margin-bottom:-5px;" >Add to mail List
                                                                                     <span
                                                                                         class="text-danger">*</span></label>
                                                                                         <input type="hidden" name="add_to_mail_list" value="0">
                                                                                         <input type="checkbox" name="add_to_mail_list" value="1"
                                                                                             {{ $headOffice->add_to_mail_list == 1 ? 'checked' : '' }}>
-                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="submit-section">
+                                                                    <div class="col-sm-12 submit-section">
                                                                         <button class="btn btn-primary"
                                                                             type="submit">Update</button>
+                                                                     </div>
                                                                     </div>
                                                                 </form>
                                                             </div>
@@ -821,17 +832,6 @@
                                                         <input type="text" class="form-control" id="lastName"
                                                             name="last_name">
                                                     </div>
-                                                    <div class="form-group">
-                                                        <label for="emailAddress">Email Address</label>
-                                                        <input type="email" class="form-control" id="emailAddress"
-                                                            name="email_address">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label class="col-form-label">Add to mail List
-                                                            <span
-                                                                class="text-danger">*</span></label>
-                                                                <input type="checkbox" name="add_to_mail_list" value="1" >
-                                                    </div>
                                                 </div>
                                                 <div class="col-sm-6">
                                                     <div class="form-group">
@@ -855,6 +855,19 @@
                                                             name="created_by" value="{{Auth()->user()->name}}">
                                                     </div>
                                                 </div>
+                                                <div class="col-sm-12" style="margin-top:-12px;">
+                                                <div class="form-group">
+                                                        <label for="emailAddress">Email Address</label>
+                                                        <input type="email" class="form-control" id="emailAddress"
+                                                            name="email_address">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style="margin-top:-12px;">
+                                                        <label class="col-form-label">Add to mail List
+                                                            <span
+                                                                class="text-danger">*</span></label>
+                                                                <input type="checkbox" name="add_to_mail_list" value="1" >
+                                                    </div>
                                             </div>
                                             <div class="submit-section">
                                                 <button class="btn btn-primary" type="submit">Submit</button>
@@ -945,9 +958,9 @@
 
                                         <!-- Delete fleet Modal -->
                                         <div id="delete_fleet{{$fleet->id}}" class="modal custom-modal fade" role="dialog">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-dialog modal-dialog-centered " role="document">
                                                 <div class="modal-content">
-                                                    <div class="modal-header">
+                                                    <div class="modal-header mb-1">
                                                         <h5 class="modal-title">Delete fleet</h5>
                                                         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
@@ -961,11 +974,11 @@
                                                                 <strong>{{$fleet->name}}</strong>?
                                                             </p>
                                                             <div class="row">
-                                                                <div class="col-sm-6">
+                                                                <!-- <div class="col-sm-12"> -->
                                                                     <div class="form-group">
                                                                         <textarea class="form-control" name="remarks" col="1"></textarea>
                                                                     </div>
-                                                                </div>
+                                                                <!-- </div> -->
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -994,7 +1007,7 @@
                                                                 method="POST" enctype="multipart/form-data">
                                                                 @csrf
                                                                 <div class="row">
-                                                                    <div class="col-sm-12">
+                                                                    <!-- <div class="col-sm-12"> -->
                                                                         <input class="form-control" type="hidden"
                                                                             name="airline_id"
                                                                             value="{{ $airlineDetails->airline_id }}">
@@ -1073,7 +1086,7 @@
                                                                                 value="{{Auth()->user()->name}}">
                                                                         </div>
                                                                     </div>
-                                                                </div>
+                                                                <!-- </div> -->
                                                                 <div class="submit-section">
                                                                     <button class="btn btn-primary"
                                                                         type="submit">Submit</button>
@@ -1536,7 +1549,7 @@
                                         <div id="delete_aircraft{{$data->id}}" class="modal custom-modal fade" role="dialog">
                                             <div class="modal-dialog modal-dialog-centered" role="document">
                                                 <div class="modal-content">
-                                                    <div class="modal-header">
+                                                    <div class="modal-header mb-1">
                                                         <h5 class="modal-title">Delete schedule</h5>
                                                         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
@@ -1549,7 +1562,7 @@
                                                             <p>Are you sure you want to delete?
                                                             </p>
                                                             <div class="row">
-                                                                <div class="col-sm-6">
+                                                                <div class="col-sm-12">
                                                                     <div class="form-group">
                                                                         <textarea class="form-control" name="remarks" col="1"></textarea>
                                                                     </div>
@@ -1583,12 +1596,12 @@
                                                                     @csrf
                                                                     @method('PATCH')
                                                                     <div class="row">
-                                                                        <div class="col-sm-6">
                                                                             <div class="form-group">
                                                                                 <input class="form-control" type="hidden"
                                                                                     name="airline_id"
                                                                                     value="{{ $airlineDetails->airline_id }}">
                                                                             </div>
+                                                                            <div class="col-sm-6">
                                                                             <div class="form-group">
                                                                                 <label class="col-form-label">Flight Number
                                                                                     <span
@@ -1863,7 +1876,7 @@
                                                         data-bs-target="#edit_library{{ $data->id }}"><i
                                                             class="fa fa-edit"></i></a>
 
-                                                            <a style="margin-right: 10px;" class="btnedit-btn"
+                                                            <a style="margin-right: 10px; margin-top: 7px;" class="btnedit-btn"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#delete_library{{ $data->id }}"><i
                                                                 class="fa fa-trash"></i></a>
@@ -1888,7 +1901,7 @@
                                                             <p>Are you sure you want to delete?
                                                             </p>
                                                             <div class="row">
-                                                                <div class="col-sm-6">
+                                                                <div class="col-sm-12">
                                                                     <div class="form-group">
                                                                         <textarea class="form-control" name="remarks" col="1"></textarea>
                                                                     </div>
@@ -1904,7 +1917,7 @@
                                             </div>
                                         </div>
                                         <!-- /Delete fleet Modal -->
-                                            <div id="edit_library{{ $data->id }}" class="modal fade"
+                                            <div id="edit_library{{ $data->id }}" class="modal custom-modal fade"
                                                 role="dialog">
                                                 <div class="modal-dialog modal-dialog-centered modal-lg">
                                                     <div class="modal-content">

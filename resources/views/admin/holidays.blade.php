@@ -3,6 +3,11 @@
 @php
     use Carbon\Carbon;
 @endphp
+<style>
+.submit-section {
+                margin-top:10px !important;
+            }
+        </style>
     <!-- Page Wrapper -->
     <div class="page-wrapper">
 

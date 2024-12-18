@@ -286,7 +286,7 @@
                                         </div>
                                         <div class="col-sm-6">
                                             <div class="form-group">
-                                                <label class="form-label">Phone </label>
+                                                <label class="form-label" style="margin-bottom: 0px;">Phone </label>
                                                 <input class="form-control" name="phone"  value="{{$data->phone}}" type="text">
                                             </div>
                                         </div>
@@ -408,7 +408,7 @@
                                                 <input class="form-control" type="password" name="password">
                                             </div>
                                         <!-- </div> -->
-                                        
+
                                         <!-- </div> -->
                                         <div class="col-sm-4">
                                             <!-- <div class="form-group"> -->

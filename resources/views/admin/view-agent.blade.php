@@ -8,6 +8,9 @@
     <!-- Page Wrapper -->
     <div class="page-wrapper">
         <style>
+            .submit-section{
+                margin-top:10px;
+            }
         </style>
         <!-- Page Content -->
         <div class="content container-fluid">
@@ -438,7 +441,7 @@
                                     <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_address"><i
                                             class="fa fa-plus"></i> Add Address</a>
                                 </div>
-                                
+
                                 <div class="card profile-box flex-fill">
                                     <div class="card-body">
                                         <ul class="personal-info">
@@ -498,7 +501,7 @@
                                             role="dialog">
                                             <div class="modal-dialog modal-dialog-centered modal-lg">
                                                 <div class="modal-content">
-                                                    <div class="modal-header">
+                                                    <div class="modal-header" style="margin-bottom:-25px;">
                                                         <h5 class="modal-title">Edit Address</h5>
                                                         <button type="button" class="close" data-bs-dismiss="modal"
                                                             aria-label="Close">
@@ -511,12 +514,12 @@
                                                             method="POST" enctype="multipart/form-data">
                                                             @csrf
                                                             <div class="row">
-                                                                <div class="col-sm-6">
 
                                                                     <div class="form-group">
                                                                         <input class="form-control" type="hidden"
                                                                             name="agent_id" value="{{ $agent->id }}">
                                                                     </div>
+                                                                    <div class="col-sm-6">
                                                                     <div class="form-group">
                                                                         <label class="col-form-label">Street Address <span
                                                                                 class="text-danger">*</span></label>
@@ -809,7 +812,7 @@
                                                                     action="{{ route('admin.agent.target.store') }}#special_fares"
                                                                     method="POST" enctype="multipart/form-data">
                                                                     @csrf
-                                                                    <div class="table-responsive text-nowrap">
+                                                                    <div class="table-responsive text-nowrap" style="margin-top:-53px;">
                                                                         <table class="table">
                                                                             <thead>
                                                                                 <tr>
@@ -889,7 +892,7 @@
                                                                 {{-- <form action="{{ route('admin.agent.target.store') }}"
                                                                     method="POST" enctype="multipart/form-data">
                                                                     @csrf --}}
-                                                                <div class="table-responsive text-nowrap">
+                                                                <div class="table-responsive text-nowrap" style="margin-top:-53px;">
                                                                     <table class="table">
                                                                         <thead>
                                                                             <tr>
@@ -1097,9 +1100,9 @@
                                                     </div>
                                                 </div>
                                                 <div id="add_product" class="modal custom-modal fade" role="dialog">
-                                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                    <div class="modal-dialog modal-dialog-centered modal-md">
                                                         <div class="modal-content">
-                                                            <div class="modal-header">
+                                                            <div class="modal-header" style="margin-bottom:-25px;">
                                                                 <h5 class="modal-title">Add Product</h5>
                                                                 <button type="button" class="close"
                                                                     data-bs-dismiss="modal" aria-label="Close">
@@ -1112,12 +1115,12 @@
                                                                     method="POST" enctype="multipart/form-data">
                                                                     @csrf
                                                                     <div class="row">
-                                                                        <div class="col-sm-6">
                                                                             <div class="form-group">
                                                                                 <input class="form-control" type="hidden"
                                                                                     name="agent_id"
                                                                                     value="{{ $agent->id }}">
                                                                             </div>
+                                                                            <div class="col-sm-12">
                                                                             <div class="form-group">
                                                                                 <label class="col-form-label">Product Name
                                                                                     <span
@@ -1182,9 +1185,9 @@
                                                     <input class="form-control" type="hidden" name="from"
                                                         value="{{ Auth()->user()->name }}">
                                                     <div class="row">
-                                                        <div class="col-sm-6">
-                                                            <div class="form-group">
-                                                            </div>
+                                                        <div class="col-sm-4">
+                                                            <!-- <div class="form-group"> -->
+                                                            <!-- </div> -->
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Airlines <span
                                                                         class="text-danger">*</span></label>
@@ -1197,16 +1200,15 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="col-sm-6">
+                                                        <div class="col-sm-4">
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Subject <span
                                                                         class="text-danger">*</span></label>
                                                                 <input class="form-control" type="text" required
                                                                     name="title">
                                                             </div>
-
                                                         </div>
-                                                        <div class="col-sm-6">
+                                                        <div class="col-sm-4">
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Date of Contact <span
                                                                         class="text-danger">*</span></label>
@@ -1605,7 +1607,7 @@
                                 <div id="add_agent" class="modal custom-modal fade" role="dialog">
                                     <div class="modal-dialog modal-dialog-centered modal-lg">
                                         <div class="modal-content">
-                                            <div class="modal-header">
+                                            <div class="modal-header " style="margin-bottom: -25px;">
                                                 <h5 class="modal-title">Add Transactions</h5>
                                                 <button type="button" class="close" data-bs-dismiss="modal"
                                                     aria-label="Close">
@@ -1617,11 +1619,11 @@
                                                     method="POST" enctype="multipart/form-data">
                                                     @csrf
                                                     <div class="row">
-                                                        <div class="col-sm-6">
                                                             <div class="form-group">
                                                                 <input class="form-control" type="hidden"
                                                                     name="agent_id" value="{{ $agent->id }}">
                                                             </div>
+                                                            <div class="col-sm-6">
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Debit Amount <span
                                                                         class="text-danger">*</span></label>
@@ -2040,10 +2042,14 @@
                     <div class="row">
                         <div class="col-md-12 d-flex">
                             <div class="card profile-box flex-fill">
-                                <div class="card-body">
+                                <div class="card-body row ">
+                                    <div class="col-sm-12 ">
+                                        <div class="float-end">
                                     <a class="btn btn-primary" data-bs-toggle="modal"
                                     style="border-radius:10px;" data-bs-target="#add_airline_activation"><i
-                                        class="fa fa-plus"></i> Add / Edit Airline Activations</a>
+                                        class="fa fa-plus"></i> Add / Edit Airline Activations</a></div>
+                                        </div>
+                                        <div class="col-sm-12">
                                     {{-- <form action="{{ route('admin.agent.target.store') }}#airline_activation"
                                         method="POST" enctype="multipart/form-data">
                                         @csrf --}}
@@ -2088,6 +2094,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
+                                        </div>
                                         {{-- <div class="submit-section">
                                             <button class="btn btn-primary" type="submit">Submit</button>
                                         </div>
@@ -2113,7 +2120,7 @@
                                 <form action="{{ route('admin.agent.target.store') }}#airline_activation"
                                 method="POST" enctype="multipart/form-data">
                                 @csrf
-                                <div class="table-responsive text-nowrap">
+                                <div class="table-responsive text-nowrap" style="margin-top:-53px;">
                                     <table class="table">
                                         <thead>
                                             <tr>
@@ -2293,7 +2300,7 @@
                 <div id="add_address" class="modal custom-modal fade" role="dialog">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
-                            <div class="modal-header">
+                            <div class="modal-header" style="margin-bottom:-25px;">
                                 <h5 class="modal-title">Add Address</h5>
                                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
@@ -2304,12 +2311,11 @@
                                     enctype="multipart/form-data">
                                     @csrf
                                     <div class="row">
-                                        <div class="col-sm-6">
-
-                                            <div class="form-group">
+                                    <div class="form-group">
                                                 <input class="form-control" type="hidden" name="agent_id"
                                                     value="{{ $agent->id }}">
                                             </div>
+                                            <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Street Address <span
                                                         class="text-danger">*</span></label>
@@ -2354,7 +2360,7 @@
                 <div id="add_contact" class="modal custom-modal fade" role="dialog">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
-                            <div class="modal-header">
+                            <div class="modal-header" style="margin-bottom:-25px;">
                                 <h5 class="modal-title">Add Contact</h5>
                                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
@@ -2365,6 +2371,11 @@
                                     enctype="multipart/form-data">
                                     @csrf
                                     <div class="row">
+                                    <div class="form-group">
+                                                <input class="form-control" type="hidden" name="agent_id"
+                                                    value="{{ $agent->id }}">
+                                                    <input class="form-control" type="hidden" required name="updated_at" value=" ">
+                                            </div>
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Title <span
@@ -2372,13 +2383,7 @@
                                                 <input class="form-control" type="text" required name="title">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
-
-                                            <div class="form-group">
-                                                <input class="form-control" type="hidden" name="agent_id"
-                                                    value="{{ $agent->id }}">
-                                                    <input class="form-control" type="hidden" required name="updated_at" value=" ">
-                                            </div>
+                                            <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">First Name <span
                                                         class="text-danger">*</span></label>

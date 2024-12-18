@@ -36,6 +36,10 @@
                     color: #333333;
                     margin-top: 30px !important;
                 }
+                .select2-container .select2-selection--single {
+    border: 1px solid #dcdcdc;
+    height: 43px;
+}
             </style>
             <div class="row">
                 <div class="col-md-12">
@@ -106,78 +110,92 @@
                                 @method('patch')
                                 @csrf
                                     <div class="row">
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">First Name <span class="text-danger">*</span></label>
                                                 <input class="form-control"name="first_name"  value="{{$data->first_name}}" type="text">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Last Name</label>
                                                 <input class="form-control" name="last_name" value="{{$data->last_name}}" type="text">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Email <span class="text-danger">*</span></label>
                                                 <input class="form-control" name="email"  value="{{$data->email}}" type="email">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Employee ID <span class="text-danger">*</span></label>
                                                 <input type="text" name="employee_id" value="{{$data->unique_id}}" class="form-control floating">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
-                                                <label class="col-form-label"></label>Joining Date<span class="text-danger">*</span></label>
+                                                <label class="col-form-label">Joining Date<span class="text-danger">*</span></label>
                                                 <input type="date" name="joining_date" value="{{$data->joining_date}}" class="form-control floating">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Phone </label>
                                                 <input class="form-control" name="phone"  value="{{$data->phone}}" type="text">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Personal Mobile </label>
                                                 <input class="form-control" value="{{$data->personal_phone}}" name="personal_phone" type="text">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Company Mobile </label>
                                                 <input class="form-control" value="{{$data->company_mobile}}" name="company_mobile" type="text">
                                             </div>
                                         </div>
 
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Work Type </label>
                                                 <input class="form-control" value="{{$data->work_type}}" name="work_type" type="text">
                                             </div>
                                         </div>
 
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Branch </label>
                                                 <input class="form-control" value="{{$data->branch}}" name="branch" type="text">
                                             </div>
                                         </div>
 
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Date of Birth </label>
                                                 <input class="form-control" value="{{$data->dob}}" name="dob" type="date">
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+
+                                        <div class="col-sm-4">
                                             <div class="form-group">
-                                                <label>Department <span class="text-danger">*</span></label>
+                                                <label class="col-form-label">Min Hrs </label>
+                                                <input class="form-control" name="min_hrs"  value="{{$data->min_hrs}}" type="text">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Max Hrs </label>
+                                                <input class="form-control" name="max_hrs"  value="{{$data->max_hrs}}" type="text">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label style="font-size:13px;margin-bottom:5px; margin-top:9px;">Department <span class="text-danger">*</span></label>
                                                 <select class="select" name="department">
                                                     <option>Select Department</option>
                                                     @foreach($department as $department_data)
@@ -186,27 +204,15 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-group">
-                                                <label>Designation <span class="text-danger">*</span></label>
+                                                <label style="font-size:13px;margin-bottom:5px; margin-top:9px; ">Designation <span class="text-danger">*</span></label>
                                                 <select class="select" name="designation">
                                                     <option>Select Designation</option>
                                                     @foreach($designation as $designation_data)
                                                         <option value="{{$designation_data->designation}}" @if ($data->position == $designation_data->designation) selected @endif>{{$designation_data->designation}}</option>
                                                     @endforeach
                                                 </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="col-form-label">Min Hrs </label>
-                                                <input class="form-control" name="min_hrs"  value="{{$data->min_hrs}}" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="col-form-label">Max Hrs </label>
-                                                <input class="form-control" name="max_hrs"  value="{{$data->max_hrs}}" type="text">
                                             </div>
                                         </div>
                                     </div>
@@ -246,88 +252,102 @@
                                 <form method="post" action ="{{route('admin.employee.store-profile')}}"  >
                                     @csrf
                                     <div class="row">
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">First Name <span class="text-danger">*</span></label>
                                                 <input class="form-control" type="text" name="first_name">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Last Name</label>
                                                 <input class="form-control" type="text" name="last_name">
                                             </div>
                                         </div>
 
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Email <span class="text-danger">*</span></label>
                                                 <input class="form-control" type="email" name="email">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Password</label>
                                                 <input class="form-control" type="password" name="password">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Employee ID <span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" name="employee_id">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Total Leave <span class="text-danger">*</span></label>
                                                 <input type="number" class="form-control" name="leave_count">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Phone </label>
                                                 <input class="form-control" name="phone" type="text">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Personal Mobile </label>
                                                 <input class="form-control" name="personal_phone" type="text">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Company Mobile </label>
                                                 <input class="form-control" name="company_mobile" type="text">
                                             </div>
                                         </div>
 
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Work Type </label>
                                                 <input class="form-control" name="work_type" type="text">
                                             </div>
                                         </div>
 
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Branch </label>
                                                 <input class="form-control" name="branch" type="text">
                                             </div>
                                         </div>
 
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Date of Birth </label>
                                                 <input class="form-control" name="dob" type="date">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="col-form-label">Joining Date <span class="text-danger">*</span></label>
                                                 <div class=""><input class="form-control" type="date" name="joining_date"></div>
                                             </div>
                                         </div>
+
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Min Hrs </label>
+                                                <input class="form-control" name="min_hrs" type="text">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Max Hrs </label>
+                                                <input class="form-control" name="max_hrs"  type="text">
+                                            </div>
+                                        </div>
+
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>Department <span class="text-danger">*</span></label>
@@ -348,18 +368,6 @@
                                                         <option value="{{$data->designation}}">{{$data->designation}}</option>
                                                     @endforeach
                                                 </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="col-form-label">Min Hrs </label>
-                                                <input class="form-control" name="min_hrs" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="col-form-label">Max Hrs </label>
-                                                <input class="form-control" name="max_hrs"  type="text">
                                             </div>
                                         </div>
                                     </div>
