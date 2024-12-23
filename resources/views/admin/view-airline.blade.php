@@ -2921,7 +2921,7 @@ $(document).ready(function() {
 
                         if (response.specialFares.length === 0) {
                             $('#searchResults').html(
-                                '<tr><td colspan="8" class="text-center">No records found</td></tr>'
+                                '<tr><td colspan="12" class="text-center">No records found</td></tr>'
                                 );
                         } else {
 
