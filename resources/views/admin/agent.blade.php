@@ -44,6 +44,45 @@
                 </div>
             </div>
             <!-- /Page Header -->
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="{{ route('admin.agents') }}" method="get">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <input type="text" name="search" class="form-control" placeholder="Search"
+                                    value="{{ request()->search ?? '' }}">
+                            </div>
+
+                            <div class="col-md-3">
+                                <select class="form-control" name="search_type" id="search_type">
+                                    <option value="" selected disabled>Select Search Type</option>
+                                    <option value="agent_name" @if(request()->search_type == 'agent_name') selected @endif >Agent Name</option>
+                                    <option value="pincode" @if(request()->search_type == 'pincode') selected @endif >Pincode</option>
+                                    <option value="city" @if(request()->search_type == 'city') selected @endif >City</option>
+                                    <option value="state" @if(request()->search_type == 'state') selected @endif >State</option>
+                                    <option value="country" @if(request()->search_type == 'country') selected @endif >Country</option>
+                                    <option value="agent_group" @if(request()->search_type == 'agent_group') selected @endif >Agent Group</option>
+                                    <option value="company_registration_no" @if(request()->search_type == 'company_registration_no') selected @endif>Company Registration No</option>
+                                    <option value="iata_number" @if(request()->search_type == 'iata_number') selected @endif>IATA Number</option>
+                                    <option value="gds_number" @if(request()->search_type == 'gds_number') selected @endif>GDS Number</option>
+                                    <option value="gds_type" @if(request()->search_type == 'gds_type') selected @endif>GDS Type</option>
+                                    <option value="focus_destinations" @if(request()->search_type == 'focus_destinations') selected @endif> Focus Destinations</option>
+                                    <option value="business_model" @if(request()->search_type == 'business_model') selected @endif>Business Model</option>
+                                    <option value="website" @if(request()->search_type == 'website') selected @endif>Website</option>
+                                    <option value="product_type" @if(request()->search_type == 'product_type') selected @endif>Product Type</option>
+                                    <option value="fare_type" @if(request()->search_type == 'fare_type') selected @endif>Fare Type</option>
+                                    <option value="account_code" @if(request()->search_type == 'account_code') selected @endif>Account Code</option>
+                                </select>
+                            </div>
+
+
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
             <div class="row">
                 <div class="col-md-12">
