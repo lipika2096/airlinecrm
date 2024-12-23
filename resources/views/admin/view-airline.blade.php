@@ -2616,6 +2616,52 @@
                 </div>
                 <div id="special_fares" class="pro-overview tab-pane fade show">
                     <div class="row">
+                        <div class="col-md-7">
+                            <form id="specialFareSearchForm" method="get">
+                                    <input type="hidden" name="airline_id" value="{{ $airlineDetails->airline_id }}">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <!-- <label class="col-form-label">Search<span class="text-danger">*</span></label> -->
+                                                <input class="form-control" placeholder="Search" type="text" name="search"
+                                                    id="search">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <!-- <label class="col-form-label">Select Type<span
+                                                        class="text-danger">*</span></label> -->
+                                                <select class="form-control" name="search_type" id="search_type">
+                                                    <option value="" selected disabled>Select Search Type</option>
+                                                    <option value="agent_name">Agent Name</option>
+                                                    <option value="pincode">Pincode</option>
+                                                    <option value="city">City</option>
+                                                    <option value="state">State</option>
+                                                    <option value="country">Country</option>
+                                                    <option value="agent_group">Agent Group</option>
+                                                    <option value="company_registration_no">Company Registration No</option>
+                                                    <option value="iata_number">IATA Number</option>
+                                                    <option value="gds_number">GDS Number</option>
+                                                    <option value="gds_type">GDS Type</option>
+                                                    <option value="focus_destinations">Focus Destinations</option>
+                                                    <option value="business_model">Business Model</option>
+                                                    <option value="website">Website</option>
+                                                    <option value="product_type">Product Type</option>
+                                                    <option value="fare_type">Fare Type</option>
+                                                    <option value="account_code">Account Code</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <button type="button" style="border-radius:10px;margin-top: 1px !important;" id="searchButton"
+                                                    class="btn btn-primary">Search</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                </div>
                         <div class="col-auto float-end ms-auto mt-2 mx-4 mb-2">
                             <a class="btn btn-primary" data-bs-toggle="modal"
                             style="border-radius:10px;" data-bs-target="#add_target"><i
@@ -2646,7 +2692,7 @@
                                                 <th>Updated By</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="searchResults">
                                         @foreach ($specialFare as $fare)
                                             <tr>
                                                 <td>{{ $fare->agent->company_name }}</td>
@@ -2857,6 +2903,58 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Your custom script -->
 <script>
+
+$(document).ready(function() {
+            $('#searchButton').on('click', function() {
+                $('#searchResults').html('<tr><td colspan="8" class="text-center">Loading...</td></tr>');
+                var searchData = $('#specialFareSearchForm').serialize();
+
+                var airlineId = "{{ $airlineDetails->airline_id }}";
+                const baseUrl = "{{ url('/') }}";
+
+                $.ajax({
+                    url: baseUrl + '/admin/airlines/get-special-fare/' + airlineId,
+                    method: 'GET',
+                    data: searchData,
+                    success: function(response) {
+                        $('#searchResults').empty();
+
+                        if (response.specialFares.length === 0) {
+                            $('#searchResults').html(
+                                '<tr><td colspan="8" class="text-center">No records found</td></tr>'
+                                );
+                        } else {
+
+                            response.specialFares.forEach(function(fare) {
+                                var row = `<tr>
+                                    <td>${fare.company_name}</td>
+                                    <td>${fare.fare_type}</td>
+                                    <td>${fare.status}</td>
+                                    <td>${fare.iata}</td>
+                                    <td>${fare.pcc_office_id}</td>
+                                    <td>${fare.account_code}</td>
+                                    <td>${fare.discount}</td>
+                                    <td>${fare.remarks}</td>
+                                    <td>${fare.created_at}</td>
+                                    <td>${fare.created_by}</td>
+                                    <td>${fare.updated_at}</td>
+                                    <td>${fare.updated_by}</td>
+
+                                </tr>`;
+
+                                $('#searchResults').append(row);
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error during search:', error);
+                    }
+                });
+            });
+        });
+
+
+
     function updateStatus(id, checkbox) {
         var form = document.getElementById('toggle-status-form-' + id);
 

@@ -268,6 +268,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
     Route::post('airlines/store', [AirlineController::class, 'store'])->name('airlines.store');
     Route::patch('airlines/edit/{id}', [AirlineController::class, 'update'])->name('airlines.update');
     Route::get('airlines/view/{id}', [AirlineController::class, 'view'])->name('airlines.view');
+    Route::get('airlines/get-special-fare/{id}', [AirlineController::class, 'searchSpecialFare'])->name('airlines.special.fare');
+
     Route::post('airlines/aircraft/', [AirlineController::class, 'aircraftStore'])->name('airline.aircraft.store');
     Route::post('airlines/fleet/', [AirlineController::class, 'fleetStore'])->name('airline.fleet.store');
     Route::patch('airlines/aircraft/update/{id}', [AirlineController::class, 'aircraftUpdate'])->name('airline.aircraft.update');

@@ -68,7 +68,90 @@ class AirlineController extends Controller
         $fareType = FareType::get();
         $duty = Duty::where('status',1)->get();
         $specialFare = SpecialFare::where('airline_id', $id)->where('status',1)->with('fareDiscount')->get();
+
         return view('admin.view-airline', compact('airlines','airlineDetails','aircrafts', 'fleets', 'staff', 'approvedStaffs','library','slas', 'headOffices', 'Staffs', 'agents', 'rules', 'headOfficesDeleted', 'agreements', 'fareType','specialFare','duty'));
+    }
+
+    public function searchSpecialFare(Request $request, $id)
+    {
+
+        $specialFares = SpecialFare::with(['airline', 'agent'])->where('airline_id', $id)
+            ->where('status', 1);
+
+        if ($request->has('search') && !empty($request->input('search'))) {
+            $searchValue = $request->input('search');
+            $searchType = $request->input('search_type');
+
+            switch ($searchType) {
+                case 'agent_name':
+                    $specialFares->whereHas('agent', function ($query) use ($searchValue) {
+                        $query->where('company_name', 'like', '%' . $searchValue . '%');
+                    });
+                    break;
+
+                case 'pincode':
+                    $specialFares->whereHas('agent', function ($query) use ($searchValue) {
+                        $query->where('pincode', 'like', '%' . $searchValue . '%');
+                    });
+                    break;
+
+                case 'city':
+                    $specialFares->whereHas('agent', function ($query) use ($searchValue) {
+                        $query->where('city', 'like', '%' . $searchValue . '%');
+                    });
+                    break;
+
+                case 'state':
+                    $specialFares->whereHas('agent', function ($query) use ($searchValue) {
+                        $query->where('state', 'like', '%' . $searchValue . '%');
+                    });
+                    break;
+
+                case 'country':
+                    $specialFares->whereHas('agent', function ($query) use ($searchValue) {
+                        $query->where('country', 'like', '%' . $searchValue . '%');
+                    });
+                    break;
+
+                case 'fare_type':
+                    $specialFares->where('fare_type', 'like', '%' . $searchValue . '%');
+                    break;
+
+                case 'account_code':
+                    $specialFares->whereHas('agent', function ($query) use ($searchValue) {
+                        $query->where('account_code', 'like', '%' . $searchValue . '%');
+                    });
+                    break;
+
+                default:
+
+                    break;
+            }
+        }
+
+        $specialFares = $specialFares->get();
+
+        if ($request->ajax()) {
+
+            $data = $specialFares->map(function ($fare) {
+                return [
+                    'company_name' => $fare->agent->company_name ?? 'N/A',
+                    'fare_type' => $fare->fare_type ?? 'N/A',
+                    'status' => $fare->status == 1 ? 'Active' : 'Inactive',
+                    'iata' => $fare->agent->iata ?? 'N/A',
+                    'pcc_office_id' => $fare->agent->pcc_office_id ?? 'N/A',
+                    'account_code' => $fare->agent->account_code ?? 'N/A',
+                    'discount' => $fare->agent->discount ?? 'N/A',
+                    'remarks' => $fare->agent->remarks ?? 'N/A',
+                    'created_at' => $fare->created_at,
+                    'created_by' => $fare->created_by,
+                    'updated_at' => $fare->updated_at,
+                    'updated_by' => $fare->updated_by,
+                ];
+            });
+
+            return response()->json(['specialFares' => $data]);
+        }
     }
     public function store(Request $request)
     {

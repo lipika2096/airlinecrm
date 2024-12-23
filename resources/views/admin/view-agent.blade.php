@@ -1623,7 +1623,7 @@
                                                                 <input class="form-control" type="hidden"
                                                                     name="agent_id" value="{{ $agent->id }}">
                                                             </div>
-                                                            <div class="col-sm-6">
+                                                            <div class="col-sm-4">
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Debit Amount <span
                                                                         class="text-danger">*</span></label>
@@ -1631,29 +1631,30 @@
                                                                     name="debit" id="debit">
                                                             </div>
                                                         </div>
-                                                        <div class="col-sm-6">
+                                                        <div class="col-sm-4">
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Credit Amount</label>
                                                                 <input class="form-control" type="text" required
                                                                     name="credit" id="credit">
                                                             </div>
                                                         </div>
-
-                                                        <div class="col-sm-6">
-                                                            <div class="form-group">
-                                                                <label class="col-form-label">Type</label>
-                                                                <input class="form-control" type="yext"
-                                                                    name="tr_type">
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="col-sm-6">
+                                                        <div class="col-sm-4">
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Transaction Date</label>
                                                                 <input class="form-control" type="date"
                                                                     name="tr_date">
                                                             </div>
                                                         </div>
+
+                                                        <div class="col-sm-12">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Remarks</label>
+                                                                <input class="form-control" type="yext"
+                                                                    name="tr_type">
+                                                            </div>
+                                                        </div>
+
+                                                        
                                                     </div>
                                                     <div class="submit-section">
                                                         <button class="btn btn-primary" type="submit">Submit</button>
