@@ -56,7 +56,7 @@
                                                 </div>
 
                                                 <div class="dash-card-content">
-                                                    <p>{{ $el->employee->first_name }} {{ $el->employee->last_name }} is on
+                                                    <p>{{ $el->leave_type . ' '. $el->employee->first_name }} {{ $el->employee->last_name }} is on
                                                         leave today</p>
                                                 </div>
                                             </div>
@@ -94,7 +94,7 @@
                                                     <i class="fa fa-suitcase"></i>
                                                 </div>
                                                 <div class="dash-card-content">
-                                                    <p>{{ $tel->employee->first_name }} {{ $tel->employee->last_name }} is
+                                                    <p> {{ $tel->leave_type . ' '. $tel->employee->first_name }} {{ $tel->employee->last_name }} is
                                                         on leave tomorrow</p>
                                                 </div>
                                             </div>
@@ -114,6 +114,7 @@
                                 </div>
                             @else
                                 @foreach ($next_seven_days as $nel)
+
                                     <div class="dash-info-list">
                                         <div class="dash-card">
                                             <div class="dash-card-container">
@@ -122,8 +123,8 @@
                                                 </div>
 
                                                 <div class="dash-card-content">
-                                                    <p>{{ $nel->employee->first_name }} {{ $nel->employee->last_name }} is
-                                                        on leave today</p>
+                                                    <p>{{$nel->leave_type . ' '. $nel->employee->first_name }} {{ $nel->employee->last_name }} is
+                                                        on leave {{ $nel->from}}</p>
                                                 </div>
                                             </div>
                                         </div>
