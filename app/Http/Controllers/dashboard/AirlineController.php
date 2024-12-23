@@ -22,6 +22,7 @@ use App\Models\FareType;
 use App\Models\Duty;
 
 use App\Models\HeadOfficeContactDetail;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -143,9 +144,9 @@ class AirlineController extends Controller
                     'account_code' => $fare->agent->account_code ?? 'N/A',
                     'discount' => $fare->agent->discount ?? 'N/A',
                     'remarks' => $fare->agent->remarks ?? 'N/A',
-                    'created_at' => $fare->created_at,
+                    'created_at' => $fare->created_at ? Carbon::parse($fare->created_at)->format('d-m-Y H:i:s') : null,
                     'created_by' => $fare->created_by,
-                    'updated_at' => $fare->updated_at,
+                    'updated_at' => $fare->updated_at ? Carbon::parse($fare->updated_at)->format('d-m-Y H:i:s') : null,
                     'updated_by' => $fare->updated_by,
                 ];
             });
