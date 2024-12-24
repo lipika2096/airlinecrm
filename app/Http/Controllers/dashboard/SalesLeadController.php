@@ -42,6 +42,8 @@ class SalesLeadController extends Controller
             'contact_person' => $request->input('contact_person')??'null',
             'category' => $request->input('category')??'null',
             'remarks' => $request->input('remarks')??'null',
+            'created_by' => auth()->user()->name,
+            'updated_at' => $request->input('updated_at'),
         ]);
 
         return redirect()->route('admin.saleslead')->with('success', 'Sales Lead added successfully');
@@ -58,6 +60,7 @@ class SalesLeadController extends Controller
             'contact_person' => $request->input('contact_person')??'null',
             'category' => $request->input('category')??'null',
             'remarks' => $request->input('remarks')??'null',
+            'updated_by' => auth()->user()->name,
         ]);
         return redirect()->route('admin.saleslead')->with('success', 'Sales Lead updated successfully');
     }

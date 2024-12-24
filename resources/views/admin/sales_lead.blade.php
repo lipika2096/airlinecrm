@@ -116,6 +116,10 @@
                                     <th>Category</th>
                                     <th>Remarks</th>
                                     <th>Staff Assigned</th>
+                                    <th>Created On</th>
+                                    <th>Created By</th>
+                                    <th>Updated On</th>
+                                    <th>Updated By</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -130,6 +134,10 @@
                                         <td>{{ $data->category }}</td>
                                         <td>{{ $data->remarks }}</td>
                                         <td>{{ $data->staff_names ?? 'No staff assigned' }}
+                                        <td>{{ $data->created_at }}</td>
+                                        <td>{{ $data->created_by }}</td>
+                                        <td>{{ $data->updated_at }}</td>
+                                        <td>{{ $data->updated_by }}</td>
                                     </td>
                                         <td class="text-end">
                                             <div class="dropdown dropdown-action">
@@ -241,6 +249,7 @@
                                 <div class="form-group col-sm-4">
                                     <label>Name of Company</label>
                                     <input class="form-control" name="company_name" type="text" >
+                                    <input class="form-control" name="updated_at" value=" " type="hidden" >
                                 </div>
                                 <div class="form-group col-sm-4">
                                     <label>Website</label>

@@ -17,6 +17,6 @@ class AssignLeadStaff extends Model
     }
     public function lead()
     {
-        return $this->belongsTo(Lead::class, 'lead_id', 'id');
+        return $this->belongsTo(SalesLead::class, 'lead_id', 'id');
     }
 }
