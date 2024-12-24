@@ -94,6 +94,10 @@
                                             <div class="text">{{ $agent->address }}</div>
                                         </li>
                                         <li>
+                                            <div class="title">State</div>
+                                            <div class="text">{{ $agent->state }}</div>
+                                        </li>
+                                        <li>
                                             <div class="title">City</div>
                                             <div class="text">{{ $agent->city }}</div>
                                         </li>
@@ -237,12 +241,17 @@
                                                         <!-- <li> -->
                                                             <!-- <div class="title">Street</div> -->
                                                             <div class="col-sm-4">
-                                                            <lable class="form-lable">street</lable>
+                                                            <lable class="form-lable">Street</lable>
                                                                 <input type="text" class="form-control" name="address"
                                                                     value="{{ $agent->address }}">
                                                             </div>
                                                         <!-- </li> -->
                                                         <!-- <li> -->
+                                                            <div class="col-sm-4">
+                                                                <lable class="form-lable">State</lable>
+                                                                    <input type="text" class="form-control" name="state"
+                                                                        value="{{ $agent->state }}">
+                                                                </div>
                                                             <!-- <div class="title">City</div> -->
                                                             <div class="col-sm-4">
                                                             <lable class="form-lable">City</lable>
@@ -1256,16 +1265,16 @@
                                         <table class="table custom-table mb-0 datatable">
                                             <thead>
                                                 <tr>
-                                                    <th class="fw-bold">Case Opening Date</th>
-                                                    <th class="fw-bold">Airline</th>
-                                                    <th class="fw-bold">Case Id</th>
-                                                    <th class="fw-bold">Opened By</th>
-                                                    <th class="fw-bold">Ticket No</th>
-                                                    <th class="fw-bold">PNR</th>
-                                                    <th class="fw-bold">Remarks</th>
-                                                    <th class="fw-bold">Case Status</th>
-                                                    <th class="fw-bold">Case Closed by</th>
-                                                    <th class="fw-bold">Case Closing Date</th>
+                                                <th class="fw-bold">Case Status</th>
+                                                <th class="fw-bold">Case Id</th>
+                                                <th class="fw-bold">Airline</th>
+                                                <th class="fw-bold">PNR</th>
+                                                <th class="fw-bold">Ticket No</th>
+                                                <th class="fw-bold">Remarks</th>
+                                                <th class="fw-bold">Opened By</th>
+                                                <th class="fw-bold">Case Opening Date</th>
+                                                <th class="fw-bold">Case Closed by</th>
+                                                <th class="fw-bold">Case Closing Date</th>
                                                     <th>Actions</th>
 
                                                 </tr>
@@ -1274,21 +1283,84 @@
                                             <tbody>
                                                 @foreach ($caseData as $data)
                                                     <tr>
-                                                        <td>{{ $data->case_opening_date }}</td>
-                                                        <td>{{ $data->airline->airline_name?? '' }}</td>
-                                                        <td>{{ $data->id }}</td>
-                                                        <td>{{ $data->opened_by }}</td>
-                                                        <td>{{ $data->ticket_no }}</td>
-                                                        <td>{{ $data->pnr }}</td>
-                                                        <td>{{ $data->remarks }}</td>
-                                                        <td>{{ $data->case_status }}</td>
-                                                        <td>{{ $data->case_closed_by }}</td>
-                                                        <td>{{ $data->case_closing_date }}</td>
-                                                        <td>
+                                                    <td>{{ $data->case_status }}</td>
+                                                    <td>{{ $data->id }}</td>
+                                                    <td>{{ $data->airline->airline_name?? '' }}</td>
+                                                    <td>{{ $data->pnr }}</td>
+                                                    <td>{{ $data->ticket_no }}</td>
+                                                    <td>{{ $data->remarks }}</td>
+                                                    <td>{{ $data->opened_by }}</td>
+                                                    <td>{{ $data->case_opening_date }}</td>
+                                                    <td>{{ $data->case_closed_by }}</td>
+                                                    <td>{{ $data->case_closing_date }}</td>
+                                                    <td>
                                                             <!-- View Button -->
-                                                            <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                                                            <button class="btn btn-info text-light btn-sm" data-bs-toggle="modal"
                                                                 data-bs-target="#viewCaseModal-{{ $data->id }}"><i
                                                                     class="fa fa-eye"></i></button>
+                                                                    <div class="modal fade" id="viewCaseModal-{{ $data->id }}"
+                                                        tabindex="-1" aria-labelledby="viewCaseModalLabel"
+                                                        aria-hidden="true">
+                                                        <div class="modal-dialog modal-lg">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="viewCaseModalLabel">View
+                                                                        Case: {{ $data->case_id }}</h5>
+                                                                    <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+
+                                                                <div class="table-responsive">
+                                                                    <table class="table table-bordered custom-table mb-0 datatable">
+                                                                        <thead>
+                                                                            <tr>
+                                                                            <th scope="col">Date</th>
+                                                                            <th scope="col">PNR</th>
+                                                                            <td scope="col">{{ $data->pnr }}</td>
+                                                                            <th scope="col">Ticket No.</th>
+                                                                            <td scope="col">{{ $data->ticket_no }}</td>
+                                                                            <th scope="col">Case Status</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @foreach ($data->updates as $update)
+                                                                                <tr>
+                                                                                    <td scope="row">{{ $update->update_date }}</td>
+                                                                                    <td colspan="4">{{$update->comments}}</td>
+                                                                                    <td>
+                                                                                        Case @if ($update->status == 'Update')
+                                                                                        Re-opened
+                                                                                        @else {{$update->status}}
+                                                                                        @endif  by {{$update->updated_by}}
+                                                                                    </td>
+                                                                                </tr>
+
+                                                                            @endforeach
+                                                                        </tbody>
+
+                                                                    </table>
+                                                                </div>
+                                                                    <!-- <p><strong>PNR:</strong> {{ $data->pnr }}</p>
+                                                                    <p><strong>Ticket No:</strong> {{ $data->ticket_no }}
+                                                                    </p>
+                                                                    <p><strong>Opened by:</strong> {{ $data->opened_by }}
+                                                                    </p>
+                                                                    <p><strong>Status:</strong> {{ $data->case_status }}
+                                                                    </p>
+                                                                    <p><strong>Closing Date:</strong>
+                                                                        {{ $data->case_closing_date }}</p>
+                                                                    <hr>
+                                                                    <h5>Conversation History:</h5>
+                                                                    @foreach ($data->updates as $update)
+                                                                        <p><strong>{{ $update->update_date }}</strong> -
+                                                                            {{ $update->comments }}</p>
+                                                                    @endforeach -->
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
                                                             <!-- Edit Button -->
                                                             <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
@@ -1303,38 +1375,7 @@
                                                             @endif
                                                         </td>
                                                     </tr>
-                                                    <div class="modal fade" id="viewCaseModal-{{ $data->id }}"
-                                                        tabindex="-1" aria-labelledby="viewCaseModalLabel"
-                                                        aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="viewCaseModalLabel">View
-                                                                        Case: {{ $data->case_id }}</h5>
-                                                                    <button type="button" class="btn-close"
-                                                                        data-bs-dismiss="modal"
-                                                                        aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <p><strong>PNR:</strong> {{ $data->pnr }}</p>
-                                                                    <p><strong>Ticket No:</strong> {{ $data->ticket_no }}
-                                                                    </p>
-                                                                    <p><strong>Opened by:</strong> {{ $data->opened_by }}
-                                                                    </p>
-                                                                    <p><strong>Status:</strong> {{ $data->case_status }}
-                                                                    </p>
-                                                                    <p><strong>Closing Date:</strong>
-                                                                        {{ $data->case_closing_date }}</p>
-                                                                    <hr>
-                                                                    <h5>Conversation History:</h5>
-                                                                    @foreach ($data->updates as $update)
-                                                                        <p><strong>{{ $update->update_date }}</strong> -
-                                                                            {{ $update->comments }}</p>
-                                                                    @endforeach
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+
 
                                                     <div class="modal fade" id="editCaseModal-{{ $data->id }}"
                                                         tabindex="-1" aria-labelledby="editCaseModalLabel"
@@ -1366,7 +1407,7 @@
                                                                                 class="form-label">Update Status</label>
                                                                             <select name="status" id="status"
                                                                                 class="form-select">
-                                                                                <option value="Update">Update</option>
+                                                                                <option value="Update">Re-open</option>
                                                                                 <option value="Close">Close</option>
                                                                             </select>
                                                                         </div>
@@ -1481,7 +1522,7 @@
                                                                     <label class="col-form-label">Opened By <span
                                                                             class="text-danger">*</span></label>
                                                                     <input class="form-control" type="text" required
-                                                                        name="opened_by" required>
+                                                                        name="opened_by" readonly value="{{auth()->user()->name }}" required>
                                                                 </div>
                                                             </div>
 
@@ -1576,7 +1617,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>Date</th>
-                                                    <th>Type</th>
+                                                    <th>Remarks</th>
                                                     <th>Credit</th>
                                                     <th>Debit</th>
                                                     <th>Balance</th>
@@ -1649,12 +1690,12 @@
                                                         <div class="col-sm-12">
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Remarks</label>
-                                                                <input class="form-control" type="yext"
-                                                                    name="tr_type">
+                                                                <textarea class="form-control" type="text"
+                                                                    name="tr_type"></textarea>
                                                             </div>
                                                         </div>
 
-                                                        
+
                                                     </div>
                                                     <div class="submit-section">
                                                         <button class="btn btn-primary" type="submit">Submit</button>
