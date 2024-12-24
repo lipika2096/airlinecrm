@@ -299,6 +299,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
 
     Route::get('sales-lead', [SalesLeadController::class, 'index'])->name('saleslead');
     Route::post('sales-lead/store', [SalesLeadController::class, 'store'])->name('saleslead.store');
+    Route::post('sales-lead/staff/store', [SalesLeadController::class, 'assignStaff'])->name('saleslead.staff.store');
     Route::patch('sales-lead/edit/{id}', [SalesLeadController::class, 'update'])->name('saleslead.update');
 
     Route::get('air-tickets', [AirTicketController::class, 'index'])->name('air-tickets');
