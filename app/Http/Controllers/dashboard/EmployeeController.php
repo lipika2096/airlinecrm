@@ -807,7 +807,9 @@ public function leavesStaffStore(Request $request)
             'title' => $request->input('title'),
             'holiday_date' => $request->input('holiday_date'),
             'holiday_day' => $holidayDay,
-            'category' => $request->input('category')
+            'category' => $request->input('category')??'bg-purple',
+            'state'=>$request->input('state'),
+            'country'=>$request->input('country'),
             ]);
 
 
@@ -823,7 +825,9 @@ public function leavesStaffStore(Request $request)
             'title' => $request->input('title'),
             'holiday_date' => $request->input('holiday_date'),
             'holiday_day' => $request->input('holiday_day'),
-            'category' => $request->input('category')
+            'category' => $request->input('category')??'bg-purple',
+            'state'=>$request->input('state'),
+            'country'=>$request->input('country'),
         ]);
         $holidays = Holiday::latest()->get();
         // Add your logic for holidays view
