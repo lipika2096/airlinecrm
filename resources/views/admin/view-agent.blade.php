@@ -441,7 +441,7 @@
                 </div>
 
 
-                <div id="address" class="pro-overview tab-pane fade show">
+                {{-- <div id="address" class="pro-overview tab-pane fade show">
                     <div class="row">
                         <div class="col-md-12 d-flex">
                             <div class="card profile-box flex-fill"
@@ -582,6 +582,136 @@
                                         </div>
                                     </div>
                                 @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div> --}}
+                <div id="address" class="pro-overview tab-pane fade show">
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <div class="card profile-box flex-fill"
+                                style="background: none; border: none !important; box-shadow: none;">
+                                <div class="card-header">
+                                    <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_address"><i
+                                            class="fa fa-plus"></i> Add Address</a>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-striped custom-table mb-0 datatable">
+                                        <thead>
+                                            <tr>
+                                                <th>Street Address</th>
+                                                <th>City</th>
+                                                <th>State</th>
+                                                <th>Country</th>
+                                                <th>Pincode</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                                <tr>
+                                                    <td>{{ $agent->address ?? 'null' }}</td>
+                                                    <td>{{ $agent->city ?? 'null' }}</td>
+                                                    <td>{{ $agent->state?? 'null' }}</td>
+                                                    <td>{{ $agent->country ?? 'null' }}</td>
+                                                    <td>{{ $agent->pincode ?? 'null' }}</td>
+                                                    <td><span class="badge badge-success p-2"> By default</span></td>
+
+                                                </tr>
+                                                @foreach ($agentAddress as $address)
+
+                                                <tr>
+                                                    <td>{{ $address->street }}</td>
+                                                    <td>{{ $address->city }}</td>
+                                                    <td>{{ $address->state }}</td>
+                                                    <td>{{ $address->country }}</td>
+                                                    <td>{{ $address->pincode }}</td>
+                                                    <td>
+                                                    <i class="fas fa-edit m-3" data-bs-toggle="modal"
+                                            data-bs-target="#edit_address{{ $address->id }}"></i>
+                                        <div id="edit_address{{ $address->id }}" class="modal custom-modal fade"
+                                            role="dialog">
+                                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header" style="margin-bottom:-25px;">
+                                                        <h5 class="modal-title">Edit Address</h5>
+                                                        <button type="button" class="close" data-bs-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form
+                                                            action="{{ route('admin.agent.address.update', ['id' => $address->id]) }}#address"
+                                                            method="POST" enctype="multipart/form-data">
+                                                            @csrf
+                                                            <div class="row">
+
+                                                                    <div class="form-group">
+                                                                        <input class="form-control" type="hidden"
+                                                                            name="agent_id" value="{{ $agent->id }}">
+                                                                    </div>
+                                                                    <div class="col-sm-6">
+                                                                    <div class="form-group">
+                                                                        <label class="col-form-label">Street Address <span
+                                                                                class="text-danger">*</span></label>
+                                                                        <input class="form-control"
+                                                                            value="{{ $address->street }}"type="text"
+                                                                            name="street">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-6">
+                                                                    <div class="form-group">
+                                                                        <label class="col-form-label">City</label>
+                                                                        <input class="form-control"
+                                                                            value="{{ $address->city }}" type="text"
+                                                                            name="city">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-6">
+                                                                    <div class="form-group">
+                                                                        <label class="col-form-label">State</label>
+                                                                        <input class="form-control"
+                                                                            value="{{ $address->state }}" type="text"
+                                                                            name="state">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-6">
+                                                                    <div class="form-group">
+                                                                        <label class="col-form-label">Country</label>
+                                                                        <input class="form-control"
+                                                                            value="{{ $address->country }}"
+                                                                            type="text" name="country">
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-sm-6">
+                                                                    <div class="form-group">
+                                                                        <label class="col-form-label">Pincode</label>
+                                                                        <input class="form-control" type="text"
+                                                                            required value="{{ $address->pincode }}"
+                                                                            name="pincode">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="submit-section">
+                                                                <button class="btn btn-primary"
+                                                                    type="submit">Submit</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
