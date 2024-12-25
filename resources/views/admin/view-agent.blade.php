@@ -8,9 +8,16 @@
     <!-- Page Wrapper -->
     <div class="page-wrapper">
         <style>
-            .submit-section{
-                margin-top:10px;
-            }
+        input[type=checkbox][disabled]{
+            outline:1px solid grey; 
+        }
+        input[type=checkbox][disabled][ checked]{
+            outline:1px solid #dddd;
+            filter: invert(100%) hue-rotate(18deg) brightness(3);
+        }
+        .submit-section{
+            margin-top:10px;
+        }
         </style>
         <!-- Page Content -->
         <div class="content container-fluid">
