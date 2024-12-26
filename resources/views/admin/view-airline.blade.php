@@ -213,7 +213,7 @@
             <div class="tab-content">
                 <!-- Profile Info Tab -->
 
-                <div id="general" class="pro-overview tab-pane fade show active">
+                {{-- <div id="general" class="pro-overview tab-pane fade show active">
                     <div class="row">
                         <div class="col-md-12 d-flex">
                             <div class="card profile-box flex-fill">
@@ -319,6 +319,98 @@
                                                     target="_blank">{{ $airlineDetails->website }}</a></div>
                                         </li>
                                     </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> --}}
+                <div id="general" class="pro-overview tab-pane fade show active">
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <div class="card profile-box flex-fill">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped mb-0 datatable">
+                                            <tbody>
+                                                <tr></tr>
+                                                <tr>
+                                                    <th>Airline</th>
+                                                    <td>{{ $airlineDetails->airline->airline_name ?? 'none' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Country</th>
+                                                    <td>{{ $airlineDetails->country ?? 'none' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th> Founded</th>
+                                                    <td>{{ $airlineDetails->founded_on ?? 'none' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Commenced</th>
+                                                    <td>{{ $airlineDetails->commenced_on ?? 'none' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Hub</th>
+                                                    <td>{{ $airlineDetails->hubs ?? 'none' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Secondary Hub</th>
+                                                    <td>{{ $airlineDetails->secondary_hubs ?? 'none' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Focus Cities</th>
+                                                    <td> @if (!empty($airlineDetails->focus_cities))
+                                                        @foreach (json_decode($airlineDetails->focus_cities) as $fc)
+                                                            {{ $fc }}<br>
+                                                        @endforeach
+                                                    @else
+                                                        No focus cities available.
+                                                    @endif</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Frequent-flyer Program</th>
+                                                    <td> {{ $airlineDetails->frequent_flyer_program ?? 'none' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Alliance</th>
+                                                    <td>{{ $airlineDetails->alliance ?? 'none' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Subsidiaries</th>
+                                                    <td>{{ $airlineDetails->subsidiaries ?? 'none' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Fleet Size</th>
+                                                    <td>{{ $airlineDetails->fleet_size ?? 'none' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Destinations</th>
+                                                    <td>{{ $airlineDetails->destinations ?? 'none' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Slogan</th>
+                                                    <td>{{ $airlineDetails->slogan ?? 'none' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Key People</th>
+                                                    <td>{{ $airlineDetails->key_people ?? 'none' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Parent Company</th>
+                                                    <td>{{ $airlineDetails->parent_company ?? 'none' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Headquarters</th>
+                                                    <td>{{ $airlineDetails->head_quarters ?? 'none' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Website</th>
+                                                    <td class="text-danger"><a href="{{ $airlineDetails->website }}"
+                                                        target="_blank">{{ $airlineDetails->website }}</a></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>

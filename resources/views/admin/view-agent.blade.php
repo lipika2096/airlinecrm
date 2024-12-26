@@ -8,16 +8,18 @@
     <!-- Page Wrapper -->
     <div class="page-wrapper">
         <style>
-        input[type=checkbox][disabled]{
-            outline:1px solid grey; 
-        }
-        input[type=checkbox][disabled][ checked]{
-            outline:1px solid #dddd;
-            filter: invert(100%) hue-rotate(18deg) brightness(3);
-        }
-        .submit-section{
-            margin-top:10px;
-        }
+            input[type=checkbox][disabled] {
+                outline: 1px solid grey;
+            }
+
+            input[type=checkbox][disabled][ checked] {
+                outline: 1px solid #dddd;
+                filter: invert(100%) hue-rotate(18deg) brightness(3);
+            }
+
+            .submit-section {
+                margin-top: 10px;
+            }
         </style>
         <!-- Page Content -->
         <div class="content container-fluid">
@@ -30,12 +32,12 @@
                             <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
                             <li class="breadcrumb-item active">Profile</li>
                         </ul>
-                        <p class="d-inline text-dark font-weight-bolder">  <b class="d-inline text-capitalize">{{ $agent->company_name }}</b> profile</p>
+                        <p class="d-inline text-dark font-weight-bolder"> <b
+                                class="d-inline text-capitalize">{{ $agent->company_name }}</b> profile</p>
                     </div>
                 </div>
             </div>
             <!-- /Page Header -->
-
 
             <div class="card tab-box">
                 <div class="row user-tabs">
@@ -48,14 +50,15 @@
                             <li class="nav-item"><a href="#contact_details" data-bs-toggle="tab" class="nav-link">Contact
                                     Details</a></li>
 
-                             <li class="nav-item"><a href="#products_type" data-bs-toggle="tab" class="nav-link">Products
+                            <li class="nav-item"><a href="#products_type" data-bs-toggle="tab" class="nav-link">Products
                                     Type
                                 </a>
                             </li>
                             <li class="nav-item"><a href="#airline_activation" data-bs-toggle="tab" class="nav-link">Airline
                                     Activation </a></li>
 
-                            <li class="nav-item"><a href="#special_fares" data-bs-toggle="tab" class="nav-link">Special Fares
+                            <li class="nav-item"><a href="#special_fares" data-bs-toggle="tab" class="nav-link">Special
+                                    Fares
                                 </a></li>
                             <li class="nav-item"><a href="#provision" data-bs-toggle="tab" class="nav-link">Provision / PLI
                                 </a></li>
@@ -76,133 +79,124 @@
             <div class="tab-content">
                 <!-- Profile Info Tab -->
 
-
                 <div id="general" class="pro-overview tab-pane fade show active">
                     <div class="row">
                         <div class="col-md-12 d-flex">
                             <div class="card profile-box flex-fill">
                                 <div class="card-body">
-                                    <ul class="personal-info">
-                                        <li>
-                                            <div class="title">Company Name</div>
-                                            <div class="text">{{ $agent->company_name }}</div>
-                                        </li>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped mb-0 datatable">
+                                            <tbody>
+                                                <tr></tr>
+                                                <tr>
+                                                    <th>Company name</th>
+                                                    <td colspan="5">{{ $agent->company_name }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Brand name</th>
+                                                    <td colspan="5">{{ $agent->owner_name }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Group</th>
+                                                    <td colspan="5">{{ $agent->agency_name }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Street</th>
+                                                    <td colspan="5">{{ $agent->address }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>City</th>
+                                                    <td colspan="5">{{ $agent->city }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Pincode</th>
+                                                    <td colspan="5">{{ $agent->pincode }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Country</th>
+                                                    <td colspan="5">{{ $agent->country }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Company Reg. No.</th>
+                                                    <td colspan="5">{{ $agent->company_registration_no }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="text-red">IATA Number:</th>
+                                                    <td class="text-red">{{ $agent->iata }}</td>
+                                                    <th>GSD Type:</th>
+                                                    <td>{{ $agent->gds_type }}</td>
+                                                    <th>PCC/Off ice ID:</th>
+                                                    <td>{{ $agent->pcc_office_id }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="text-red">Account Code</th>
+                                                    <td colspan="5" class="text-red">{{ $agent->account_code }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="text-red">Discount</th>
+                                                    <td colspan="5" class="text-red">{{ $agent->discount }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="text-red">Remarks</th>
+                                                    <td colspan="5" class="text-red">{{ $agent->remarks }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="text-red">Business Model:</th>
+                                                    <td colspan="5" class="text-red">{{ $agent->business_mode }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Focused Destinations</th>
+                                                    <td colspan="5">
+                                                        <ul style="margin-left: -20px;">
+                                                            @foreach (json_decode($agent->focus_destinations) as $destination)
+                                                                <li style="list-style:disc !important;">{{ $destination }}
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Key People</th>
+                                                    <td colspan="5">{{ $agent->key_people }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Parent Company</th>
+                                                    <td colspan="5">{{ $agent->parent_company }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Headquarters</th>
+                                                    <td colspan="5">{{ $agent->headquarters }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Website</th>
+                                                    <td colspan="5">
 
-                                        <li>
-                                            <div class="title">Brand Name</div>
-                                            <div class="text">{{ $agent->owner_name }}</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Group</div>
-                                            <div class="text">{{ $agent->agency_name }}</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Street</div>
-                                            <div class="text">{{ $agent->address }}</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">State</div>
-                                            <div class="text">{{ $agent->state }}</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">City</div>
-                                            <div class="text">{{ $agent->city }}</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Pincode</div>
-                                            <div class="text">{{ $agent->pincode }}</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Country</div>
-                                            <div class="text">{{ $agent->country }}</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Company Registration No</div>
-                                            <div class="text">{{ $agent->company_registration_no }}</div>
-                                        </li>
-                                        <ul id="field-list" class="list-unstyled">
-                                            <li class="col-md-12 field-item">
-                                                <div class="row">
-                                                    <div class="col-md-4">
-                                                        <div class="title">IATA Number:</div>
-                                                        <div class="text">{{ $agent->iata }}</div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="title">GDS Type:</div>
-                                                        <div class="text">{{ $agent->gds_type }}</div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="title">PCC/Office ID:</div>
-                                                        <div class="text">{{ $agent->pcc_office_id }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </ul>
+                                                        <ul style="margin-left: -20px;">
+                                                            @foreach (json_decode($agent->websites) as $websites)
+                                                                <li style="list-style:disc !important;">{{ $websites }}
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Employees</th>
+                                                    <td colspan="5">{{ $agent->no_of_employees }}</td>
+                                                </tr>
 
-                                        <li>
-                                            <div class="title">Account Code</div>
-                                            <div class="text">{{ $agent->account_code }}</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Discount</div>
-                                            <div class="text">{{ $agent->discount }}</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Remarks</div>
-                                            <div class="text">{{ $agent->remarks }}</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Business Model:</div>
-                                            <div class="text">{{ $agent->business_mode }}</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Focused Destinations</div>
-                                            <div class="text">
-                                                <ul style="list-style: disc; margin-left: 20px;">
-                                                    @foreach (json_decode($agent->focus_destinations) as $destination)
-                                                        <li>{{ $destination }}</li>
-                                                    @endforeach
-                                                </ul>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Key People</div>
-                                            <div class="text">{{ $agent->key_people }}</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Parent Company</div>
-                                            <div class="text">{{ $agent->parent_company }}</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Headquarters</div>
-                                            <div class="text">{{ $agent->headquarters }}</div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Website</div>
-                                            <div class="text">
-                                                <ul style="list-style: disc; margin-left: 20px;">
-                                                    @foreach (json_decode($agent->websites) as $websites)
-                                                        <li>{{ $websites }}</li>
-                                                    @endforeach
-                                                </ul>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="title">Employees</div>
-                                            <div class="text">{{ $agent->no_of_employees }}</div>
-                                        </li>
+                                            </tbody>
+                                        </table>
+                                    </div>
 
-                                    </ul>
                                 </div>
 
                                 <!-- Edit Icon -->
-                                <i class="fas fa-edit position-absolute top-0 end-0 m-3" data-bs-toggle="modal"
+                                <i class="fa fa-edit position-absolute top-0 end-0 m-3" data-bs-toggle="modal"
                                     data-bs-target="#edit_general{{ $agent->id }}"></i>
 
                                 <div id="edit_general{{ $agent->id }}" class="modal custom-modal fade"
                                     role="dialog">
-                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                    <div class="modal-dialog modal-dialog-centered modal-xl">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Edit General Profile</h5>
@@ -213,229 +207,205 @@
                                             </div>
                                             <div class="modal-body">
 
-                                                <form
-                                                    action="{{ route('admin.agent.edit', ['id' => $agent->id]) }}#general"
+                                                <form action="{{ route('admin.agent.edit', ['id' => $agent->id]) }}#general"
                                                     method="POST" enctype="multipart/form-data">@csrf
-                                                    <!-- <ul class="personal-info">
-                                                        <li> -->
-                                                            <div class= "row form-group">
-                                                            <!-- <div class="title">Company Name</div> -->
-                                                            <div class="col-sm-4">
-                                                                <lable class="form-lable">Company Name</lable>
+                                                    <!-- <ul class="personal-info" style="margin-left:-35px;"> -->
+                                                    <div class="row form-group">
+                                                        <div class="col-sm-4">
+                                                            <label class="col-form-label"
+                                                                style="margin-bottom: 10px;">Company Name</label>
+                                                            <div class="" style="margin-bottom: 10px;">
                                                                 <input type="text" class="form-control"
                                                                     name="company_name"
                                                                     value="{{ $agent->company_name }}">
                                                             </div>
-                            <!-- </div> -->
-                                                        <!-- </li> -->
+                                                        </div>
 
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Brand Name</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Brand Name</lable>
+                                                        <div class="col-sm-4">
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">Brand Name</label>
+                                                            <div class="" style="margin-bottom: 10px;">
                                                                 <input type="text" class="form-control"
                                                                     name="owner_name" value="{{ $agent->owner_name }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Group</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Group</lable>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">Group</label>
+                                                            <div class="" style="margin-bottom: 10px;">
                                                                 <input type="text" class="form-control"
                                                                     name="agency_name" value="{{ $agent->agency_name }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Street</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Street</lable>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">Street</label>
+                                                            <div class="">
                                                                 <input type="text" class="form-control" name="address"
                                                                     value="{{ $agent->address }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <div class="col-sm-4">
-                                                                <lable class="form-lable">State</lable>
-                                                                    <input type="text" class="form-control" name="state"
-                                                                        value="{{ $agent->state }}">
-                                                                </div>
-                                                            <!-- <div class="title">City</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">City</lable>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">City</label>
+                                                            <div class="" style="margin-bottom: 10px;">
                                                                 <input type="text" class="form-control" name="city"
                                                                     value="{{ $agent->city }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Pincode</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Pincode</lable>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">Pincode</label>
+                                                            <div class="">
                                                                 <input type="text" class="form-control" name="pincode"
                                                                     value="{{ $agent->pincode }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Country</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Country</lable>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">Country</label>
+                                                            <div class="" style="margin-bottom: 10px;">
                                                                 <input type="text" class="form-control" name="country"
                                                                     value="{{ $agent->country }}">
                                                             </div>
-                                                            <div class="col-sm-4">
-                                                                <!-- <div class="form-group"> -->
-                                                                    <label class="col-form-label">Company Registration No.</label>
-                                                                    <input class="form-control" type="text" name="company_registration_number" value="{{ $agent->company_registration_no }}">
-                                                                </div>
-                                                        </li>
-                                                        <!-- <ul id="field-list" class="list-unstyled"> -->
-                                                            <!-- <li class="col-md-12 field-item"> -->
-                                                                <!-- <div class="row"> -->
-                                                                    <!-- <div class="col-md-4"> -->
-                                                                        <!-- <div class="title">IATA Number:</div> -->
-                                                                        <div class="col-sm-4">
-                                                                <lable class="form-lable">IATA Number</lable>
-                                                                            <input type="text" class="form-control"
-                                                                                name="iata"
-                                                                                value="{{ $agent->iata }}">
-                                                                        </div>
-                                                                    <!-- </div> -->
-                                                                    <!-- <div class="col-md-4"> -->
-                                                                        <!-- <div class="title">GDS Type:</div> -->
-                                                                        <div class="col-sm-4">
-                                                                <lable class="form-lable">GDS Type</lable>
-                                                                            <input type="text" class="form-control"
-                                                                                name="gds_type"
-                                                                                value="{{ $agent->gds_type }}">
-                                                                        </div>
-                                                                    <!-- </div> -->
-                                                                    <!-- <div class="col-md-4"> -->
-                                                                        <!-- <div class="title">PCC/Office ID:</div> -->
-                                                                        <div class="col-sm-4">
-                                                                <lable class="form-lable">PCC/Office ID:</lable>
-                                                                            <input type="text" class="form-control"
-                                                                                name="pcc_office_id"
-                                                                                value="{{ $agent->pcc_office_id }}">
-                                                                        </div>
-                                                                    <!-- </div> -->
-                                                                <!-- </div> -->
-                                                            <!-- </li> -->
-                                                        <!-- </ul> -->
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">Company Registration
+                                                                Number</label>
+                                                            <div class="" style="margin-bottom: 10px;">
+                                                                <input type="text" class="form-control"
+                                                                    name="company_registration_number"
+                                                                    value="{{ $agent->company_registration_no }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
 
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Account Code</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Account Code</lable>
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">IATA Number:</label>
+                                                            <div style="margin-bottom: 10px;" class="">
+                                                                <input type="text" class="form-control" name="iata"
+                                                                    value="{{ $agent->iata }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label style="margin-bottom: 10px;" class="col-form-label">GDS
+                                                                Type:</label>
+                                                            <div class="" style="margin-bottom: 10px;">
+                                                                <input type="text" class="form-control"
+                                                                    name="gds_type" value="{{ $agent->gds_type }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">PCC/Office ID:</label>
+                                                            <div class="" style="margin-bottom: 10px;">
+                                                                <input type="text" class="form-control"
+                                                                    name="pcc_office_id"
+                                                                    value="{{ $agent->pcc_office_id }}">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-sm-4">
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">Account Code</label>
+                                                            <div class="" style="margin-bottom: 10px;">
                                                                 <input type="text" class="form-control"
                                                                     name="account_code"
                                                                     value="{{ $agent->account_code }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Discount</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Discount</lable>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">Discount</label>
+                                                            <div class="" style="margin-bottom: 10px;">
                                                                 <input type="text" class="form-control"
                                                                     name="discount" value="{{ $agent->discount }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Remarks</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Remarks</lable>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">Remarks</label>
+                                                            <div class="" style="margin-bottom: 10px;">
                                                                 <input type="text" class="form-control" name="remarks"
                                                                     value="{{ $agent->remarks }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Business Model:</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Business Model</lable>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">Business Model:</label>
+                                                            <div style="margin-bottom: 10px;" class="">
                                                                 <input type="text" class="form-control"
                                                                     name="business_mode"
                                                                     value="{{ $agent->business_mode }}">
                                                             </div>
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Parent Company</lable>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">Parent Company</label>
+                                                            <div class="" style="margin-bottom: 10px;">
                                                                 <input type="text" class="form-control"
                                                                     name="parent_company"
                                                                     value="{{ $agent->parent_company }}">
                                                             </div>
-                            </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Focused Destinations</div> -->
-                                                            <div class="row form-group">
-                                                            <lable class="form-lable">Focused Destinations</lable>
+                                                        </div>
+                                                        <div class="col-sm-12">
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">Focused Destinations</label>
+                                                            <div class="row">
                                                                 @foreach (json_decode($agent->focus_destinations) as $destination)
-                                                                <div class=col-sm-4>
-                                                                <input type="text" class="form-control"
-                                                                        name="focus_destinations[]"
-                                                                        value="{{ $destination }}">
-                                                                        </div>
+                                                                    <div class="col-sm-4 " style="margin-bottom: 10px;">
+                                                                        <input type="text" class="form-control"
+                                                                            name="focus_destinations[]"
+                                                                            value="{{ $destination }}">
+                                                                    </div>
                                                                 @endforeach
                                                             </div>
-                            <!-- </div> -->
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <div class="row form-group">
-                                                            <!-- <div class="title">Key People</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Key People</lable>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label style="margin-bottom: 10px;" class="col-form-label">Key
+                                                                People</label>
+                                                            <div class="" style="margin-bottom: 10px;">
                                                                 <input type="text" class="form-control"
                                                                     name="key_people" value="{{ $agent->key_people }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Parent Company</div> -->
-
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title">Headquarters</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Headquarters</lable>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">Headquarters</label>
+                                                            <div class="" style="margin-bottom: 10px;">
                                                                 <input type="text" class="form-control"
                                                                     name="headquarters"
                                                                     value="{{ $agent->headquarters }}">
                                                             </div>
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                        <!-- <div class="title">Employees</div> -->
-                                                            <div class="col-sm-4">
-                                                            <lable class="form-lable">Employees</lable>
-                                                                <input type="text" class="form-control"
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label class="col-form-label" style="margin-bottom: 10px;"
+                                                                class="col-from-label">Employees</label>
+                                                            <div style="margin-bottom: 10px;" class="">
+                                                                <input type="number" class="form-control"
                                                                     name="no_of_employees"
                                                                     value="{{ $agent->no_of_employees }}">
                                                             </div>
-                            </div>
-                            <div class="row form-group">
-                                                            <!-- <div class="title">Website</div> -->
-                                                            <!-- <div class="row"> -->
-                                                            <lable class="form-lable">Website</lable>
+                                                        </div>
 
+                                                        <div class="col-sm-12">
+                                                            <label style="margin-bottom: 10px;"
+                                                                class="col-form-label">Website</label>
+                                                            <div style="margin-bottom: 10px;" class="">
                                                                 @foreach (json_decode($agent->websites) as $awebsites)
-                                                                <div class="col-sm-4">
                                                                     <input type="text" class="form-control"
-                                                                        name="websites[]"
-                                                                        value="{{ $awebsites }}">
-                                                                        </div>
+                                                                        name="websites[]" value="{{ $awebsites }}">
                                                                 @endforeach
+                                                            </div>
+                                                        </div>
 
-                                                                <!-- {{-- <input type="text" class="form-control"
-                                                                    name="websites" value="{{ $agent->websites }}"
-                                                                    placeholder="http://example.com"> --}} -->
-                                                                    <!-- </div> -->
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-
-                                                        <!-- </li> -->
-                                                        <!-- <li> -->
-                                                            <!-- <div class="title"></div> -->
-                                                            <div class="submit-section"><button class="btn btn-primary"
+                                                        <div class="col-sm-12">
+                                                            <div class=" mt-3 "><button class="btn btn-primary"
                                                                     type="submit">Update</button></div>
-                                                                    </div>
-                                                        <!-- </li> -->
-                                                    <!-- </ul> -->
-
+                                                        </div>
+                                                        <!-- </ul> -->
+                                                    </div>
                                                 </form>
                                             </div>
                                         </div>
@@ -446,7 +416,6 @@
                         </div>
                     </div>
                 </div>
-
 
                 {{-- <div id="address" class="pro-overview tab-pane fade show">
                     <div class="row">
@@ -617,17 +586,16 @@
                                         </thead>
                                         <tbody>
 
-                                                <tr>
-                                                    <td>{{ $agent->address ?? 'null' }}</td>
-                                                    <td>{{ $agent->city ?? 'null' }}</td>
-                                                    <td>{{ $agent->state?? 'null' }}</td>
-                                                    <td>{{ $agent->country ?? 'null' }}</td>
-                                                    <td>{{ $agent->pincode ?? 'null' }}</td>
-                                                    <td><span class="badge badge-success p-2"> By default</span></td>
+                                            <tr>
+                                                <td>{{ $agent->address ?? 'null' }}</td>
+                                                <td>{{ $agent->city ?? 'null' }}</td>
+                                                <td>{{ $agent->state ?? 'null' }}</td>
+                                                <td>{{ $agent->country ?? 'null' }}</td>
+                                                <td>{{ $agent->pincode ?? 'null' }}</td>
+                                                <td><span class="badge badge-success p-2"> By default</span></td>
 
-                                                </tr>
-                                                @foreach ($agentAddress as $address)
-
+                                            </tr>
+                                            @foreach ($agentAddress as $address)
                                                 <tr>
                                                     <td>{{ $address->street }}</td>
                                                     <td>{{ $address->city }}</td>
@@ -635,86 +603,93 @@
                                                     <td>{{ $address->country }}</td>
                                                     <td>{{ $address->pincode }}</td>
                                                     <td>
-                                                    <i class="fas fa-edit m-3" data-bs-toggle="modal"
-                                            data-bs-target="#edit_address{{ $address->id }}"></i>
-                                        <div id="edit_address{{ $address->id }}" class="modal custom-modal fade"
-                                            role="dialog">
-                                            <div class="modal-dialog modal-dialog-centered modal-lg">
-                                                <div class="modal-content">
-                                                    <div class="modal-header" style="margin-bottom:-25px;">
-                                                        <h5 class="modal-title">Edit Address</h5>
-                                                        <button type="button" class="close" data-bs-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <form
-                                                            action="{{ route('admin.agent.address.update', ['id' => $address->id]) }}#address"
-                                                            method="POST" enctype="multipart/form-data">
-                                                            @csrf
-                                                            <div class="row">
+                                                        <i class="fas fa-edit m-3" data-bs-toggle="modal"
+                                                            data-bs-target="#edit_address{{ $address->id }}"></i>
+                                                        <div id="edit_address{{ $address->id }}"
+                                                            class="modal custom-modal fade" role="dialog">
+                                                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header"
+                                                                        style="margin-bottom:-25px;">
+                                                                        <h5 class="modal-title">Edit Address</h5>
+                                                                        <button type="button" class="close"
+                                                                            data-bs-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <form
+                                                                            action="{{ route('admin.agent.address.update', ['id' => $address->id]) }}#address"
+                                                                            method="POST" enctype="multipart/form-data">
+                                                                            @csrf
+                                                                            <div class="row">
 
-                                                                    <div class="form-group">
-                                                                        <input class="form-control" type="hidden"
-                                                                            name="agent_id" value="{{ $agent->id }}">
-                                                                    </div>
-                                                                    <div class="col-sm-6">
-                                                                    <div class="form-group">
-                                                                        <label class="col-form-label">Street Address <span
-                                                                                class="text-danger">*</span></label>
-                                                                        <input class="form-control"
-                                                                            value="{{ $address->street }}"type="text"
-                                                                            name="street">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-6">
-                                                                    <div class="form-group">
-                                                                        <label class="col-form-label">City</label>
-                                                                        <input class="form-control"
-                                                                            value="{{ $address->city }}" type="text"
-                                                                            name="city">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-6">
-                                                                    <div class="form-group">
-                                                                        <label class="col-form-label">State</label>
-                                                                        <input class="form-control"
-                                                                            value="{{ $address->state }}" type="text"
-                                                                            name="state">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-6">
-                                                                    <div class="form-group">
-                                                                        <label class="col-form-label">Country</label>
-                                                                        <input class="form-control"
-                                                                            value="{{ $address->country }}"
-                                                                            type="text" name="country">
-                                                                    </div>
-                                                                </div>
+                                                                                <div class="form-group">
+                                                                                    <input class="form-control"
+                                                                                        type="hidden" name="agent_id"
+                                                                                        value="{{ $agent->id }}">
+                                                                                </div>
+                                                                                <div class="col-sm-6">
+                                                                                    <div class="form-group">
+                                                                                        <label
+                                                                                            class="col-form-label">Street
+                                                                                            Address <span
+                                                                                                class="text-danger">*</span></label>
+                                                                                        <input class="form-control"
+                                                                                            value="{{ $address->street }}"type="text"
+                                                                                            name="street">
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-sm-6">
+                                                                                    <div class="form-group">
+                                                                                        <label
+                                                                                            class="col-form-label">City</label>
+                                                                                        <input class="form-control"
+                                                                                            value="{{ $address->city }}"
+                                                                                            type="text" name="city">
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-sm-6">
+                                                                                    <div class="form-group">
+                                                                                        <label
+                                                                                            class="col-form-label">State</label>
+                                                                                        <input class="form-control"
+                                                                                            value="{{ $address->state }}"
+                                                                                            type="text" name="state">
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="col-sm-6">
+                                                                                    <div class="form-group">
+                                                                                        <label
+                                                                                            class="col-form-label">Country</label>
+                                                                                        <input class="form-control"
+                                                                                            value="{{ $address->country }}"
+                                                                                            type="text" name="country">
+                                                                                    </div>
+                                                                                </div>
 
-                                                                <div class="col-sm-6">
-                                                                    <div class="form-group">
-                                                                        <label class="col-form-label">Pincode</label>
-                                                                        <input class="form-control" type="text"
-                                                                            required value="{{ $address->pincode }}"
-                                                                            name="pincode">
+                                                                                <div class="col-sm-6">
+                                                                                    <div class="form-group">
+                                                                                        <label
+                                                                                            class="col-form-label">Pincode</label>
+                                                                                        <input class="form-control"
+                                                                                            type="text" required
+                                                                                            value="{{ $address->pincode }}"
+                                                                                            name="pincode">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="submit-section">
+                                                                                <button class="btn btn-primary"
+                                                                                    type="submit">Submit</button>
+                                                                            </div>
+                                                                        </form>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="submit-section">
-                                                                <button class="btn btn-primary"
-                                                                    type="submit">Submit</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
                                                     </td>
                                                 </tr>
-                                                @endforeach
-
-
+                                            @endforeach
 
                                         </tbody>
                                     </table>
@@ -762,7 +737,8 @@
                                                     <td>{{ $contact->email_address }}</td>
                                                     <td>{{ $contact->phone_number }}</td>
                                                     <td>
-                                                        <input type="checkbox" disabled {{ $contact->add_to_mail_list == 1 ? 'checked' : '' }}>
+                                                        <input type="checkbox" disabled
+                                                            {{ $contact->add_to_mail_list == 1 ? 'checked' : '' }}>
                                                     </td>
 
                                                     <td>{{ $contact->created_at }}</td>
@@ -854,12 +830,16 @@
                                                                         </div>
                                                                         <div class="col-sm-6">
                                                                             <div class="form-group">
-                                                                                <label class="col-form-label">Add to mail List
+                                                                                <label class="col-form-label">Add to mail
+                                                                                    List
                                                                                     <span
                                                                                         class="text-danger">*</span></label>
-                                                                                        <input type="hidden" name="add_to_mail_list" value="0">
-                                                                                        <input type="checkbox" name="add_to_mail_list" value="1"
-                                                                                            {{ $contact->add_to_mail_list == 1 ? 'checked' : '' }}>
+                                                                                <input type="hidden"
+                                                                                    name="add_to_mail_list"
+                                                                                    value="0">
+                                                                                <input type="checkbox"
+                                                                                    name="add_to_mail_list" value="1"
+                                                                                    {{ $contact->add_to_mail_list == 1 ? 'checked' : '' }}>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -932,7 +912,7 @@
                                                                         </td>
                                                                         <td>{{ $fare->agent->iata }}</td>
                                                                         <td>{{ $fare->agent->pcc_office_id }}</td>
-                                                                        <td>{{$fare->agent->account_code}}</td>
+                                                                        <td>{{ $fare->agent->account_code }}</td>
                                                                         <td>{{ $fare->agent->discount }}</td>
                                                                         <td>{{ $fare->agent->remarks }}</td>
                                                                     </tr>
@@ -958,7 +938,8 @@
                                                                     action="{{ route('admin.agent.target.store') }}#special_fares"
                                                                     method="POST" enctype="multipart/form-data">
                                                                     @csrf
-                                                                    <div class="table-responsive text-nowrap" style="margin-top:-53px;">
+                                                                    <div class="table-responsive text-nowrap"
+                                                                        style="margin-top:-53px;">
                                                                         <table class="table">
                                                                             <thead>
                                                                                 <tr>
@@ -1038,7 +1019,8 @@
                                                                 {{-- <form action="{{ route('admin.agent.target.store') }}"
                                                                     method="POST" enctype="multipart/form-data">
                                                                     @csrf --}}
-                                                                <div class="table-responsive text-nowrap" style="margin-top:-53px;">
+                                                                <div class="table-responsive text-nowrap"
+                                                                    style="margin-top:-53px;">
                                                                     <table class="table">
                                                                         <thead>
                                                                             <tr>
@@ -1201,7 +1183,6 @@
                                                                         </div>
                                                                     </div>
 
-
                                                                     <!-- Delete Confirmation Modal -->
                                                                     <div id="delete_product{{ $prod->id }}"
                                                                         class="modal custom-modal fade" role="dialog">
@@ -1261,12 +1242,12 @@
                                                                     method="POST" enctype="multipart/form-data">
                                                                     @csrf
                                                                     <div class="row">
-                                                                            <div class="form-group">
-                                                                                <input class="form-control" type="hidden"
-                                                                                    name="agent_id"
-                                                                                    value="{{ $agent->id }}">
-                                                                            </div>
-                                                                            <div class="col-sm-12">
+                                                                        <div class="form-group">
+                                                                            <input class="form-control" type="hidden"
+                                                                                name="agent_id"
+                                                                                value="{{ $agent->id }}">
+                                                                        </div>
+                                                                        <div class="col-sm-12">
                                                                             <div class="form-group">
                                                                                 <label class="col-form-label">Product Name
                                                                                     <span
@@ -1310,7 +1291,7 @@
                                             <div class="conversation-description">
                                                 {{ $conversation->description }}
                                             </div>
-                                            <div class="conversation-author">added by {{ $conversation->from}}</div>
+                                            <div class="conversation-author">added by {{ $conversation->from }}</div>
                                         </div>
                                     @endforeach
                                 </div>
@@ -1337,11 +1318,11 @@
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Airlines <span
                                                                         class="text-danger">*</span></label>
-                                                                <select class="form-control" required
-                                                                    name="airline_id">
+                                                                <select class="form-control" required name="airline_id">
                                                                     <option>Select Airline</option>
-                                                                    @foreach ($airlineDetailData as $data )
-                                                                        <option value="{{$data->airline_id}}">{{$data->airline->airline_name}}</option>
+                                                                    @foreach ($airlineDetailData as $data)
+                                                                        <option value="{{ $data->airline_id }}">
+                                                                            {{ $data->airline->airline_name }}</option>
                                                                     @endforeach
                                                                 </select>
                                                             </div>
@@ -1365,8 +1346,7 @@
                                                         <div class="col-sm-12">
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Remarks</label>
-                                                                <textarea class="form-control"  required
-                                                                    name="description"></textarea>
+                                                                <textarea class="form-control" required name="description"></textarea>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1396,22 +1376,20 @@
 
                                 <div class="card-body">
 
-
-
                                     <div class="table-responsive">
                                         <table class="table custom-table mb-0 datatable">
                                             <thead>
                                                 <tr>
-                                                <th class="fw-bold">Case Status</th>
-                                                <th class="fw-bold">Case Id</th>
-                                                <th class="fw-bold">Airline</th>
-                                                <th class="fw-bold">PNR</th>
-                                                <th class="fw-bold">Ticket No</th>
-                                                <th class="fw-bold">Remarks</th>
-                                                <th class="fw-bold">Opened By</th>
-                                                <th class="fw-bold">Case Opening Date</th>
-                                                <th class="fw-bold">Case Closed by</th>
-                                                <th class="fw-bold">Case Closing Date</th>
+                                                    <th class="fw-bold">Case Status</th>
+                                                    <th class="fw-bold">Case Id</th>
+                                                    <th class="fw-bold">Airline</th>
+                                                    <th class="fw-bold">PNR</th>
+                                                    <th class="fw-bold">Ticket No</th>
+                                                    <th class="fw-bold">Remarks</th>
+                                                    <th class="fw-bold">Opened By</th>
+                                                    <th class="fw-bold">Case Opening Date</th>
+                                                    <th class="fw-bold">Case Closed by</th>
+                                                    <th class="fw-bold">Case Closing Date</th>
                                                     <th>Actions</th>
 
                                                 </tr>
@@ -1420,84 +1398,97 @@
                                             <tbody>
                                                 @foreach ($caseData as $data)
                                                     <tr>
-                                                    <td>{{ $data->case_status }}</td>
-                                                    <td>{{ $data->id }}</td>
-                                                    <td>{{ $data->airline->airline_name?? '' }}</td>
-                                                    <td>{{ $data->pnr }}</td>
-                                                    <td>{{ $data->ticket_no }}</td>
-                                                    <td>{{ $data->remarks }}</td>
-                                                    <td>{{ $data->opened_by }}</td>
-                                                    <td>{{ $data->case_opening_date }}</td>
-                                                    <td>{{ $data->case_closed_by }}</td>
-                                                    <td>{{ $data->case_closing_date }}</td>
-                                                    <td>
+                                                        <td>{{ $data->case_status }}</td>
+                                                        <td>{{ $data->id }}</td>
+                                                        <td>{{ $data->airline->airline_name ?? '' }}</td>
+                                                        <td>{{ $data->pnr }}</td>
+                                                        <td>{{ $data->ticket_no }}</td>
+                                                        <td>{{ $data->remarks }}</td>
+                                                        <td>{{ $data->opened_by }}</td>
+                                                        <td>{{ $data->case_opening_date }}</td>
+                                                        <td>{{ $data->case_closed_by }}</td>
+                                                        <td>{{ $data->case_closing_date }}</td>
+                                                        <td>
                                                             <!-- View Button -->
-                                                            <button class="btn btn-info text-light btn-sm" data-bs-toggle="modal"
+                                                            <button class="btn btn-info text-light btn-sm"
+                                                                data-bs-toggle="modal"
                                                                 data-bs-target="#viewCaseModal-{{ $data->id }}"><i
                                                                     class="fa fa-eye"></i></button>
-                                                                    <div class="modal fade" id="viewCaseModal-{{ $data->id }}"
-                                                        tabindex="-1" aria-labelledby="viewCaseModalLabel"
-                                                        aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="viewCaseModalLabel">View
-                                                                        Case: {{ $data->case_id }}</h5>
-                                                                    <button type="button" class="btn-close"
-                                                                        data-bs-dismiss="modal"
-                                                                        aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
+                                                            <div class="modal fade"
+                                                                id="viewCaseModal-{{ $data->id }}" tabindex="-1"
+                                                                aria-labelledby="viewCaseModalLabel" aria-hidden="true">
+                                                                <div class="modal-dialog modal-lg">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title"
+                                                                                id="viewCaseModalLabel">View
+                                                                                Case: {{ $data->case_id }}</h5>
+                                                                            <button type="button" class="btn-close"
+                                                                                data-bs-dismiss="modal"
+                                                                                aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
 
-                                                                <div class="table-responsive">
-                                                                    <table class="table table-bordered custom-table mb-0 datatable">
-                                                                        <thead>
-                                                                            <tr>
-                                                                            <th scope="col">Date</th>
-                                                                            <th scope="col">PNR</th>
-                                                                            <td scope="col">{{ $data->pnr }}</td>
-                                                                            <th scope="col">Ticket No.</th>
-                                                                            <td scope="col">{{ $data->ticket_no }}</td>
-                                                                            <th scope="col">Case Status</th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
+                                                                            <div class="table-responsive">
+                                                                                <table
+                                                                                    class="table table-bordered custom-table mb-0 datatable">
+                                                                                    <thead>
+                                                                                        <tr>
+                                                                                            <th scope="col">Date</th>
+                                                                                            <th scope="col">PNR</th>
+                                                                                            <td scope="col">
+                                                                                                {{ $data->pnr }}</td>
+                                                                                            <th scope="col">Ticket No.
+                                                                                            </th>
+                                                                                            <td scope="col">
+                                                                                                {{ $data->ticket_no }}
+                                                                                            </td>
+                                                                                            <th scope="col">Case Status
+                                                                                            </th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        @foreach ($data->updates as $update)
+                                                                                            <tr>
+                                                                                                <td scope="row">
+                                                                                                    {{ $update->update_date }}
+                                                                                                </td>
+                                                                                                <td colspan="4">
+                                                                                                    {{ $update->comments }}
+                                                                                                </td>
+                                                                                                <td>
+                                                                                                    Case @if ($update->status == 'Update')
+                                                                                                        Re-opened
+                                                                                                    @else
+                                                                                                        {{ $update->status }}
+                                                                                                    @endif by
+                                                                                                    {{ $update->updated_by }}
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        @endforeach
+                                                                                    </tbody>
+
+                                                                                </table>
+                                                                            </div>
+                                                                            <!-- <p><strong>PNR:</strong> {{ $data->pnr }}</p>
+                                                                            <p><strong>Ticket No:</strong> {{ $data->ticket_no }}
+                                                                            </p>
+                                                                            <p><strong>Opened by:</strong> {{ $data->opened_by }}
+                                                                            </p>
+                                                                            <p><strong>Status:</strong> {{ $data->case_status }}
+                                                                            </p>
+                                                                            <p><strong>Closing Date:</strong>
+                                                                                {{ $data->case_closing_date }}</p>
+                                                                            <hr>
+                                                                            <h5>Conversation History:</h5>
                                                                             @foreach ($data->updates as $update)
-                                                                                <tr>
-                                                                                    <td scope="row">{{ $update->update_date }}</td>
-                                                                                    <td colspan="4">{{$update->comments}}</td>
-                                                                                    <td>
-                                                                                        Case @if ($update->status == 'Update')
-                                                                                        Re-opened
-                                                                                        @else {{$update->status}}
-                                                                                        @endif  by {{$update->updated_by}}
-                                                                                    </td>
-                                                                                </tr>
-
-                                                                            @endforeach
-                                                                        </tbody>
-
-                                                                    </table>
-                                                                </div>
-                                                                    <!-- <p><strong>PNR:</strong> {{ $data->pnr }}</p>
-                                                                    <p><strong>Ticket No:</strong> {{ $data->ticket_no }}
-                                                                    </p>
-                                                                    <p><strong>Opened by:</strong> {{ $data->opened_by }}
-                                                                    </p>
-                                                                    <p><strong>Status:</strong> {{ $data->case_status }}
-                                                                    </p>
-                                                                    <p><strong>Closing Date:</strong>
-                                                                        {{ $data->case_closing_date }}</p>
-                                                                    <hr>
-                                                                    <h5>Conversation History:</h5>
-                                                                    @foreach ($data->updates as $update)
-                                                                        <p><strong>{{ $update->update_date }}</strong> -
-                                                                            {{ $update->comments }}</p>
-                                                                    @endforeach -->
+    <p><strong>{{ $update->update_date }}</strong> -
+                                                                                    {{ $update->comments }}</p>
+    @endforeach -->
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
 
                                                             <!-- Edit Button -->
                                                             <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
@@ -1512,7 +1503,6 @@
                                                             @endif
                                                         </td>
                                                     </tr>
-
 
                                                     <div class="modal fade" id="editCaseModal-{{ $data->id }}"
                                                         tabindex="-1" aria-labelledby="editCaseModalLabel"
@@ -1630,17 +1620,18 @@
                                                         method="POST" enctype="multipart/form-data">
                                                         @csrf
 
-
                                                         <div class="row">
                                                             <div class="col-sm-6">
                                                                 <div class="form-group">
                                                                     <label class="col-form-label">Airline Id <span
                                                                             class="text-danger">*</span></label>
-                                                                    <select class="form-control"
-                                                                        name="airline_id" required>
+                                                                    <select class="form-control" name="airline_id"
+                                                                        required>
                                                                         <option>Select Airline</option>
                                                                         @foreach ($airlineDetailData as $airData)
-                                                                            <option value="{{$airData->airline_id}}">{{$airData->airline->airline_name}}</option>
+                                                                            <option value="{{ $airData->airline_id }}">
+                                                                                {{ $airData->airline->airline_name }}
+                                                                            </option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
@@ -1659,7 +1650,8 @@
                                                                     <label class="col-form-label">Opened By <span
                                                                             class="text-danger">*</span></label>
                                                                     <input class="form-control" type="text" required
-                                                                        name="opened_by" readonly value="{{auth()->user()->name }}" required>
+                                                                        name="opened_by" readonly
+                                                                        value="{{ auth()->user()->name }}" required>
                                                                 </div>
                                                             </div>
 
@@ -1715,8 +1707,7 @@
                                                                 <div class="form-group">
                                                                     <label class="col-form-label">Remarks <span
                                                                             class="text-danger">*</span></label>
-                                                                    <textarea class="form-control"
-                                                                        required name="remarks" required></textarea>
+                                                                    <textarea class="form-control" required name="remarks" required></textarea>
                                                                 </div>
                                                             </div>
                                                             <div class="col-sm-6">
@@ -1762,7 +1753,7 @@
                                             </thead>
                                             <tbody>
                                                 @php
-                                                    $balance = $agentAccountBal->balance?? 0;
+                                                    $balance = $agentAccountBal->balance ?? 0;
                                                 @endphp
                                                 @foreach ($agentAccounts as $account)
                                                     @php
@@ -1797,11 +1788,11 @@
                                                     method="POST" enctype="multipart/form-data">
                                                     @csrf
                                                     <div class="row">
-                                                            <div class="form-group">
-                                                                <input class="form-control" type="hidden"
-                                                                    name="agent_id" value="{{ $agent->id }}">
-                                                            </div>
-                                                            <div class="col-sm-4">
+                                                        <div class="form-group">
+                                                            <input class="form-control" type="hidden" name="agent_id"
+                                                                value="{{ $agent->id }}">
+                                                        </div>
+                                                        <div class="col-sm-4">
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Debit Amount <span
                                                                         class="text-danger">*</span></label>
@@ -1827,11 +1818,9 @@
                                                         <div class="col-sm-12">
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Remarks</label>
-                                                                <textarea class="form-control" type="text"
-                                                                    name="tr_type"></textarea>
+                                                                <textarea class="form-control" type="text" name="tr_type"></textarea>
                                                             </div>
                                                         </div>
-
 
                                                     </div>
                                                     <div class="submit-section">
@@ -1846,7 +1835,6 @@
                         </div>
                     </div>
                 </div>
-
 
                 <div id="provision" class="pro-overview tab-pane fade">
                     <div class="row">
@@ -1866,14 +1854,16 @@
                                                         <table class="table custom-table mb-0 datatable">
                                                             <thead>
                                                                 <tr>
-                                                                    <th rowspan="2" style="padding-bottom: 70px;">Term
+                                                                    <th rowspan="2" style="padding-bottom: 70px;">
+                                                                        Term
                                                                     </th>
                                                                     <th rowspan="2" style="padding-bottom: 70px;">
                                                                         Incentive Description</th>
                                                                     <th rowspan="2" style="padding-bottom: 70px;">
                                                                         Target</th>
 
-                                                                    <th class="text-center" colspan="2">Buissness Class
+                                                                    <th class="text-center" colspan="2">Buissness
+                                                                        Class
 
                                                                     </th>
                                                                     <th class="text-center" colspan="2">Premium Class
@@ -1886,18 +1876,11 @@
                                                                 </tr>
                                                                 <tr>
 
-
-
-
                                                                     <th>Intl</th>
                                                                     <th>Dom</th>
 
-
-
                                                                     <th>Intl</th>
                                                                     <th>Dom</th>
-
-
 
                                                                     <th>Intl</th>
                                                                     <th>Dom</th>
@@ -1950,7 +1933,8 @@
                                                                     @csrf
                                                                     <div class="row">
                                                                         <input class="form-control" type="hidden"
-                                                                            name="agent_id" value="{{ $agent->id }}">
+                                                                            name="agent_id"
+                                                                            value="{{ $agent->id }}">
                                                                         <div class="col-sm-6">
                                                                             <div class="form-group">
                                                                                 <label class="col-form-label">Airline<span
@@ -1973,9 +1957,9 @@
                                                                                 <label class="col-form-label">Incentive
                                                                                     Description <span
                                                                                         class="text-danger">*</span></label>
-                                                                                <input class="form-control" type="text"
-                                                                                    required name="incentive_description"
-                                                                                    required>
+                                                                                <input class="form-control"
+                                                                                    type="text" required
+                                                                                    name="incentive_description" required>
                                                                             </div>
                                                                         </div>
                                                                         <div class="col-sm-6">
@@ -2204,7 +2188,6 @@
                                                             </tbody>
                                                         </table>
 
-
                                                     </div>
                                                 </div>
                                             </div>
@@ -2216,7 +2199,6 @@
                     </div>
                 </div>
 
-
                 <div id="airline_activation" class="pro-overview tab-pane fade show">
                     <div class="row">
                         <div class="col-md-12 d-flex">
@@ -2224,12 +2206,13 @@
                                 <div class="card-body row ">
                                     <div class="col-sm-12 ">
                                         <div class="float-end">
-                                    <a class="btn btn-primary" data-bs-toggle="modal"
-                                    style="border-radius:10px;" data-bs-target="#add_airline_activation"><i
-                                        class="fa fa-plus"></i> Add / Edit Airline Activations</a></div>
+                                            <a class="btn btn-primary" data-bs-toggle="modal"
+                                                style="border-radius:10px;" data-bs-target="#add_airline_activation"><i
+                                                    class="fa fa-plus"></i> Add / Edit Airline Activations</a>
                                         </div>
-                                        <div class="col-sm-12">
-                                    {{-- <form action="{{ route('admin.agent.target.store') }}#airline_activation"
+                                    </div>
+                                    <div class="col-sm-12">
+                                        {{-- <form action="{{ route('admin.agent.target.store') }}#airline_activation"
                                         method="POST" enctype="multipart/form-data">
                                         @csrf --}}
                                         <div class="table-responsive text-nowrap">
@@ -2273,8 +2256,8 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        </div>
-                                        {{-- <div class="submit-section">
+                                    </div>
+                                    {{-- <div class="submit-section">
                                             <button class="btn btn-primary" type="submit">Submit</button>
                                         </div>
                                     </form> --}}
@@ -2284,71 +2267,67 @@
                     </div>
                 </div>
 
-
                 <div id="add_airline_activation" class="modal custom-modal fade" role="dialog">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title">Add Target</h5>
-                                <button type="button" class="close"
-                                    data-bs-dismiss="modal" aria-label="Close">
+                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
                                 <form action="{{ route('admin.agent.target.store') }}#airline_activation"
-                                method="POST" enctype="multipart/form-data">
-                                @csrf
-                                <div class="table-responsive text-nowrap" style="margin-top:-53px;">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th class="fw-bold">Airline/Service</th>
-                                                @foreach ($fareType as $ft)
-                                                    <th class="fw-bold">{{ $ft->fare_type }}</th>
-                                                @endforeach
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($airline as $air)
+                                    method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="table-responsive text-nowrap" style="margin-top:-53px;">
+                                        <table class="table">
+                                            <thead>
                                                 <tr>
-                                                    <div class="form-group">
-                                                        <input class="form-control" type="hidden"
-                                                            name="agent_id" value="{{ $agent->id }}">
-                                                    </div>
-                                                    <th class="fw-bold">{{ $air->airline_name }}</th>
+                                                    <th class="fw-bold">Airline/Service</th>
                                                     @foreach ($fareType as $ft)
-                                                        @php
-                                                            $status = DB::table('special_fares')
-                                                                ->where('airline_id', $air->id)
-                                                                ->where('fare_type', $ft->fare_type_name)
-                                                                ->where('agent_id', $agent->id)
-                                                                ->value('status');
-                                                        @endphp
-                                                        <input type="hidden"
-                                                            name="airline[{{ $air->id }}][{{ $ft->fare_type_name }}]"
-                                                            value="2">
-                                                        <th>
-                                                            <input type="checkbox"
-                                                                name="airline[{{ $air->id }}][{{ $ft->fare_type_name }}]"
-                                                                value="1"
-                                                                {{ $status == 1 ? 'checked' : '' }}>
-                                                        </th>
+                                                        <th class="fw-bold">{{ $ft->fare_type }}</th>
                                                     @endforeach
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="submit-section">
-                                    <button class="btn btn-primary" type="submit">Submit</button>
-                                </div>
-                            </form>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($airline as $air)
+                                                    <tr>
+                                                        <div class="form-group">
+                                                            <input class="form-control" type="hidden" name="agent_id"
+                                                                value="{{ $agent->id }}">
+                                                        </div>
+                                                        <th class="fw-bold">{{ $air->airline_name }}</th>
+                                                        @foreach ($fareType as $ft)
+                                                            @php
+                                                                $status = DB::table('special_fares')
+                                                                    ->where('airline_id', $air->id)
+                                                                    ->where('fare_type', $ft->fare_type_name)
+                                                                    ->where('agent_id', $agent->id)
+                                                                    ->value('status');
+                                                            @endphp
+                                                            <input type="hidden"
+                                                                name="airline[{{ $air->id }}][{{ $ft->fare_type_name }}]"
+                                                                value="2">
+                                                            <th>
+                                                                <input type="checkbox"
+                                                                    name="airline[{{ $air->id }}][{{ $ft->fare_type_name }}]"
+                                                                    value="1" {{ $status == 1 ? 'checked' : '' }}>
+                                                            </th>
+                                                        @endforeach
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="submit-section">
+                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
-
 
                 <div id="add_pli" class="modal custom-modal fade" role="dialog">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -2475,7 +2454,6 @@
                     </div>
                 </div>
 
-
                 <div id="add_address" class="modal custom-modal fade" role="dialog">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
@@ -2490,11 +2468,11 @@
                                     enctype="multipart/form-data">
                                     @csrf
                                     <div class="row">
-                                    <div class="form-group">
-                                                <input class="form-control" type="hidden" name="agent_id"
-                                                    value="{{ $agent->id }}">
-                                            </div>
-                                            <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <input class="form-control" type="hidden" name="agent_id"
+                                                value="{{ $agent->id }}">
+                                        </div>
+                                        <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Street Address <span
                                                         class="text-danger">*</span></label>
@@ -2550,11 +2528,12 @@
                                     enctype="multipart/form-data">
                                     @csrf
                                     <div class="row">
-                                    <div class="form-group">
-                                                <input class="form-control" type="hidden" name="agent_id"
-                                                    value="{{ $agent->id }}">
-                                                    <input class="form-control" type="hidden" required name="updated_at" value=" ">
-                                            </div>
+                                        <div class="form-group">
+                                            <input class="form-control" type="hidden" name="agent_id"
+                                                value="{{ $agent->id }}">
+                                            <input class="form-control" type="hidden" required name="updated_at"
+                                                value=" ">
+                                        </div>
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Title <span
@@ -2562,7 +2541,7 @@
                                                 <input class="form-control" type="text" required name="title">
                                             </div>
                                         </div>
-                                            <div class="col-sm-6">
+                                        <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">First Name <span
                                                         class="text-danger">*</span></label>
@@ -2599,9 +2578,8 @@
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="col-form-label">Add to mail List
-                                                    <span
-                                                        class="text-danger">*</span></label>
-                                                        <input type="checkbox" name="add_to_mail_list" value="1">
+                                                    <span class="text-danger">*</span></label>
+                                                <input type="checkbox" name="add_to_mail_list" value="1">
                                             </div>
                                         </div>
                                     </div>
@@ -2614,10 +2592,7 @@
                     </div>
                 </div>
 
-
-
             </div>
-
 
             <style>
                 .conversation-date {
