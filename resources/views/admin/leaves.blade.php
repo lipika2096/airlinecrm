@@ -309,15 +309,30 @@
             const noOfDaysInput = document.querySelector('input[name="no_of_days"]');
 
             if (fromDate && toDate) {
-                const from = new Date(fromDate);
-                const to = new Date(toDate);
-                const timeDifference = to - from;
-                const daysDifference = timeDifference / (1000 * 3600 * 24);
 
-                noOfDaysInput.value = daysDifference >= 0 ? daysDifference + 1 : 0;
-            } else {
-                noOfDaysInput.value = '';
-            }
+                var startDate = new Date(fromDate);
+                var endDate = new Date(toDate);
+
+                const baseUrl = "{{ url('/admin') }}";
+                fetch(baseUrl + '/get-holidays')
+                    .then(response => response.json())
+
+                    .then(holidays => {
+
+                        var holidayDates = holidays.map(holiday => new Date(holiday.holiday_date).toDateString());
+                        var diffDays = 0;
+                        for (var date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+
+                            if (date.getDay() !== 0 && date.getDay() !== 6 && !holidayDates.includes(date
+                                    .toDateString())) {
+                                diffDays++;
+                            }
+                        }
+
+                        noOfDaysInput.value = diffDays;
+                    })
+                    .catch(error => console.error('Error fetching holidays:', error));
+                }
         }
 
      // Function to ensure the date input meets the requirements

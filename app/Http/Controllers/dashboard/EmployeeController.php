@@ -1199,4 +1199,10 @@ public function leavesStaffStore(Request $request)
         // Add your logic for leaves admin view
         return redirect()->back()->with('success', 'New Absence added successfully');
     }
+
+    public function getHolidays()
+    {
+        $holidays = Holiday::select('holiday_date')->get();
+        return response()->json($holidays);
+    }
 }

@@ -342,6 +342,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
     Route::post('holidays/store', [EmployeeController::class, 'holidayStore'])->name('holidays.store');
     Route::patch('holidays/edit/{id}', [EmployeeController::class, 'holidayUpdate'])->name('holidays.update');
     Route::get('leaves', [EmployeeController::class, 'leavesAdmin'])->name('leaves');
+    Route::get('/get-holidays', [EmployeeController::class, 'getHolidays']);
+
     Route::post('leaves/store', [EmployeeController::class, 'leavesAdminStore'])->name('leaves.store');
     Route::patch('leaves/edit/{id}', [EmployeeController::class, 'leavesAdminUpdate'])->name('leaves.update');
     Route::get('leave-settings', [EmployeeController::class, 'leaveSettings'])->name('leave-settings');
@@ -536,5 +538,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
     Route::get('commissions/{commission}/edit', [CommissionController::class, 'edit'])->name('commissions.edit');
     Route::put('commissions/{commission}', [CommissionController::class, 'update'])->name('commissions.update');
     Route::delete('commissions/{commission}', [CommissionController::class, 'destroy'])->name('commissions.destroy');
+
 
 });
