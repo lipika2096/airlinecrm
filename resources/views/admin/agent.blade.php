@@ -21,6 +21,16 @@
             .submit-section {
                 margin-top: 10px !important;
             }
+            .add-btn {
+                background-color: #ff9b44;
+                border: 1px solid #ff9b44;
+                color: #ffffff;
+                float: right;
+                font-weight: 500;
+                min-width: 140px;
+                border-radius: 50px;
+                font-size: 13px;
+            }
         </style>
         <!-- Page Content -->
         <div class="content container-fluid">
@@ -37,7 +47,7 @@
                             </ul>
                         </div>
                         <div class="col-auto float-end ms-auto">
-                            <a href="#" class="btn add-btn btn btn-info mt-3" data-bs-toggle="modal"
+                            <a href="#" class="btn add-btn mt-3" data-bs-toggle="modal"
                                 data-bs-target="#add_agent"><i class="fa fa-plus "></i> Add Travel Agent</a>
                         </div>
                     @else
