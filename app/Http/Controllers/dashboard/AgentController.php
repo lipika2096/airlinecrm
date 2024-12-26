@@ -40,41 +40,47 @@ class AgentController extends Controller
     public function index(Request $request)
     {
         $designation = Designation::latest()->get();
-        $query = Agent::whereNull('deleted_at')->orWhere('deleted_at', 'null');
+        $query = Agent::with('agent_addresses', 'head_office')->whereNull('deleted_at')->orWhere('deleted_at', 'null');
 
 
         if ($request->has('search') && !empty($request->input('search'))) {
             $searchValue = $request->input('search');
-            $searchType = $request->input('search_type');
-            // dd($searchType, $searchValue);
-            switch ($searchType) {
-                case 'agent_name':
-                    $query->where('company_name', 'like', '%' . $searchValue . '%');
-                    break;
-                case 'pincode':
-                    $query->where('pincode', 'like', '%' . $searchValue . '%');
-                    break;
-                case 'city':
-                    $query->where('city', 'like', '%' . $searchValue . '%');
-                    break;
-                case 'state':
-                    $query->where('state', 'like', '%' . $searchValue . '%');
-                    break;
-                case 'country':
-                    $query->where('country', 'like', '%' . $searchValue . '%');
-                    break;
-                case 'account_code':
-                    $query->where('account_code', 'like', '%' . $searchValue . '%');
-                    break;
-                default:
-                    break;
-            }
+            $searchTypes = $request->input('search_type', []);
+
+
+            $searchParts = array_map('trim', explode(',', $searchValue));
+
+
+            $query->where(function ($q) use ($searchParts, $searchTypes) {
+                foreach ($searchTypes as $index => $type) {
+                    if (isset($searchParts[$index])) {
+                        $searchTerm = '%' . $searchParts[$index] . '%';
+                        if (in_array($type, ['city', 'pincode', 'state', 'country','company_name', 'agency_name','company_registration_no','iata','gds_type','focus_destinations', 'business_mode', 'website', 'account_code',''])) {
+                            $q->orWhere($type, 'like', $searchTerm);
+                        }
+
+                        if (in_array($type, ['city', 'pincode', 'state', 'country'])) {
+                            $q->orWhereHas('agent_addresses', function ($subQuery) use ($type, $searchTerm) {
+                                $subQuery->where($type, 'like', $searchTerm);
+                            });
+                        }
+
+                        if (in_array($type, ['phone_number', 'email_address', 'first_name'])) {
+                            $q->orWhereHas('head_office', function ($subQuery) use ($type, $searchTerm) {
+                                $subQuery->where($type, 'like', $searchTerm);
+                            });
+                        }
+                    }
+                }
+            });
         }
+
 
         $agents = $query->get();
 
         return view('admin.agent', compact('agents', 'designation'));
     }
+
 
     public function deletedAgent()
     {

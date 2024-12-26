@@ -12,4 +12,12 @@ class Agent extends Model
   {
       return $this->belongsTo(SpecialFare::class, 'agent_id');
   }
+
+  public function agent_addresses(){
+    return $this->hasOne(AgentAddress::class, 'agent_id');
+  }
+
+  public function head_office(){
+    return $this->hasOne(HeadOfficeContactDetail::class, 'agent_id');
+  }
 }

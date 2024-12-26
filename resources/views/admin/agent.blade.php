@@ -63,38 +63,24 @@
                             </div>
 
                             <div class="col-md-3">
-                                <select class="form-select" name="search_type" id="search_type" data-placeholder="Choose anything" multiple>
-                                    {{-- <option value="" selected disabled>Select Search Type</option> --}}
-                                    <option value="agent_name" @if (request()->search_type == 'agent_name') selected @endif>Agent Name
-                                    </option>
-                                    <option value="pincode" @if (request()->search_type == 'pincode') selected @endif>Pincode
-                                    </option>
-                                    <option value="city" @if (request()->search_type == 'city') selected @endif>City</option>
-                                    <option value="state" @if (request()->search_type == 'state') selected @endif>State</option>
-                                    <option value="country" @if (request()->search_type == 'country') selected @endif>Country
-                                    </option>
-                                    <option value="agent_group" @if (request()->search_type == 'agent_group') selected @endif>Agent
-                                        Group</option>
-                                    <option value="company_registration_no"
-                                        @if (request()->search_type == 'company_registration_no') selected @endif>Company Registration No</option>
-                                    <option value="iata_number" @if (request()->search_type == 'iata_number') selected @endif>IATA
-                                        Number</option>
-                                    <option value="gds_number" @if (request()->search_type == 'gds_number') selected @endif>GDS Number
-                                    </option>
-                                    <option value="gds_type" @if (request()->search_type == 'gds_type') selected @endif>GDS Type
-                                    </option>
-                                    <option value="focus_destinations" @if (request()->search_type == 'focus_destinations') selected @endif>
-                                        Focus Destinations</option>
-                                    <option value="business_model" @if (request()->search_type == 'business_model') selected @endif>
-                                        Business Model</option>
-                                    <option value="website" @if (request()->search_type == 'website') selected @endif>Website
-                                    </option>
-                                    <option value="product_type" @if (request()->search_type == 'product_type') selected @endif>Product
-                                        Type</option>
-                                    <option value="fare_type" @if (request()->search_type == 'fare_type') selected @endif>Fare Type
-                                    </option>
-                                    <option value="account_code" @if (request()->search_type == 'account_code') selected @endif>Account
-                                        Code</option>
+                                <select class="form-select" name="search_type[]" id="search_type" data-placeholder="Select Type" multiple>
+                                    <option value="company_name" @if (request()->search_type && in_array('company_name', request()->search_type)) selected @endif>Agent Name</option>
+                                    <option value="agency_name " @if (request()->search_type && in_array('agency_name', request()->search_type)) selected @endif>Agent Group</option>
+                                    <option value="company_registration_no" @if (request()->search_type && in_array('company_registration_no', request()->search_type)) selected @endif>Company Registration No</option>
+                                    <option value="iata" @if (request()->search_type && in_array('iata', request()->search_type)) selected @endif>IATA Number</option>
+                                    <option value="gds_type" @if (request()->search_type && in_array('gds_type', request()->search_type)) selected @endif>GDS Type</option>
+                                    <option value="focus_destinations" @if (request()->search_type && in_array('focus_destinations', request()->search_type)) selected @endif>Focus Destinations</option>
+                                    <option value="business_mode" @if (request()->search_type && in_array('business_mode', request()->search_type)) selected @endif>Agent Type</option>
+                                    <option value="website" @if (request()->search_type && in_array('website', request()->search_type)) selected @endif>Website</option>
+                                    <option value="account_code" @if (request()->search_type && in_array('account_code', request()->search_type)) selected @endif>Account Code</option>
+                                    <option value="pincode" @if (request()->search_type && in_array('pincode', request()->search_type)) selected @endif>Pincode</option>
+                                    <option value="city" @if (request()->search_type && in_array('city', request()->search_type)) selected @endif>City</option>
+                                    <option value="state" @if (request()->search_type && in_array('state', request()->search_type)) selected @endif>State</option>
+                                    <option value="country" @if (request()->search_type && in_array('country', request()->search_type)) selected @endif>Country</option>
+                                    <option value="phone_number" @if (request()->search_type && in_array('phone_number', request()->search_type)) selected @endif>Phone</option>
+                                    <option value="email_address" @if (request()->search_type && in_array('email_address', request()->search_type)) selected @endif>Email Address</option>
+                                    <option value="first_name" @if (request()->search_type && in_array('first_name', request()->search_type)) selected @endif>Contact Person First Name</option>
+
                                 </select>
                             </div>
 
