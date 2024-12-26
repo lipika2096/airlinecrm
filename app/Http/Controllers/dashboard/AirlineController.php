@@ -34,7 +34,7 @@ class AirlineController extends Controller
         $airlineDetails = AirlineDetail::where('deleted_at', NULL)->with('airline')->get();
         $airlines = Airline::all();
 
-        return view('admin.airlines', compact('airlines','airlineDetails'));
+        return view('admin.airlines', compact('airlines', 'airlineDetails'));
     }
 
     public function report(Request $request)
@@ -43,97 +43,75 @@ class AirlineController extends Controller
         $airline_id = $request->airline_id;
         // dd($airline_id);
         $specialFares = SpecialFare::where('airline_id', $request->airline_id)
-                        ->groupBy('agent_id')
-                        ->get();
-                        // dd($specialFares);
+            ->groupBy('agent_id')
+            ->get();
+        // dd($specialFares);
 
-        return view('admin.airline-reports', compact('airlines','specialFares'));
+        return view('admin.airline-reports', compact('airlines', 'specialFares'));
     }
 
     public function view($id)
     {
         $rules = Rule::where('airline_id', $id)->get();
-        $agents = Agent::where('deleted_at',null)->orWhere('deleted_at','null')->with('specialFare')->get();
-        $airlineDetails = AirlineDetail::where('airline_id', $id)->where('deleted_at',null)->orWhere('deleted_at','null')->first();
+        $agents = Agent::where('deleted_at', null)->orWhere('deleted_at', 'null')->with('specialFare')->get();
+        $airlineDetails = AirlineDetail::where('airline_id', $id)->where('deleted_at', null)->orWhere('deleted_at', 'null')->first();
         $airlines = Airline::all();
-        $aircrafts = Aircraft::where('deleted_at',null)->orWhere('deleted_at','null')->where('airline_id', $id)->get();
-        $fleets = Fleet::where('deleted_at',null)->orWhere('deleted_at','null')->where('airline_id', $id)->get();
+        $aircrafts = Aircraft::where('deleted_at', null)->orWhere('deleted_at', 'null')->where('airline_id', $id)->get();
+        $fleets = Fleet::where('deleted_at', null)->orWhere('deleted_at', 'null')->where('airline_id', $id)->get();
         $staff = User::where('role_id', 2)->get();
-        $library = AirlineLibrary::where('deleted_at',null)->orWhere('deleted_at','null')->where('airline_id', $id)->get();
-        $approvedStaffs = ApprovedStaff::where('status',1)->where('airline_id', $id)->get();
-        $slas = SLA::where('deleted_at',null)->orWhere('deleted_at','null')->where('airline_id', $id)->get();
+        $library = AirlineLibrary::where('deleted_at', null)->orWhere('deleted_at', 'null')->where('airline_id', $id)->get();
+        $approvedStaffs = ApprovedStaff::where('status', 1)->where('airline_id', $id)->get();
+        $slas = SLA::where('deleted_at', null)->orWhere('deleted_at', 'null')->where('airline_id', $id)->get();
         $headOffices = HeadOfficeContactDetail::where('airline_id', $id)->where('deleted_at', NULL)->get();
-        $headOfficesDeleted = HeadOfficeContactDetail::where('airline_id', $id)->where('deleted_at','!=', NULL)->get();
+        $headOfficesDeleted = HeadOfficeContactDetail::where('airline_id', $id)->where('deleted_at', '!=', NULL)->get();
         $Staffs = User::where('status', 'active')->get();
-        $agreements = Agreement::where('deleted_at',null)->orWhere('deleted_at','null')->with(['agent', 'airline'])->get();
+        $agreements = Agreement::where('deleted_at', null)->orWhere('deleted_at', 'null')->with(['agent', 'airline'])->get();
         $fareType = FareType::get();
-        $duty = Duty::where('status',1)->get();
-        $specialFare = SpecialFare::where('airline_id', $id)->where('status',1)->with('fareDiscount')->get();
+        $duty = Duty::where('status', 1)->get();
+        $specialFare = SpecialFare::where('airline_id', $id)->where('status', 1)->with('fareDiscount')->get();
 
-        return view('admin.view-airline', compact('airlines','airlineDetails','aircrafts', 'fleets', 'staff', 'approvedStaffs','library','slas', 'headOffices', 'Staffs', 'agents', 'rules', 'headOfficesDeleted', 'agreements', 'fareType','specialFare','duty'));
+        return view('admin.view-airline', compact('airlines', 'airlineDetails', 'aircrafts', 'fleets', 'staff', 'approvedStaffs', 'library', 'slas', 'headOffices', 'Staffs', 'agents', 'rules', 'headOfficesDeleted', 'agreements', 'fareType', 'specialFare', 'duty'));
     }
 
     public function searchSpecialFare(Request $request, $id)
     {
-
-        $specialFares = SpecialFare::with(['airline', 'agent'])->where('airline_id', $id)
+        $specialFares = SpecialFare::with(['airline', 'agent.head_office'])->where('airline_id', $id)
             ->where('status', 1);
 
         if ($request->has('search') && !empty($request->input('search'))) {
             $searchValue = $request->input('search');
-            $searchType = $request->input('search_type');
+            $searchTypes = $request->input('search_type', []);
 
-            switch ($searchType) {
-                case 'agent_name':
-                    $specialFares->whereHas('agent', function ($query) use ($searchValue) {
-                        $query->where('company_name', 'like', '%' . $searchValue . '%');
-                    });
-                    break;
+            $searchParts = array_map('trim', explode(',', $searchValue));
 
-                case 'pincode':
-                    $specialFares->whereHas('agent', function ($query) use ($searchValue) {
-                        $query->where('pincode', 'like', '%' . $searchValue . '%');
-                    });
-                    break;
+            $specialFares->where(function ($q) use ($searchParts, $searchTypes) {
+                foreach ($searchTypes as $index => $type) {
+                    if (isset($searchParts[$index])) {
+                        $searchTerm = '%' . $searchParts[$index] . '%';
 
-                case 'city':
-                    $specialFares->whereHas('agent', function ($query) use ($searchValue) {
-                        $query->where('city', 'like', '%' . $searchValue . '%');
-                    });
-                    break;
+                        if (in_array($type, ['agent_name', 'pincode', 'city', 'state', 'country', 'account_code'])) {
+                            $q->orWhereHas('agent', function ($subQuery) use ($type, $searchTerm) {
+                                $subQuery->where($type, 'like', $searchTerm);
+                            });
+                        }
 
-                case 'state':
-                    $specialFares->whereHas('agent', function ($query) use ($searchValue) {
-                        $query->where('state', 'like', '%' . $searchValue . '%');
-                    });
-                    break;
+                        if (in_array($type, ['phone_number', 'email_address', 'first_name'])) {
+                            $q->orWhereHas('agent.head_office', function ($subQuery) use ($type, $searchTerm) {
+                                $subQuery->where($type, 'like', $searchTerm);
+                            });
+                        }
 
-                case 'country':
-                    $specialFares->whereHas('agent', function ($query) use ($searchValue) {
-                        $query->where('country', 'like', '%' . $searchValue . '%');
-                    });
-                    break;
-
-                case 'fare_type':
-                    $specialFares->where('fare_type', 'like', '%' . $searchValue . '%');
-                    break;
-
-                case 'account_code':
-                    $specialFares->whereHas('agent', function ($query) use ($searchValue) {
-                        $query->where('account_code', 'like', '%' . $searchValue . '%');
-                    });
-                    break;
-
-                default:
-
-                    break;
-            }
+                        if ($type === 'fare_type') {
+                            $q->orWhere('fare_type', 'like', $searchTerm);
+                        }
+                    }
+                }
+            });
         }
 
         $specialFares = $specialFares->get();
 
         if ($request->ajax()) {
-
             $data = $specialFares->map(function ($fare) {
                 return [
                     'company_name' => $fare->agent->company_name ?? 'N/A',
@@ -154,6 +132,7 @@ class AirlineController extends Controller
             return response()->json(['specialFares' => $data]);
         }
     }
+
     public function store(Request $request)
     {
         // Validate the incoming request data
@@ -216,7 +195,6 @@ class AirlineController extends Controller
 
         // Return a response
         return redirect()->route('admin.airlines-details')->with('success', 'Airline added successfully');
-
     }
 
     public function update(Request $request, $id)
@@ -288,13 +266,14 @@ class AirlineController extends Controller
         // Update the airlineDetails record
         $airlineDetail = AirlineDetail::where('airline_id', $id)->first();
 
-            $airlineDetail->update($airlineDetailsData);
+        $airlineDetail->update($airlineDetailsData);
 
         // Return a response
         return redirect()->route('admin.airlines-details')->with('success', 'Airline updated successfully');
     }
 
-    public function delete($id){
+    public function delete($id)
+    {
         $airlines = AirlineDetail::find($id);
         $airlines->update([
             'deleted_at' => now()
@@ -353,7 +332,8 @@ class AirlineController extends Controller
         return redirect()->back();
     }
 
-    public function aircraftDelete($id, Request $request){
+    public function aircraftDelete($id, Request $request)
+    {
         $flight = Aircraft::findOrFail($id);
         $flight->update([
             'deleted_at' => now(),
@@ -382,16 +362,18 @@ class AirlineController extends Controller
         return redirect()->back()->with('success', 'Fleet Updated Sucessfully');
     }
 
-    public function fleetDelete($id, Request $request){
+    public function fleetDelete($id, Request $request)
+    {
         $fleets = Fleet::findorFail($id);
         $fleets->update([
             'deleted_at' => now(),
             'remarks' => $request->input('remarks')
         ]);
-        return redirect()->back()->with('success','Fleet Deleted Sucessfully');
+        return redirect()->back()->with('success', 'Fleet Deleted Sucessfully');
     }
 
-    public function approvedStaffStore(Request $request){
+    public function approvedStaffStore(Request $request)
+    {
         $validatedData = $request->validate([
             'airline_id' => 'required|integer',
             'staff_id' => 'required|integer',
@@ -405,7 +387,8 @@ class AirlineController extends Controller
         return redirect()->back();
     }
 
-    public function approvedStaffUpdate(Request $request, $id){
+    public function approvedStaffUpdate(Request $request, $id)
+    {
         $approvedStaff = ApprovedStaff::find($id);
         $approvedStaff->update([
             'staff_id' => $request->input('staff_id'),
@@ -423,7 +406,7 @@ class AirlineController extends Controller
 
     public function slaStore(Request $request)
     {
-        try{
+        try {
 
             $fileName = null;
 
@@ -435,7 +418,7 @@ class AirlineController extends Controller
 
                 $mediaPath = $docName->move('public/assets/docs/', $fileName);
                 if (!$mediaPath) {
-                return back()->with('error', 'Failed to upload sla documnt');
+                    return back()->with('error', 'Failed to upload sla documnt');
                 }
             }
 
@@ -452,8 +435,7 @@ class AirlineController extends Controller
             ]);
 
             return redirect()->back()->with('success', 'SLA added successfully.');
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             dd($e);
         }
     }
@@ -477,7 +459,7 @@ class AirlineController extends Controller
 
             $mediaPath = $docName->move('public/assets/docs/', $fileName);
             if (!$mediaPath) {
-            return back()->with(['error' => 'Failed to upload document']);
+                return back()->with(['error' => 'Failed to upload document']);
             }
         }
 
@@ -497,7 +479,8 @@ class AirlineController extends Controller
 
 
 
-    public function slaDestroy($id, Request $request){
+    public function slaDestroy($id, Request $request)
+    {
         $sla = SLA::findOrFail($id);
         $sla->update([
             'deleted_at' => now(),
@@ -509,34 +492,34 @@ class AirlineController extends Controller
 
 
     public function slaUpdateStatus($id, Request $request)
-{
-    try {
-        // Find the SLA record by ID
-        $sla = SLA::findOrFail($id);
+    {
+        try {
+            // Find the SLA record by ID
+            $sla = SLA::findOrFail($id);
 
-        // Toggle the status
-        $sla->status = ($sla->status == 1) ? 2 : 1;
-        $sla->save();
+            // Toggle the status
+            $sla->status = ($sla->status == 1) ? 2 : 1;
+            $sla->save();
 
-        // Return a JSON response for AJAX requests
-        if ($request->ajax()) {
-            return response()->json(['success' => true, 'status' => $sla->status]);
+            // Return a JSON response for AJAX requests
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'status' => $sla->status]);
+            }
+
+            // Fallback for non-AJAX requests
+            return redirect()->back()->with('success', 'SLA status updated successfully.');
+        } catch (\Exception $e) {
+            // Log the error message
+            \Log::error('Error updating SLA status: ' . $e->getMessage());
+
+            // Return a JSON error response
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Error updating status'], 500);
+            }
+
+            return redirect()->back()->with('error', 'Error updating status.');
         }
-
-        // Fallback for non-AJAX requests
-        return redirect()->back()->with('success', 'SLA status updated successfully.');
-    } catch (\Exception $e) {
-        // Log the error message
-        \Log::error('Error updating SLA status: ' . $e->getMessage());
-
-        // Return a JSON error response
-        if ($request->ajax()) {
-            return response()->json(['success' => false, 'message' => 'Error updating status'], 500);
-        }
-
-        return redirect()->back()->with('error', 'Error updating status.');
     }
-}
 
 
     public function headOfficeStore(Request $request)
@@ -544,8 +527,8 @@ class AirlineController extends Controller
 
         $validated = $request->all();
 
-       HeadOfficeContactDetail::create($validated);
-       //dd($validated);
+        HeadOfficeContactDetail::create($validated);
+        //dd($validated);
         return redirect()->back()->with('success', 'head office Contact Details added successfully.');
     }
 
@@ -579,24 +562,24 @@ class AirlineController extends Controller
     {
 
 
-            $headOffice = HeadOfficeContactDetail::findOrFail($id);
+        $headOffice = HeadOfficeContactDetail::findOrFail($id);
 
 
-            $headOffice->status = ($headOffice->status == 1) ? 2 : 1;
-            $headOffice->save();
+        $headOffice->status = ($headOffice->status == 1) ? 2 : 1;
+        $headOffice->save();
 
-            // Return a JSON response for AJAX requests
-            if ($request->ajax()) {
-                return response()->json(['success' => true, 'status' => $headOffice->status]);
-            }
+        // Return a JSON response for AJAX requests
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'status' => $headOffice->status]);
+        }
 
-            // Fallback for non-AJAX requests
-            return redirect()->back()->with('success', 'SLA status updated successfully.');
-
+        // Fallback for non-AJAX requests
+        return redirect()->back()->with('success', 'SLA status updated successfully.');
     }
 
 
-    public function headOfficeDestroy($id, Request $request){
+    public function headOfficeDestroy($id, Request $request)
+    {
         $headOffice = HeadOfficeContactDetail::findOrFail($id);
         $headOffice->update([
             'deleted_at' => now(),
@@ -612,207 +595,208 @@ class AirlineController extends Controller
     public function approvedStaffUpdateStatus(Request $request)
     {
 
-    $request->validate([
-        'staff_id' => 'required|integer',
-        'field' => 'required|string',
-        'status' => 'required|integer|in:1,2',
-    ]);
+        $request->validate([
+            'staff_id' => 'required|integer',
+            'field' => 'required|string',
+            'status' => 'required|integer|in:1,2',
+        ]);
 
-    $staff = ApprovedStaff::where('staff_id', $request->staff_id)->first();
+        $staff = ApprovedStaff::where('staff_id', $request->staff_id)->first();
 
-    if (!$staff) {
-        return response()->json(['success' => false, 'message' => 'Staff not found']);
+        if (!$staff) {
+            return response()->json(['success' => false, 'message' => 'Staff not found']);
+        }
+
+        $staff->{$request->field} = $request->status;
+        $staff->save();
+
+        return response()->json(['success' => true]);
     }
 
-    $staff->{$request->field} = $request->status;
-    $staff->save();
+    public function libraryupdate(Request $request, $id)
+    {
+        // Find the document by its ID
+        $document = AirlineLibrary::findOrFail($id);
 
-    return response()->json(['success' => true]);
-}
+        // Handle the attachment file upload
+        // if ($request->hasFile('attachment')) {
+        //     $docName = $request->file('attachment');
+        //     $fileName = uniqid() . '.' . $docName->getClientOriginalExtension();
+        //     $mediaPath = $docName->move(public_path('public/assets/docs/'), $fileName);
 
-public function libraryupdate(Request $request, $id)
-{
-    // Find the document by its ID
-    $document = AirlineLibrary::findOrFail($id);
+        //     if (!$mediaPath) {
+        //         return back()->withErrors(['media' => 'Failed to upload document']);
+        //     }
 
-    // Handle the attachment file upload
-    // if ($request->hasFile('attachment')) {
-    //     $docName = $request->file('attachment');
-    //     $fileName = uniqid() . '.' . $docName->getClientOriginalExtension();
-    //     $mediaPath = $docName->move(public_path('public/assets/docs/'), $fileName);
+        //     // Update the attachment field
+        //     $document->attachment = $fileName;
+        // }
 
-    //     if (!$mediaPath) {
-    //         return back()->withErrors(['media' => 'Failed to upload document']);
-    //     }
-
-    //     // Update the attachment field
-    //     $document->attachment = $fileName;
-    // }
-
-    $fileNames = []; // Array to hold the filenames
+        $fileNames = []; // Array to hold the filenames
 
         if ($request->hasFile('attachment')) {
             $docFile = $request->file('attachment');
 
             // foreach ($docFiles as $docFile) {
-                // Generate a unique file name with extension
-                $fileName = Str::uuid() . '.' . $docFile->getClientOriginalExtension();
+            // Generate a unique file name with extension
+            $fileName = Str::uuid() . '.' . $docFile->getClientOriginalExtension();
 
-                // Define the storage path
-                $storagePath = ('public/assets/docs/');
+            // Define the storage path
+            $storagePath = ('public/assets/docs/');
 
-                // Check if the directory exists, if not create it
-                if (!File::exists($storagePath)) {
-                    File::makeDirectory($storagePath, 0755, true, true);
-                }
+            // Check if the directory exists, if not create it
+            if (!File::exists($storagePath)) {
+                File::makeDirectory($storagePath, 0755, true, true);
+            }
 
-                // Move the file to the defined path
-                $docFile->move($storagePath, $fileName);
+            // Move the file to the defined path
+            $docFile->move($storagePath, $fileName);
 
-                // Add the filename to the array
-                $fileNames[] = asset('public/assets/docs/')."/".$fileName;
+            // Add the filename to the array
+            $fileNames[] = asset('public/assets/docs/') . "/" . $fileName;
             // }
         }
         // Convert array to a JSON string or comma-separated string
         $fileNamesString = json_encode($fileNames); // Use this if you prefer JSON format
 
 
-    // Update other fields
-    $document->airline_id = $request->input('airline_id');
-    $document->doc_name = $request->input('doc_name');
-    $document->issue_date = $request->input('issue_date');
-    $document->effective_date = now();
-    $document->attachment = $fileNamesString;
-    $document->edition_no = $request->input('edition_no');
+        // Update other fields
+        $document->airline_id = $request->input('airline_id');
+        $document->doc_name = $request->input('doc_name');
+        $document->issue_date = $request->input('issue_date');
+        $document->effective_date = now();
+        $document->attachment = $fileNamesString;
+        $document->edition_no = $request->input('edition_no');
 
 
-    $document->updated_by = auth()->user()->id; // Assuming you want to store the user ID
-    $document->updated_at = now();
+        $document->updated_by = auth()->user()->id; // Assuming you want to store the user ID
+        $document->updated_at = now();
 
 
-    $document->read_sign = 1;
+        $document->read_sign = 1;
 
 
-    $document->save();
+        $document->save();
 
 
-    return redirect()->back()->with('success', 'Document updated successfully!');
-}
-
-public function libraryDelete($id, Request $request){
-    $library = AirlineLibrary::findOrFail($id);
-    $library->update([
-        'deleted_at' => now(),
-        'remarks' => $request->input('remarks')
-    ]);
-    return redirect()->back()->with('success', 'Library deleted successfully');
-}
-
-public function targetStore(Request $request)
-{
-    foreach ($request->input('agent') as $agentId => $fareTypes) {
-        foreach ($fareTypes as $fareType => $status) {
-
-           $specialFare=  SpecialFare::updateOrCreate(
-                [
-                    'airline_id' => $request->input('airline_id'),
-                    'fare_type' => $fareType,
-                    'agent_id' => $agentId
-                ],
-                [
-                    'status' => $status
-                ]
-            );
-
-            if ($specialFare->wasRecentlyCreated) {
-                $specialFare->created_by = Auth()->user()->name;
-                $specialFare->updated_at = $request->input('updated_at'); // Assuming user authentication is used
-            } else {
-                $specialFare->updated_by = auth()->user()->name;
-            }
-
-            // Save the changes
-            $specialFare->save();
-        }
+        return redirect()->back()->with('success', 'Document updated successfully!');
     }
 
-    return redirect()->back()->with('success', 'Special fares updated successfully.');
-}
-
-
-public function approvedStaffRightsStore(Request $request)
-{
-    foreach ($request->input('staff') as $satffId => $duties) {
-        foreach ($duties as $duty => $status) {
-
-           $specialFare=  ApprovedStaff::updateOrCreate(
-                [
-                    'airline_id' => $request->input('airline_id'),
-                    'duties' => $duty,
-                    'staff_id' => $satffId
-                ],
-                [
-                    'status' => $status
-                ]
-            );
-
-            if ($specialFare->wasRecentlyCreated) {
-                $specialFare->created_by = Auth()->user()->name;
-                $specialFare->updated_at = $request->input('updated_at'); // Assuming user authentication is used
-            } else {
-                $specialFare->updated_by = auth()->user()->name;
-                $specialFare->updated_at = now();
-            }
-
-            // Save the changes
-            $specialFare->save();
-        }
+    public function libraryDelete($id, Request $request)
+    {
+        $library = AirlineLibrary::findOrFail($id);
+        $library->update([
+            'deleted_at' => now(),
+            'remarks' => $request->input('remarks')
+        ]);
+        return redirect()->back()->with('success', 'Library deleted successfully');
     }
 
-    return redirect()->back()->with('success', 'Approved Staff data updated successfully.');
-}
-public function specialfaresUpdate(Request $request, $id)
-{
-    $request->validate([
-        'ticket_authorization' => 'nullable|boolean',
-        'vfr_fares' => 'nullable|boolean',
-        'to_fares' => 'nullable|boolean',
-        'sme_fares' => 'nullable|boolean',
-        'status' => 'required|boolean',
-    ]);
+    public function targetStore(Request $request)
+    {
+        foreach ($request->input('agent') as $agentId => $fareTypes) {
+            foreach ($fareTypes as $fareType => $status) {
 
-    $specialFare = SpecialFare::findOrFail($id);
-    $specialFare->update([
-        'ticket_authorization' => $request->has('ticket_authorization') ? 1 : 0,
-        'vfr_fares' => $request->has('vfr_fares') ? 1 : 0,
-        'to_fares' => $request->has('to_fares') ? 1 : 0,
-        'sme_fares' => $request->has('sme_fares') ? 1 : 0,
-        'status' => $request->input('status'),
-    ]);
+                $specialFare =  SpecialFare::updateOrCreate(
+                    [
+                        'airline_id' => $request->input('airline_id'),
+                        'fare_type' => $fareType,
+                        'agent_id' => $agentId
+                    ],
+                    [
+                        'status' => $status
+                    ]
+                );
 
-    return redirect()->back()->with('success', 'Special fares updated successfully.');
-}
+                if ($specialFare->wasRecentlyCreated) {
+                    $specialFare->created_by = Auth()->user()->name;
+                    $specialFare->updated_at = $request->input('updated_at'); // Assuming user authentication is used
+                } else {
+                    $specialFare->updated_by = auth()->user()->name;
+                }
 
-public function rulesStore(Request $request)
-{
-    $request->validate([
-        'airline_id' => 'required|exists:airlines,id',
-        'dos' => 'required|string',
-        'donts' => 'required|string',
-        'cancellation_policy' => 'required|string',
-        'date_change_policy' => 'required|string',
-    ]);
+                // Save the changes
+                $specialFare->save();
+            }
+        }
 
-    Rule::create([
-        'airline_id' => $request->input('airline_id'),
-        'dos' => $request->input('dos'),
-        'donts' => $request->input('donts'),
-        'cancellation_policy' => $request->input('cancellation_policy'),
-        'date_change_policy' => $request->input('date_change_policy'),
-    ]);
+        return redirect()->back()->with('success', 'Special fares updated successfully.');
+    }
 
-    return redirect()->back()->with('success', 'Rules updated successfully.');
-}
+
+    public function approvedStaffRightsStore(Request $request)
+    {
+        foreach ($request->input('staff') as $satffId => $duties) {
+            foreach ($duties as $duty => $status) {
+
+                $specialFare =  ApprovedStaff::updateOrCreate(
+                    [
+                        'airline_id' => $request->input('airline_id'),
+                        'duties' => $duty,
+                        'staff_id' => $satffId
+                    ],
+                    [
+                        'status' => $status
+                    ]
+                );
+
+                if ($specialFare->wasRecentlyCreated) {
+                    $specialFare->created_by = Auth()->user()->name;
+                    $specialFare->updated_at = $request->input('updated_at'); // Assuming user authentication is used
+                } else {
+                    $specialFare->updated_by = auth()->user()->name;
+                    $specialFare->updated_at = now();
+                }
+
+                // Save the changes
+                $specialFare->save();
+            }
+        }
+
+        return redirect()->back()->with('success', 'Approved Staff data updated successfully.');
+    }
+    public function specialfaresUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'ticket_authorization' => 'nullable|boolean',
+            'vfr_fares' => 'nullable|boolean',
+            'to_fares' => 'nullable|boolean',
+            'sme_fares' => 'nullable|boolean',
+            'status' => 'required|boolean',
+        ]);
+
+        $specialFare = SpecialFare::findOrFail($id);
+        $specialFare->update([
+            'ticket_authorization' => $request->has('ticket_authorization') ? 1 : 0,
+            'vfr_fares' => $request->has('vfr_fares') ? 1 : 0,
+            'to_fares' => $request->has('to_fares') ? 1 : 0,
+            'sme_fares' => $request->has('sme_fares') ? 1 : 0,
+            'status' => $request->input('status'),
+        ]);
+
+        return redirect()->back()->with('success', 'Special fares updated successfully.');
+    }
+
+    public function rulesStore(Request $request)
+    {
+        $request->validate([
+            'airline_id' => 'required|exists:airlines,id',
+            'dos' => 'required|string',
+            'donts' => 'required|string',
+            'cancellation_policy' => 'required|string',
+            'date_change_policy' => 'required|string',
+        ]);
+
+        Rule::create([
+            'airline_id' => $request->input('airline_id'),
+            'dos' => $request->input('dos'),
+            'donts' => $request->input('donts'),
+            'cancellation_policy' => $request->input('cancellation_policy'),
+            'date_change_policy' => $request->input('date_change_policy'),
+        ]);
+
+        return redirect()->back()->with('success', 'Rules updated successfully.');
+    }
 
     public function rulesUpdate(Request $request, $id)
     {
@@ -832,7 +816,6 @@ public function rulesStore(Request $request)
         ]);
 
         return redirect()->back()->with('success', 'Rules updated successfully.');
-
     }
     public function fleetUpdateStatus($id, Request $request)
     {
@@ -854,118 +837,118 @@ public function rulesStore(Request $request)
 
 
     public function scheduleUpdateStatus($id, Request $request)
-{
-    $data = Aircraft::findOrFail($id);
+    {
+        $data = Aircraft::findOrFail($id);
 
 
-    $data->status = $data->status == 1 ? 2 : 1;
-    $data->save();
+        $data->status = $data->status == 1 ? 2 : 1;
+        $data->save();
 
 
-    if ($request->ajax()) {
-        return response()->json(['success' => true, 'status' => $data->status]);
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'status' => $data->status]);
+        }
+
+
+        return redirect()->back()->with('success', 'Status updated successfully.');
+    }
+
+    public function librarystatusUpdate($id, Request $request)
+    {
+        // Find the record by ID
+        $data = AirlineLibrary::findOrFail($id);
+
+        // Toggle the status
+        $data->status = ($data->status == 1) ? 2 : 1;
+        $data->save();
+
+        // Return a JSON response for AJAX requests
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'status' => $data->status]);
+        }
+
+        // Fallback for non-AJAX requests
+        return redirect()->back()->with('success', 'Status updated successfully.');
     }
 
 
-    return redirect()->back()->with('success', 'Status updated successfully.');
-}
+    public function rulesupdateStatus($id, Request $request)
+    {
+        // Find the rule by ID
+        $rule = Rule::findOrFail($id);
 
-public function librarystatusUpdate($id, Request $request)
-{
-    // Find the record by ID
-    $data = AirlineLibrary::findOrFail($id);
+        // Toggle the status
+        $rule->status = ($rule->status == 1) ? 2 : 1;
+        $rule->save();
 
-    // Toggle the status
-    $data->status = ($data->status == 1) ? 2 : 1;
-    $data->save();
+        // Return a JSON response for AJAX requests
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'status' => $rule->status]);
+        }
 
-    // Return a JSON response for AJAX requests
-    if ($request->ajax()) {
-        return response()->json(['success' => true, 'status' => $data->status]);
+        // Fallback for non-AJAX requests
+        return redirect()->back()->with('success', 'Status updated successfully.');
     }
 
-    // Fallback for non-AJAX requests
-    return redirect()->back()->with('success', 'Status updated successfully.');
-}
+    public function specialfaresupdateStatus($id, Request $request)
+    {
 
 
-public function rulesupdateStatus($id, Request $request)
-{
-    // Find the rule by ID
-    $rule = Rule::findOrFail($id);
+        // Find the record by ID
+        $specialFare = SpecialFare::findOrFail($id);
 
-    // Toggle the status
-    $rule->status = ($rule->status == 1) ? 2 : 1;
-    $rule->save();
+        // Toggle the status
+        $specialFare->status = ($specialFare->status == 1) ? 2 : 1;
+        $specialFare->save();
 
-    // Return a JSON response for AJAX requests
-    if ($request->ajax()) {
-        return response()->json(['success' => true, 'status' => $rule->status]);
+        // Return a JSON response for AJAX requests
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'status' => $specialFare->status]);
+        }
+
+        // Fallback for non-AJAX requests
+        return redirect()->back()->with('success', 'Status updated successfully.');
     }
 
-    // Fallback for non-AJAX requests
-    return redirect()->back()->with('success', 'Status updated successfully.');
-}
 
-public function specialfaresupdateStatus($id, Request $request)
-{
+    public function agreemenstStatusUpdate($id)
+    {
+        $agreement = Agreement::findOrFail($id);
+        $agreement->status = $agreement->status == 1 ? 2 : 1;
+        $agreement->save();
+        // Return a JSON response for AJAX requests
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'status' => $specialFare->status]);
+        }
 
-
-    // Find the record by ID
-    $specialFare = SpecialFare::findOrFail($id);
-
-    // Toggle the status
-    $specialFare->status = ($specialFare->status == 1) ? 2 : 1;
-    $specialFare->save();
-
-    // Return a JSON response for AJAX requests
-    if ($request->ajax()) {
-        return response()->json(['success' => true, 'status' => $specialFare->status]);
+        // Fallback for non-AJAX requests
+        return redirect()->back()->with('success', 'Status updated successfully.');
     }
 
-    // Fallback for non-AJAX requests
-    return redirect()->back()->with('success', 'Status updated successfully.');
-}
 
+    public function agreementsStore(Request $request)
+    {
+        $request->validate([
+            'airline_id' => 'required|integer',
+            'agent_id' => 'required|integer',
+            'incentive_description' => 'required|string|max:255',
+            'term' => 'required|string|max:255',
+            'agreement_status' => 'required|string|max:255',
+        ]);
 
-public function agreemenstStatusUpdate($id)
-{
-    $agreement = Agreement::findOrFail($id);
-    $agreement->status = $agreement->status == 1 ? 2 : 1;
-    $agreement->save();
-     // Return a JSON response for AJAX requests
-     if ($request->ajax()) {
-        return response()->json(['success' => true, 'status' => $specialFare->status]);
+        Agreement::create([
+            'airline_id' => $request->input('airline_id'),
+            'agent_id' => $request->input('agent_id'),
+            'incentive_description' => $request->input('incentive_description'),
+            'term' => $request->input('term'),
+            'agreement_status' => $request->input('agreement_status'),
+            'type' => 'Agreement',
+            'updated_at' => $request->input('updated_at'),
+            'created_by' => Auth()->user()->name
+        ]);
+
+        return redirect()->back()->with('success', 'Rules updated successfully.');
     }
-
-   // Fallback for non-AJAX requests
-   return redirect()->back()->with('success', 'Status updated successfully.');
-}
-
-
-public function agreementsStore(Request $request)
-{
-    $request->validate([
-        'airline_id' => 'required|integer',
-        'agent_id' => 'required|integer',
-        'incentive_description' => 'required|string|max:255',
-        'term' => 'required|string|max:255',
-        'agreement_status' => 'required|string|max:255',
-    ]);
-
-    Agreement::create([
-        'airline_id' => $request->input('airline_id'),
-        'agent_id' => $request->input('agent_id'),
-        'incentive_description' => $request->input('incentive_description'),
-        'term' => $request->input('term'),
-        'agreement_status' => $request->input('agreement_status'),
-        'type' => 'Agreement',
-        'updated_at' => $request->input('updated_at'),
-        'created_by' => Auth()->user()->name
-     ]);
-
-    return redirect()->back()->with('success', 'Rules updated successfully.');
-}
 
 
 
@@ -987,10 +970,10 @@ public function agreementsStore(Request $request)
         ]);
 
         return redirect()->back()->with('success', 'Rules updated successfully.');
-
     }
 
-    public function agreementsDestroy(){
+    public function agreementsDestroy()
+    {
 
         $agreement = Agreement::findOrFail($id);
         $agreement->update([
@@ -1041,8 +1024,4 @@ public function agreementsStore(Request $request)
 
         return redirect()->back()->with('success', 'Rules updated successfully.');
     }
-
-
-
-
 }

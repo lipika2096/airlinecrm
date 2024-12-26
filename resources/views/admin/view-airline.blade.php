@@ -10,6 +10,17 @@
     <head>
         <!-- Other meta tags -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
+
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    <!-- Or for RTL support -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" />
+
+
     </head>
     <!-- Page Wrapper -->
     <div class="page-wrapper">
@@ -2603,26 +2614,21 @@
                                         </div>
                                         <div class="col-md-5">
                                             <div class="form-group">
-                                                <!-- <label class="col-form-label">Select Type<span
-                                                        class="text-danger">*</span></label> -->
-                                                <select class="form-control" name="search_type" id="search_type">
-                                                    <option value="" selected disabled>Select Search Type</option>
-                                                    <option value="agent_name">Agent Name</option>
+                                                <select class="form-control" name="search_type[]" id="search_type" data-placeholder="Select Type" multiple>
+                                                    <option value="company_name" >Agent Name</option>
+                                                    <option value="agency_name " >Agent Group</option>
+                                                    <option value="company_registration_no">Company Registration No</option>
+                                                    <option value="iata" >IATA Number</option>
+                                                    <option value="fare_type" >IATA Number</option>
+                                                    <option value="gds_type" >GDS Type</option>
+                                                    <option value="focus_destinations" >Focus Destinations</option>
+                                                    <option value="business_mode">Agent Type</option>
+                                                    <option value="website" >Website</option>
+                                                    <option value="account_code">Account Code</option>
                                                     <option value="pincode">Pincode</option>
                                                     <option value="city">City</option>
                                                     <option value="state">State</option>
                                                     <option value="country">Country</option>
-                                                    <option value="agent_group">Agent Group</option>
-                                                    <option value="company_registration_no">Company Registration No</option>
-                                                    <option value="iata_number">IATA Number</option>
-                                                    <option value="gds_number">GDS Number</option>
-                                                    <option value="gds_type">GDS Type</option>
-                                                    <option value="focus_destinations">Focus Destinations</option>
-                                                    <option value="business_model">Business Model</option>
-                                                    <option value="website">Website</option>
-                                                    <option value="product_type">Product Type</option>
-                                                    <option value="fare_type">Fare Type</option>
-                                                    <option value="account_code">Account Code</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -2875,8 +2881,21 @@
     CKEDITOR.replace('date_change_policy');
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Your custom script -->
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
+
+
+        $('#search_type').select2({
+            theme: "bootstrap-5",
+            width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+            placeholder: $(this).data('placeholder'),
+            closeOnSelect: false,
+        });
+
 
 $(document).ready(function() {
             $('#searchButton').on('click', function() {
@@ -2885,7 +2904,7 @@ $(document).ready(function() {
 
                 var airlineId = "{{ $airlineDetails->airline_id }}";
                 const baseUrl = "{{ url('/') }}";
-
+                console.log(searchData);
                 $.ajax({
                     url: baseUrl + '/admin/airlines/get-special-fare/' + airlineId,
                     method: 'GET',
