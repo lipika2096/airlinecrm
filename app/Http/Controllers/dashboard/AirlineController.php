@@ -89,20 +89,20 @@ class AirlineController extends Controller
                     if (isset($searchParts[$index])) {
                         $searchTerm = '%' . $searchParts[$index] . '%';
 
-                        if (in_array($type, ['agent_name', 'pincode', 'city', 'state', 'country', 'account_code'])) {
-                            $q->orWhereHas('agent', function ($subQuery) use ($type, $searchTerm) {
+                        if (in_array($type, ['company_name', 'pincode', 'city', 'state', 'country', 'account_code'])) {
+                            $q->WhereHas('agent', function ($subQuery) use ($type, $searchTerm) {
                                 $subQuery->where($type, 'like', $searchTerm);
                             });
                         }
 
                         if (in_array($type, ['phone_number', 'email_address', 'first_name'])) {
-                            $q->orWhereHas('agent.head_office', function ($subQuery) use ($type, $searchTerm) {
+                            $q->WhereHas('agent.head_office', function ($subQuery) use ($type, $searchTerm) {
                                 $subQuery->where($type, 'like', $searchTerm);
                             });
                         }
 
                         if ($type === 'fare_type') {
-                            $q->orWhere('fare_type', 'like', $searchTerm);
+                            $q->where('fare_type', 'like', $searchTerm);
                         }
                     }
                 }
