@@ -1,5 +1,13 @@
 @extends('admin/layouts/head-main')
 @section('content')
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    <!-- Or for RTL support -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" />
     <title>Designations</title>
 
     <!-- Page Wrapper -->
@@ -9,7 +17,9 @@
                 color: #333333;
                 margin-top: 30px !important;
             }
-            .submit-section{                margin-top:10px !important;
+
+            .submit-section {
+                margin-top: 10px !important;
             }
         </style>
         <!-- Page Content -->
@@ -19,27 +29,26 @@
             <div class="page-header">
                 <div class="row align-items-center">
                     @if (!request()->is('admin/deleted/agent'))
-
-                    <div class="col">
-                        <h3 class="page-title">Travel Agent List</h3>
-                        <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Travel Agent List</li>
-                        </ul>
-                    </div>
-                    <div class="col-auto float-end ms-auto">
-                        <a href="#" class="btn add-btn btn btn-info mt-3" data-bs-toggle="modal" data-bs-target="#add_agent"><i
-                                class="fa fa-plus "></i> Add Travel Agent</a>
-                    </div>
+                        <div class="col">
+                            <h3 class="page-title">Travel Agent List</h3>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="">Dashboard</a></li>
+                                <li class="breadcrumb-item active">Travel Agent List</li>
+                            </ul>
+                        </div>
+                        <div class="col-auto float-end ms-auto">
+                            <a href="#" class="btn add-btn btn btn-info mt-3" data-bs-toggle="modal"
+                                data-bs-target="#add_agent"><i class="fa fa-plus "></i> Add Travel Agent</a>
+                        </div>
                     @else
-                    <div class="col">
-                        <h3 class="page-title">Travel Agent List</h3>
-                        <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="">Dashboard</a></li>
-                            <li class="breadcrumb-item">Travel Agent List</li>
-                            <li class="breadcrumb-item active">Deleted Travel Agent List</li>
-                        </ul>
-                    </div>
+                        <div class="col">
+                            <h3 class="page-title">Travel Agent List</h3>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="">Dashboard</a></li>
+                                <li class="breadcrumb-item">Travel Agent List</li>
+                                <li class="breadcrumb-item active">Deleted Travel Agent List</li>
+                            </ul>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -54,24 +63,38 @@
                             </div>
 
                             <div class="col-md-3">
-                                <select class="form-control" name="search_type" id="search_type">
-                                    <option value="" selected disabled>Select Search Type</option>
-                                    <option value="agent_name" @if(request()->search_type == 'agent_name') selected @endif >Agent Name</option>
-                                    <option value="pincode" @if(request()->search_type == 'pincode') selected @endif >Pincode</option>
-                                    <option value="city" @if(request()->search_type == 'city') selected @endif >City</option>
-                                    <option value="state" @if(request()->search_type == 'state') selected @endif >State</option>
-                                    <option value="country" @if(request()->search_type == 'country') selected @endif >Country</option>
-                                    <option value="agent_group" @if(request()->search_type == 'agent_group') selected @endif >Agent Group</option>
-                                    <option value="company_registration_no" @if(request()->search_type == 'company_registration_no') selected @endif>Company Registration No</option>
-                                    <option value="iata_number" @if(request()->search_type == 'iata_number') selected @endif>IATA Number</option>
-                                    <option value="gds_number" @if(request()->search_type == 'gds_number') selected @endif>GDS Number</option>
-                                    <option value="gds_type" @if(request()->search_type == 'gds_type') selected @endif>GDS Type</option>
-                                    <option value="focus_destinations" @if(request()->search_type == 'focus_destinations') selected @endif> Focus Destinations</option>
-                                    <option value="business_model" @if(request()->search_type == 'business_model') selected @endif>Business Model</option>
-                                    <option value="website" @if(request()->search_type == 'website') selected @endif>Website</option>
-                                    <option value="product_type" @if(request()->search_type == 'product_type') selected @endif>Product Type</option>
-                                    <option value="fare_type" @if(request()->search_type == 'fare_type') selected @endif>Fare Type</option>
-                                    <option value="account_code" @if(request()->search_type == 'account_code') selected @endif>Account Code</option>
+                                <select class="form-select" name="search_type" id="search_type" data-placeholder="Choose anything" multiple>
+                                    {{-- <option value="" selected disabled>Select Search Type</option> --}}
+                                    <option value="agent_name" @if (request()->search_type == 'agent_name') selected @endif>Agent Name
+                                    </option>
+                                    <option value="pincode" @if (request()->search_type == 'pincode') selected @endif>Pincode
+                                    </option>
+                                    <option value="city" @if (request()->search_type == 'city') selected @endif>City</option>
+                                    <option value="state" @if (request()->search_type == 'state') selected @endif>State</option>
+                                    <option value="country" @if (request()->search_type == 'country') selected @endif>Country
+                                    </option>
+                                    <option value="agent_group" @if (request()->search_type == 'agent_group') selected @endif>Agent
+                                        Group</option>
+                                    <option value="company_registration_no"
+                                        @if (request()->search_type == 'company_registration_no') selected @endif>Company Registration No</option>
+                                    <option value="iata_number" @if (request()->search_type == 'iata_number') selected @endif>IATA
+                                        Number</option>
+                                    <option value="gds_number" @if (request()->search_type == 'gds_number') selected @endif>GDS Number
+                                    </option>
+                                    <option value="gds_type" @if (request()->search_type == 'gds_type') selected @endif>GDS Type
+                                    </option>
+                                    <option value="focus_destinations" @if (request()->search_type == 'focus_destinations') selected @endif>
+                                        Focus Destinations</option>
+                                    <option value="business_model" @if (request()->search_type == 'business_model') selected @endif>
+                                        Business Model</option>
+                                    <option value="website" @if (request()->search_type == 'website') selected @endif>Website
+                                    </option>
+                                    <option value="product_type" @if (request()->search_type == 'product_type') selected @endif>Product
+                                        Type</option>
+                                    <option value="fare_type" @if (request()->search_type == 'fare_type') selected @endif>Fare Type
+                                    </option>
+                                    <option value="account_code" @if (request()->search_type == 'account_code') selected @endif>Account
+                                        Code</option>
                                 </select>
                             </div>
 
@@ -111,7 +134,9 @@
                                                     <i class="fa fa-eye"></i>
                                                 </a>
                                                 @if (!request()->is('admin/deleted/agent'))
-                                                    <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_agent{{$agent->id}}"><i class="fa fa-trash m-r-5"></i></a>
+                                                    <a href="#" class="action-icon" data-bs-toggle="modal"
+                                                        data-bs-target="#delete_agent{{ $agent->id }}"><i
+                                                            class="fa fa-trash m-r-5"></i></a>
                                                 @endif
                                                 {{-- <form action="" method="POST" style="display:inline;">
                                                 <a class="action-icon" href="" data-bs-toggle="modal"
@@ -133,24 +158,28 @@
                                     </tr>
 
                                     <!-- Delete Agent Modal -->
-                                    <div id="delete_agent{{$agent->id}}" class="modal custom-modal fade" role="dialog">
+                                    <div id="delete_agent{{ $agent->id }}" class="modal custom-modal fade"
+                                        role="dialog">
                                         <div class="modal-dialog modal-dialog-centered" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h5 class="modal-title">Delete Leave Type</h5>
-                                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                                    <button type="button" class="close" data-bs-dismiss="modal"
+                                                        aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="{{route('admin.agent.delete',$agent->id)}}" method="POST">
+                                                    <form action="{{ route('admin.agent.delete', $agent->id) }}"
+                                                        method="POST">
                                                         @csrf
                                                         @method('DELETE')
                                                         <p>Are you sure you want to delete
-                                                            <strong>{{$agent->company_name}}</strong>  Agent?
+                                                            <strong>{{ $agent->company_name }}</strong> Agent?
                                                         </p>
                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Cancel</button>
                                                             <button type="submit" class="btn btn-danger">Delete</button>
                                                         </div>
                                                     </form>
@@ -189,30 +218,30 @@
                         <div class="row form-group">
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">Company Name <span class="text-danger">*</span></label>
-                                    <input class="form-control" type="text" name="company_name" required>
-                                </div>
+                                <label class="col-form-label">Company Name <span class="text-danger">*</span></label>
+                                <input class="form-control" type="text" name="company_name" required>
+                            </div>
                             <!-- </div> -->
 
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">Group <span class="text-danger">*</span></label>
-                                    <input class="form-control" type="text" name="agency_name" required>
-                                </div>
+                                <label class="col-form-label">Group <span class="text-danger">*</span></label>
+                                <input class="form-control" type="text" name="agency_name" required>
+                            </div>
                             <!-- </div> -->
 
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">Brand Name <span class="text-danger">*</span></label>
-                                    <input class="form-control" type="text" name="owner_name" required>
-                                </div>
+                                <label class="col-form-label">Brand Name <span class="text-danger">*</span></label>
+                                <input class="form-control" type="text" name="owner_name" required>
+                            </div>
                             <!-- </div> -->
 
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">Street</label>
-                                    <input class="form-control" type="text" name="address">
-                                </div>
+                                <label class="col-form-label">Street</label>
+                                <input class="form-control" type="text" name="address">
+                            </div>
                             <!-- </div> -->
 
                             <div class="col-sm-4">
@@ -223,152 +252,168 @@
 
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">City</label>
-                                    <input class="form-control" type="text" name="city">
-                                </div>
+                                <label class="col-form-label">City</label>
+                                <input class="form-control" type="text" name="city">
+                            </div>
                             <!-- </div> -->
 
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">Pincode</label>
-                                    <input class="form-control" type="text" name="pincode">
-                                </div>
+                                <label class="col-form-label">Pincode</label>
+                                <input class="form-control" type="text" name="pincode">
+                            </div>
                             <!-- </div> -->
 
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">Country</label>
-                                    <input class="form-control" type="text" name="country">
-                                </div>
+                                <label class="col-form-label">Country</label>
+                                <input class="form-control" type="text" name="country">
+                            </div>
                             <!-- </div> -->
 
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">Company Registration No.</label>
-                                    <input class="form-control" type="text" name="company_registration_number">
-                                </div>
+                                <label class="col-form-label">Company Registration No.</label>
+                                <input class="form-control" type="text" name="company_registration_number">
+                            </div>
                             <!-- </div> -->
 
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">IATA Number</label>
-                                    <input class="form-control" type="text" name="iata">
-                                </div>
+                                <label class="col-form-label">IATA Number</label>
+                                <input class="form-control" type="text" name="iata">
+                            </div>
                             <!-- </div> -->
 
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">GDS Type</label>
-                                    <input class="form-control" type="text" name="gds_type">
-                                </div>
+                                <label class="col-form-label">GDS Type</label>
+                                <input class="form-control" type="text" name="gds_type">
+                            </div>
                             <!-- </div> -->
 
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">PCC/Office ID</label>
-                                    <input class="form-control" type="text" name="pcc_office_id">
-                                </div>
+                                <label class="col-form-label">PCC/Office ID</label>
+                                <input class="form-control" type="text" name="pcc_office_id">
+                            </div>
                             <!-- </div> -->
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">Account Code</label>
-                                    <input class="form-control" type="text" name="account_code">
-                                </div>
+                                <label class="col-form-label">Account Code</label>
+                                <input class="form-control" type="text" name="account_code">
+                            </div>
                             <!-- </div> -->
 
 
 
                             <div class="col-sm-8">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">Focus Destinations</label>
-                                    <div id="focus-destinations-container">
-                                        <div class="input-group mb-2">
-                                            <input type="text" class="form-control" name="focus_destinations[]"
-                                                placeholder="Enter destination">
-                                            <button class="btn btn-danger remove-destination"
-                                                type="button">Remove</button>
-                                        </div>
+                                <label class="col-form-label">Focus Destinations</label>
+                                <div id="focus-destinations-container">
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control" name="focus_destinations[]"
+                                            placeholder="Enter destination">
+                                        <button class="btn btn-danger remove-destination" type="button">Remove</button>
                                     </div>
-                                    <button class="btn btn-primary" type="button" id="add-destination">Add More</button>
                                 </div>
+                                <button class="btn btn-primary" type="button" id="add-destination">Add More</button>
+                            </div>
                             <!-- </div> -->
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">Discount</label>
-                                    <input class="form-control" type="text" name="discount">
-                                </div>
-                            <!-- </div> -->
-
-                            <div class="col-sm-4">
-                                <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">Remarks</label>
-                                    <input class="form-control" type="text" name="remarks">
-                                </div>
-                            <!-- </div> -->
-                            <div class="col-sm-4">
-                                <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">Business Mode</label>
-                                    <input class="form-control" type="text" name="business_mode">
-                                </div>
+                                <label class="col-form-label">Discount</label>
+                                <input class="form-control" type="text" name="discount">
+                            </div>
                             <!-- </div> -->
 
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">Key People</label>
-                                    <input class="form-control" type="text" name="key_people">
-                                </div>
+                                <label class="col-form-label">Remarks</label>
+                                <input class="form-control" type="text" name="remarks">
+                            </div>
+                            <!-- </div> -->
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
+                                <label class="col-form-label">Business Mode</label>
+                                <input class="form-control" type="text" name="business_mode">
+                            </div>
                             <!-- </div> -->
 
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">Parent Company</label>
-                                    <input class="form-control" type="text" name="parent_company">
-                                </div>
+                                <label class="col-form-label">Key People</label>
+                                <input class="form-control" type="text" name="key_people">
+                            </div>
                             <!-- </div> -->
 
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">Headquarters</label>
-                                    <input class="form-control" type="text" name="headquarters">
-                                </div>
+                                <label class="col-form-label">Parent Company</label>
+                                <input class="form-control" type="text" name="parent_company">
+                            </div>
+                            <!-- </div> -->
+
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
+                                <label class="col-form-label">Headquarters</label>
+                                <input class="form-control" type="text" name="headquarters">
+                            </div>
                             <!-- </div> -->
 
                             <!-- <div class="col-sm-4">
-                                <div class="form-group">
-                                    <label class="col-form-label">Website</label>
-                                    <input class="form-control" type="url" name="websites">
-                                </div> -->
-                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label">Website</label>
+                                        <input class="form-control" type="url" name="websites">
+                                    </div> -->
+                            <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
-                                    <label class="col-form-label">Number of Employees</label>
-                                    <input class="form-control" type="number" name="no_of_employees">
-                                </div>
-                                <div class="col-sm-12">
-                                    <label class="col-form-label">Websites</label>
-                                    <div id="website-address-container">
-                                        <div class="input-group mb-2">
-                                            <input type="text" class="form-control" name="websites[]"
-                                                placeholder="Enter website address">
-                                            <button class="btn btn-danger remove-website-address"
-                                                type="button">Remove</button>
-                                        </div>
+                                <label class="col-form-label">Number of Employees</label>
+                                <input class="form-control" type="number" name="no_of_employees">
+                            </div>
+                            <div class="col-sm-12">
+                                <label class="col-form-label">Websites</label>
+                                <div id="website-address-container">
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control" name="websites[]"
+                                            placeholder="Enter website address">
+                                        <button class="btn btn-danger remove-website-address"
+                                            type="button">Remove</button>
                                     </div>
-                                    <button class="btn btn-primary" type="button" id="add-website-address">Add More</button>
                                 </div>
+                                <button class="btn btn-primary" type="button" id="add-website-address">Add More</button>
+                            </div>
                             <!-- </div> -->
-                        <!-- </div> -->
-                        <div class="submit-section">
-                            <button class="btn btn-primary" type="submit">Submit</button>
+                            <!-- </div> -->
+                            <div class="submit-section">
+                                <button class="btn btn-primary" type="submit">Submit</button>
+                            </div>
                         </div>
-                        </div>
-                      </div>
-                    </form>
                 </div>
+                </form>
             </div>
         </div>
     </div>
+    </div>
+
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+
 
     <script>
+        $('#search_type').select2({
+            theme: "bootstrap-5",
+            width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+            placeholder: $(this).data('placeholder'),
+            closeOnSelect: false,
+        });
+
+
         document.getElementById('add-destination').addEventListener('click', function() {
             const container = document.getElementById('focus-destinations-container');
             const newInputGroup = document.createElement('div');
