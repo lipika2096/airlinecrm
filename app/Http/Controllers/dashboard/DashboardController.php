@@ -29,13 +29,14 @@ class DashboardController extends Controller
         $currentMonthStart = now();
         $currentMonthEnd = now()->endOfMonth();
         $today_leave = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
-        ->whereDate('to', '>=', now()->toDateString())
+        ->whereDate('to', '>=', now()->toDateString())->where('status',3)
         ->get()->unique('employee_id');
         $tomorrow_leave = EmployeeLeave::whereDate('from', '<=', now()->addDay()->toDateString())
-        ->whereDate('to', '>=', now()->addDay()->toDateString())
+        ->whereDate('to', '>=', now()->addDay()->toDateString())->where('status',3)
         ->get()->unique('employee_id');
         $next_seven_days = EmployeeLeave::whereDate('from', '<=', now()->addDays(7)->toDateString())
-        ->whereDate('to', '>=', now()->toDateString())
+        ->whereDate('to', '>=', now()->toDateString())->whereYear('from', now()->year)
+        ->whereYear('to', now()->year)->where('status',3)->orderBy('from','asc')
         ->get();
 
 
