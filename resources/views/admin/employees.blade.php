@@ -1,7 +1,19 @@
 @extends('admin/layouts/head-main')
 @section('content')
+<style>
+.accordion-button:not(.collapsed) {
+    color: #000;
+    background-color: transparent;
+    box-shadow: none;
+}
+.accordion-button:focus {
+    /* color: #0c63e4; */
+    /* background-color: #e7f1ff; */
+    /* box-shadow: none;
+    border:none; */
+}
 
-
+</style>
     <title>Employees</title>
 
 
@@ -95,7 +107,7 @@
                                                 <th>No</th>
                                                 <th>Picture</th>
                                                 <th>Staff Name</th>
-                                                <th>Airlines</th>
+                                                <th>Company Name</th>
                                                 <th>Department</th>
                                                 <th>Position</th>
                                                 <th>Staff No</th>
@@ -152,56 +164,66 @@
                     <div id="branch" class="pro-overview tab-pane fade show">
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="table-responsive">
-                                    <table class="table table-striped custom-table mb-0 datatable">
-                                        <thead>
-                                            <tr>
-                                                <th>S.No</th>
-                                                <th>Picture</th>
-                                                <th>Staff Name</th>
-                                                <th>Airlines</th>
-                                                <th>Position</th>
-                                                <th>Staff No</th>
-                                                {{-- <th>DOJ</th>
-                                                <th>Min Hrs</th>
-                                                <th>Max Hrs</th> --}}
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        @foreach($departmentEmployees as $index => $data)
-                                                <tr>
-                                                    <td>{{ $index+1 }}</td>
-                                                    <td>
-                                                        @if(!empty($data->avatar_filename))
-                                                            <img src="{{ asset('staff/storage/avatars/'.$data->avatar_directory."/" . $data->avatar_filename) }}" alt="">
-                                                        @else
-                                                            <img src="{{ asset('public/assets/img/user.jpg/') }}" alt="">
-                                                        @endif
-                                                    </td>
-                                                    <td style="color:#ed5b24;">{{ $data->first_name }} {{ $data->last_name }}</td>
-                                                    <td>
-                                                        @if(!empty($data->client->client_company_name))
-                                                            {{ $data->client->client_company_name }}
-                                                        @else
-                                                            Null
-                                                        @endif
-                                                    </td>
-                                                    <td>{{ $data->position }}</td>
-                                                    <td>{{ $data->unique_id }}</td>
-                                                    {{-- <td>{{ $data->joining_date }}</td>
-                                                    <td>{{ $data->min_hrs }}</td>
-                                                    <td>{{ $data->max_hrs }}</td> --}}
-                                                    <td>
-                                                            <a class="action-icon" href="#" data-bs-toggle="modal" data-bs-target="#edit_employee{{$data->id}}"><i class="fa fa-pencil"></i></a>
-                                                            <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_modal_{{ $data->id }}" style="">
-                                                                <i class="fa fa-trash"></i>
-                                                            </a>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                <div class="accordion" id="discountAccordion">
+                                    @foreach($departmentEmployees as $departments => $employees)
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="heading{{ \Str::slug($departments) }}">
+                                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ \Str::slug($departments) }}" aria-expanded="true" aria-controls="collapse{{ \Str::slug($departments) }}">
+                                                    <strong style="padding-right:10px;">Department:</strong> {{ $departments }}
+                                                </button>
+                                            </h2>
+                                            <div id="collapse{{ \Str::slug($departments) }}" class="accordion-collapse collapse" aria-labelledby="heading{{ \Str::slug($departments) }}" data-bs-parent="#discountAccordion" style="padding:10px 20px;">
+                                                <div class="accordion-body p-0">
+                                                    <table class="table table-striped custom-table mb-0 datatable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>S.No</th>
+                                                                <th>Picture</th>
+                                                                <th>Staff Name</th>
+                                                                <th>Company Name</th>
+                                                                <th>Position</th>
+                                                                <th>Staff No</th>
+                                                                <th>Actions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($employees as $index => $employee)
+                                                                <tr>
+                                                                    <td>{{ $loop->iteration }}</td>
+                                                                    <td>
+                                                                        @if(!empty($employee->avatar_filename))
+                                                                            <img src="{{ asset('staff/storage/avatars/'.$employee->avatar_directory."/" . $employee->avatar_filename) }}" alt="">
+                                                                        @else
+                                                                            <img src="{{ asset('public/assets/img/user.jpg/') }}" alt="">
+                                                                        @endif
+                                                                    </td>
+                                                                    <td style="color:#ed5b24;">{{ $employee->first_name }} {{ $employee->last_name }}</td>
+                                                                    <td>
+                                                                        @if(!empty($employee->client->client_company_name))
+                                                                            {{ $employee->client->client_company_name }}
+                                                                        @else
+                                                                            Null
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>{{ $employee->position }}</td>
+                                                                    <td>{{ $employee->unique_id }}</td>
+                                                                    {{-- <td>{{ $data->joining_date }}</td>
+                                                                    <td>{{ $data->min_hrs }}</td>
+                                                                    <td>{{ $data->max_hrs }}</td> --}}
+                                                                    <td>
+                                                                            <a class="action-icon" href="#" data-bs-toggle="modal" data-bs-target="#edit_employee{{$employee->id}}"><i class="fa fa-pencil"></i></a>
+                                                                            <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_modal_{{ $employee->id }}" style="">
+                                                                                <i class="fa fa-trash"></i>
+                                                                            </a>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
                         </div>

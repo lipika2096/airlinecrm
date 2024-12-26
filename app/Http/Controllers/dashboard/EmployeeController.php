@@ -340,12 +340,15 @@ class EmployeeController extends Controller
     public function allEmployees(Request $request)
     {
 
-        $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')->where('users.role_id', 2)
-                        ->get(['clients.*', 'users.*']);
-        $department = Department::latest()->get();
-        $designation = Designation::latest()->get();
+        $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
+        ->where('users.role_id', 2)
+        ->get(['clients.*', 'users.*']);
+    $department = Department::latest()->get();
+    $designation = Designation::latest()->get();
 
-        $departmentEmployees = User::where('role_id', 2)->groupBy('department')->get();
+    $departmentEmployees = User::where('role_id', 2)
+        ->get()
+        ->groupBy('department');
 
         return view('admin.employees', compact('employees', 'department', 'designation','departmentEmployees'));
     }
