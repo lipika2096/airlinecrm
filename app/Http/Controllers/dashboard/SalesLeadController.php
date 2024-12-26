@@ -103,10 +103,9 @@ class SalesLeadController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Find the sales lead
-        $saleslead = SalesLead::findOrFail($id);
+        $saleslead = SalesLead::find($id);
 
-        // Update the sales lead details
+        // Update the sales lead data
         $saleslead->update([
             'company_name' => $request->input('company_name') ?? 'null',
             'website' => $request->input('website') ?? 'null',
@@ -118,8 +117,36 @@ class SalesLeadController extends Controller
             'updated_by' => auth()->user()->name,
         ]);
 
+        // Get the current assigned staff for this sales lead
+        $currentAssignedStaff = AssignLeadStaff::where('lead_id', $id)->pluck('staff_id')->toArray();
+
+        // Get the staff from the submitted form data
+        $submittedStaff = $request->input('staff', []);
+
+        // Remove staff that are unchecked (not in the submitted list)
+        $removedStaff = array_diff($currentAssignedStaff, array_keys($submittedStaff));
+        if ($removedStaff) {
+            AssignLeadStaff::whereIn('staff_id', $removedStaff)
+                ->where('lead_id', $id)
+                ->delete(); // Remove the staff from the assignment
+        }
+
+        // Add new staff or update existing staff
+        foreach ($submittedStaff as $staffId => $status) {
+            AssignLeadStaff::updateOrCreate(
+                [
+                    'lead_id' => $id,
+                    'staff_id' => $staffId,
+                ],
+                [
+                    'status' => $status,
+                ]
+            );
+        }
+
         return redirect()->route('admin.saleslead')->with('success', 'Sales Lead updated successfully');
     }
+
 
     // Add other methods as per your defined routes
     public function assignStaff(Request $request)
