@@ -138,6 +138,18 @@
                                                                                 <label>Category</label>
                                                                                 <input class="form-control" name="category" value="{{ $data->category }}" type="text">
                                                                             </div>
+                                                                            <div class="form-group">
+                                                                                @foreach ($allEmployee as $elData)
+                                                                                    <label class="form-label">
+                                                                                        {{ $elData->user->first_name . ' ' . $elData->user->last_name }}
+                                                                                    </label>
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        name="staff[{{ $elData->user->id }}]"
+                                                                                        value="1"
+                                                                                        @if(!empty($data->staff_names) && str_contains($data->staff_names, $elData->user->first_name . ' ' . $elData->user->last_name)) checked @endif>
+                                                                                @endforeach
+                                                                            </div>
                                                                             <div class="form-group col-sm-12">
                                                                                 <label>Remarks</label>
                                                                                 <textarea class="form-control" name="remarks">{{ $data->remarks }}</textarea>
@@ -253,6 +265,18 @@
                                                                             <div class="form-group col-sm-4">
                                                                                 <label>Category</label>
                                                                                 <input class="form-control" name="category" value="{{ $data->category }}" type="text">
+                                                                            </div>
+                                                                            <div class="form-group">
+                                                                                @foreach ($allEmployee as $elData)
+                                                                                    <label class="form-label">
+                                                                                        {{ $elData->user->first_name . ' ' . $elData->user->last_name }}
+                                                                                    </label>
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        name="staff[{{ $elData->user->id }}]"
+                                                                                        value="1"
+                                                                                        @if(!empty($data->staff_names) && str_contains($data->staff_names, $elData->user->first_name . ' ' . $elData->user->last_name)) checked @endif>
+                                                                                @endforeach
                                                                             </div>
                                                                             <div class="form-group col-sm-12">
                                                                                 <label>Remarks</label>
