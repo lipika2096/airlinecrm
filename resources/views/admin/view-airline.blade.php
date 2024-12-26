@@ -2619,7 +2619,7 @@
                                                     <option value="agency_name " >Agent Group</option>
                                                     <option value="company_registration_no">Company Registration No</option>
                                                     <option value="iata" >IATA Number</option>
-                                                    <option value="fare_type" >IATA Number</option>
+                                                    <option value="fare_type" >Fare Type</option>
                                                     <option value="gds_type" >GDS Type</option>
                                                     <option value="focus_destinations" >Focus Destinations</option>
                                                     <option value="business_mode">Agent Type</option>
@@ -2901,10 +2901,9 @@ $(document).ready(function() {
             $('#searchButton').on('click', function() {
                 $('#searchResults').html('<tr><td colspan="8" class="text-center">Loading...</td></tr>');
                 var searchData = $('#specialFareSearchForm').serialize();
-
                 var airlineId = "{{ $airlineDetails->airline_id }}";
                 const baseUrl = "{{ url('/') }}";
-                console.log(searchData);
+
                 $.ajax({
                     url: baseUrl + '/admin/airlines/get-special-fare/' + airlineId,
                     method: 'GET',
@@ -2957,7 +2956,7 @@ $(document).ready(function() {
         }
 
         var formData = new FormData(form);
-        formData.append('_token', '{{ csrf_token() }}'); // Include CSRF token
+        formData.append('_token', '{{ csrf_token() }}');
 
         $.ajax({
             url: form.action,
