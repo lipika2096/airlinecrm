@@ -106,6 +106,8 @@
                                                     <thead>
                                                         <tr>
                                                             <th>#</th>
+                                                            <th>Country</th>
+                                                            <th>State</th>
                                                             <th>Holiday Name</th>
                                                             <th>Holiday Date</th>
                                                         </tr>
@@ -114,7 +116,10 @@
                                                         @foreach ($holidays as $data)
                                                             <tr
                                                                 data-month="{{ date('n', strtotime($data->holiday_date)) - 1 }}">
+
                                                                 <td>{{ $data->id }}</td>
+                                                                <td>{{ $data->country }}</td>
+                                                                <td>{{ $data->state }}</td>
                                                                 <td>{{ $data->title }}</td>
                                                                 <td>{{ $data->holiday_date }}</td>
                                                             </tr>
@@ -146,6 +151,19 @@
                                 <div class="modal-body">
                                     <form action="{{ route('admin.holidays.store') }}" method="POST">
                                         @csrf <!-- Include CSRF token -->
+
+                                        <div class="form-group">
+                                            <label>Country <span class="text-danger">*</span></label>
+                                            <div class="">
+                                                <input class="form-control" name="country" type="text">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>State <span class="text-danger">*</span></label>
+                                            <div class="">
+                                                <input class="form-control" name="state" type="text">
+                                            </div>
+                                        </div>
                                         <div class="form-group">
                                             <label>Holiday Name <span class="text-danger">*</span></label>
                                             <input class="form-control" name="title" type="text">

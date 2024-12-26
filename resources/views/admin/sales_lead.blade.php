@@ -1,9 +1,6 @@
 @extends('admin/layouts/head-main')
 @section('content')
-
-
     <title>Designations</title>
-
 
     <!-- Page Wrapper -->
     <div class="page-wrapper">
@@ -22,7 +19,83 @@
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
-                        <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_salelead"><i class="fa fa-plus"></i> Add Sale Lead</a>
+                        <a href="#" class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#add_salelead"><i
+                                class="fa fa-plus"></i> Add Sale Lead</a>
+                        <a class="btn btn-info rounded20  mx-2 text-white" data-bs-toggle="modal"
+                            data-bs-target="#assign_leads"><i class="fa fa-plus"></i> Assign Leads to Staff</a>
+
+                    </div>
+                </div>
+            </div>
+            <!-- Assign leads modal -->
+            <div id="assign_leads" class="modal custom-modal fade" role="dialog">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Assign Lead to Staff</h5>
+                            <button type="button" class="close"
+                                data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form
+                                action="{{ route('admin.saleslead.staff.store') }}"
+                                method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div class="table-responsive text-nowrap">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="fw-bold">Staff/Sales Leads
+                                                </th>
+                                                @foreach ($salesLead as $ft)
+                                                    <th class="fw-bold">
+                                                        {{ $ft->company_name }}</th>
+                                                @endforeach
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($allEmployee as $air)
+                                                <tr>
+                                                    <th class="fw-bold">
+                                                        {{ $air->user->first_name }}{{ $air->user->last_name }}</th>
+                                                    @foreach ($salesLead as $ft)
+                                                        @php
+                                                            $status = DB::table(
+                                                                'assign_lead_staffs',
+                                                            )
+                                                                ->where(
+                                                                    'staff_id',
+                                                                    $air->id,
+                                                                )
+                                                                ->where(
+                                                                    'lead_id',
+                                                                    $ft->id,
+                                                                )
+                                                                ->value('status');
+                                                        @endphp
+                                                        <input type="hidden"
+                                                            name="staff[{{ $air->id }}][{{ $ft->id }}]"
+                                                            value="2">
+                                                        <th>
+                                                            <input type="checkbox"
+                                                                name="staff[{{ $air->id }}][{{ $ft->id }}]"
+                                                                value="1"
+                                                                {{ $status == 1 ? 'checked' : '' }}>
+                                                        </th>
+                                                    @endforeach
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="submit-section">
+                                    <button class="btn btn-primary"
+                                        type="submit">Submit</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -41,78 +114,114 @@
                                     <th>Phone</th>
                                     <th>Contact Person</th>
                                     <th>Category</th>
+                                    <th>Remarks</th>
+                                    <th>Staff Assigned</th>
+                                    <th>Created On</th>
+                                    <th>Created By</th>
+                                    <th>Updated On</th>
+                                    <th>Updated By</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($salesLead as $data)
-                <tr>
-                    <td>{{ $data->company_name }}</td>
-                    <td>{{ $data->website }}</td>
-                    <td>{{ $data->email_id}}</td>
-                    <td>{{ $data->phone }}</td>
-                    <td>{{ $data->contact_person }}</td>
-                    <td>{{ $data->category}}</td>
-                    <td class="text-end">
-                        <div class="dropdown dropdown-action">
-                            <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_salelead{{$data->id}}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
-                                <!-- Add more actions if needed -->
-                            </div>
-                        </div>
-                    </td>
-
-                </tr>
-                                 <!-- Edit Designation Modal -->
-                                 <div id="edit_salelead{{$data->id}}" class="modal custom-modal fade" role="dialog">
-                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Edit Sales Lead</h5>
-                                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
+                                @foreach ($salesLead as $data)
+                                    <tr>
+                                        <td>{{ $data->company_name }}</td>
+                                        <td>{{ $data->website }}</td>
+                                        <td>{{ $data->email_id }}</td>
+                                        <td>{{ $data->phone }}</td>
+                                        <td>{{ $data->contact_person }}</td>
+                                        <td>{{ $data->category }}</td>
+                                        <td>{{ $data->remarks }}</td>
+                                        <td>{{ $data->staff_names ?? 'No staff assigned' }}
+                                        <td>{{ $data->created_at }}</td>
+                                        <td>{{ $data->created_by }}</td>
+                                        <td>{{ $data->updated_at }}</td>
+                                        <td>{{ $data->updated_by }}</td>
+                                    </td>
+                                        <td class="text-end">
+                                            <div class="dropdown dropdown-action">
+                                                <a href="#" class="action-icon dropdown-toggle"
+                                                    data-bs-toggle="dropdown" aria-expanded="false"><i
+                                                        class="material-icons">more_vert</i></a>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                                        data-bs-target="#edit_salelead{{ $data->id }}"><i
+                                                            class="fa fa-pencil m-r-5"></i> Edit</a>
+                                                    <!-- Add more actions if needed -->
+                                                </div>
                                             </div>
-                                            <div class="modal-body">
-                                                <form action="{{ route('admin.saleslead.update', ['id' => $data->id]) }}" method="POST" enctype="multipart/form-data">
-                                                    @method('patch')
-                                                    @csrf
+                                        </td>
 
-                    <div class="form-group">
-                        <label>Name of Company</label>
-                        <input class="form-control" name="company_name" value="{{$data->company_name}}" type="text" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Website</label>
-                        <input class="form-control" name="website" value="{{$data->website}}" type="text" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Email Id</label>
-                        <input class="form-control" name="email" type="email" value="{{$data->email_id}}" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Phone No.</label>
-                        <input class="form-control" name="phone" type="text" value="{{$data->phone}}" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Contact Person</label>
-                        <input class="form-control" name="contact_person" value="{{$data->contact_person}}" type="text" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Category</label>
-                        <input class="form-control" name="category" value="{{$data->category}}"  type="text" required>
-                    </div>
-                                                    <div class="submit-section">
-                                                        <button class="btn btn-primary" type="submit">Update</button>
-                                                    </div>
-                                                </form>
+                                    </tr>
+                                    <!-- Edit Designation Modal -->
+                                    <div id="edit_salelead{{ $data->id }}" class="modal custom-modal fade"
+                                        role="dialog">
+                                        <div class="modal-dialog modal-dialog-centered modal-lg " role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Edit Sales Lead</h5>
+                                                    <button type="button" class="close" data-bs-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form
+                                                        action="{{ route('admin.saleslead.update', ['id' => $data->id]) }}"
+                                                        method="POST" enctype="multipart/form-data">
+                                                        @method('patch')
+                                                        @csrf
+                                                        <div class="row">
+                                                            <div class="form-group col-sm-4">
+                                                                <label>Name of Company</label>
+                                                                <input class="form-control" name="company_name"
+                                                                    value="{{ $data->company_name }}" type="text"
+                                                                    >
+                                                            </div>
+                                                            <div class="form-group col-sm-4">
+                                                                <label>Website</label>
+                                                                <input class="form-control" name="website"
+                                                                    value="{{ $data->website }}" type="text" >
+                                                            </div>
+                                                            <div class="form-group col-sm-4">
+                                                                <label>Email Id</label>
+                                                                <input class="form-control" name="email" type="email"
+                                                                    value="{{ $data->email_id }}" >
+                                                            </div>
+                                                            <div class="form-group col-sm-4">
+                                                                <label>Phone No.</label>
+                                                                <input class="form-control" name="phone" type="text"
+                                                                    value="{{ $data->phone }}" >
+                                                            </div>
+                                                            <div class="form-group col-sm-4">
+                                                                <label>Contact Person</label>
+                                                                <input class="form-control" name="contact_person"
+                                                                    value="{{ $data->contact_person }}" type="text"
+                                                                    >
+                                                            </div>
+                                                            <div class="form-group col-sm-4">
+                                                                <label>Category</label>
+                                                                <input class="form-control" name="category"
+                                                                    value="{{ $data->category }}" type="text"
+                                                                    >
+                                                            </div>
+                                                            <div class="form-group col-sm-12">
+                                                                <label>Remarks</label>
+                                                                <textarea class="form-control" name="remarks" type="text" >{{ $data->remarks }}</textarea>
+                                                            </div>
+                                                            <div class="submit-section">
+                                                                <button class="btn btn-primary"
+                                                                    type="submit">Update</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-        <!-- /Edit Designation Modal -->
+                                    <!-- /Edit Designation Modal -->
                                 @endforeach
                             </tbody>
                         </table>
@@ -122,57 +231,61 @@
         </div>
         <!-- /Page Content -->
 
-       <!-- Add Airline Modal -->
-<div id="add_salelead" class="modal custom-modal fade" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add Sales Lead</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ route('admin.saleslead.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
+        <!-- Add Airline Modal -->
+        <div id="add_salelead" class="modal custom-modal fade " role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Sales Lead</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body model-md">
+                        <form action="{{ route('admin.saleslead.store') }}" method="POST"
+                            enctype="multipart/form-data">
+                            @csrf
+                            <div class="row">
+                                <div class="form-group col-sm-4">
+                                    <label>Name of Company</label>
+                                    <input class="form-control" name="company_name" type="text" >
+                                    <input class="form-control" name="updated_at" value=" " type="hidden" >
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label>Website</label>
+                                    <input class="form-control" name="website" type="text" >
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label>Email Id</label>
+                                    <input class="form-control" name="email" type="email" >
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label>Phone No.</label>
+                                    <input class="form-control" name="phone" type="text" >
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label>Contact Person</label>
+                                    <input class="form-control" name="contact_person" type="text" >
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label>Category</label>
+                                    <input class="form-control" name="category" type="text" >
+                                </div>
+                                <div class="form-group col-sm-12">
+                                    <label>Remarks</label>
+                                    <textarea class="form-control" name="remarks" type="text" ></textarea>
+                                </div>
 
-                    <div class="form-group">
-                        <label>Name of Company</label>
-                        <input class="form-control" name="company_name" type="text" required>
+                                <div class="submit-section">
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    <div class="form-group">
-                        <label>Website</label>
-                        <input class="form-control" name="website" type="text" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Email Id</label>
-                        <input class="form-control" name="email" type="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Phone No.</label>
-                        <input class="form-control" name="phone" type="text" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Contact Person</label>
-                        <input class="form-control" name="contact_person" type="text" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Category</label>
-                        <input class="form-control" name="category" type="text" required>
-                    </div>
-
-                    <div class="submit-section">
-                        <button class="btn btn-primary" type="submit">Submit</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
-    </div>
-</div>
-<!-- /Add Airline Modal -->
-
-
-
+        <!-- /Add Airline Modal -->
 
         <!-- Delete Designation Modal -->
         <div class="modal custom-modal fade" id="delete_designation" role="dialog">
@@ -189,7 +302,8 @@
                                     <a href="javascript:void(0);" class="btn btn-primary continue-btn">Delete</a>
                                 </div>
                                 <div class="col-6">
-                                    <a href="javascript:void(0);" data-bs-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
+                                    <a href="javascript:void(0);" data-bs-dismiss="modal"
+                                        class="btn btn-primary cancel-btn">Cancel</a>
                                 </div>
                             </div>
                         </div>
@@ -201,9 +315,4 @@
 
     </div>
     <!-- /Page Wrapper -->
-
-
-
-
-
 @endsection

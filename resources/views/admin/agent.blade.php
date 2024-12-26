@@ -217,6 +217,12 @@
 
                             <div class="col-sm-4">
                                 <!-- <div class="form-group"> -->
+                                <label class="col-form-label">State</label>
+                                <input class="form-control" type="text" name="state">
+                            </div>
+
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
                                     <label class="col-form-label">City</label>
                                     <input class="form-control" type="text" name="city">
                                 </div>

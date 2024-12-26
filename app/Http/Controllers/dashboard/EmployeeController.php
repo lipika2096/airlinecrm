@@ -352,7 +352,7 @@ class EmployeeController extends Controller
 
     // Display the employee's details and leave information
 
-    public function viewEmployee($id)
+    public function viewEmployee($id, Request $request)
     {
         $usedAnnualLeave = EmployeeLeave::where('employee_id', $id)->where('status',3)->where('leave_type','Annual Leave')
                                         ->sum('no_of_days');
@@ -361,7 +361,8 @@ class EmployeeController extends Controller
         $employee = Client::join('users', 'users.clientid', '=', 'clients.client_id')
             ->where('users.id', $id)
             ->first(['clients.*', 'users.*']);
-
+        $allEmployee = Client::join('users', 'users.clientid', '=', 'clients.client_id')
+        ->get(['clients.*', 'users.*']);
         $employees = User::find($id);
 
         $currentDate = \Carbon\Carbon::now()->format('l, j.n.Y');
@@ -425,7 +426,73 @@ class EmployeeController extends Controller
         $leavetypes = LeaveType::where('status',1)->get();
         $staffReadSign = StaffReadSign::where('staff_id', $id)->get();
         $employee_leaves_view = EmployeeLeave::where('employee_id',$id)->latest()->get();
-        return view('admin.view-profile', compact(
+        $users = User::where('department', '!=', null)->get()->groupBy('department');
+
+    // If this is an AJAX request
+    if ($request->ajax()) {
+        $type = $request->get('type'); // 'coworker', 'team', or 'browse_list'
+        $value = $request->get('value'); // Selected value from the dropdown
+
+        $filteredData = [];
+
+        if ($type === 'coworker') {
+            // Filter data based on coworker (employee ID)
+            $filteredData = User::where('id', $value)->get();
+        } elseif ($type === 'team') {
+            // Filter data based on team (department)
+            $filteredData = User::where('department', $value)->get();
+        } elseif ($type === 'browse_list') {
+            // Filter data based on browse list (user ID)
+            $filteredData = User::where('id', $value)->get();
+        }
+
+        // Prepare filtered employee leave data for calendar display
+        $calendarData = [];
+        foreach ($filteredData as $employee) {
+            // Fetching leave dates for the employee
+            $employeeLeaves = DB::table('employee_leaves')
+                ->where('employee_id', $employee->id)
+                ->get();
+
+            // Create an array of leave days
+            $leaveDays = [];
+            $currentMonth = \Carbon\Carbon::now()->month; // Get the current month
+
+            foreach ($employeeLeaves as $leave) {
+                $fromDate = \Carbon\Carbon::parse($leave->from);
+                $toDate = \Carbon\Carbon::parse($leave->to);
+
+                // Check if the leave falls within the current month
+                if (
+                    $fromDate->month === $currentMonth ||
+                    $toDate->month === $currentMonth
+                ) {
+                    // Generate all days between from and to date
+                    while ($fromDate->lte($toDate)) {
+                        $leaveDays[] = $fromDate->day;
+                        $fromDate->addDay();
+                    }
+                }
+            }
+
+            $calendarData[] = [
+                'employee' => $employee,
+                'leaveDays' => $leaveDays,
+            ];
+        }
+
+        return response()->json(['calendarData' => $calendarData]);
+    }
+
+    $departments = Department::get();
+
+    // For the normal view (non-AJAX request)
+    if ($departments->isEmpty()) {
+        return response()->json(['error' => 'No departments found'], 404);
+    }
+        return view('admin.view-profile', compact('departments',
+            'users',
+            'allEmployee',
             'holidays',
             'leaveData',
             'total_holidays',
@@ -740,7 +807,9 @@ public function leavesStaffStore(Request $request)
             'title' => $request->input('title'),
             'holiday_date' => $request->input('holiday_date'),
             'holiday_day' => $holidayDay,
-            'category' => $request->input('category')
+            'category' => $request->input('category')??'bg-purple',
+            'state'=>$request->input('state'),
+            'country'=>$request->input('country'),
             ]);
 
 
@@ -756,7 +825,9 @@ public function leavesStaffStore(Request $request)
             'title' => $request->input('title'),
             'holiday_date' => $request->input('holiday_date'),
             'holiday_day' => $request->input('holiday_day'),
-            'category' => $request->input('category')
+            'category' => $request->input('category')??'bg-purple',
+            'state'=>$request->input('state'),
+            'country'=>$request->input('country'),
         ]);
         $holidays = Holiday::latest()->get();
         // Add your logic for holidays view

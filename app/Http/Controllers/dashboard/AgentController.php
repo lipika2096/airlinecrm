@@ -222,7 +222,15 @@ class AgentController extends Controller
             'airline_id' => 'required|string'
         ]);
 
-        $airline = CaseHistory::create($validatedData);
+        $case = CaseHistory::create($validatedData);
+        // Add the new update to the case_updates table
+        CaseUpdate::create([
+            'case_id' => $case->id,
+            'update_date' => $request->input('case_opening_date'),
+            'updated_by' => auth()->user()->name,
+            'comments' => $request->remarks,
+            'status' => $request->input('case_status'),
+        ]);
 
         return redirect()->back()->with('success', 'Special fares updated successfully.');
     }
@@ -517,6 +525,7 @@ class AgentController extends Controller
     {
         $prod = Agent::find($id);
         $prod->update([
+            'state' => $request->input('state'),
             'city' => $request->input('city'),
             'agency_name' => $request->input('agency_name'),
             'address' => $request->input('address'),

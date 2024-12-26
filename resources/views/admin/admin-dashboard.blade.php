@@ -41,7 +41,7 @@
                                             </div>
                                             <div class="dash-card-content">
                                                 <p>No employee is
-                                                    on leave today Air India</p>
+                                                    on leave today</p>
                                             </div>
                                         </div>
                                     </div>
@@ -56,8 +56,8 @@
                                                 </div>
 
                                                 <div class="dash-card-content">
-                                                    <p>{{ $el->leave_type . ' '. $el->employee->first_name }} {{ $el->employee->last_name }} is on
-                                                        leave today</p>
+                                                    <p>{{$el->employee->first_name }} {{ $el->employee->last_name }} is on
+                                                       {{ $el->leave_type }} today</p>
                                                 </div>
                                             </div>
                                         </a>
@@ -94,8 +94,8 @@
                                                     <i class="fa fa-suitcase"></i>
                                                 </div>
                                                 <div class="dash-card-content">
-                                                    <p> {{ $tel->leave_type . ' '. $tel->employee->first_name }} {{ $tel->employee->last_name }} is
-                                                        on leave tomorrow</p>
+                                                    <p> {{ $tel->employee->first_name }} {{ $tel->employee->last_name }} is
+                                                        on {{$tel->leave_type }} tomorrow</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -123,8 +123,8 @@
                                                 </div>
 
                                                 <div class="dash-card-content">
-                                                    <p>{{$nel->leave_type . ' '. $nel->employee->first_name }} {{ $nel->employee->last_name }} is
-                                                        on leave {{ $nel->from}}</p>
+                                                    <p>{{$nel->employee->first_name }} {{ $nel->employee->last_name }} is
+                                                        on {{$nel->leave_type}} from {{ $nel->from}} to  {{ $nel->to}}</p>
                                                 </div>
                                             </div>
                                         </div>
