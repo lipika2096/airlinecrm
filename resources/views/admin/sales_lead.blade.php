@@ -19,215 +19,265 @@
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
-                        <a href="#" class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#add_salelead"><i
-                                class="fa fa-plus"></i> Add Sale Lead</a>
-                        <a class="btn btn-info rounded20  mx-2 text-white" data-bs-toggle="modal"
-                            data-bs-target="#assign_leads"><i class="fa fa-plus"></i> Assign Leads to Staff</a>
+                        <a href="#" class="btn btn-primary text-white" data-bs-toggle="modal"
+                            data-bs-target="#add_salelead"><i class="fa fa-plus"></i> Add Sale Lead</a>
 
                     </div>
                 </div>
             </div>
-            <!-- Assign leads modal -->
-            <div id="assign_leads" class="modal custom-modal fade" role="dialog">
-                <div class="modal-dialog modal-dialog-centered modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Assign Lead to Staff</h5>
-                            <button type="button" class="close"
-                                data-bs-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form
-                                action="{{ route('admin.saleslead.staff.store') }}"
-                                method="POST" enctype="multipart/form-data">
-                                @csrf
-                                <div class="table-responsive text-nowrap">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th class="fw-bold">Staff/Sales Leads
-                                                </th>
-                                                @foreach ($salesLead as $ft)
-                                                    <th class="fw-bold">
-                                                        {{ $ft->company_name }}</th>
-                                                @endforeach
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($allEmployee as $air)
+            <div class="card tab-box">
+                <div class="row user-tabs">
+                    <div class="col-lg-12 col-md-12 col-sm-12 line-tabs">
+                        <ul class="nav nav-tabs nav-tabs-bottom">
+                            <li class="nav-item">
+                                <a href="#allocated-leads" data-bs-toggle="tab" class="nav-link active">Allocated Leads</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#unallocated-leads" data-bs-toggle="tab" class="nav-link">Un-allocated Leads</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content">
+                <!-- Profile Info Tab -->
+                <div id="allocated-leads" class="pro-overview tab-pane fade show active">
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <div class="card profile-box flex-fill">
+                                <div class="card-body">
+
+                                    <div class="table-responsive">
+                                        <table class="table table-striped custom-table mb-0 datatable">
+                                            <thead>
                                                 <tr>
-                                                    <th class="fw-bold">
-                                                        {{ $air->user->first_name }}{{ $air->user->last_name }}</th>
-                                                    @foreach ($salesLead as $ft)
-                                                        @php
-                                                            $status = DB::table(
-                                                                'assign_lead_staffs',
-                                                            )
-                                                                ->where(
-                                                                    'staff_id',
-                                                                    $air->id,
-                                                                )
-                                                                ->where(
-                                                                    'lead_id',
-                                                                    $ft->id,
-                                                                )
-                                                                ->value('status');
-                                                        @endphp
-                                                        <input type="hidden"
-                                                            name="staff[{{ $air->id }}][{{ $ft->id }}]"
-                                                            value="2">
-                                                        <th>
-                                                            <input type="checkbox"
-                                                                name="staff[{{ $air->id }}][{{ $ft->id }}]"
-                                                                value="1"
-                                                                {{ $status == 1 ? 'checked' : '' }}>
-                                                        </th>
-                                                    @endforeach
+
+                                                    <th>Name of company</th>
+                                                    <th>Website</th>
+                                                    <th>Email Id</th>
+                                                    <th>Phone</th>
+                                                    <th>Contact Person</th>
+                                                    <th>Category</th>
+                                                    <th>Remarks</th>
+                                                    <th>Staff Assigned</th>
+                                                    <th>Created On</th>
+                                                    <th>Created By</th>
+                                                    <th>Updated On</th>
+                                                    <th>Updated By</th>
+                                                    <th>Actions</th>
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($allocatedsalesLead as $data)
+                                                    <tr>
+                                                        <td>{{ $data->company_name }}</td>
+                                                        <td>{{ $data->website }}</td>
+                                                        <td>{{ $data->email_id }}</td>
+                                                        <td>{{ $data->phone }}</td>
+                                                        <td>{{ $data->contact_person }}</td>
+                                                        <td>{{ $data->category }}</td>
+                                                        <td>{{ $data->remarks }}</td>
+                                                        <td>{{ $data->staff_names ?? 'No staff assigned' }}
+                                                        <td>{{ $data->created_at }}</td>
+                                                        <td>{{ $data->created_by }}</td>
+                                                        <td>{{ $data->updated_at }}</td>
+                                                        <td>{{ $data->updated_by }}</td>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <div class="dropdown dropdown-action">
+                                                                <a href="#" class="action-icon dropdown-toggle"
+                                                                    data-bs-toggle="dropdown" aria-expanded="false"><i
+                                                                        class="material-icons">more_vert</i></a>
+                                                                <div class="dropdown-menu dropdown-menu-right">
+                                                                    <a class="dropdown-item" href="#"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#edit_salelead{{ $data->id }}"><i
+                                                                            class="fa fa-pencil m-r-5"></i> Edit</a>
+                                                                    <!-- Add more actions if needed -->
+                                                                </div>
+                                                            </div>
+                                                        </td>
+
+                                                    </tr>
+                                                    <!-- Edit Sales Lead Modal -->
+                                                    <div id="edit_salelead{{ $data->id }}" class="modal custom-modal fade" role="dialog">
+                                                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title">Edit Sales Lead</h5>
+                                                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">&times;</span>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <form action="{{ route('admin.saleslead.update', ['id' => $data->id]) }}" method="POST" enctype="multipart/form-data">
+                                                                        @method('patch')
+                                                                        @csrf
+                                                                        <div class="row">
+                                                                            <div class="form-group col-sm-4">
+                                                                                <label>Name of Company</label>
+                                                                                <input class="form-control" name="company_name" value="{{ $data->company_name }}" type="text">
+                                                                            </div>
+                                                                            <div class="form-group col-sm-4">
+                                                                                <label>Website</label>
+                                                                                <input class="form-control" name="website" value="{{ $data->website }}" type="text">
+                                                                            </div>
+                                                                            <div class="form-group col-sm-4">
+                                                                                <label>Email Id</label>
+                                                                                <input class="form-control" name="email" value="{{ $data->email_id }}" type="email">
+                                                                            </div>
+                                                                            <div class="form-group col-sm-4">
+                                                                                <label>Phone No.</label>
+                                                                                <input class="form-control" name="phone" value="{{ $data->phone }}" type="text">
+                                                                            </div>
+                                                                            <div class="form-group col-sm-4">
+                                                                                <label>Contact Person</label>
+                                                                                <input class="form-control" name="contact_person" value="{{ $data->contact_person }}" type="text">
+                                                                            </div>
+                                                                            <div class="form-group col-sm-4">
+                                                                                <label>Category</label>
+                                                                                <input class="form-control" name="category" value="{{ $data->category }}" type="text">
+                                                                            </div>
+                                                                            <div class="form-group col-sm-12">
+                                                                                <label>Remarks</label>
+                                                                                <textarea class="form-control" name="remarks">{{ $data->remarks }}</textarea>
+                                                                            </div>
+                                                                            <div class="submit-section">
+                                                                                <button class="btn btn-primary" type="submit">Update</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- /Edit Sales Lead Modal -->
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                                <div class="submit-section">
-                                    <button class="btn btn-primary"
-                                        type="submit">Submit</button>
-                                </div>
-                            </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="unallocated-leads" class="pro-overview tab-pane fade show">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Name of company</th>
+                                                    <th>Website</th>
+                                                    <th>Email Id</th>
+                                                    <th>Phone</th>
+                                                    <th>Contact Person</th>
+                                                    <th>Category</th>
+                                                    <th>Remarks</th>
+                                                    <th>Staff Assigned</th>
+                                                    <th>Created On</th>
+                                                    <th>Created By</th>
+                                                    <th>Updated On</th>
+                                                    <th>Updated By</th>
+                                                    <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($unallocatedsalesLead as $data)
+                                                    <tr>
+                                                        <td>{{ $data->company_name }}</td>
+                                                        <td>{{ $data->website }}</td>
+                                                        <td>{{ $data->email_id }}</td>
+                                                        <td>{{ $data->phone }}</td>
+                                                        <td>{{ $data->contact_person }}</td>
+                                                        <td>{{ $data->category }}</td>
+                                                        <td>{{ $data->remarks }}</td>
+                                                        <td>{{ $data->staff_names ?? 'No staff assigned' }}
+                                                        <td>{{ $data->created_at }}</td>
+                                                        <td>{{ $data->created_by }}</td>
+                                                        <td>{{ $data->updated_at }}</td>
+                                                        <td>{{ $data->updated_by }}</td>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <div class="dropdown dropdown-action">
+                                                                <a href="#" class="action-icon dropdown-toggle"
+                                                                    data-bs-toggle="dropdown" aria-expanded="false"><i
+                                                                        class="material-icons">more_vert</i></a>
+                                                                <div class="dropdown-menu dropdown-menu-right">
+                                                                    <a class="dropdown-item" href="#"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#edit_salelead{{ $data->id }}"><i
+                                                                            class="fa fa-pencil m-r-5"></i> Edit</a>
+                                                                    <!-- Add more actions if needed -->
+                                                                </div>
+                                                            </div>
+                                                        </td>
+
+                                                    </tr>
+                                                    <!-- Edit Sales Lead Modal -->
+                                                    <div id="edit_salelead{{ $data->id }}" class="modal custom-modal fade" role="dialog">
+                                                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title">Edit Sales Lead</h5>
+                                                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">&times;</span>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <form action="{{ route('admin.saleslead.update', ['id' => $data->id]) }}" method="POST" enctype="multipart/form-data">
+                                                                        @method('patch')
+                                                                        @csrf
+                                                                        <div class="row">
+                                                                            <div class="form-group col-sm-4">
+                                                                                <label>Name of Company</label>
+                                                                                <input class="form-control" name="company_name" value="{{ $data->company_name }}" type="text">
+                                                                            </div>
+                                                                            <div class="form-group col-sm-4">
+                                                                                <label>Website</label>
+                                                                                <input class="form-control" name="website" value="{{ $data->website }}" type="text">
+                                                                            </div>
+                                                                            <div class="form-group col-sm-4">
+                                                                                <label>Email Id</label>
+                                                                                <input class="form-control" name="email" value="{{ $data->email_id }}" type="email">
+                                                                            </div>
+                                                                            <div class="form-group col-sm-4">
+                                                                                <label>Phone No.</label>
+                                                                                <input class="form-control" name="phone" value="{{ $data->phone }}" type="text">
+                                                                            </div>
+                                                                            <div class="form-group col-sm-4">
+                                                                                <label>Contact Person</label>
+                                                                                <input class="form-control" name="contact_person" value="{{ $data->contact_person }}" type="text">
+                                                                            </div>
+                                                                            <div class="form-group col-sm-4">
+                                                                                <label>Category</label>
+                                                                                <input class="form-control" name="category" value="{{ $data->category }}" type="text">
+                                                                            </div>
+                                                                            <div class="form-group col-sm-12">
+                                                                                <label>Remarks</label>
+                                                                                <textarea class="form-control" name="remarks">{{ $data->remarks }}</textarea>
+                                                                            </div>
+                                                                            <div class="submit-section">
+                                                                                <button class="btn btn-primary" type="submit">Update</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- /Edit Sales Lead Modal -->
+                                                @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- /Page Header -->
 
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="table-responsive">
-                        <table class="table table-striped custom-table mb-0 datatable">
-                            <thead>
-                                <tr>
-
-                                    <th>Name of company</th>
-                                    <th>Website</th>
-                                    <th>Email Id</th>
-                                    <th>Phone</th>
-                                    <th>Contact Person</th>
-                                    <th>Category</th>
-                                    <th>Remarks</th>
-                                    <th>Staff Assigned</th>
-                                    <th>Created On</th>
-                                    <th>Created By</th>
-                                    <th>Updated On</th>
-                                    <th>Updated By</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($salesLead as $data)
-                                    <tr>
-                                        <td>{{ $data->company_name }}</td>
-                                        <td>{{ $data->website }}</td>
-                                        <td>{{ $data->email_id }}</td>
-                                        <td>{{ $data->phone }}</td>
-                                        <td>{{ $data->contact_person }}</td>
-                                        <td>{{ $data->category }}</td>
-                                        <td>{{ $data->remarks }}</td>
-                                        <td>{{ $data->staff_names ?? 'No staff assigned' }}
-                                        <td>{{ $data->created_at }}</td>
-                                        <td>{{ $data->created_by }}</td>
-                                        <td>{{ $data->updated_at }}</td>
-                                        <td>{{ $data->updated_by }}</td>
-                                    </td>
-                                        <td class="text-end">
-                                            <div class="dropdown dropdown-action">
-                                                <a href="#" class="action-icon dropdown-toggle"
-                                                    data-bs-toggle="dropdown" aria-expanded="false"><i
-                                                        class="material-icons">more_vert</i></a>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                                        data-bs-target="#edit_salelead{{ $data->id }}"><i
-                                                            class="fa fa-pencil m-r-5"></i> Edit</a>
-                                                    <!-- Add more actions if needed -->
-                                                </div>
-                                            </div>
-                                        </td>
-
-                                    </tr>
-                                    <!-- Edit Designation Modal -->
-                                    <div id="edit_salelead{{ $data->id }}" class="modal custom-modal fade"
-                                        role="dialog">
-                                        <div class="modal-dialog modal-dialog-centered modal-lg " role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Edit Sales Lead</h5>
-                                                    <button type="button" class="close" data-bs-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form
-                                                        action="{{ route('admin.saleslead.update', ['id' => $data->id]) }}"
-                                                        method="POST" enctype="multipart/form-data">
-                                                        @method('patch')
-                                                        @csrf
-                                                        <div class="row">
-                                                            <div class="form-group col-sm-4">
-                                                                <label>Name of Company</label>
-                                                                <input class="form-control" name="company_name"
-                                                                    value="{{ $data->company_name }}" type="text"
-                                                                    >
-                                                            </div>
-                                                            <div class="form-group col-sm-4">
-                                                                <label>Website</label>
-                                                                <input class="form-control" name="website"
-                                                                    value="{{ $data->website }}" type="text" >
-                                                            </div>
-                                                            <div class="form-group col-sm-4">
-                                                                <label>Email Id</label>
-                                                                <input class="form-control" name="email" type="email"
-                                                                    value="{{ $data->email_id }}" >
-                                                            </div>
-                                                            <div class="form-group col-sm-4">
-                                                                <label>Phone No.</label>
-                                                                <input class="form-control" name="phone" type="text"
-                                                                    value="{{ $data->phone }}" >
-                                                            </div>
-                                                            <div class="form-group col-sm-4">
-                                                                <label>Contact Person</label>
-                                                                <input class="form-control" name="contact_person"
-                                                                    value="{{ $data->contact_person }}" type="text"
-                                                                    >
-                                                            </div>
-                                                            <div class="form-group col-sm-4">
-                                                                <label>Category</label>
-                                                                <input class="form-control" name="category"
-                                                                    value="{{ $data->category }}" type="text"
-                                                                    >
-                                                            </div>
-                                                            <div class="form-group col-sm-12">
-                                                                <label>Remarks</label>
-                                                                <textarea class="form-control" name="remarks" type="text" >{{ $data->remarks }}</textarea>
-                                                            </div>
-                                                            <div class="submit-section">
-                                                                <button class="btn btn-primary"
-                                                                    type="submit">Update</button>
-                                                            </div>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- /Edit Designation Modal -->
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
         </div>
         <!-- /Page Content -->
 
@@ -248,32 +298,43 @@
                             <div class="row">
                                 <div class="form-group col-sm-4">
                                     <label>Name of Company</label>
-                                    <input class="form-control" name="company_name" type="text" >
-                                    <input class="form-control" name="updated_at" value=" " type="hidden" >
+                                    <input class="form-control" name="company_name" type="text">
+                                    <input class="form-control" name="updated_at" value=" " type="hidden">
                                 </div>
                                 <div class="form-group col-sm-4">
                                     <label>Website</label>
-                                    <input class="form-control" name="website" type="text" >
+                                    <input class="form-control" name="website" type="text">
                                 </div>
                                 <div class="form-group col-sm-4">
                                     <label>Email Id</label>
-                                    <input class="form-control" name="email" type="email" >
+                                    <input class="form-control" name="email" type="email">
                                 </div>
                                 <div class="form-group col-sm-4">
                                     <label>Phone No.</label>
-                                    <input class="form-control" name="phone" type="text" >
+                                    <input class="form-control" name="phone" type="text">
                                 </div>
                                 <div class="form-group col-sm-4">
                                     <label>Contact Person</label>
-                                    <input class="form-control" name="contact_person" type="text" >
+                                    <input class="form-control" name="contact_person" type="text">
                                 </div>
                                 <div class="form-group col-sm-4">
                                     <label>Category</label>
-                                    <input class="form-control" name="category" type="text" >
+                                    <input class="form-control" name="category" type="text">
+                                </div>
+                                <div class="form-group col-sm-12">
+                                    <label>Assign Staff</label>
+                                    <div class="form-group">
+                                        @foreach ($allEmployee as $elData)
+                                            <label class="form-label">
+                                                <input type="checkbox" name="staff[{{ $elData->user->id }}]" value="active">
+                                                {{ $elData->user->first_name . " " . $elData->user->last_name }}
+                                            </label>
+                                        @endforeach
+                                    </div>
                                 </div>
                                 <div class="form-group col-sm-12">
                                     <label>Remarks</label>
-                                    <textarea class="form-control" name="remarks" type="text" ></textarea>
+                                    <textarea class="form-control" name="remarks" type="text"></textarea>
                                 </div>
 
                                 <div class="submit-section">
