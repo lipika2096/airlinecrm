@@ -399,6 +399,7 @@ class AirlineController extends Controller
             'marketing' => 'required|integer',
             'sales' => 'required|integer',
             'airport_operations' => 'required|integer',
+            'created_by' => 'nullable'
         ]);
         $approvedStaff = ApprovedStaff::create($validatedData);
         return redirect()->back();
@@ -412,6 +413,8 @@ class AirlineController extends Controller
             'marketing' => $request->input('marketing'),
             'sales' => $request->input('sales'),
             'airport_operations' => $request->input('airport_operations'),
+            'updated_at' => now(),
+            'updated_by' => auth()->user()->name
         ]);
         return redirect()->back();
     }
@@ -758,6 +761,7 @@ public function approvedStaffRightsStore(Request $request)
                 $specialFare->updated_at = $request->input('updated_at'); // Assuming user authentication is used
             } else {
                 $specialFare->updated_by = auth()->user()->name;
+                $specialFare->updated_at = now();
             }
 
             // Save the changes
@@ -765,7 +769,7 @@ public function approvedStaffRightsStore(Request $request)
         }
     }
 
-    return redirect()->back()->with('success', 'Special fares updated successfully.');
+    return redirect()->back()->with('success', 'Approved Staff data updated successfully.');
 }
 public function specialfaresUpdate(Request $request, $id)
 {

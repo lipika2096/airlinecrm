@@ -25,6 +25,7 @@ use App\Models\AirlineDetail;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use App\Models\AirlineLibrary;
+use App\Models\ApprovedStaff;
 
 
 use App\Models\FareType;
@@ -354,9 +355,44 @@ class EmployeeController extends Controller
     }
 
     // Display the employee's details and leave information
+    public function approvedStaffRightsStore(Request $request)
+    {
+        foreach ($request->input('airline') as $airlineId => $duties) {
+            foreach ($duties as $duty => $status) {
 
+            $specialFare=  ApprovedStaff::updateOrCreate(
+                    [
+                        'airline_id' => $airlineId,
+                        'duties' => $duty,
+                        'staff_id' => $request->staff_id
+                    ],
+                    [
+                        'status' => $status
+                    ]
+                );
+
+                if ($specialFare->wasRecentlyCreated) {
+                    $specialFare->created_by = Auth()->user()->name;
+                    $specialFare->updated_at = $request->input('updated_at'); // Assuming user authentication is used
+                } else {
+                    $specialFare->updated_by = auth()->user()->name;
+                    $specialFare->updated_at = now();
+                }
+
+                // Save the changes
+                $specialFare->save();
+            }
+        }
+
+        return redirect()->back()->with('success', 'Approved Staff data updated successfully.');
+    }
     public function viewEmployee($id, Request $request)
     {
+
+        $airlineDetails = AirlineDetail::where('deleted_at',null)->orWhere('deleted_at','null')->get();
+        $duty = Duty::where('status',1)->get();
+        $Staffs = User::where('status', 'active')->get();
+        $approvedStaffs = ApprovedStaff::where('status',1)->where('airline_id', $id)->get();
         $usedAnnualLeave = EmployeeLeave::where('employee_id', $id)->where('status',3)->where('leave_type','Annual Leave')
                                         ->sum('no_of_days');
         $library = AirlineLibrary::where('deleted_at',null)->orWhere('deleted_at','null')->where('staff_id', $id)->get();
@@ -493,7 +529,7 @@ class EmployeeController extends Controller
     if ($departments->isEmpty()) {
         return response()->json(['error' => 'No departments found'], 404);
     }
-        return view('admin.view-profile', compact('departments',
+        return view('admin.view-profile', compact('departments','approvedStaffs','Staffs', 'duty','airlineDetails',
             'users',
             'allEmployee',
             'holidays',

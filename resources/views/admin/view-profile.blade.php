@@ -50,6 +50,8 @@
                                     </li>
                                     <li class="nav-item"><a href="#teams" data-bs-toggle="tab" class="nav-link">Teams</a>
                                     </li>
+                                    <li class="nav-item"><a href="#approved-airlines" data-bs-toggle="tab" class="nav-link">Approved Airline Duties</a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -2122,6 +2124,250 @@
 
                     </div>
                     <!-- Page Content -->
+                </div>
+                <div id="approved-airlines" class="pro-overview tab-pane fade show ">
+                    <!-- Page Content -->
+                    <div class="content container-fluid">
+                        <div class="row">
+                            <div class="col-auto float-end ms-auto mt-2 mx-4 mb-2">
+                            <a class="btn add-btn"   style="margin-right:10px; border-radius:10px !important;" data-bs-toggle="modal" data-bs-target="#add_approvedStaff"><i
+                            class="fa fa-plus"></i> Add/Edit Approved Staff</a>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="table-responsive text-nowrap">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="fw-bold">Airline
+                                                </th>
+                                                @foreach ($duty as $ft)
+                                                    <th class="fw-bold">
+                                                        {{ $ft->name }}</th>
+                                                @endforeach
+                                                <th>Created On</th>
+                                                <th>Created By</th>
+                                                <th>Updated On</th>
+                                                <th>Updated By</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($airlineDetails as $air)
+                                                <tr>
+                                                    <div class="form-group">
+                                                        <input class="form-control"
+                                                            type="hidden"
+                                                            name="staff_id"
+                                                            value="{{ $employees->id ?? 0}}">
+
+                                                            <input class="form-control"
+                                                            type="hidden"
+                                                            name="updated_at"
+                                                            value="  ">
+                                                    </div>
+                                                    <th class="fw-bold">
+                                                        {{ $air->airline->airline_name }}</th>
+                                                    @foreach ($duty as $ft)
+                                                        @php
+                                                            $approvedStaff = DB::table('approved_staffs')
+                                                                                ->where('staff_id', $employees->id)
+                                                                                ->where('duties', $ft->name)
+                                                                                ->where('airline_id', $air->airline_id)
+                                                                                ->first();
+                                                        @endphp
+                                                        <input type="hidden"
+                                                            name="staff[{{ $air->id }}][{{ $ft->name }}]"
+                                                            value="2">
+                                                        <th>
+                                                            <input type="checkbox"
+                                                                name="staff[{{ $air->id }}][{{ $ft->name }}]"
+                                                                value="1"
+                                                                {{ $approvedStaff && $approvedStaff->status == 1 ? 'checked' : '' }}>
+                                                        </th>
+                                                    @endforeach
+                                                    <td>{{ $approvedStaff->created_at ?? 'N/A' }}</td>
+                                                    <td>{{ $approvedStaff->created_by ?? 'N/A' }}</td>
+                                                    <td>{{ $approvedStaff->updated_at ?? 'N/A' }}</td>
+                                                    <td>{{ $approvedStaff->updated_by ?? 'N/A' }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="add_approvedStaff" class="modal custom-modal fade" role="dialog">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Add Approved Staff</h5>
+                                    <button type="button" class="close" data-bs-dismiss="modal"
+                                        aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form
+                                        action="{{ route('admin.staff.approved-staff-rights.store') }}#approved-airlines"
+                                        method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        <div class="table-responsive text-nowrap">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="fw-bold">Airline
+                                                        </th>
+                                                        @foreach ($duty as $ft)
+                                                            <th class="fw-bold">
+                                                                {{ $ft->name }}</th>
+                                                        @endforeach
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($airlineDetails as $air)
+                                                    <tr>
+                                                        <div class="form-group">
+                                                            <input class="form-control"
+                                                                type="hidden"
+                                                                name="staff_id"
+                                                                value="{{ $employees->id ?? 0}}">
+
+                                                                <input class="form-control"
+                                                                type="hidden"
+                                                                name="updated_at"
+                                                                value="  ">
+
+                                                                <input class="form-control"
+                                                                type="hidden"
+                                                                name="created_by"
+                                                                value="{{auth()->user()->name}}">
+                                                        </div>
+                                                        <th class="fw-bold">
+                                                            {{ $air->airline->airline_name }}</th>
+                                                        @foreach ($duty as $ft)
+                                                            @php
+                                                                $approvedStaff = DB::table('approved_staffs')
+                                                                                    ->where('staff_id', $employees->id)
+                                                                                    ->where('duties', $ft->name)
+                                                                                    ->where('airline_id', $air->airline_id)
+                                                                                    ->first();
+                                                            @endphp
+                                                            <input type="hidden"
+                                                                name="airline[{{ $air->airline_id }}][{{ $ft->name }}]"
+                                                                value="2">
+                                                            <th>
+                                                                <input type="checkbox"
+                                                                    name="airline[{{ $air->airline_id }}][{{ $ft->name }}]"
+                                                                    value="1"
+                                                                    {{ $approvedStaff && $approvedStaff->status == 1 ? 'checked' : '' }}>
+                                                            </th>
+                                                        @endforeach
+                                                    </tr>
+                                                @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="submit-section">
+                                            <button class="btn btn-primary"
+                                                type="submit">Submit</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /Page Content -->
+
+                    <!-- Add Leave Modal -->
+                    <div id="add_leave" class="modal custom-modal fade" role="dialog">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Add Leave</h5>
+                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="POST" action ="{{ route('admin.view-staff.leaves.store') }}#leaves">
+                                        @csrf
+                                        <div class="form-group">
+                                            <!-- <label>Select Employee <span class="text-danger">*</span></label> -->
+                                            <input type="hidden" value="{{ $employees->id }}" name="employee_id">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Leave Type <span class="text-danger">*</span></label>
+                                            <select class="select form-control" name="leave_type">
+                                                <option>Select Leave Type</option>
+                                                @foreach ($leavetypes as $leavetype)
+                                                    <option value="{{ $leavetype->name }}">{{ $leavetype->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>From <span class="text-danger">*</span></label>
+                                            <div class="">
+                                                <input class="form-control " type="date" name="from" id="from"
+                                                    onchange="calculateDays()">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>To <span class="text-danger">*</span></label>
+                                            <div class="">
+                                                <input class="form-control" type="date" name="to" id="to"
+                                                    onchange="calculateDays()">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Number of days <span class="text-danger">*</span></label>
+                                            <input class="form-control" readonly type="text" name="no_of_days">
+                                        </div>
+                                        <!--<div class="form-group">-->
+                                        <!--    <label>Remaining Leaves <span class="text-danger">*</span></label>-->
+                                        <!--    <input class="form-control" readonly value="12" type="text">-->
+                                        <!--</div>-->
+                                        <div class="form-group">
+                                            <label>Leave Reason <span class="text-danger">*</span></label>
+                                            <textarea rows="4" name="reason" class="form-control"></textarea>
+                                        </div>
+                                        <div class="submit-section">
+                                            <button class="btn btn-primary submit-btn">Submit</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /Add Leave Modal -->
+
+                    <!-- Delete Leave Modal -->
+                    <div class="modal custom-modal fade" id="delete_approve" role="dialog">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <div class="form-header">
+                                        <h3>Delete Leave</h3>
+                                        <p>Are you sure want to delete this leave?</p>
+                                    </div>
+                                    <div class="modal-btn delete-action">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <a href="javascript:void(0);"
+                                                    class="btn btn-primary continue-btn">Delete</a>
+                                            </div>
+                                            <div class="col-6">
+                                                <a href="javascript:void(0);" data-bs-dismiss="modal"
+                                                    class="btn btn-primary cancel-btn">Cancel</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /Delete Leave Modal -->
                 </div>
                 <!-- Page Content -->
             </div>

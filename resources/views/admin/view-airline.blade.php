@@ -46,9 +46,6 @@
                 border: 1px solid #902b2b;
                 display: none !important;
             }
-        </style>
-
-        <style>
             .switch {
                 position: relative;
                 display: inline-block;
@@ -1252,6 +1249,10 @@
                                                                 type="hidden"
                                                                 name="updated_at"
                                                                 value="  ">
+                                                                <input class="form-control"
+                                                                type="hidden"
+                                                                name="created_by"
+                                                                value="{{auth()->user()->name}}">
                                                         </div>
                                                         <th class="fw-bold">
                                                             {{ $air->first_name }}</th>
@@ -1298,190 +1299,71 @@
                         </div>
                     </div>
                 </div>
-                <div id="view_approvedStaff" class="modal custom-modal fade" role="dialog">
-                    <div class="modal-dialog modal-dialog-centered modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">View Approved Staff</h5>
-                                <button type="button" class="close" data-bs-dismiss="modal"
-                                    aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                    <div class="table-responsive text-nowrap">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th class="fw-bold">Staff
-                                                    </th>
-                                                    @foreach ($duty as $ft)
-                                                        <th class="fw-bold">
-                                                            {{ $ft->name }}</th>
-                                                    @endforeach
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($Staffs as $air)
-                                                    <tr>
-                                                        <div class="form-group">
-                                                            <input class="form-control"
-                                                                type="hidden"
-                                                                name="airline_id"
-                                                                value="{{ $airlineDetails->airline_id }}">
-
-                                                                <input class="form-control"
-                                                                type="hidden"
-                                                                name="updated_at"
-                                                                value="  ">
-                                                        </div>
-                                                        <th class="fw-bold">
-                                                            {{ $air->first_name }}</th>
-                                                        @foreach ($duty as $ft)
-                                                            @php
-                                                                $status = DB::table(
-                                                                    'approved_staffs',
-                                                                )
-                                                                    ->where(
-                                                                        'staff_id',
-                                                                        $air->id,
-                                                                    )
-                                                                    ->where(
-                                                                        'duties',
-                                                                        $ft->name,
-                                                                    )
-                                                                    ->where(
-                                                                        'airline_id',
-                                                                        $airlineDetails->airline_id,
-                                                                    )
-                                                                    ->value('status');
-                                                            @endphp
-                                                            <input type="hidden"
-                                                                name="staff[{{ $air->id }}][{{ $ft->name }}]"
-                                                                value="2">
-                                                            <th>
-                                                                <input type="checkbox"
-                                                                    name="staff[{{ $air->id }}][{{ $ft->name }}]"
-                                                                    value="1"
-                                                                    {{ $status == 1 ? 'checked' : '' }}>
-                                                            </th>
-                                                        @endforeach
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div id="approved_staffs" class="pro-overview tab-pane fade show">
                     <div class="row">
                         <div class="col-auto float-end ms-auto mt-2 mx-4 mb-2">
                         <a class="btn add-btn"   style="margin-right:10px; border-radius:10px !important;" data-bs-toggle="modal" data-bs-target="#add_approvedStaff"><i
                         class="fa fa-plus"></i> Add/Edit Approved Staff</a>
-                        <a class="btn btn-info text-white"   style="margin-right:10px; border-radius:10px !important;" data-bs-toggle="modal" data-bs-target="#view_approvedStaff"><i
-                        class="fa fa-eye"></i> View Approved Staff</a>
                         </div>
                         <div class="col-md-12">
-                            <div class="table-responsive">
-                                <table class="table table-striped custom-table mb-0 datatable">
+                            <div class="table-responsive text-nowrap">
+                                <table class="table">
                                     <thead>
                                         <tr>
-                                            <th>No.</th>
-                                            <th>Picture</th>
-                                            <th>First Name</th>
-                                            <th>Last Name</th>
-                                            <th>Department</th>
-                                            <th>Duties</th>
-                                            <th>Status</th>
+                                            <th class="fw-bold">Staff
+                                            </th>
+                                            @foreach ($duty as $ft)
+                                                <th class="fw-bold">
+                                                    {{ $ft->name }}</th>
+                                            @endforeach
                                             <th>Created On</th>
                                             <th>Created By</th>
                                             <th>Updated On</th>
                                             <th>Updated By</th>
-                                            <!-- <th>Actions</th> -->
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($approvedStaffs as $index => $data)
+                                        @foreach ($Staffs as $air)
                                             <tr>
-                                                <td>{{ $index + 1 }}</td>
-                                                <td>{{ $data->staff->avatar_filename }}</td>
-                                                <td>{{ $data->staff->first_name }}</td>
-                                                <td>{{ $data->staff->last_name }}</td>
-                                                <td>{{ $data->staff->department }}</td>
-                                                <td>{{$data->duties}}</td>
-                                                <td>
-                                                    @if ($data->status == 1)
-                                                        Active
-                                                    @else
-                                                        Inactive
-                                                    @endif
+                                                <div class="form-group">
+                                                    <input class="form-control"
+                                                        type="hidden"
+                                                        name="airline_id"
+                                                        value="{{ $airlineDetails->airline_id }}">
 
-                                                </td>
-                                                <td>
-                                                    {{$data->created_at}}
-                                                </td>
-                                                <td>
-                                                    {{$data->created_by}}
-                                                </td>
-                                                <td>
-                                                    {{$data->updated_at}}
-                                                </td>
-                                                <td>
-                                                    {{$data->updated_by}}
-                                                </td>
-                                                <!-- <td>
-                        <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add_approvedStaff">
-                        <i class="fa fa-edit"></i>
-                        </a>
-                        </td> -->
+                                                        <input class="form-control"
+                                                        type="hidden"
+                                                        name="updated_at"
+                                                        value="  ">
+                                                </div>
+                                                <th class="fw-bold">
+                                                    {{ $air->first_name }}</th>
+                                                @foreach ($duty as $ft)
+                                                    @php
+                                                        $approvedStaff = DB::table('approved_staffs')
+                                                                            ->where('staff_id', $air->id)
+                                                                            ->where('duties', $ft->name)
+                                                                            ->where('airline_id', $airlineDetails->airline_id)
+                                                                            ->first();
+                                                    @endphp
+                                                    <input type="hidden"
+                                                        name="staff[{{ $air->id }}][{{ $ft->name }}]"
+                                                        value="2">
+                                                    <th>
+                                                        <input type="checkbox"
+                                                            name="staff[{{ $air->id }}][{{ $ft->name }}]"
+                                                            value="1"
+                                                            {{ $approvedStaff && $approvedStaff->status == 1 ? 'checked' : '' }}>
+                                                    </th>
+                                                @endforeach
+                                                <td>{{ $approvedStaff->created_at ?? 'N/A' }}</td>
+                                                <td>{{ $approvedStaff->created_by ?? 'N/A' }}</td>
+                                                <td>{{ $approvedStaff->updated_at ?? 'N/A' }}</td>
+                                                <td>{{ $approvedStaff->updated_by ?? 'N/A' }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
-                                <script>
-                                    document.addEventListener('DOMContentLoaded', function() {
-                                        const statusIcons = document.querySelectorAll('.status-icon');
-
-                                        statusIcons.forEach(icon => {
-                                            icon.addEventListener('click', function() {
-                                                const field = this.getAttribute('data-field');
-                                                const staffId = this.getAttribute('data-staff-id');
-
-                                                // Determine the new status
-                                                const isChecked = this.classList.contains('fa-check');
-                                                const status = isChecked ? 2 : 1; // Use 2 for unchecked and 1 for checked
-
-                                                // Make the AJAX request
-                                                fetch('{{ route('admin.airline.approvedstaff.updatestatus') }}', {
-                                                        method: 'POST',
-                                                        headers: {
-                                                            'Content-Type': 'application/json',
-                                                            'X-CSRF-TOKEN': document.querySelector(
-                                                                'meta[name="csrf-token"]').getAttribute('content')
-                                                        },
-                                                        body: JSON.stringify({
-                                                            staff_id: staffId,
-                                                            field: field,
-                                                            status: status
-                                                        })
-                                                    })
-                                                    .then(response => response.json())
-                                                    .then(data => {
-                                                        if (data.success) {
-                                                            // Update the icon to reflect the new status
-                                                            this.classList.toggle('fa-check');
-                                                            this.classList.toggle('fa-times');
-                                                        } else {
-                                                            alert('Failed to update status');
-                                                        }
-                                                    })
-                                                    .catch(error => console.error('Error:', error));
-                                            });
-                                        });
-                                    });
-                                </script>
                             </div>
                         </div>
                     </div>
