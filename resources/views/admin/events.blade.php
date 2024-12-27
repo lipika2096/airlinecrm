@@ -69,89 +69,111 @@
                                         <div class="section-header">
                                             <h2>My Todo's</h2>
                                         </div>
-                                        <table class="table table-striped custom-table mb-0 datatable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Task Number</th>
-                                                    <th>Task Name</th>
-                                                    <th>Schedule Date</th>
-                                                    <th>Status</th>
-                                                    {{-- <th>Action</th> --}}
-                                                </tr>
-                                            </thead>
-                                            <tbody id="events-table-body">
-                                                @foreach ($events as $data)
-                                                    <tr data-month="{{ date('n', strtotime($data->event_date)) - 1 }}">
-                                                        <td>{{ $data->id }}</td>
-                                                        <td>{{ $data->event_name }}</td>
-                                                        <td>{{ $data->event_date }}</td>
-                                                        <td>
-                                                            <div class="dropdown action-label dropdown-item" >
-                                                                <a class="btn btn-white btn-sm btn-rounded" data-bs-toggle="modal"
-                                                                data-bs-target="#edit_employee{{ $data->id }}" style="text-transform:capitalize;">
-                                                                    <i class="fa fa-dot-circle-o text-purple"></i>
-                                                                    {{ $data->statusId->status_type??'No status Assigned' }}
-                                                                </a>
-                                                            </div>
-                                                        </td>
-                                                        {{-- <td>
-                                                            <div class="dropdown dropdown-action">
-                                                                <a href="#" class="action-icon dropdown-toggle"
-                                                                    data-bs-toggle="dropdown" aria-expanded="false"><i
-                                                                        class="material-icons">more_vert</i></a>
-                                                                <div class="dropdown-menu dropdown-menu-right">
-                                                                    <a class="dropdown-item" data-bs-toggle="modal"
-                                                                        data-bs-target="#edit_employee{{ $data->id }}"><i
-                                                                            class="fa fa-pencil m-r-5"></i> Edit</a>
-                                                                    <!-- Add more actions if needed -->
-                                                                </div>
-                                                            </div>
-                                                        </td> --}}
+                                        <div class="table-responsive">
+                                            <table class="table table-striped custom-table mb-0 datatable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Id</th>
+                                                        <th>Title</th>
+                                                        <th>Schedule Date</th>
+                                                        <th>Website</th>
+                                                        <th>Email</th>
+                                                        <th>Phone No</th>
+                                                        <th>Contact Person</th>
+                                                        <th>Category</th>
+                                                        <th>Remarks</th>
+                                                        <th>Created On</th>
+                                                        <th>Created By</th>
+                                                        <th>Updated On</th>
+                                                        <th>Updated By</th>
+                                                        <th>Status</th>
+                                                        {{-- <th>Action</th> --}}
                                                     </tr>
-                                                    <!-- Edit Designation Modal -->
-                                                    <div id="edit_employee{{ $data->id }}"
-                                                        class="modal custom-modal fade" role="dialog">
-                                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title">Edit Todo Status</h5>
-                                                                    <button type="button" class="close"
-                                                                        data-bs-dismiss="modal" aria-label="Close">
-                                                                        <span aria-hidden="true">&times;</span>
-                                                                    </button>
+                                                </thead>
+                                                <tbody id="events-table-body">
+                                                    @foreach ($events as $data)
+                                                        <tr data-month="{{ date('n', strtotime($data->event_date)) - 1 }}">
+                                                            <td>{{ $data->id }}</td>
+                                                            <td>{{ $data->event_name }}</td>
+                                                            <td>{{ $data->event_date }}</td>
+                                                            <td>{{ $data->website }}</td>
+                                                            <td>{{ $data->email_id }}</td>
+                                                            <td>{{ $data->phone_no }}</td>
+                                                            <td>{{ $data->contact_person }}</td>
+                                                            <td>{{ $data->category }}</td>
+                                                            <td>{{ $data->remarks }}</td>
+                                                            <td>{{ $data->created_at }}</td>
+                                                            <td>{{ $data->created_by }}</td>
+                                                            <td>{{ $data->updated_at }}</td>
+                                                            <td>{{ $data->updated_by }}</td>
+                                                            <td>
+                                                                <div class="dropdown action-label dropdown-item" >
+                                                                    <a class="btn btn-white btn-sm btn-rounded" data-bs-toggle="modal"
+                                                                    data-bs-target="#edit_employee{{ $data->id }}" style="text-transform:capitalize;">
+                                                                        <i class="fa fa-dot-circle-o text-purple"></i>
+                                                                        {{ $data->statusId->status_type??'No status Assigned' }}
+                                                                    </a>
                                                                 </div>
-                                                                <div class="modal-body">
-                                                                    <form
-                                                                        action="{{ route('admin.events.update', ['id' => $data->id]) }}"
-                                                                        method="POST" enctype="multipart/form-data">
-                                                                        @method('patch')
-                                                                        @csrf
-                                                                        <div class="form-group">
-                                                                            <label>Status<span
-                                                                                    class="text-danger">*</span></label>
-                                                                            <select class="form-control" name="status"
-                                                                                required>
-                                                                                <option>Select Status</option>
-                                                                                @foreach ($eventStatus as $status)
-                                                                                    <option value="{{ $status->id }}"  @if($data->status_id == $status->id) selected @endif>
-                                                                                        {{ $status->status_type }}</option>
-                                                                                @endforeach
-                                                                            </select>
-                                                                        </div>
-                                                                        <div class="submit-section">
-                                                                            <button class="btn btn-primary"
-                                                                                type="submit">Update</button>
-                                                                        </div>
-                                                                    </form>
+                                                            </td>
+                                                            {{-- <td>
+                                                                <div class="dropdown dropdown-action">
+                                                                    <a href="#" class="action-icon dropdown-toggle"
+                                                                        data-bs-toggle="dropdown" aria-expanded="false"><i
+                                                                            class="material-icons">more_vert</i></a>
+                                                                    <div class="dropdown-menu dropdown-menu-right">
+                                                                        <a class="dropdown-item" data-bs-toggle="modal"
+                                                                            data-bs-target="#edit_employee{{ $data->id }}"><i
+                                                                                class="fa fa-pencil m-r-5"></i> Edit</a>
+                                                                        <!-- Add more actions if needed -->
+                                                                    </div>
+                                                                </div>
+                                                            </td> --}}
+                                                        </tr>
+                                                        <!-- Edit Designation Modal -->
+                                                        <div id="edit_employee{{ $data->id }}"
+                                                            class="modal custom-modal fade" role="dialog">
+                                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title">Edit Todo Status</h5>
+                                                                        <button type="button" class="close"
+                                                                            data-bs-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <form
+                                                                            action="{{ route('admin.events.update', ['id' => $data->id]) }}"
+                                                                            method="POST" enctype="multipart/form-data">
+                                                                            @method('patch')
+                                                                            @csrf
+                                                                            <div class="form-group">
+                                                                                <label>Status<span
+                                                                                        class="text-danger">*</span></label>
+                                                                                <select class="form-control" name="status"
+                                                                                    required>
+                                                                                    <option>Select Status</option>
+                                                                                    @foreach ($eventStatus as $status)
+                                                                                        <option value="{{ $status->id }}"  @if($data->status_id == $status->id) selected @endif>
+                                                                                            {{ $status->status_type }}</option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="submit-section">
+                                                                                <button class="btn btn-primary"
+                                                                                    type="submit">Update</button>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
 
-                                                    <!-- /Edit Designation Modal -->
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+                                                        <!-- /Edit Designation Modal -->
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                     <!-- /Calendar -->
 
@@ -166,7 +188,7 @@
 
         <!-- Add Event Modal -->
         <div id="add_event" class="modal custom-modal fade" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Add Event</h5>
@@ -177,31 +199,58 @@
                     <div class="modal-body">
                         <form action="{{ route('admin.events.store') }}" method="POST">
                             @csrf <!-- Include CSRF token -->
-                            <div class="form-group">
-                                <label>Event Name <span class="text-danger">*</span></label>
-                                <input class="form-control" name="event_name" type="text">
-                            </div>
-                            <div class="form-group">
-                                <label>Event Date <span class="text-danger">*</span></label>
-                                <div class="">
-                                    <input class="form-control" name="event_date" type="datetime-local">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Title <span class="text-danger">*</span></label>
+                                        <input class="form-control" name="updated_at" type="hidden" value=" ">
+                                        <input class="form-control" name="event_name" type="text">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label">Category</label>
-                                <select class="select form-control" name="category">
-                                    <option value='bg-danger'>Danger</option>
-                                    <option value='bg-success'>Success</option>
-                                    <option value='bg-purple'>Purple</option>
-                                    <option value='bg-primary'>Primary</option>
-                                    <option value='bg-pink'>Pink</option>
-                                    <option value='bg-info'>Info</option>
-                                    <option value='bg-inverse'>Inverse</option>
-                                    <option value='bg-orange'>Orange</option>
-                                    <option value='bg-brown'>Brown</option>
-                                    <option value='bg-teal'>Teal</option>
-                                    <option value='bg-warning'>Warning</option>
-                                </select>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Website</label>
+                                        <input class="form-control" name="website" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Email Id</label>
+                                        <input class="form-control" name="email_id" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Phone No.</label>
+                                        <input class="form-control" name="phone_no" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Contact Person</label>
+                                        <input class="form-control" name="contact_person" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Category</label>
+                                        <input class="form-control" name="category" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Event Date <span class="text-danger">*</span></label>
+                                        <div class="">
+                                            <input class="form-control" name="event_date" type="datetime-local">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Remarks</label>
+                                        <textarea class="form-control" name="remarks"></textarea>
+                                    </div>
+                                </div>
                             </div>
                             <div class="submit-section">
                                 <button class="btn btn-primary" type="submit">Submit</button>
@@ -233,49 +282,6 @@
             </div>
         </div>
         <!-- /Event Modal -->
-
-        <!-- Add Category Modal-->
-        <div class="modal custom-modal fade" id="add-category">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Add a category</h4>
-                    </div>
-                    <div class="modal-body p-20">
-                        <form>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="col-form-label">Category Name</label>
-                                    <input class="form-control" placeholder="Enter name" type="text"
-                                        name="category-name">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="col-form-label">Choose Category Color</label>
-                                    <select class="form-control form-select" data-placeholder="Choose a color..."
-                                        name="category-color">
-                                        <option value="success">Success</option>
-                                        <option value="danger">Danger</option>
-                                        <option value="info">Info</option>
-                                        <option value="pink">Pink</option>
-                                        <option value="primary">Primary</option>
-                                        <option value="warning">Warning</option>
-                                        <option value="orange">Orange</option>
-                                        <option value="brown">Brown</option>
-                                        <option value="teal">Teal</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-white" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-danger save-category" data-bs-dismiss="modal">Save</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- /Add Category Modal-->
 
     </div>
     <!-- /Page Wrapper -->

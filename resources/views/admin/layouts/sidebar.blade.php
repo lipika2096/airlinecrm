@@ -259,6 +259,13 @@
                     <ul style="display: none;">
                         @if (auth()->user()->hasRole('admin'))
                             <li><a class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Admin Dashboard</a></li>
+                            <li><a class="{{ request()->routeIs('admin.events') ? 'active' : '' }}" href="{{ route('admin.events') }}">My Todo(s)</a>
+                                <!-- <ul style="display: none;">
+                                    <li><a class="" href="{{ route('admin.events.status') }}">Custom Event Status</a>
+                                    </li>
+                                    <li><a class="" href="{{ route('admin.events') }}">Calendar</a></li>
+                                </ul> -->
+                            </li>
                         @endif
                         @if (auth()->user()->hasRole('employee'))
                             <li><a class="" href="{{ route('employee.dashboard') }}">Employee
@@ -361,13 +368,6 @@
                             <li><a class="{{ request()->routeIs('admin.leave-type') ? 'active' : '' }}" href="{{ route('admin.leave-type') }}">Add Leave Types</a></li>
                             <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{ route('admin.comingSoon') }}">Add Agent Types</a></li>
                             <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{ route('admin.comingSoon') }}">Add Report Types</a></li>
-                            <li><a class="{{ request()->routeIs('admin.events') ? 'active' : '' }}" href="{{ route('admin.events') }}">My Todo(s)</a>
-                                <!-- <ul style="display: none;">
-                                    <li><a class="" href="{{ route('admin.events.status') }}">Custom Event Status</a>
-                                    </li>
-                                    <li><a class="" href="{{ route('admin.events') }}">Calendar</a></li>
-                                </ul> -->
-                            </li>
                             <li class="submenu">
                                 <a href="javascript:void(0);"><span>Deleted Data</span> <span
                                         class="menu-arrow"></span></a>
