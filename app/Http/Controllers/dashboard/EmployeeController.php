@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\dashboard;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Employee;
@@ -54,30 +55,30 @@ class EmployeeController extends Controller
 
         $fileNames = []; // Array to hold the filenames
 
-            if ($request->hasFile('attachment')) {
-                $docFile = $request->file('attachment');
+        if ($request->hasFile('attachment')) {
+            $docFile = $request->file('attachment');
 
-                // foreach ($docFiles as $docFile) {
-                    // Generate a unique file name with extension
-                    $fileName = Str::uuid() . '.' . $docFile->getClientOriginalExtension();
+            // foreach ($docFiles as $docFile) {
+            // Generate a unique file name with extension
+            $fileName = Str::uuid() . '.' . $docFile->getClientOriginalExtension();
 
-                    // Define the storage path
-                    $storagePath = ('public/assets/docs/');
+            // Define the storage path
+            $storagePath = ('public/assets/docs/');
 
-                    // Check if the directory exists, if not create it
-                    if (!File::exists($storagePath)) {
-                        File::makeDirectory($storagePath, 0755, true, true);
-                    }
-
-                    // Move the file to the defined path
-                    $docFile->move($storagePath, $fileName);
-
-                    // Add the filename to the array
-                    $fileNames[] = asset('public/assets/docs/')."/".$fileName;
-                // }
+            // Check if the directory exists, if not create it
+            if (!File::exists($storagePath)) {
+                File::makeDirectory($storagePath, 0755, true, true);
             }
-            // Convert array to a JSON string or comma-separated string
-            $fileNamesString = json_encode($fileNames); // Use this if you prefer JSON format
+
+            // Move the file to the defined path
+            $docFile->move($storagePath, $fileName);
+
+            // Add the filename to the array
+            $fileNames[] = asset('public/assets/docs/') . "/" . $fileName;
+            // }
+        }
+        // Convert array to a JSON string or comma-separated string
+        $fileNamesString = json_encode($fileNames); // Use this if you prefer JSON format
 
 
         // Update other fields
@@ -103,7 +104,8 @@ class EmployeeController extends Controller
         return redirect()->back()->with('success', 'Document updated successfully!');
     }
 
-    public function libraryDelete($id, Request $request){
+    public function libraryDelete($id, Request $request)
+    {
         $library = AirlineLibrary::findOrFail($id);
         $library->update([
             'deleted_at' => now(),
@@ -124,22 +126,22 @@ class EmployeeController extends Controller
             $docFile = $request->file('documents');
 
             // foreach ($docFiles as $docFile) {
-                // Generate a unique file name with extension
-                $fileName = Str::uuid() . '.' . $docFile->getClientOriginalExtension();
+            // Generate a unique file name with extension
+            $fileName = Str::uuid() . '.' . $docFile->getClientOriginalExtension();
 
-                // Define the storage path
-                $storagePath = ('public/assets/docs/');
+            // Define the storage path
+            $storagePath = ('public/assets/docs/');
 
-                // Check if the directory exists, if not create it
-                if (!File::exists($storagePath)) {
-                    File::makeDirectory($storagePath, 0755, true, true);
-                }
+            // Check if the directory exists, if not create it
+            if (!File::exists($storagePath)) {
+                File::makeDirectory($storagePath, 0755, true, true);
+            }
 
-                // Move the file to the defined path
-                $docFile->move($storagePath, $fileName);
+            // Move the file to the defined path
+            $docFile->move($storagePath, $fileName);
 
-                // Add the filename to the array
-                $fileNames[] = asset('public/assets/docs/')."/".$fileName;
+            // Add the filename to the array
+            $fileNames[] = asset('public/assets/docs/') . "/" . $fileName;
             // }
         }
         // Convert array to a JSON string or comma-separated string
@@ -159,20 +161,23 @@ class EmployeeController extends Controller
         return redirect()->back();
     }
 
-    public function PemployeeProfile($id){
+    public function PemployeeProfile($id)
+    {
         $employees = User::find($id);
         return view('admin.view-profile', compact('employees'));
     }
 
-    public function viewUserProfile(){
+    public function viewUserProfile()
+    {
         $employees = User::where('role_id', 2)->get();
-         $department = Department::latest()->get();
+        $department = Department::latest()->get();
         $designation = Designation::latest()->get();
 
-        return view('admin.view-employee', compact('employees','department', 'designation'));
+        return view('admin.view-employee', compact('employees', 'department', 'designation'));
     }
 
-    public function storeUserProfile(Request $request) {
+    public function storeUserProfile(Request $request)
+    {
 
         // Create a new client record
         $client = new Client();
@@ -246,9 +251,10 @@ class EmployeeController extends Controller
         return redirect()->back()->with('success', 'Employee added successfully');
     }
 
-    public function viewUserRights(){
-        $department_rights = DepartmentRight::where('status',1)->get();
-         $department = Department::latest()->get();
+    public function viewUserRights()
+    {
+        $department_rights = DepartmentRight::where('status', 1)->get();
+        $department = Department::latest()->get();
         $duties = Duty::latest()->get();
 
         $specialFare = SpecialFare::where('agent_id', 4)->get();
@@ -256,26 +262,27 @@ class EmployeeController extends Controller
         $fareType = FareType::get();
 
 
-        return view('admin.view-rights', compact('department_rights', 'department','duties'));
+        return view('admin.view-rights', compact('department_rights', 'department', 'duties'));
     }
 
-    public function storeUserRights(Request $request) {
+    public function storeUserRights(Request $request)
+    {
 
         foreach ($request->input('department') as $departmentId => $duty) {
-        foreach ($duty as $dutiesData => $status) {
+            foreach ($duty as $dutiesData => $status) {
 
-            DepartmentRight::updateOrCreate(
-                [
-                    'staff_id' => $request->input('staff_id'),
-                    'duties_id' => $dutiesData,
-                    'department_id' => $departmentId
-                ],
-                [
-                    'status' => $status
-                ]
-            );
+                DepartmentRight::updateOrCreate(
+                    [
+                        'staff_id' => $request->input('staff_id'),
+                        'duties_id' => $dutiesData,
+                        'department_id' => $departmentId
+                    ],
+                    [
+                        'status' => $status
+                    ]
+                );
+            }
         }
-    }
         return redirect()->back()->with('success', 'User Rights by department added successfully');
     }
 
@@ -296,9 +303,9 @@ class EmployeeController extends Controller
         $email = session('email');
         $employee = Employee::where('email', $email)->first();
         $attendance = EmployeeAttendance::where('employee_id',  $employee->id)
-                                        ->whereNull('punch_out')
-                                        ->orderBy('created_at', 'desc')
-                                        ->first();
+            ->whereNull('punch_out')
+            ->orderBy('created_at', 'desc')
+            ->first();
         if ($attendance) {
             $attendance->punch_out = $request->time;
             $attendance->save();
@@ -306,26 +313,27 @@ class EmployeeController extends Controller
 
         return response()->json(['success' => true]);
     }
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
-          ]);
-          $credentials = $request->only('email', 'password');
-          // Attempt to log the user in
-          if (Auth::guard('employee')->attempt($request->only('email', 'password'), $request->filled('remember'))) {
+        ]);
+        $credentials = $request->only('email', 'password');
+        // Attempt to log the user in
+        if (Auth::guard('employee')->attempt($request->only('email', 'password'), $request->filled('remember'))) {
             $admin = Auth::guard('employee')->user();
-            $name = $admin->first_name ." ". $admin->last_name;
-          $request->session()->put('employee_name', $name );
-          $request->session()->put('email', $admin->email );
-          $request->session()->put('role', 'Employee');
+            $name = $admin->first_name . " " . $admin->last_name;
+            $request->session()->put('employee_name', $name);
+            $request->session()->put('email', $admin->email);
+            $request->session()->put('role', 'Employee');
 
             return redirect()->route('employee.dashboard');
-          }
+        }
 
-          // If unsuccessful, then redirect back to the login with the form data
-          // If unsuccessful, then redirect back to the login with the form data
-          return redirect()
+        // If unsuccessful, then redirect back to the login with the form data
+        // If unsuccessful, then redirect back to the login with the form data
+        return redirect()
             ->back()
             ->with('error', 'These credentials do not match our records.');
     }
@@ -342,16 +350,16 @@ class EmployeeController extends Controller
     {
 
         $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-        ->where('users.role_id', 2)
-        ->get(['clients.*', 'users.*']);
-    $department = Department::latest()->get();
-    $designation = Designation::latest()->get();
+            ->where('users.role_id', 2)
+            ->get(['clients.*', 'users.*']);
+        $department = Department::latest()->get();
+        $designation = Designation::latest()->get();
 
-    $departmentEmployees = User::where('role_id', 2)
-        ->get()
-        ->groupBy('department');
+        $departmentEmployees = User::where('role_id', 2)
+            ->get()
+            ->groupBy('department');
 
-        return view('admin.employees', compact('employees', 'department', 'designation','departmentEmployees'));
+        return view('admin.employees', compact('employees', 'department', 'designation', 'departmentEmployees'));
     }
 
     // Display the employee's details and leave information
@@ -360,7 +368,7 @@ class EmployeeController extends Controller
         foreach ($request->input('airline') as $airlineId => $duties) {
             foreach ($duties as $duty => $status) {
 
-            $specialFare=  ApprovedStaff::updateOrCreate(
+                $specialFare =  ApprovedStaff::updateOrCreate(
                     [
                         'airline_id' => $airlineId,
                         'duties' => $duty,
@@ -389,19 +397,19 @@ class EmployeeController extends Controller
     public function viewEmployee($id, Request $request)
     {
 
-        $airlineDetails = AirlineDetail::where('deleted_at',null)->orWhere('deleted_at','null')->get();
-        $duty = Duty::where('status',1)->get();
+        $airlineDetails = AirlineDetail::where('deleted_at', null)->orWhere('deleted_at', 'null')->get();
+        $duty = Duty::where('status', 1)->get();
         $Staffs = User::where('status', 'active')->get();
-        $approvedStaffs = ApprovedStaff::where('status',1)->where('airline_id', $id)->get();
-        $usedAnnualLeave = EmployeeLeave::where('employee_id', $id)->where('status',3)->where('leave_type','Annual Leave')
-                                        ->sum('no_of_days');
-        $library = AirlineLibrary::where('deleted_at',null)->orWhere('deleted_at','null')->where('staff_id', $id)->get();
+        $approvedStaffs = ApprovedStaff::where('status', 1)->where('airline_id', $id)->get();
+        $usedAnnualLeave = EmployeeLeave::where('employee_id', $id)->where('status', 3)->where('leave_type', 'Annual Leave')
+            ->sum('no_of_days');
+        $library = AirlineLibrary::where('deleted_at', null)->orWhere('deleted_at', 'null')->where('staff_id', $id)->get();
         $airline = AirlineDetail::where('deleted_at', NULL)->with('airline')->get();
         $employee = Client::join('users', 'users.clientid', '=', 'clients.client_id')
             ->where('users.id', $id)
             ->first(['clients.*', 'users.*']);
         $allEmployee = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-        ->get(['clients.*', 'users.*']);
+            ->get(['clients.*', 'users.*']);
         $employees = User::find($id);
 
         $currentDate = \Carbon\Carbon::now()->format('l, j.n.Y');
@@ -413,17 +421,17 @@ class EmployeeController extends Controller
                 return \Carbon\Carbon::parse($leave->from)->diffInDays(\Carbon\Carbon::parse($leave->to)) + 1;
             });
 
-            $tl = EmployeeLeave::where('employee_id',$id)->sum('no_of_days');
-            $eel = User::where('id',$id)->first();
+        $tl = EmployeeLeave::where('employee_id', $id)->sum('no_of_days');
+        $eel = User::where('id', $id)->first();
 
         $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
-        ->whereDate('to', '>=', now()->toDateString())->count();
+            ->whereDate('to', '>=', now()->toDateString())->count();
 
-        $approvedLeaves = EmployeeLeave::where('employee_id',$id)->where('leave_type','Annual Leave')->where('status', 3)->sum('no_of_days');
-        $total_pending_leaves = EmployeeLeave::where('employee_id',$id)->where('status', 2)->sum('no_of_days');
-        $total_declined_leaves = EmployeeLeave::where('employee_id',$id)->where('status', 4)->sum('no_of_days');
+        $approvedLeaves = EmployeeLeave::where('employee_id', $id)->where('leave_type', 'Annual Leave')->where('status', 3)->sum('no_of_days');
+        $total_pending_leaves = EmployeeLeave::where('employee_id', $id)->where('status', 2)->sum('no_of_days');
+        $total_declined_leaves = EmployeeLeave::where('employee_id', $id)->where('status', 4)->sum('no_of_days');
 
-        $remaining_leaves = $eel->leave_count-$approvedLeaves;
+        $remaining_leaves = $eel->leave_count - $approvedLeaves;
         $leave_used_percentage = ($total_leaves > 0) ? ($total_leave_taken / $total_leaves) * 100 : 0;
         $leave_used_percentage = min(100, max(0, $leave_used_percentage));
 
@@ -439,9 +447,9 @@ class EmployeeController extends Controller
 
         $total_employee = Client::count();
 
-          $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
-                                                     ->whereDate('to', '>=', now()->toDateString())
-                                                     ->count();
+        $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
+            ->whereDate('to', '>=', now()->toDateString())
+            ->count();
         $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
 
         $holidays = Holiday::select('holiday_date')->get();
@@ -449,10 +457,10 @@ class EmployeeController extends Controller
         // Calculate approved leaves for the current month
 
         // Fetch leaves by type for the authenticated user
-        $leaveData = EmployeeLeave::where('employee_id', $id)->where('status',3)
-        ->get();
+        $leaveData = EmployeeLeave::where('employee_id', $id)->where('status', 3)
+            ->get();
         $userData = User::where('id', $id)->first();
-                $annualLeave = $userData->leave_count ?? 0;
+        $annualLeave = $userData->leave_count ?? 0;
         $absencePerMonth = EmployeeLeave::where('employee_id', $id)
             ->where('status', 3) // Approved status
             ->whereMonth('from', now()->month)
@@ -460,76 +468,81 @@ class EmployeeController extends Controller
             ->count();
 
         $remainingLeave = $annualLeave - $usedAnnualLeave;
-        $total_holidays=$usedAnnualLeave +  $remainingLeave;
+        $total_holidays = $usedAnnualLeave +  $remainingLeave;
 
-        $leavetypes = LeaveType::where('status',1)->get();
+        $leavetypes = LeaveType::where('status', 1)->get();
         $staffReadSign = StaffReadSign::where('staff_id', $id)->get();
-        $employee_leaves_view = EmployeeLeave::where('employee_id',$id)->latest()->get();
+        $employee_leaves_view = EmployeeLeave::where('employee_id', $id)->latest()->get();
         $users = User::where('department', '!=', null)->get()->groupBy('department');
 
-    // If this is an AJAX request
-    if ($request->ajax()) {
-        $type = $request->get('type'); // 'coworker', 'team', or 'browse_list'
-        $value = $request->get('value'); // Selected value from the dropdown
+        // If this is an AJAX request
+        if ($request->ajax()) {
+            $type = $request->get('type'); // 'coworker', 'team', or 'browse_list'
+            $value = $request->get('value'); // Selected value from the dropdown
 
-        $filteredData = [];
+            $filteredData = [];
 
-        if ($type === 'coworker') {
-            // Filter data based on coworker (employee ID)
-            $filteredData = User::where('id', $value)->get();
-        } elseif ($type === 'team') {
-            // Filter data based on team (department)
-            $filteredData = User::where('department', $value)->get();
-        } elseif ($type === 'browse_list') {
-            // Filter data based on browse list (user ID)
-            $filteredData = User::where('id', $value)->get();
-        }
-
-        // Prepare filtered employee leave data for calendar display
-        $calendarData = [];
-        foreach ($filteredData as $employee) {
-            // Fetching leave dates for the employee
-            $employeeLeaves = DB::table('employee_leaves')
-                ->where('employee_id', $employee->id)
-                ->get();
-
-            // Create an array of leave days
-            $leaveDays = [];
-            $currentMonth = \Carbon\Carbon::now()->month; // Get the current month
-
-            foreach ($employeeLeaves as $leave) {
-                $fromDate = \Carbon\Carbon::parse($leave->from);
-                $toDate = \Carbon\Carbon::parse($leave->to);
-
-                // Check if the leave falls within the current month
-                if (
-                    $fromDate->month === $currentMonth ||
-                    $toDate->month === $currentMonth
-                ) {
-                    // Generate all days between from and to date
-                    while ($fromDate->lte($toDate)) {
-                        $leaveDays[] = $fromDate->day;
-                        $fromDate->addDay();
-                    }
-                }
+            if ($type === 'coworker') {
+                // Filter data based on coworker (employee ID)
+                $filteredData = User::where('id', $value)->get();
+            } elseif ($type === 'team') {
+                // Filter data based on team (department)
+                $filteredData = User::where('department', $value)->get();
+            } elseif ($type === 'browse_list') {
+                // Filter data based on browse list (user ID)
+                $filteredData = User::where('id', $value)->get();
             }
 
-            $calendarData[] = [
-                'employee' => $employee,
-                'leaveDays' => $leaveDays,
-            ];
+            // Prepare filtered employee leave data for calendar display
+            $calendarData = [];
+            foreach ($filteredData as $employee) {
+                // Fetching leave dates for the employee
+                $employeeLeaves = DB::table('employee_leaves')
+                    ->where('employee_id', $employee->id)
+                    ->get();
+
+                // Create an array of leave days
+                $leaveDays = [];
+                $currentMonth = \Carbon\Carbon::now()->month; // Get the current month
+
+                foreach ($employeeLeaves as $leave) {
+                    $fromDate = \Carbon\Carbon::parse($leave->from);
+                    $toDate = \Carbon\Carbon::parse($leave->to);
+
+                    // Check if the leave falls within the current month
+                    if (
+                        $fromDate->month === $currentMonth ||
+                        $toDate->month === $currentMonth
+                    ) {
+                        // Generate all days between from and to date
+                        while ($fromDate->lte($toDate)) {
+                            $leaveDays[] = $fromDate->day;
+                            $fromDate->addDay();
+                        }
+                    }
+                }
+
+                $calendarData[] = [
+                    'employee' => $employee,
+                    'leaveDays' => $leaveDays,
+                ];
+            }
+
+            return response()->json(['calendarData' => $calendarData]);
         }
 
-        return response()->json(['calendarData' => $calendarData]);
-    }
+        $departments = Department::get();
 
-    $departments = Department::get();
-
-    // For the normal view (non-AJAX request)
-    if ($departments->isEmpty()) {
-        return response()->json(['error' => 'No departments found'], 404);
-    }
-        return view('admin.view-profile', compact('departments','approvedStaffs','Staffs', 'duty','airlineDetails',
+        // For the normal view (non-AJAX request)
+        if ($departments->isEmpty()) {
+            return response()->json(['error' => 'No departments found'], 404);
+        }
+        return view('admin.view-profile', compact(
+            'departments',
+            'approvedStaffs',
+            'Staffs',
+            'duty',
+            'airlineDetails',
             'users',
             'allEmployee',
             'holidays',
@@ -562,28 +575,28 @@ class EmployeeController extends Controller
         ));
     }
 
-// Store the employee's leave request
-public function leavesStaffStore(Request $request)
-{
-    $request->validate([
-        'employee_id' => 'required|exists:users,id',
-        'leave_type' => 'required|string',
-        'from' => 'required|date',
-        'to' => 'required|date|after_or_equal:from',
-        'reason' => 'nullable|string',
-    ]);
+    // Store the employee's leave request
+    public function leavesStaffStore(Request $request)
+    {
+        $request->validate([
+            'employee_id' => 'required|exists:users,id',
+            'leave_type' => 'required|string',
+            'from' => 'required|date',
+            'to' => 'required|date|after_or_equal:from',
+            'reason' => 'nullable|string',
+        ]);
 
-    EmployeeLeave::create([
-        'employee_id' => $request->input('employee_id'),
-        'leave_type' => $request->input('leave_type'),
-        'from' => $request->input('from'),
-        'to' => $request->input('to'),
-        'reason' => $request->input('reason'),
-        'status' => 1
-    ]);
+        EmployeeLeave::create([
+            'employee_id' => $request->input('employee_id'),
+            'leave_type' => $request->input('leave_type'),
+            'from' => $request->input('from'),
+            'to' => $request->input('to'),
+            'reason' => $request->input('reason'),
+            'status' => 1
+        ]);
 
-    return redirect()->route('admin.view-staff', ['id' => $request->input('employee_id')]);
-}
+        return redirect()->route('admin.view-staff', ['id' => $request->input('employee_id')]);
+    }
 
 
 
@@ -685,30 +698,31 @@ public function leavesStaffStore(Request $request)
     {
         // Reuse the existing logic to fetch employees
         $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-                            ->where('users.role_id', 2)
-                            ->get(['clients.*', 'users.*']);
+            ->where('users.role_id', 2)
+            ->get(['clients.*', 'users.*']);
 
         $department = Department::latest()->get();
         $designation = Designation::latest()->get();
         $total_employee = Client::count();
         $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
-                                                 ->whereDate('to', '>=', now()->toDateString())->count();
+            ->whereDate('to', '>=', now()->toDateString())->count();
         $total_pending_leaves = EmployeeLeave::where('status', 2)->count();
         //$employee_leaves = EmployeeLeave::latest()->get();
         $employee_leaves = EmployeeLeave::latest()->get();
         // Number of employees on leave today
         $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
-                                                 ->whereDate('to', '>=', now()->toDateString())
-                                                 ->count();
+            ->whereDate('to', '>=', now()->toDateString())
+            ->count();
         // Number of present employees today
         $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
 
         // Return the view with the same data
-        return view('admin.manage-staff', compact('employees', 'department', 'designation','total_employee', 'total_leaves', 'total_pending_leaves','total_leaves','employee_leaves','noofpresentemployeestoday'));
+        return view('admin.manage-staff', compact('employees', 'department', 'designation', 'total_employee', 'total_leaves', 'total_pending_leaves', 'total_leaves', 'employee_leaves', 'noofpresentemployeestoday'));
     }
 
 
-    public function viewEmployeeProfile(Request $request, $id){
+    public function viewEmployeeProfile(Request $request, $id)
+    {
         $employeeProfile = Employee::find($id);
         return view('admin.employee-profile', compact('employeeProfile'));
     }
@@ -750,86 +764,86 @@ public function leavesStaffStore(Request $request)
     // }
 
     public function holidays(Request $request)
-{
-    $holidays = Holiday::latest()->get();
-    $total_employee = Client::count();
-    $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-        ->get(['clients.*', 'users.*']);
-    $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
-        ->whereDate('to', '>=', now()->toDateString())->count();
-    $total_pending_leaves = EmployeeLeave::where('status', 2)->count();
-    $employee_leaves = EmployeeLeave::latest()->get();
-    $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
-        ->whereDate('to', '>=', now()->toDateString())
-        ->count();
-    $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
-    $leavetypes = LeaveType::where('status', 1)->get();
-    $departments = Department::get();
-    $users = User::where('department', '!=', null)->get()->groupBy('department');
+    {
+        $holidays = Holiday::latest()->get();
+        $total_employee = Client::count();
+        $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
+            ->get(['clients.*', 'users.*']);
+        $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
+            ->whereDate('to', '>=', now()->toDateString())->count();
+        $total_pending_leaves = EmployeeLeave::where('status', 2)->count();
+        $employee_leaves = EmployeeLeave::latest()->get();
+        $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
+            ->whereDate('to', '>=', now()->toDateString())
+            ->count();
+        $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
+        $leavetypes = LeaveType::where('status', 1)->get();
+        $departments = Department::get();
+        $users = User::where('department', '!=', null)->get()->groupBy('department');
 
-    // If this is an AJAX request
-    if ($request->ajax()) {
-        $type = $request->get('type'); // 'coworker', 'team', or 'browse_list'
-        $value = $request->get('value'); // Selected value from the dropdown
+        // If this is an AJAX request
+        if ($request->ajax()) {
+            $type = $request->get('type'); // 'coworker', 'team', or 'browse_list'
+            $value = $request->get('value'); // Selected value from the dropdown
 
-        $filteredData = [];
+            $filteredData = [];
 
-        if ($type === 'coworker') {
-            // Filter data based on coworker (employee ID)
-            $filteredData = User::where('id', $value)->get();
-        } elseif ($type === 'team') {
-            // Filter data based on team (department)
-            $filteredData = User::where('department', $value)->get();
-        } elseif ($type === 'browse_list') {
-            // Filter data based on browse list (user ID)
-            $filteredData = User::where('id', $value)->get();
-        }
-
-        // Prepare filtered employee leave data for calendar display
-        $calendarData = [];
-        foreach ($filteredData as $employee) {
-            // Fetching leave dates for the employee
-            $employeeLeaves = DB::table('employee_leaves')
-                ->where('employee_id', $employee->id)
-                ->get();
-
-            // Create an array of leave days
-            $leaveDays = [];
-            $currentMonth = \Carbon\Carbon::now()->month; // Get the current month
-
-            foreach ($employeeLeaves as $leave) {
-                $fromDate = \Carbon\Carbon::parse($leave->from);
-                $toDate = \Carbon\Carbon::parse($leave->to);
-
-                // Check if the leave falls within the current month
-                if (
-                    $fromDate->month === $currentMonth ||
-                    $toDate->month === $currentMonth
-                ) {
-                    // Generate all days between from and to date
-                    while ($fromDate->lte($toDate)) {
-                        $leaveDays[] = $fromDate->day;
-                        $fromDate->addDay();
-                    }
-                }
+            if ($type === 'coworker') {
+                // Filter data based on coworker (employee ID)
+                $filteredData = User::where('id', $value)->get();
+            } elseif ($type === 'team') {
+                // Filter data based on team (department)
+                $filteredData = User::where('department', $value)->get();
+            } elseif ($type === 'browse_list') {
+                // Filter data based on browse list (user ID)
+                $filteredData = User::where('id', $value)->get();
             }
 
-            $calendarData[] = [
-                'employee' => $employee,
-                'leaveDays' => $leaveDays,
-            ];
+            // Prepare filtered employee leave data for calendar display
+            $calendarData = [];
+            foreach ($filteredData as $employee) {
+                // Fetching leave dates for the employee
+                $employeeLeaves = DB::table('employee_leaves')
+                    ->where('employee_id', $employee->id)
+                    ->get();
+
+                // Create an array of leave days
+                $leaveDays = [];
+                $currentMonth = \Carbon\Carbon::now()->month; // Get the current month
+
+                foreach ($employeeLeaves as $leave) {
+                    $fromDate = \Carbon\Carbon::parse($leave->from);
+                    $toDate = \Carbon\Carbon::parse($leave->to);
+
+                    // Check if the leave falls within the current month
+                    if (
+                        $fromDate->month === $currentMonth ||
+                        $toDate->month === $currentMonth
+                    ) {
+                        // Generate all days between from and to date
+                        while ($fromDate->lte($toDate)) {
+                            $leaveDays[] = $fromDate->day;
+                            $fromDate->addDay();
+                        }
+                    }
+                }
+
+                $calendarData[] = [
+                    'employee' => $employee,
+                    'leaveDays' => $leaveDays,
+                ];
+            }
+
+            return response()->json(['calendarData' => $calendarData]);
         }
 
-        return response()->json(['calendarData' => $calendarData]);
-    }
+        // For the normal view (non-AJAX request)
+        if ($departments->isEmpty()) {
+            return response()->json(['error' => 'No departments found'], 404);
+        }
 
-    // For the normal view (non-AJAX request)
-    if ($departments->isEmpty()) {
-        return response()->json(['error' => 'No departments found'], 404);
+        return view('admin.holidays', compact('total_employee', 'employees', 'total_pending_leaves', 'total_leaves', 'employee_leaves', 'noofpresentemployeestoday', 'holidays', 'leavetypes', 'departments', 'users'));
     }
-
-    return view('admin.holidays', compact('total_employee', 'employees', 'total_pending_leaves', 'total_leaves', 'employee_leaves', 'noofpresentemployeestoday', 'holidays', 'leavetypes', 'departments', 'users'));
-}
 
     public function holidayStore(Request $request)
     {
@@ -846,17 +860,17 @@ public function leavesStaffStore(Request $request)
             'title' => $request->input('title'),
             'holiday_date' => $request->input('holiday_date'),
             'holiday_day' => $holidayDay,
-            'category' => $request->input('category')??'bg-purple',
-            'state'=>$request->input('state'),
-            'country'=>$request->input('country'),
-            ]);
+            'category' => $request->input('category') ?? 'bg-purple',
+            'state' => $request->input('state'),
+            'country' => $request->input('country'),
+        ]);
 
 
         $holidays = Holiday::latest()->get();
         // Add your logic for holidays view
         return redirect()->route('admin.holidays');
     }
-    public function holidayUpdate(Request $request , $id)
+    public function holidayUpdate(Request $request, $id)
     {
         // Create a new employee
         $holiday =  Holiday::find($id);
@@ -864,9 +878,9 @@ public function leavesStaffStore(Request $request)
             'title' => $request->input('title'),
             'holiday_date' => $request->input('holiday_date'),
             'holiday_day' => $request->input('holiday_day'),
-            'category' => $request->input('category')??'bg-purple',
-            'state'=>$request->input('state'),
-            'country'=>$request->input('country'),
+            'category' => $request->input('category') ?? 'bg-purple',
+            'state' => $request->input('state'),
+            'country' => $request->input('country'),
         ]);
         $holidays = Holiday::latest()->get();
         // Add your logic for holidays view
@@ -876,26 +890,26 @@ public function leavesStaffStore(Request $request)
     public function leavesAdmin()
     {
 
-        $leavetypes = LeaveType::where('status',1)->get();
+        $leavetypes = LeaveType::where('status', 1)->get();
         $total_employee = Client::count();
         $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-        ->get(['clients.*', 'users.*']);
+            ->get(['clients.*', 'users.*']);
         $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
-                                                 ->whereDate('to', '>=', now()->toDateString())->where('leave_type','Annual Leave')->count();
-        $total_pending_leaves = EmployeeLeave::where('status', 2)->where('leave_type','Annual Leave')->count();
+            ->whereDate('to', '>=', now()->toDateString())->where('leave_type', 'Annual Leave')->count();
+        $total_pending_leaves = EmployeeLeave::where('status', 2)->where('leave_type', 'Annual Leave')->count();
         //$employee_leaves = EmployeeLeave::latest()->get();
-        $employee_leaves = EmployeeLeave::where('status',1)->get();
-        $pending_employee_leaves = EmployeeLeave::where('status',2)->get();
-        $approved_employee_leaves = EmployeeLeave::where('status',3)->get();
-        $rejected_employee_leaves = EmployeeLeave::where('status',4)->get();
+        $employee_leaves = EmployeeLeave::where('status', 1)->get();
+        $pending_employee_leaves = EmployeeLeave::where('status', 2)->get();
+        $approved_employee_leaves = EmployeeLeave::where('status', 3)->get();
+        $rejected_employee_leaves = EmployeeLeave::where('status', 4)->get();
         // Number of employees on leave today
         $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
-                                                 ->whereDate('to', '>=', now()->toDateString())->where('leave_type','Annual Leave')
-                                                 ->count();
+            ->whereDate('to', '>=', now()->toDateString())->where('leave_type', 'Annual Leave')
+            ->count();
         // Number of present employees today
         $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
         // Add your logic for leaves admin view
-        return view('admin.leaves', compact('total_employee','employees','total_pending_leaves','total_leaves','employee_leaves','leavetypes','noofpresentemployeestoday', 'rejected_employee_leaves', 'approved_employee_leaves', 'pending_employee_leaves')); // Example view path, adjust as per your structure
+        return view('admin.leaves', compact('total_employee', 'employees', 'total_pending_leaves', 'total_leaves', 'employee_leaves', 'leavetypes', 'noofpresentemployeestoday', 'rejected_employee_leaves', 'approved_employee_leaves', 'pending_employee_leaves')); // Example view path, adjust as per your structure
     }
 
     public function leavesAdminStore(Request $request)
@@ -908,7 +922,7 @@ public function leavesStaffStore(Request $request)
             'no_of_days' => $request->input('no_of_days'),
             'reason' => $request->input('reason'),
             'status' => 1
-            ]);
+        ]);
         // Add your logic for leaves admin view
         return redirect()->route('admin.leaves')->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
     }
@@ -928,15 +942,15 @@ public function leavesStaffStore(Request $request)
         // Add your logic for leaves employee view
         $email = session('email');
         $employee = Employee::where('email', $email)->first();
-        $total_leaves = Employee::where('id',$employee->id)->where('leave_type','Annual Leave')->pluck('leave_count')->first();
-        $medical_leave = EmployeeLeave::where('employee_id',$employee->id)->where('leave_type','Medical Leave')->count();
+        $total_leaves = Employee::where('id', $employee->id)->where('leave_type', 'Annual Leave')->pluck('leave_count')->first();
+        $medical_leave = EmployeeLeave::where('employee_id', $employee->id)->where('leave_type', 'Medical Leave')->count();
         $other_leave = EmployeeLeave::where('employee_id', $employee->id)
-        ->where('leave_type', '!=', 'Medical Leave')
-        ->count();
-        $total_taken = EmployeeLeave::where('employee_id',$employee->id)->where('leave_type','Annual Leave')->count();
+            ->where('leave_type', '!=', 'Medical Leave')
+            ->count();
+        $total_taken = EmployeeLeave::where('employee_id', $employee->id)->where('leave_type', 'Annual Leave')->count();
         $remaining_leave = $total_leaves - $total_taken;
-        $leaves = EmployeeLeave::where('employee_id',$employee->id)->get();
-        return view('admin.leaves-employee', compact('total_leaves', 'medical_leave', 'other_leave', 'remaining_leave','leaves')); // Example view path, adjust as per your structure
+        $leaves = EmployeeLeave::where('employee_id', $employee->id)->get();
+        return view('admin.leaves-employee', compact('total_leaves', 'medical_leave', 'other_leave', 'remaining_leave', 'leaves')); // Example view path, adjust as per your structure
     }
     public function leavesEmployeeStore(Request $request)
     {
@@ -950,12 +964,13 @@ public function leavesStaffStore(Request $request)
             'no_of_days' => $request->input('no_of_days'),
             'reason' => $request->input('reason'),
             'status' => 1
-            ]);
+        ]);
         // Add your logic for leaves admin view
         return redirect()->route('employee.leaves')->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
     }
 
-    public function EmployeeReadSignStore(Request $request){
+    public function EmployeeReadSignStore(Request $request)
+    {
         // Get the file
         // if ($request->hasFile('attachment')) {
         //     $file = $request->file('attachment');
@@ -991,7 +1006,7 @@ public function leavesStaffStore(Request $request)
             'updated_at' => $request->input('updated_at'),
 
         ]);
-        return redirect()->back()->with('success',' Document Uploaded successfully');
+        return redirect()->back()->with('success', ' Document Uploaded successfully');
     }
 
     public function leavesEmployeeViewStore(Request $request)
@@ -1004,7 +1019,7 @@ public function leavesStaffStore(Request $request)
             'no_of_days' => $request->input('no_of_days'),
             'reason' => $request->input('reason'),
             'status' => 1
-            ]);
+        ]);
         // Add your logic for leaves admin view
         return redirect()->back()->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
     }
@@ -1018,15 +1033,16 @@ public function leavesStaffStore(Request $request)
         // Add your logic for leaves admin view
         return redirect()->back()->with('success', 'Employee added successfully');
     }
-   public function EmployeeReadSignUpdate($id, Request $request){
-    $read =  StaffReadSign::find($id);
-    $read->update([
-        'sign_doc' => $request->input('sign_document'),
-        'updated_by' => Auth()->user()->name
-    ]);
-    // Add your logic for leaves admin view
-    return redirect()->back()->with('success', 'Signed Successfully added successfully');
-   }
+    public function EmployeeReadSignUpdate($id, Request $request)
+    {
+        $read =  StaffReadSign::find($id);
+        $read->update([
+            'sign_doc' => $request->input('sign_document'),
+            'updated_by' => Auth()->user()->name
+        ]);
+        // Add your logic for leaves admin view
+        return redirect()->back()->with('success', 'Signed Successfully added successfully');
+    }
 
     public function leaveSettings()
     {
@@ -1036,15 +1052,15 @@ public function leavesStaffStore(Request $request)
 
     public function attendanceAdmin()
     {
-         $attendance = DB::table('employee_attendances')
-        ->select('employee_id', DB::raw('DATE(punch_in) as punch_date'))
-        ->distinct()
-        ->get()
-        ->groupBy('employee_id');
+        $attendance = DB::table('employee_attendances')
+            ->select('employee_id', DB::raw('DATE(punch_in) as punch_date'))
+            ->distinct()
+            ->get()
+            ->groupBy('employee_id');
 
         // Fetch employee data to include in the view
         $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-        ->get(['clients.*', 'users.*']);
+            ->get(['clients.*', 'users.*']);
         // Add your logic for attendance admin view
         return view('admin.attendance', compact('attendance', 'employees'));
     }
@@ -1139,38 +1155,38 @@ public function leavesStaffStore(Request $request)
     }
 
     public function storeReportSick(Request $request)
-{
-    $request->validate([
-        'employee_id' => 'required|integer',
-        'leave_type' => 'required|string',
-        'from' => 'required|date',
-        'to' => 'required|date',
-        'note' => 'nullable|string',
-        'no_of_days' => 'nullable|integer',
-        'reason' => 'nullable|string',
-        'attachment' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,pdf,doc,docx|max:2048',
-    ]);
+    {
+        $request->validate([
+            'employee_id' => 'required|integer',
+            'leave_type' => 'required|string',
+            'from' => 'required|date',
+            'to' => 'required|date',
+            'note' => 'nullable|string',
+            'no_of_days' => 'nullable|integer',
+            'reason' => 'nullable|string',
+            'attachment' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,pdf,doc,docx|max:2048',
+        ]);
 
-    if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
-        $attachment = $request->file('attachment');
-        $path = $attachment->store('attachments', 'public');
-    } else {
-        $path = null; // Handle accordingly
+        if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
+            $attachment = $request->file('attachment');
+            $path = $attachment->store('attachments', 'public');
+        } else {
+            $path = null; // Handle accordingly
+        }
+
+        EmployeeLeave::create([
+            'employee_id' => $request->input('employee_id'),
+            'leave_type' => $request->input('leave_type'),
+            'from' => $request->input('from'),
+            'to' => $request->input('to'),
+            'note' => $request->input('note'),
+            'no_of_days' => $request->input('no_of_days'),
+            'attachment' => $path,
+            'status' => 1
+        ]);
+
+        return redirect()->back()->with('success', 'Sick Report added successfully');
     }
-
-    EmployeeLeave::create([
-        'employee_id' => $request->input('employee_id'),
-        'leave_type' => $request->input('leave_type'),
-        'from' => $request->input('from'),
-        'to' => $request->input('to'),
-        'note' => $request->input('note'),
-        'no_of_days' => $request->input('no_of_days'),
-        'attachment' => $path,
-        'status' => 1
-    ]);
-
-    return redirect()->back()->with('success', 'Sick Report added successfully');
-}
 
 
 
@@ -1198,7 +1214,7 @@ public function leavesStaffStore(Request $request)
             'note' => $request->input('note'),
             'representation' => $request->input('representation'),
             'status' => 1
-            ]);
+        ]);
         // Add your logic for leaves admin view
         return redirect()->back()->with('success', 'New Absence added successfully');
     }
@@ -1207,5 +1223,45 @@ public function leavesStaffStore(Request $request)
     {
         $holidays = Holiday::select('holiday_date')->get();
         return response()->json($holidays);
+    }
+
+    public function getDepartments()
+    {
+        $departments = User::whereNotNull('department')
+            ->select('department')
+            ->distinct()
+            ->pluck('department');
+
+        return response()->json(['departments' => $departments]);
+    }
+
+    public function getEmployeesByDepartment($department)
+    {
+        $users = User::where('department', $department)->get();
+
+        foreach ($users as $user) {
+            $employeeLeaves = DB::table('employee_leaves')
+                ->where('employee_id', $user->id)
+                ->get();
+
+            $leaveDays = [];
+            $currentMonth = Carbon::now()->month;
+
+            foreach ($employeeLeaves as $leave) {
+                $fromDate = Carbon::parse($leave->from);
+                $toDate = Carbon::parse($leave->to);
+
+                if ($fromDate->month === $currentMonth || $toDate->month === $currentMonth) {
+                    while ($fromDate->lte($toDate)) {
+                        $leaveDays[] = $fromDate->day;
+                        $fromDate->addDay();
+                    }
+                }
+            }
+
+            $user->leaveDays = $leaveDays;
+        }
+
+        return response()->json(['users' => $users]);
     }
 }

@@ -102,6 +102,11 @@ Route::get('/', function () {
 
 Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.post.login');
 Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->group(function () {
+
+
+    Route::get('/get-departments', [EmployeeController::class, 'getDepartments']);
+    Route::get('/get-employees/{department}', [EmployeeController::class, 'getEmployeesByDepartment']);
+
     // Accounting routes
     Route::get('categories/view', [CategoryController::class, 'categoriesIndex'])->name('categories.view');
     Route::post('categories/store', [CategoryController::class, 'storeCategory'])->name('categories.store');
