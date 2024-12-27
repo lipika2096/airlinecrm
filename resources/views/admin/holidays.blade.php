@@ -764,10 +764,11 @@
                                         url: baseurl + `/admin/get-employees/${department}`,
                                         method: 'GET',
                                         success: function(response) {
-                                            let html = '';
+                                            let html = '<div class="row">';
                                             response.users.forEach((user, userIndex) => {
                                                 html += generateCalendar(user, `${index}-${userIndex}`);
                                             });
+                                            html += '</div>';
                                             employeesContainer.html(html);
                                             employeesContainer.removeClass('d-none');
                                         },
@@ -792,7 +793,7 @@
                                 const leaveDays = user.leaveDays || [];
 
                                 let calendarHtml = `
-        <div class="employee-card card mb-3">
+        <div class="employee-card card mb-3 col-6">
             <div class="card-body">
                 <h5 class="card-title">${user.first_name} ${user.last_name}</h5>
                 <div class="calendar">
