@@ -884,7 +884,10 @@ public function leavesStaffStore(Request $request)
                                                  ->whereDate('to', '>=', now()->toDateString())->where('leave_type','Annual Leave')->count();
         $total_pending_leaves = EmployeeLeave::where('status', 2)->where('leave_type','Annual Leave')->count();
         //$employee_leaves = EmployeeLeave::latest()->get();
-        $employee_leaves = EmployeeLeave::latest()->get();
+        $employee_leaves = EmployeeLeave::where('status',1)->get();
+        $pending_employee_leaves = EmployeeLeave::where('status',2)->get();
+        $approved_employee_leaves = EmployeeLeave::where('status',3)->get();
+        $rejected_employee_leaves = EmployeeLeave::where('status',4)->get();
         // Number of employees on leave today
         $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
                                                  ->whereDate('to', '>=', now()->toDateString())->where('leave_type','Annual Leave')
@@ -892,7 +895,7 @@ public function leavesStaffStore(Request $request)
         // Number of present employees today
         $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
         // Add your logic for leaves admin view
-        return view('admin.leaves', compact('total_employee','employees','total_pending_leaves','total_leaves','employee_leaves','leavetypes','noofpresentemployeestoday')); // Example view path, adjust as per your structure
+        return view('admin.leaves', compact('total_employee','employees','total_pending_leaves','total_leaves','employee_leaves','leavetypes','noofpresentemployeestoday', 'rejected_employee_leaves', 'approved_employee_leaves', 'pending_employee_leaves')); // Example view path, adjust as per your structure
     }
 
     public function leavesAdminStore(Request $request)
