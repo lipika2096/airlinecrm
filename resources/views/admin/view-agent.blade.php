@@ -1303,12 +1303,12 @@
                                 <div class="card-body">
                                     @foreach ($agentConversation as $conversation)
                                         <div class="container">
-                                            <div class="conversation-date">{{ $conversation->c_date }}</div>
-                                            <div class="conversation-title">{{ $conversation->title }}</div>
+                                            <div class="conversation-date">{{ $conversation->date_of_contact }}</div>
+                                            <div class="conversation-title"><span class="text-danger text-capitalize">{{ $conversation->airline->airline_name ?? 'N/A' }}: </span> {{ $conversation->title }}</div>
                                             <div class="conversation-description">
                                                 {{ $conversation->description }}
                                             </div>
-                                            <div class="conversation-author">added by {{ $conversation->from }}</div>
+                                            <div class="conversation-author">added by {{ $conversation->from }} <br/> {{ $conversation->c_date }}</div>
                                         </div>
                                     @endforeach
                                 </div>

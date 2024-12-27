@@ -8,6 +8,10 @@ class AgentConversation extends Model
 {
   protected $guarded = ['id'];
 
+  public function airline(){
+    return $this->belongsTo(Airline:: class,'airline_id','id');
+  }
+
   public function user(){
     return $this->belongsTo(User:: class,'from','id');
   }
