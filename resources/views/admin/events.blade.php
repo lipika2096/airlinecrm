@@ -73,7 +73,6 @@
                                             <table class="table table-striped custom-table mb-0 datatable">
                                                 <thead>
                                                     <tr>
-                                                        <th>Id</th>
                                                         <th>Title</th>
                                                         <th>Schedule Date</th>
                                                         <th>Website</th>
@@ -93,7 +92,6 @@
                                                 <tbody id="events-table-body">
                                                     @foreach ($events as $data)
                                                         <tr data-month="{{ date('n', strtotime($data->event_date)) - 1 }}">
-                                                            <td>{{ $data->id }}</td>
                                                             <td>{{ $data->event_name }}</td>
                                                             <td>{{ $data->event_date }}</td>
                                                             <td>{{ $data->website }}</td>

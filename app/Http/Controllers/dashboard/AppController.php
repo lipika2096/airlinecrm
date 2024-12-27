@@ -12,7 +12,7 @@ class AppController extends Controller
 {
     public function calendar()
     {
-        $events = Calender::all(); // Assuming Event is the correct model name
+        $events = Calender::where('created_by', auth()->user()->name)->get(); // Assuming Event is the correct model name
         $eventStatus = EventStatus::orderBy('status_type')->get();
         return view('admin.events', compact('events', 'eventStatus')); // Ensure the view path is correct
     }
