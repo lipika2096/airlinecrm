@@ -12,7 +12,7 @@ class AppController extends Controller
 {
     public function calendar()
     {
-        $events = Calender::where('created_by', auth()->user()->name)->get(); // Assuming Event is the correct model name
+        $events = Calender::where('created_by', auth()->user()->id)->get(); // Assuming Event is the correct model name
         $eventStatus = EventStatus::orderBy('status_type')->get();
         return view('admin.events', compact('events', 'eventStatus')); // Ensure the view path is correct
     }
@@ -49,7 +49,7 @@ class AppController extends Controller
         $eventStatus = Calender::find($id);
         $eventStatus->update([
             'status' => $request->input('status'),
-            'updated_by' => auth()->user()->name,
+            'updated_by' => auth()->user()->id,
             'updated_at' => now()
         ]);
         return redirect()->back()->with('success', 'Event added successfully.');

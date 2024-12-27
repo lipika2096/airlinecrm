@@ -15,4 +15,14 @@ class Calender extends Model
     public function statusId(){
         return $this->belongsTo(EventStatus::class, 'status', 'id');
     }
+
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
+    }
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by', 'id');
+    }
 }

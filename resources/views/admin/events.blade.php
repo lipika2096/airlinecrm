@@ -101,9 +101,9 @@
                                                             <td>{{ $data->category }}</td>
                                                             <td>{{ $data->remarks }}</td>
                                                             <td>{{ $data->created_at }}</td>
-                                                            <td>{{ $data->created_by }}</td>
+                                                            <td>{{ $data->createdBy->first_name ?? 'N/A' }} {{ $data->createdBy->last_name ?? '' }}</td>
                                                             <td>{{ $data->updated_at }}</td>
-                                                            <td>{{ $data->updated_by }}</td>
+                                                            <td>{{ $data->updatedBy->first_name ?? 'N/A' }} {{ $data->updatedBy->last_name ?? ''  }}</td>
                                                             <td>
                                                                 <div class="dropdown action-label dropdown-item" >
                                                                     <a class="btn btn-white btn-sm btn-rounded" data-bs-toggle="modal"
