@@ -639,11 +639,8 @@
                             <div class="col-md-4">
                                 <div class="input-group">
                                     <select class="form-control" id="coworkerSelect" aria-label="Add Coworker">
-                                        <option value="" disabled selected>Add Colleagues</option>
-                                        @foreach ($employees as $data => $employee)
-                                            <option value="{{ $employee->user->id }}">{{ $employee->first_name }}
-                                                {{ $employee->last_name }}</option>
-                                        @endforeach
+                                        <option value="" selected>Add Colleagues</option>
+
                                         <!-- Add more coworker options as needed -->
                                     </select>
                                     <span class="input-group-text">
@@ -702,9 +699,9 @@
                                         response.departments.forEach((dept, index) => {
                                             html += `
                                             <div class="department mb-3" id="department-${index}">
-                                                <div class="department-header bg-secondary text-white p-3 rounded d-flex justify-content-between align-items-center" style="cursor: pointer;" data-department="${dept}" data-index="${index}">
+                                                <div class="department-header bg-secondary text-white p- rounded d-flex justify-content-between align-items-center" style="cursor: pointer;" data-department="${dept}" data-index="${index}">
                                                     <h5 class="fw-bold">${dept} <i class="fa fa-caret-down"></i></h5>
-                                                    <button class="btn btn-danger btn-sm close-department" data-department="${dept}" data-index="${index}">
+                                                    <button class="btn  btn-sm close-department text-white" data-department="${dept}" data-index="${index}">
                                                         <i class="fa fa-times"></i>
                                                     </button>
                                                 </div>
@@ -728,7 +725,25 @@
                                     $(`#department-${index}`).hide();
 
                                     addDepartmentToDropdown(department);
+                                    fetchEmployeesForCoworkerDropdown(department);
                                 });
+                                function fetchEmployeesForCoworkerDropdown(department) {
+                                    const coworkerDropdown = $('#coworkerSelect');
+
+                                    $.ajax({
+                                        url: baseUrl + `/admin/get-employees/${department}`,
+                                        method: 'GET',
+                                        success: function(response) {
+                                            response.users.forEach(user => {
+                                                const optionHTML = `<option value="${user.id}">${user.first_name} ${user.last_name} - ${department}</option>`;
+                                                coworkerDropdown.append(optionHTML);
+                                            });
+                                        },
+                                        error: function(error) {
+                                            console.error(`Failed to fetch employees for department ${department}:`, error);
+                                        }
+                                    });
+                                }
 
                                 // Function to add the department back to the dropdown
                                 function addDepartmentToDropdown(department) {
@@ -749,6 +764,49 @@
                                         $(this).find(`option[value="${selectedDepartment}"]`).remove();
                                     }
                                 });
+                                // Handle employee selection from Coworker dropdown
+                                $('#coworkerSelect').on('change', function () {
+                                    const selectedOption = $(this).find(':selected');
+                                    const employeeId = selectedOption.val();
+                                    const department = selectedOption.data('department');
+
+                                    if (employeeId && department) {
+                                        // Show the department tab
+                                        const departmentElement = $(`.department-header[data-department="${department}"]`).closest('.department');
+                                        departmentElement.show();
+
+                                        // Fetch and display employee details in the department tab
+                                        fetchAndShowEmployeeDetails(employeeId, department);
+
+                                        // Remove the employee from the Coworker dropdown
+                                        $(this).find(`option[value="${employeeId}"]`).remove();
+                                    }
+                                });
+                                // Function to fetch and show employee details
+                                function fetchAndShowEmployeeDetails(employeeId, department) {
+                                    const employeesContainer = $(`.department-header[data-department="${department}"]`)
+                                        .closest('.department')
+                                        .find('.employees');
+
+                                    if (employeesContainer.length > 0) {
+                                        const baseurl = "{{ url('/') }}";
+
+                                        $.ajax({
+                                            url: baseurl + `/admin/get-employee/${employeeId}`,
+                                            method: 'GET',
+                                            success: function (response) {
+                                                const employee = response.user;
+                                                const html = generateCalendar(employee, department);
+
+                                                // Add employee data and make sure the container is visible
+                                                employeesContainer.append(html).removeClass('d-none');
+                                            },
+                                            error: function (error) {
+                                                console.error(`Failed to fetch details for employee ID ${employeeId}:`, error);
+                                            }
+                                        });
+                                    }
+                                }
                             });
 
                             $(document).on('click', '.department-header', function() {
@@ -793,20 +851,20 @@
                                 const leaveDays = user.leaveDays || [];
 
                                 let calendarHtml = `
-        <div class="employee-card card mb-3 col-6">
-            <div class="card-body">
-                <h5 class="card-title">${user.first_name} ${user.last_name}</h5>
-                <div class="calendar">
-                    <div class="week-days my-2 d-flex justify-content-between">
-                        ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => `
-                                                    <div class="day-header" style="width: 14%; font-weight: bold; text-align: center;">
-                                                        ${day}
-                                                    </div>
-                                                `).join('')}
-                    </div>
+                                    <div class="employee-card card mb-3 col-6">
+                                        <div class="card-body">
+                                            <h5 class="card-title">${user.first_name} ${user.last_name}</h5>
+                                            <div class="calendar">
+                                                <div class="week-days my-2 d-flex justify-content-between">
+                                                    ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => `
+                                                                                <div class="day-header" style="width: 14%; font-weight: bold; text-align: center;">
+                                                                                    ${day}
+                                                                                </div>
+                                                                            `).join('')}
+                                                </div>
 
-                    <div class="month-weeks">
-    `;
+                                                <div class="month-weeks">
+                                `;
 
                                 let dayCounter = 1;
                                 for (let week = 0; week < Math.ceil((daysInMonth + firstDayOfMonth) / 7); week++) {
@@ -818,11 +876,11 @@
 
                                         if (currentDay > 0 && currentDay <= daysInMonth) {
                                             calendarHtml += `
-                    <div class="day mb-2 ms-2"
-                        style="width: 14%; height: 40px; text-align: center; line-height: 50px; ${isLeaveDay ? 'background-color: black; font-weight: bold; color: white;' : ''}">
-                        ${currentDay}
-                    </div>
-                `;
+                                                <div class="day mb-2 ms-2"
+                                                    style="width: 14%; height: 40px; text-align: center; line-height: 50px; ${isLeaveDay ? 'background-color: black; font-weight: bold; color: white;' : ''}">
+                                                    ${currentDay}
+                                                </div>
+                                            `;
                                         } else {
                                             calendarHtml += '<div class="day empty-day mb-2 ms-2" style="width: 14%; height: 40px;"></div>';
                                         }
@@ -832,11 +890,11 @@
                                 }
 
                                 calendarHtml += `
-                    </div> <!-- Close month-weeks -->
-                </div> <!-- Close calendar -->
-            </div> <!-- Close card-body -->
-        </div> <!-- Close employee-card -->
-    `;
+                                                </div> <!-- Close month-weeks -->
+                                            </div> <!-- Close calendar -->
+                                        </div> <!-- Close card-body -->
+                                    </div> <!-- Close employee-card -->
+                                `;
 
                                 return calendarHtml;
                             }
