@@ -481,7 +481,7 @@ class AgentController extends Controller
             'phone_number' => $request->input('phone_number'),
             'position' => $request->input('position'),
             'add_to_mail_list' => $request->input('add_to_mail_list') == '1' ? 1 : 0,
-            'updated_by' => Auth()->user()->name
+            'last_updated_by' => Auth()->user()->id
         ]);
         return redirect()->back();
     }
@@ -497,7 +497,7 @@ class AgentController extends Controller
             'agent_id' => $request->input('agent_id'),
             'add_to_mail_list' => $request->input('add_to_mail_list'),
             'updated_at' => $request->input('updated_at'),
-            'created_by' => Auth()->user()->name
+            'created_by' => Auth()->user()->id
         ]);
         return redirect()->back();
     }

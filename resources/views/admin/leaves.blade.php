@@ -794,8 +794,8 @@
 
             // Check if the entered date has a valid year
             const enteredDate = new Date(dateInput.value);
-            if (enteredDate.getFullYear() > currentYear || enteredDate.getFullYear() < 1000) {
-                alert("Please enter a valid year between 1000 and the current year.");
+            if (enteredDate.getFullYear() < currentYear) {
+                alert("Please enter a valid year either with current year or with future year.");
                 dateInput.value = ''; // Clear the invalid input
             }
         });

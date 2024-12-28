@@ -174,230 +174,236 @@
                         </div>
                         <!-- /Page Header -->
 
-                                            <!-- Request Absence Modal -->
-                                            <div id="new_absence" class="modal custom-modal fade" role="dialog">
-                                                <div class="modal-dialog modal-dialog-centered modal-lg">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Request Absence</h5>
-                                                            <button type="button" class="close" data-bs-dismiss="modal"
-                                                                aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body pt-0">
-                                                            <form method="post"
-                                                                action="{{ route('admin.newabsence.store') }}#leaves">
-                                                                @csrf
-                                                                <div class="row">
-                                                                    <div class="col-md-12">
-                                                                            <input type="hidden" value="{{ $employees->id }}" class="form-control"
-                                                                            name="employee_id">
+                        <!-- Request Absence Modal -->
+                        <div id="new_absence" class="modal custom-modal fade" role="dialog">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Request Absence</h5>
+                                        <button type="button" class="close" data-bs-dismiss="modal"
+                                            aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body pt-0">
+                                        <form method="post"
+                                            action="{{ route('admin.newabsence.store') }}#leaves">
+                                            @csrf
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                        <input type="hidden" value="{{ $employees->id }}" class="form-control"
+                                                        name="employee_id">
 
-                                                                    </div>
-                                                                    <div class="col-md-12">
-                                                                        <div class="form-group">
-                                                                            <label>Absence type</label>
-                                                                            <select class="form-control select"
-                                                                                name="leave_type">
-                                                                                @foreach ($leavetypes as $leavetype)
-                                                                                <option value="{{ $leavetype->name }}">
-                                                                                    {{ $leavetype->name }}</option>
-                                                                                @endforeach
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-6">
-                                                                        <div class="form-group">
-                                                                            <label class="col-form-label">From</label>
-                                                                            <input class="form-control" id="from" type="date"
-                                                                                name="from" onchange="calculateDays()">
-                                                                        </div>
-                                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>Absence type</label>
+                                                        <select class="form-control select"
+                                                            name="leave_type">
+                                                            @foreach ($leavetypes as $leavetype)
+                                                            <option value="{{ $leavetype->name }}">
+                                                                {{ $leavetype->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">From</label>
+                                                        <input class="form-control" id="from" type="date"
+                                                            name="from" onchange="calculateDays()">
+                                                    </div>
+                                                </div>
 
-                                                                    <div class="col-sm-6">
-                                                                        <div class="form-group">
-                                                                            <label class="col-form-label">Until</label>
-                                                                            <input class="form-control"  id="to" type="date"
-                                                                                name="to" onchange="calculateDays()">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-12">
-                                                                        <div class="form-group">
-                                                                            <label>Number of days <span
-                                                                                    class="text-danger">*</span></label>
-                                                                            <input class="form-control" id="no_of_days" readonly type="text"
-                                                                                name="no_of_days">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-4">
-                                                                        <div class="form-group d-flex">
-                                                                            <input type="checkbox" name="half"
-                                                                                id="half-day">&nbsp;Half Day
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-4">
-                                                                        <div class="form-group d-flex">
-                                                                            <input type="radio" name="formerly"
-                                                                                id="formerly">&nbsp;Formerly
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-4">
-                                                                        <div class="form-group d-flex">
-                                                                            <input type="radio" name="afternoon"
-                                                                                id="afternoon">&nbsp;Afternoon
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-6">
-                                                                        <div class="form-group">
-                                                                            <label class="col-form-label">Absence Series
-                                                                            </label>
-                                                                            <input type="text" class="form-control"
-                                                                                name="absence_series">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-6">
-                                                                        <div class="form-group">
-                                                                            <label class="col-form-label">Representation
-                                                                            </label>
-                                                                            <input type="text" class="form-control"
-                                                                                name="representation">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-12">
-                                                                        <div class="form-group">
-                                                                            <label class="col-form-label">note </label>
-                                                                            <textarea class="form-control" name="note"
-                                                                                cols="3" rows="3"></textarea>
-                                                                        </div>
-                                                                    </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Until</label>
+                                                        <input class="form-control"  id="to" type="date"
+                                                            name="to" onchange="calculateDays()">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="form-group">
+                                                        <label>Number of days <span
+                                                                class="text-danger">*</span></label>
+                                                        <input class="form-control" id="no_of_days" readonly type="text"
+                                                            name="no_of_days">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group d-flex">
+                                                        <input type="checkbox" name="half"
+                                                            id="half-day">&nbsp;Half Day
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group d-flex">
+                                                        <input type="radio" name="formerly"
+                                                            id="formerly">&nbsp;Formerly
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group d-flex">
+                                                        <input type="radio" name="afternoon"
+                                                            id="afternoon">&nbsp;Afternoon
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Absence Series
+                                                        </label>
+                                                        <input type="text" class="form-control"
+                                                            name="absence_series">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Representation
+                                                        </label>
+                                                        <input type="text" class="form-control"
+                                                            name="representation">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">note </label>
+                                                        <textarea class="form-control" name="note"
+                                                            cols="3" rows="3"></textarea>
+                                                    </div>
+                                                </div>
 
-                                                                </div>
-                                                                <div class="submit-section">
-                                                                    <button class="btn btn-primary " type="submit">Apply
-                                                                        For</button>
-                                                                </div>
-                                                            </form>
+                                            </div>
+                                            <div class="submit-section">
+                                                <button class="btn btn-primary " type="submit">Apply
+                                                    For</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Request Absence Modal -->
+
+                        <!-- Report Sick Modal -->
+                        <div id="report_sick" class="modal custom-modal fade" role="dialog">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Report Sick</h5>
+                                        <button type="button" class="close" data-bs-dismiss="modal"
+                                            aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="post"
+                                            action="{{ route('admin.reportsick.store') }}#leaves"
+                                            enctype="multipart/form-data">
+                                            @csrf
+                                            {{-- <input type="hidden" name="no_of_days" value="0"> --}}
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+
+                                                            <input type="hidden" value="{{ $employees->id }}" class="form-control"
+                                                                name="employee_id">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label>Absence type</label>
+                                                        <select class="form-control select"
+                                                            name="leave_type">
+                                                            @foreach ($leavetypes as $leavetype)
+                                                            <option value="{{ $leavetype->name }}">
+                                                                {{ $leavetype->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">From</label>
+                                                        <input class="form-control" type="date"
+                                                            name="from" id="from1" onchange="calculateDays1()">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Until</label>
+                                                        <input class="form-control" type="date"
+                                                            name="to"  id="to1" onchange="calculateDays1()">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="form-group">
+                                                        <label>Number of days <span
+                                                                class="text-danger">*</span></label>
+                                                        <input class="form-control" id="no_of_days1" readonly type="text"
+                                                            name="no_of_days">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group d-flex">
+                                                        <input type="checkbox" name="half"
+                                                            id="half-day">&nbsp;Half Day
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group d-flex">
+                                                        <input type="radio" name="formerly"
+                                                            id="formerly">&nbsp;Formerly
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group d-flex">
+                                                        <input type="radio" name="afternoon"
+                                                            id="afternoon">&nbsp;Afternoon
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">note </label>
+                                                        <textarea class="form-control" name="note"
+                                                            cols="3" rows="3"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Add
+                                                            Attachment</label>
+
+                                                        <!-- Custom file input container -->
+                                                        <div class="custom-file-upload">
+                                                            <input type="file" class="file-input"
+                                                                name="attachment" id="fileUpload" />
+                                                            <i class="fa fa-file-o file-icon"></i>
+                                                            <span class="file-text">Click to
+                                                                upload</span>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <!-- /Request Absence Modal -->
-
-                                            <!-- Report Sick Modal -->
-                                            <div id="report_sick" class="modal custom-modal fade" role="dialog">
-                                                <div class="modal-dialog modal-dialog-centered modal-lg">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Report Sick</h5>
-                                                            <button type="button" class="close" data-bs-dismiss="modal"
-                                                                aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form method="post"
-                                                                action="{{ route('admin.reportsick.store') }}#leaves"
-                                                                enctype="multipart/form-data">
-                                                                @csrf
-                                                                {{-- <input type="hidden" name="no_of_days" value="0"> --}}
-                                                                <div class="row">
-                                                                    <div class="col-md-12">
-                                                                        <div class="form-group">
-
-                                                                                <input type="hidden" value="{{ $employees->id }}" class="form-control"
-                                                                                    name="employee_id">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-md-12">
-                                                                        <div class="form-group">
-                                                                            <label>Absence type</label>
-                                                                            <select class="form-control select"
-                                                                                name="leave_type">
-                                                                                @foreach ($leavetypes as $leavetype)
-                                                                                <option value="{{ $leavetype->name }}">
-                                                                                    {{ $leavetype->name }}</option>
-                                                                                @endforeach
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-6">
-                                                                        <div class="form-group">
-                                                                            <label class="col-form-label">From</label>
-                                                                            <input class="form-control" type="date"
-                                                                                name="from" id="from1" onchange="calculateDays1()">
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="col-sm-6">
-                                                                        <div class="form-group">
-                                                                            <label class="col-form-label">Until</label>
-                                                                            <input class="form-control" type="date"
-                                                                                name="to"  id="to1" onchange="calculateDays1()">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-12">
-                                                                        <div class="form-group">
-                                                                            <label>Number of days <span
-                                                                                    class="text-danger">*</span></label>
-                                                                            <input class="form-control" id="no_of_days1" readonly type="text"
-                                                                                name="no_of_days">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-4">
-                                                                        <div class="form-group d-flex">
-                                                                            <input type="checkbox" name="half"
-                                                                                id="half-day">&nbsp;Half Day
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-4">
-                                                                        <div class="form-group d-flex">
-                                                                            <input type="radio" name="formerly"
-                                                                                id="formerly">&nbsp;Formerly
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-4">
-                                                                        <div class="form-group d-flex">
-                                                                            <input type="radio" name="afternoon"
-                                                                                id="afternoon">&nbsp;Afternoon
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-12">
-                                                                        <div class="form-group">
-                                                                            <label class="col-form-label">note </label>
-                                                                            <textarea class="form-control" name="note"
-                                                                                cols="3" rows="3"></textarea>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-sm-12">
-                                                                        <div class="form-group">
-                                                                            <label class="col-form-label">Add
-                                                                                Attachment</label>
-
-                                                                            <!-- Custom file input container -->
-                                                                            <div class="custom-file-upload">
-                                                                                <input type="file" class="file-input"
-                                                                                    name="attachment" id="fileUpload" />
-                                                                                <i class="fa fa-file-o file-icon"></i>
-                                                                                <span class="file-text">Click to
-                                                                                    upload</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="submit-section">
-                                                                    <button class="btn btn-primary " type="submit">Report
-                                                                        Sick</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                            <div class="submit-section">
+                                                <button class="btn btn-primary " type="submit">Report
+                                                    Sick</button>
                                             </div>
-                                            <!-- /Report Sick Modal -->
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Report Sick Modal -->
+
                         <div class="card">
                             <div class="card-body">
                                 <div class="container">
+                                    <div class="year-scroller">
+                                        <a class="btnn" id="prevYear"> <i class="fa fa-angle-left"></i></a>
+                                        <span class="crtyear" id="currentYearDisplay">{{ \Carbon\Carbon::now()->year }}</span>
+                                        <a class="btnn" id="nextYear"> <i class="fa fa-angle-right"></i></a>
+                                    </div>
                                     <div class="month-dates">
 
                                         <div id="monthDateList"></div>
@@ -406,13 +412,12 @@
                                                 <!-- Legend for leave types -->
                                                 <div class="leave-type-legend">
                                                     <div class="legend-item"><span class="color-box"
-                                                            style="background-color: #229f7c"></span><span class="color-box"
-                                                            style="background-color: #7ccdb6;"></span> Vacation </div>
+                                                            style="background-color: #229f7c"></span>Annual Leave </div>
                                                     <!--<div class="legend-item"><span class="color-box" style="background-color: #7ccdb6;"></span> Half Vacation Leave</div>-->
                                                     <div class="legend-item"><span class="color-box"
                                                             style="background-color: rgb(242, 188, 68)"></span> Business Trip</div>
                                                     <div class="legend-item"><span class="color-box"
-                                                            style="background-color: rgb(255, 120, 98);"></span> Annual Leave </div>
+                                                            style="background-color: rgb(255, 120, 98);"></span> Sick Leave </div>
                                                     <div class="legend-item"><span class="color-box"
                                                             style="background-color: #206eb6"></span> Holidays</div>
                                                     <div class="legend-item"><span class="color-box"
@@ -459,6 +464,33 @@
                     <!-- /Page Content -->
 
                     <style>
+                        .year-scroller {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin: 20px 0;
+                        }
+
+                        .year-scroller .btn {
+                            margin: 0 10px;
+                        }
+                        a.btnn{
+                            display: inline-block;
+                            font-size: 15px !important;
+                            background: #ddd ;
+                            border: 1px solid #ddd !important;
+                            border-radius: 5px !important;
+                            margin: 0px 5px 14px 5px;
+                            padding: 5px 12px 5px 12px;
+                            color:#000;
+                        }
+                        .fa{ font-size:20px;}
+                        .crtyear{
+                            font-size: 22px;
+
+                            margin: 0px 5px 8px 5px;
+                            /* padding: 13px 12px 4px 12px; */
+                        }
                         .leave-type-legend {
                             display: flex;
                             justify-content: center;
@@ -577,13 +609,13 @@
                             // Function to return leave type colors
                             function getLeaveTypeColor(type) {
                                 switch (type) {
-                                    case 'Vacation':
+                                    case 'Annual Leave':
                                         return 'rgb(67, 169, 148)'; // Vacation leave color
                                     case 'Half Vacation Leave':
                                         return 'lightgreen'; // Half vacation leave color
                                     case 'Business Trip': // Ensure correct spelling
                                         return 'rgb(242, 188, 68)'; // Business trip color
-                                    case 'Annual Leave': // Ensure correct spelling
+                                    case 'Sick Leave': // Ensure correct spelling
                                         return 'rgb(255, 120, 98)'; // Sick leave color
                                     case 'Holiday':
                                         return '#206eb6'; // Holiday color
@@ -593,72 +625,92 @@
                                         return 'rgb(255, 120, 98)'; // Returning the leave type name as title
                                 }
                             }
-
-                            // Function to render the calendar with colored leaves
                             document.addEventListener("DOMContentLoaded", () => {
+                                let currentYear = new Date().getFullYear();
+
                                 const monthDateList = document.getElementById("monthDateList");
-                                const currentYear = 2024; // Set the year
 
-                                // Loop through each month
-                                monthNames.forEach((month, index) => {
-                                    const monthDateDiv = document.createElement("div");
-                                    monthDateDiv.classList.add("month-date");
-
-                                    const monthDiv = document.createElement("div");
-                                    monthDiv.classList.add("month");
-                                    monthDiv.textContent = month;
-
-                                    const datesDiv = document.createElement("div");
-                                    datesDiv.classList.add("dates");
-
-                                    // Get the number of days in the month
-                                    const days = new Date(currentYear, index+1 , 0).getDate();
-                                    for (let day = 1; day <= days; day++) {
-                                        const dateDiv = document.createElement("div");
-                                        dateDiv.classList.add("date");
-                                        dateDiv.textContent = day;
-
-                                        // Check if the date falls within any leave range and apply the leave color
-                                        leaveData.forEach(leave => {
-                                        const leaveStart = new Date(leave.from);
-                                        const leaveEnd = new Date(leave.to);
-                                        const currentDate = new Date(currentYear, index, day);
-                                        leaveStart.setDate(leaveStart.getDate() - 1);
-
-                                        if (currentDate >= leaveStart && currentDate <= leaveEnd) {
-                                            const leaveColor = getLeaveTypeColor(leave.leave_type);
-                                            if (leaveColor !== 'transparent') {
-                                                dateDiv.style.backgroundColor = leaveColor;
-                                                dateDiv.style.color = "#fff"; // Make the text white for better contrast
-                                            }
-                                        }
-                                        if (currentDate === leaveStart) {
-                                                dateDiv.style.backgroundColor =
-                                                leaveColor; // Apply blue color for holidays
-                                                dateDiv.style.color = "#fff"; // Make the text white
-                                            }
-                                    });
-
-                                        // Check if the current date is a holiday
-                                        holidays.forEach(holiday => {
-                                            const holidayDate = new Date(holiday.holiday_date);
-                                            if (holidayDate.getFullYear() === currentYear &&
-                                                holidayDate.getMonth() === index &&
-                                                holidayDate.getDate() === day) {
-                                                dateDiv.style.backgroundColor =
-                                                '#206eb6'; // Apply blue color for holidays
-                                                dateDiv.style.color = "#fff"; // Make the text white
-                                            }
-                                        });
-
-                                        datesDiv.appendChild(dateDiv);
-                                    }
-
-                                    monthDateDiv.appendChild(monthDiv);
-                                    monthDateDiv.appendChild(datesDiv);
-                                    monthDateList.appendChild(monthDateDiv);
+                                $('#prevYear').click(function () {
+                                    currentYear--;
+                                    updateYearDisplay();
                                 });
+
+                                $('#nextYear').click(function () {
+                                    currentYear++;
+                                    updateYearDisplay();
+                                });
+
+                                function updateYearDisplay() {
+                                    // Clear existing data
+                                    monthDateList.innerHTML = '';
+
+                                    $('#currentYearDisplay').text(currentYear);
+
+                                    // Loop through each month
+                                    monthNames.forEach((month, index) => {
+                                            const monthDateDiv = document.createElement("div");
+                                            monthDateDiv.classList.add("month-date");
+
+                                            const monthDiv = document.createElement("div");
+                                            monthDiv.classList.add("month");
+                                            monthDiv.textContent = month;
+
+                                            const datesDiv = document.createElement("div");
+                                            datesDiv.classList.add("dates");
+
+                                            // Get the number of days in the month
+                                            const days = new Date(currentYear, index+1 , 0).getDate();
+                                            for (let day = 1; day <= days; day++) {
+                                                const dateDiv = document.createElement("div");
+                                                dateDiv.classList.add("date");
+                                                dateDiv.textContent = day;
+
+                                                // Check if the date falls within any leave range and apply the leave color
+                                                leaveData.forEach(leave => {
+                                                const leaveStart = new Date(leave.from);
+                                                const leaveEnd = new Date(leave.to);
+                                                const currentDate = new Date(currentYear, index, day);
+                                                leaveStart.setDate(leaveStart.getDate() - 1);
+
+                                                if (currentDate >= leaveStart && currentDate <= leaveEnd) {
+                                                    const leaveColor = getLeaveTypeColor(leave.leave_type);
+                                                    if (leaveColor !== 'transparent') {
+                                                        dateDiv.style.backgroundColor = leaveColor;
+                                                        dateDiv.style.color = "#fff"; // Make the text white for better contrast
+                                                    }
+                                                }
+                                                if (currentDate === leaveStart) {
+                                                        dateDiv.style.backgroundColor =
+                                                        leaveColor; // Apply blue color for holidays
+                                                        dateDiv.style.color = "#fff"; // Make the text white
+                                                    }
+                                            });
+
+                                                // Check if the current date is a holiday
+                                                holidays.forEach(holiday => {
+                                                    const holidayDate = new Date(holiday.holiday_date);
+                                                    if (holidayDate.getFullYear() === currentYear &&
+                                                        holidayDate.getMonth() === index &&
+                                                        holidayDate.getDate() === day) {
+                                                        dateDiv.style.backgroundColor =
+                                                        '#206eb6'; // Apply blue color for holidays
+                                                        dateDiv.style.color = "#fff"; // Make the text white
+                                                    }
+                                                });
+
+                                                datesDiv.appendChild(dateDiv);
+                                            }
+
+                                            monthDateDiv.appendChild(monthDiv);
+                                            monthDateDiv.appendChild(datesDiv);
+                                            monthDateList.appendChild(monthDateDiv);
+                                        });
+                                }
+
+                                // Call updateYearDisplay to show data for the default current year
+                                updateYearDisplay();
                             });
+
                         </script>
 
                     <!-- Add Leave Modal -->
@@ -2644,8 +2696,8 @@
 
     // Check if the entered date has a valid year
     const enteredDate = new Date(dateInput.value);
-    if (enteredDate.getFullYear() > currentYear || enteredDate.getFullYear() < 1000) {
-      alert("Please enter a valid year between 1000 and the current year.");
+    if (enteredDate.getFullYear() < currentYear ) {
+      alert("Please enter a valid year either with current year or with future year.");
       dateInput.value = ''; // Clear the invalid input
     }
   });
