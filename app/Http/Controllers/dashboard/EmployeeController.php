@@ -1251,7 +1251,7 @@ class EmployeeController extends Controller
                 $fromDate = Carbon::parse($leave->from);
                 $toDate = Carbon::parse($leave->to);
 
-                if ($fromDate->month === $currentMonth || $toDate->month === $currentMonth) {
+                if ($fromDate->month === $currentMonth && $toDate->month === $currentMonth) {
                     while ($fromDate->lte($toDate)) {
                         $leaveDays[] = $fromDate->day;
                         $fromDate->addDay();

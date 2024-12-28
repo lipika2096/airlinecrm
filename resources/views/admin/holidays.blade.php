@@ -701,7 +701,7 @@
                                             <div class="department mb-3" id="department-${index}">
                                                 <div class="department-header bg-secondary text-white p- rounded d-flex justify-content-between align-items-center" style="cursor: pointer;" data-department="${dept}" data-index="${index}">
                                                     <h5 class="fw-bold">${dept} <i class="fa fa-caret-down"></i></h5>
-                                                    <button class="btn  btn-sm close-department text-white" data-department="${dept}" data-index="${index}">
+                                                    <button class="btn btn-primary btn-sm close-department" data-department="${dept}" data-index="${index}">
                                                         <i class="fa fa-times"></i>
                                                     </button>
                                                 </div>

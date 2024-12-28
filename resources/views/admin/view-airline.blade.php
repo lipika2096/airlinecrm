@@ -162,9 +162,21 @@
                 margin-top:10px;
             }
             .modal-header{
-                margin-bottom:-25px;
+                margin-bottom:-20px;
             }
-
+            .add-btn {
+                background-color: #ff9b44;
+                border: 1px solid #ff9b44;
+                color: #ffffff;
+                float: right;
+                font-weight: 500;
+                min-width: 140px;
+                border-radius: 50px;
+                font-size: 13px;
+            }
+         a{
+            text-decoration:none;
+         }
         </style>
         <!-- Page Content -->
         <div class="content container-fluid">
@@ -1405,7 +1417,7 @@
                 <div id="approved_staffs" class="pro-overview tab-pane fade show">
                     <div class="row">
                         <div class="col-auto float-end ms-auto mt-2 mx-4 mb-2">
-                        <a class="btn add-btn"   style="margin-right:10px; border-radius:10px !important;" data-bs-toggle="modal" data-bs-target="#add_approvedStaff"><i
+                        <a class="btn add-btn"  data-bs-toggle="modal" data-bs-target="#add_approvedStaff"><i
                         class="fa fa-plus"></i> Add/Edit Approved Staff</a>
                         </div>
                         <div class="col-md-12">
@@ -2398,7 +2410,7 @@
                         </div>
 
                         <div id="add_pli" class="modal  custom-modal fade"  role="dialog">
-                            <div class="modal-dialog container padding-custom modal-dialog-centered " role="document">
+                            <div class="modal-dialog container padding-custom modal-dialog-centered modal-xl " role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title">Add PLI</h5>
@@ -2601,18 +2613,18 @@
                 </div>
                 <div id="special_fares" class="pro-overview tab-pane fade show">
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-7 mt-2">
                             <form id="specialFareSearchForm" method="get">
                                     <input type="hidden" name="airline_id" value="{{ $airlineDetails->airline_id }}">
                                     <div class="row">
-                                        <div class="col-md-5">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <!-- <label class="col-form-label">Search<span class="text-danger">*</span></label> -->
-                                                <input class="form-control" placeholder="Search" type="text" name="search"
+                                                <input class="form-control " style="line-height:38px !important;" placeholder="Search" type="text" name="search"
                                                     id="search">
                                             </div>
                                         </div>
-                                        <div class="col-md-5">
+                                        <div class="col-md-5 ">
                                             <div class="form-group">
                                                 <select class="form-control" name="search_type[]" id="search_type" data-placeholder="Select Type" multiple>
                                                     <option value="company_name" >Agent Name</option>
@@ -2632,26 +2644,28 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-md-3">
                                             <div class="form-group">
-                                                <button type="button" style="border-radius:10px;margin-top: 1px !important;" id="searchButton"
-                                                    class="btn btn-primary">Search</button>
+                                                <button type="button"  id="searchButton"
+                                                    class="btn add-btn text-right" style="width:20px !important; padding:5px;">Search</button>
                                             </div>
                                         </div>
                                     </div>
                                 </form>
 
                                 </div>
-                        <div class="col-auto float-end ms-auto mt-2 mx-4 mb-2">
-                            <a class="btn btn-primary" data-bs-toggle="modal"
-                            style="border-radius:10px;" data-bs-target="#add_target"><i
+                                <div class="col-md-5">
+                        <div class=" ms-auto mt-2  mb-2">
+                            <a class="btn add-btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#add_target"><i
                                 class="fa fa-plus"></i> Add / Edit
                             Special Fares</a>
 
-                            <a class="btn btn-info text-white" data-bs-toggle="modal"
-                                style="margin-right:10px; border-radius:10px !important;"
+                            <a class=" btn add-btn mx-2 btn-info text-white" data-bs-toggle="modal"
+                         
                                 data-bs-target="#view_fares"><i class="fa fa-plus"></i> View
                                 Special Fares</a>
+                        </div>
                         </div>
                         <div class="col-md-12">
                             <div class="table-responsive">
