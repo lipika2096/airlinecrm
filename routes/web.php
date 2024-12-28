@@ -106,6 +106,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
 
     Route::get('/get-departments', [EmployeeController::class, 'getDepartments']);
     Route::get('/get-employees/{department}', [EmployeeController::class, 'getEmployeesByDepartment']);
+    Route::get('/get-employees/{user_id}', [EmployeeController::class, 'getEmployeesByUsers']);
 
     // Accounting routes
     Route::get('categories/view', [CategoryController::class, 'categoriesIndex'])->name('categories.view');

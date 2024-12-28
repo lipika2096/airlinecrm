@@ -1234,6 +1234,35 @@ class EmployeeController extends Controller
 
         return response()->json(['departments' => $departments]);
     }
+    public function getEmployeesByUsers($user_id)
+    {
+        $users = User::where('id', $user_id)->get();
+
+        foreach ($users as $user) {
+            $employeeLeaves = DB::table('employee_leaves')
+                ->where('employee_id', $user->id)
+                ->get();
+
+            $leaveDays = [];
+            $currentMonth = Carbon::now()->month;
+
+            foreach ($employeeLeaves as $leave) {
+                $fromDate = Carbon::parse($leave->from);
+                $toDate = Carbon::parse($leave->to);
+
+                if ($fromDate->month === $currentMonth && $toDate->month === $currentMonth) {
+                    while ($fromDate->lte($toDate)) {
+                        $leaveDays[] = $fromDate->day;
+                        $fromDate->addDay();
+                    }
+                }
+            }
+
+            $user->leaveDays = $leaveDays;
+        }
+
+        return response()->json(['users' => $users]);
+    }
 
     public function getEmployeesByDepartment($department)
     {

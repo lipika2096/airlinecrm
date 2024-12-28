@@ -691,6 +691,7 @@
                             $(document).ready(function() {
                                 const baseUrl = "{{ url('/') }}";
 
+                                // Fetch departments on page load
                                 $.ajax({
                                     url: baseUrl + '/admin/get-departments',
                                     method: 'GET',
@@ -698,16 +699,16 @@
                                         let html = '';
                                         response.departments.forEach((dept, index) => {
                                             html += `
-                                            <div class="department mb-3" id="department-${index}">
-                                                <div class="department-header bg-secondary text-white p- rounded d-flex justify-content-between align-items-center" style="cursor: pointer;" data-department="${dept}" data-index="${index}">
-                                                    <h5 class="fw-bold">${dept} <i class="fa fa-caret-down"></i></h5>
-                                                    <button class="btn btn-primary btn-sm close-department" data-department="${dept}" data-index="${index}">
-                                                        <i class="fa fa-times"></i>
-                                                    </button>
+                                                <div class="department mb-3" id="department-${index}">
+                                                    <div class="department-header bg-secondary text-white p-2 rounded d-flex justify-content-between align-items-center" style="cursor: pointer;" data-department="${dept}" data-index="${index}">
+                                                        <h5 class="fw-bold">${dept} <i class="fa fa-caret-down"></i></h5>
+                                                        <button class="btn btn-primary btn-sm close-department" data-department="${dept}" data-index="${index}">
+                                                            <i class="fa fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="employees d-none mt-2" id="employees-${index}"></div>
                                                 </div>
-                                                <div class="employees d-none mt-2" id="employees-${index}"></div>
-                                            </div>
-                                        `;
+                                            `;
                                         });
 
                                         $('#departmentContainer').html(html);
@@ -717,26 +718,42 @@
                                     }
                                 });
 
-                                // Handle the close toggle (hide the department)
+                                // Close department and add to dropdowns
                                 $(document).on('click', '.close-department', function() {
                                     const department = $(this).data('department');
                                     const index = $(this).data('index');
 
                                     $(`#department-${index}`).hide();
-
-                                    addDepartmentToDropdown(department);
-                                    fetchEmployeesForCoworkerDropdown(department);
+                                    addToDropdowns(department);
                                 });
+
+                                // Add department to both dropdowns
+                                function addToDropdowns(department) {
+                                    const teamOption = `<option value="${department}">${department}</option>`;
+                                    const coworkerOption = `<option class="coworker-dept-option" data-department="${department}">${department}</option>`;
+
+                                    if (!$(`#teamSelect option[value="${department}"]`).length) {
+                                        $('#teamSelect').append(teamOption);
+                                    }
+
+                                    fetchEmployeesForCoworkerDropdown(department);
+                                }
+                                // Function to fetch employees and populate the Coworker dropdown
                                 function fetchEmployeesForCoworkerDropdown(department) {
                                     const coworkerDropdown = $('#coworkerSelect');
 
                                     $.ajax({
-                                        url: baseUrl + `/admin/get-employees/${department}`,
+                                        url: `${baseUrl}/admin/get-employees/${department}`,
                                         method: 'GET',
                                         success: function(response) {
                                             response.users.forEach(user => {
-                                                const optionHTML = `<option value="${user.id}">${user.first_name} ${user.last_name} - ${department}</option>`;
-                                                coworkerDropdown.append(optionHTML);
+                                                const coworkerOption = `
+                                                    <option value="${user.id}" data-department="${department}">
+                                                        ${user.first_name} ${user.last_name}
+                                                    </option>`;
+                                                if (!$(`#coworkerSelect option[value="${user.id}"]`).length) {
+                                                    coworkerDropdown.append(coworkerOption);
+                                                }
                                             });
                                         },
                                         error: function(error) {
@@ -744,303 +761,147 @@
                                         }
                                     });
                                 }
-
-                                // Function to add the department back to the dropdown
-                                function addDepartmentToDropdown(department) {
-                                    const departmentDropdown = $('#teamSelect');
-                                    const optionHTML = `<option value="${department}">${department}</option>`;
-                                    departmentDropdown.append(optionHTML);
-                                }
-
+                                // Restore department on selecting from Team dropdown
                                 $('#teamSelect').on('change', function() {
                                     const selectedDepartment = $(this).val();
-
                                     if (selectedDepartment) {
-
                                         const departmentElement = $(`.department-header[data-department="${selectedDepartment}"]`).closest('.department');
                                         departmentElement.show();
-                                        const departmentIndex = departmentElement.data('index');
-                                        // fetchEmployeesForDepartment(departmentIndex);
+
                                         $(this).find(`option[value="${selectedDepartment}"]`).remove();
                                     }
                                 });
-                                // Handle employee selection from Coworker dropdown
-                                $('#coworkerSelect').on('change', function () {
+
+                                // Show employee data on selecting from Coworker dropdown
+                                $('#coworkerSelect').on('change', function() {
                                     const selectedOption = $(this).find(':selected');
                                     const employeeId = selectedOption.val();
                                     const department = selectedOption.data('department');
 
                                     if (employeeId && department) {
-                                        // Show the department tab
                                         const departmentElement = $(`.department-header[data-department="${department}"]`).closest('.department');
                                         departmentElement.show();
 
-                                        // Fetch and display employee details in the department tab
                                         fetchAndShowEmployeeDetails(employeeId, department);
 
-                                        // Remove the employee from the Coworker dropdown
                                         $(this).find(`option[value="${employeeId}"]`).remove();
                                     }
                                 });
-                                // Function to fetch and show employee details
+
+                                // Fetch and display employee details
                                 function fetchAndShowEmployeeDetails(employeeId, department) {
                                     const employeesContainer = $(`.department-header[data-department="${department}"]`)
                                         .closest('.department')
                                         .find('.employees');
 
                                     if (employeesContainer.length > 0) {
-                                        const baseurl = "{{ url('/') }}";
-
                                         $.ajax({
-                                            url: baseurl + `/admin/get-employee/${employeeId}`,
+                                            url: baseUrl + `/admin/get-employee/${employeeId}`,
                                             method: 'GET',
-                                            success: function (response) {
+                                            success: function(response) {
                                                 const employee = response.user;
                                                 const html = generateCalendar(employee, department);
 
-                                                // Add employee data and make sure the container is visible
                                                 employeesContainer.append(html).removeClass('d-none');
                                             },
-                                            error: function (error) {
+                                            error: function(error) {
                                                 console.error(`Failed to fetch details for employee ID ${employeeId}:`, error);
                                             }
                                         });
                                     }
                                 }
-                            });
 
-                            $(document).on('click', '.department-header', function() {
-                                const department = $(this).data('department');
-                                const index = $(this).data('index');
-                                const employeesContainer = $(`#employees-${index}`);
+                                // Expand/Collapse department
+                                $(document).on('click', '.department-header', function() {
+                                    const department = $(this).data('department');
+                                    const index = $(this).data('index');
+                                    const employeesContainer = $(`#employees-${index}`);
 
+                                    if (employeesContainer.hasClass('d-none')) {
+                                        fetchEmployeesForDepartment(department, employeesContainer);
+                                    } else {
+                                        employeesContainer.addClass('d-none');
+                                    }
 
-                                if (employeesContainer.hasClass('d-none')) {
-                                    const baseurl = "{{ url('/') }}";
+                                    $(this).find('i').toggleClass('fa-caret-down fa-caret-up');
+                                });
 
+                                // Fetch employees for department
+                                function fetchEmployeesForDepartment(department, container) {
                                     $.ajax({
-                                        url: baseurl + `/admin/get-employees/${department}`,
+                                        url: baseUrl + `/admin/get-employees/${department}`,
                                         method: 'GET',
                                         success: function(response) {
                                             let html = '<div class="row">';
-                                            response.users.forEach((user, userIndex) => {
-                                                html += generateCalendar(user, `${index}-${userIndex}`);
+                                            response.users.forEach(user => {
+                                                html += generateCalendar(user, department);
                                             });
                                             html += '</div>';
-                                            employeesContainer.html(html);
-                                            employeesContainer.removeClass('d-none');
+
+                                            container.html(html).removeClass('d-none');
                                         },
                                         error: function(error) {
-                                            console.error(error);
-                                        }
-                                    });
-                                } else {
-
-                                    employeesContainer.addClass('d-none');
-                                }
-
-                                const icon = $(this).find('i');
-                                icon.toggleClass('fa-caret-down fa-caret-up');
-                            });
-
-
-                            function generateCalendar(user, index) {
-                                const currentMonth = new Date().getMonth() + 1;
-                                const daysInMonth = new Date(new Date().getFullYear(), currentMonth, 0).getDate();
-                                const firstDayOfMonth = new Date(new Date().getFullYear(), currentMonth - 1, 1).getDay();
-                                const leaveDays = user.leaveDays || [];
-
-                                let calendarHtml = `
-                                    <div class="employee-card card mb-3 col-6">
-                                        <div class="card-body">
-                                            <h5 class="card-title">${user.first_name} ${user.last_name}</h5>
-                                            <div class="calendar">
-                                                <div class="week-days my-2 d-flex justify-content-between">
-                                                    ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => `
-                                                                                <div class="day-header" style="width: 14%; font-weight: bold; text-align: center;">
-                                                                                    ${day}
-                                                                                </div>
-                                                                            `).join('')}
-                                                </div>
-
-                                                <div class="month-weeks">
-                                `;
-
-                                let dayCounter = 1;
-                                for (let week = 0; week < Math.ceil((daysInMonth + firstDayOfMonth) / 7); week++) {
-                                    calendarHtml += '<div class="week d-flex">';
-
-                                    for (let day = 0; day < 7; day++) {
-                                        const currentDay = (week * 7 + day) - firstDayOfMonth + 1;
-                                        const isLeaveDay = leaveDays.includes(currentDay);
-
-                                        if (currentDay > 0 && currentDay <= daysInMonth) {
-                                            calendarHtml += `
-                                                <div class="day mb-2 ms-2"
-                                                    style="width: 14%; height: 40px; text-align: center; line-height: 50px; ${isLeaveDay ? 'background-color: black; font-weight: bold; color: white;' : ''}">
-                                                    ${currentDay}
-                                                </div>
-                                            `;
-                                        } else {
-                                            calendarHtml += '<div class="day empty-day mb-2 ms-2" style="width: 14%; height: 40px;"></div>';
-                                        }
-                                    }
-
-                                    calendarHtml += '</div>';
-                                }
-
-                                calendarHtml += `
-                                                </div> <!-- Close month-weeks -->
-                                            </div> <!-- Close calendar -->
-                                        </div> <!-- Close card-body -->
-                                    </div> <!-- Close employee-card -->
-                                `;
-
-                                return calendarHtml;
-                            }
-                        </script>
-
-
-                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-                        <script>
-                            $(document).ready(function() {
-                                // Event listener for Coworker dropdown
-                                $('select[aria-label="Add Coworker"]').on('change', function() {
-                                    const selectedValue = $(this).val();
-                                    filterData('coworker', selectedValue);
-                                });
-
-                                // Event listener for Team dropdown
-                                $('select[aria-label="Add Team"]').on('change', function() {
-                                    const selectedValue = $(this).val();
-                                    filterData('team', selectedValue);
-                                });
-
-                                // Event listener for Browse List dropdown
-                                $('select[aria-label="Browse List"]').on('change', function() {
-                                    const selectedValue = $(this).val();
-                                    filterData('browse_list', selectedValue);
-                                });
-
-                                // AJAX function for filtering
-                                function filterData(type, value) {
-                                    $.ajax({
-                                        url: "{{ route('admin.holidays') }}", // Same route as the holidays view
-                                        method: "GET",
-                                        data: {
-                                            type: type,
-                                            value: value,
-                                            _token: "{{ csrf_token() }}" // CSRF Token for security
-                                        },
-                                        success: function(response) {
-                                            // Process and display the filtered data
-                                            if (response.calendarData) {
-                                                updateCalendarUI(response.calendarData);
-                                            }
-                                        },
-                                        error: function(xhr) {
-                                            console.error(xhr.responseText);
+                                            console.error(`Failed to fetch employees for department ${department}:`, error);
                                         }
                                     });
                                 }
 
-                                // Function to update the UI with filtered data
-                                function updateCalendarUI(calendarData) {
-                                    let container = $('#calendarContainer');
-                                    container.empty();
+                                // Generate calendar HTML
+                                function generateCalendar(user, department) {
+                                    const currentMonth = new Date().getMonth() + 1;
+                                    const daysInMonth = new Date(new Date().getFullYear(), currentMonth, 0).getDate();
+                                    const firstDayOfMonth = new Date(new Date().getFullYear(), currentMonth - 1, 1).getDay();
+                                    const leaveDays = user.leaveDays || [];
 
-                                    calendarData.forEach(item => {
-                                        let leaveDays = item.leaveDays;
-                                        let employee = item.employee;
-
-                                        let employeeInitials = employee.first_name.charAt(0).toUpperCase() + employee.last_name
-                                            .charAt(0).toUpperCase();
-                                        let employeeName = `${employee.first_name} ${employee.last_name}`;
-
-                                        let calendarHtml = `
-
-                                            <div class="col-sm-6">
-                                                <div class="card pe-3 ps-2">
-                                                <div class="row" style="margin-top: 20px;">
-                                                    <div class="col-sm-2 ms-4 employee-profile rounded-pill leave-card text-white fw-bold">
-                                                        ${employeeInitials}
+                                    let calendarHtml = `
+                                        <div class="employee-card card mb-3 col-6">
+                                            <div class="card-body">
+                                                <h5 class="card-title">${user.first_name} ${user.last_name}</h5>
+                                                <div class="calendar">
+                                                    <div class="week-days my-2 d-flex justify-content-between">
+                                                        ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => `
+                                                            <div class="day-header" style="width: 14%; font-weight: bold; text-align: center;">${day}</div>
+                                                        `).join('')}
                                                     </div>
-                                                    <div class="col-sm-5 mt-2 employee-name text-capitalize" style="font-weight:600;">
-                                                        ${employeeName}
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12 mb-2">
-                                                    <div class="calendar">
-                                                        <div class="week-days d-flex justify-content-between">
-                                                            ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => `
-                                                                                                                                                                <div class="day-header" style="width: 14.28%; text-align: center;">
-                                                                                                                                                                    ${day}
-                                                                                                                                                                </div>
-                                                                                                                                                            `).join('')}
-                                                        </div>
-
-                                                        <div class="month-weeks">
-                                                            ${renderWeeks(leaveDays)}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            </div>
-
-                                        `;
-
-                                        container.append(calendarHtml);
-                                        // Now we handle hiding the content properly
-                                        const targetSelectors = document.getElementsByClassName('mainCalendarDiv');
-                                        const departmentSelectors = document.getElementsByClassName('mainCalendarContentDiv');
-
-                                        // Loop through and hide each element individually
-                                        Array.from(targetSelectors).forEach(element => {
-                                            element.style.display = 'none';
-                                        });
-
-                                        Array.from(departmentSelectors).forEach(element => {
-                                            element.style.display = 'none';
-                                        });
-                                    });
-                                }
-
-                                // Function to render the weeks and days in the calendar
-                                function renderWeeks(leaveDays) {
-                                    let now = moment();
-                                    let daysInMonth = now.daysInMonth();
-                                    let firstDayOfMonth = now.startOf('month').day(); // 0 (Sunday) to 6 (Saturday)
-
-                                    let weeksHtml = '';
-                                    let dayCounter = 1;
+                                                    <div class="month-weeks">
+                                    `;
 
                                     for (let week = 0; week < Math.ceil((daysInMonth + firstDayOfMonth) / 7); week++) {
-                                        weeksHtml += '<div class="week d-flex">';
-
+                                        calendarHtml += '<div class="week d-flex">';
                                         for (let day = 0; day < 7; day++) {
-                                            let currentDay = dayCounter - firstDayOfMonth + 1;
-                                            let isLeaveDay = leaveDays.includes(currentDay);
+                                            const currentDay = week * 7 + day - firstDayOfMonth + 1;
+                                            const isLeaveDay = leaveDays.includes(currentDay);
 
                                             if (currentDay > 0 && currentDay <= daysInMonth) {
-                                                weeksHtml += `
-                                                    <div class="day mb-2 ms-2" style="width: 14.28%; height: 50px; text-align: center; line-height: 50px; ${isLeaveDay ? 'background-color: black; color: white;' : ''}">
+                                                calendarHtml += `
+                                                    <div class="day mb-2 ms-2" style="width: 14%; height: 40px; text-align: center; line-height: 50px; ${isLeaveDay ? 'background-color: black; font-weight: bold; color: white;' : ''}">
                                                         ${currentDay}
                                                     </div>
                                                 `;
-                                                dayCounter++;
                                             } else {
-                                                weeksHtml +=
-                                                    '<div class="day empty-day ms-2" style="width: 14.28%; height: 50px;"></div>';
+                                                calendarHtml += '<div class="day empty-day mb-2 ms-2" style="width: 14%; height: 40px;"></div>';
                                             }
                                         }
-
-                                        weeksHtml += '</div>';
+                                        calendarHtml += '</div>';
                                     }
 
-                                    return weeksHtml;
+                                    calendarHtml += `
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+
+                                    return calendarHtml;
                                 }
                             });
                         </script>
+
+
+
+
+                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 
                         <script>
                             // JavaScript to toggle calendar visibility for each department
