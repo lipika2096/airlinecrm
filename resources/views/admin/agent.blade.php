@@ -78,6 +78,9 @@
                                     <option value="agency_name " @if (request()->search_type && in_array('agency_name', request()->search_type)) selected @endif>Agent Group</option>
                                     <option value="company_registration_no" @if (request()->search_type && in_array('company_registration_no', request()->search_type)) selected @endif>Company Registration No</option>
                                     <option value="iata" @if (request()->search_type && in_array('iata', request()->search_type)) selected @endif>IATA Number</option>
+                                    <option value="id" @if (request()->search_type && in_array('id', request()->search_type)) selected @endif>Case ID</option>
+                                    <option value="ticket_no" @if (request()->search_type && in_array('ticket_no', request()->search_type)) selected @endif>Ticket No</option>
+                                    <option value="pnr" @if (request()->search_type && in_array('pnr', request()->search_type)) selected @endif>PNR No</option>
                                     <option value="gds_type" @if (request()->search_type && in_array('gds_type', request()->search_type)) selected @endif>GDS Type</option>
                                     <option value="focus_destinations" @if (request()->search_type && in_array('focus_destinations', request()->search_type)) selected @endif>Focus Destinations</option>
                                     <option value="business_mode" @if (request()->search_type && in_array('business_mode', request()->search_type)) selected @endif>Agent Type</option>

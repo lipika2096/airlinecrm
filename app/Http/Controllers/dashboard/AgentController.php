@@ -70,6 +70,12 @@ class AgentController extends Controller
                                 $subQuery->where($type, 'like', $searchTerm);
                             });
                         }
+
+                        if (in_array($type, ['id', 'ticket_no', 'pnr'])) {
+                            $q->whereHas('cases', function ($subQuery) use ($type, $searchTerm) {
+                                $subQuery->where($type, 'like', $searchTerm);
+                            });
+                        }
                     }
                 }
             });

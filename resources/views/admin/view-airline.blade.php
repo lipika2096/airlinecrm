@@ -2631,6 +2631,7 @@
                                                     <option value="agency_name " >Agent Group</option>
                                                     <option value="company_registration_no">Company Registration No</option>
                                                     <option value="iata" >IATA Number</option>
+                                                    <option value="product_type" >Product Type</option>
                                                     <option value="fare_type" >Fare Type</option>
                                                     <option value="gds_type" >GDS Type</option>
                                                     <option value="focus_destinations" >Focus Destinations</option>
@@ -2662,7 +2663,7 @@
                             Special Fares</a>
 
                             <a class=" btn add-btn mx-2 btn-info text-white" data-bs-toggle="modal"
-                         
+
                                 data-bs-target="#view_fares"><i class="fa fa-plus"></i> View
                                 Special Fares</a>
                         </div>

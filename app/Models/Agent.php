@@ -20,4 +20,11 @@ class Agent extends Model
   public function head_office(){
     return $this->hasOne(HeadOfficeContactDetail::class, 'agent_id');
   }
+  public function agentProductTypes(){
+    return $this->hasMany(AgentProductsType::class, 'agent_id');
+  }
+
+  public function cases(){
+    return $this->hasMany(CaseHistory::class, 'agent_id');
+  }
 }

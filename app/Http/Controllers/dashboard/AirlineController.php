@@ -89,20 +89,27 @@ class AirlineController extends Controller
                     if (isset($searchParts[$index])) {
                         $searchTerm = '%' . $searchParts[$index] . '%';
 
-                        if (in_array($type, ['company_name', 'pincode', 'city', 'state', 'country', 'account_code', 'iata','agency_name'    ])) {
-                            $q->WhereHas('agent', function ($subQuery) use ($type, $searchTerm) {
+                        if (in_array($type, ['company_name', 'pincode', 'city', 'state', 'country', 'account_code', 'iata', 'agency_name'])) {
+                            $q->whereHas('agent', function ($subQuery) use ($type, $searchTerm) {
                                 $subQuery->where($type, 'like', $searchTerm);
                             });
                         }
 
                         if (in_array($type, ['phone_number', 'email_address', 'first_name'])) {
-                            $q->WhereHas('agent.head_office', function ($subQuery) use ($type, $searchTerm) {
+                            $q->whereHas('agent.head_office', function ($subQuery) use ($type, $searchTerm) {
                                 $subQuery->where($type, 'like', $searchTerm);
                             });
                         }
 
                         if ($type === 'fare_type') {
                             $q->where('fare_type', 'like', $searchTerm);
+                        }
+
+                        // Check for product_type in agent_product_types
+                        if ($type === 'product_type') {
+                            $q->whereHas('agent.agentProductTypes', function ($subQuery) use ($searchTerm) {
+                                $subQuery->where('product_type', 'like', $searchTerm);
+                            });
                         }
                     }
                 }
