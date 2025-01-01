@@ -1,335 +1,336 @@
 @extends('admin/layouts/head-main')
 @section('content')
-    @php
-        use Carbon\Carbon;
-    @endphp
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+@php
+use Carbon\Carbon;
+@endphp
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
-    <style>
-        .submit-section {
-            margin-top: 10px !important;
-        }
+<style>
+    .submit-section {
+        margin-top: 10px !important;
+    }
 
-        .toggle-dropdown,
-        .toggle-close {
-            cursor: pointer;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            width: 30px;
-            height: 30px;
-        }
+    .toggle-dropdown,
+    .toggle-close {
+        cursor: pointer;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 30px;
+        height: 30px;
+    }
 
-        .toggle-dropdown i,
-        .toggle-close i {
-            font-size: 16px;
-            color: white;
-        }
-    </style>
-    <!-- Page Wrapper -->
-    <div class="page-wrapper">
+    .toggle-dropdown i,
+    .toggle-close i {
+        font-size: 16px;
+        color: white;
+    }
+</style>
+<!-- Page Wrapper -->
+<div class="page-wrapper">
 
 
-        <!-- Page Content -->
-        <div class="content container-fluid">
+    <!-- Page Content -->
+    <div class="content container-fluid">
 
-            <!-- Page Header -->
-            <div class="page-header" style="margin-bottom: 10px;">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h3 class="page-title"></h3>
-                        <ul class="breadcrumb">
-                            <li class="breadcrumb-item active">Holidays & Leaves</li>
-                        </ul>
-                    </div>
-
-                    <div class="card tab-box" style="margin-top: 20px;">
-                        <div class="row user-tabs">
-                            <div class="col-lg-12 col-md-12 col-sm-12 line-tabs">
-                                <ul class="nav nav-tabs nav-tabs-bottom">
-                                    <li class="nav-item"><a href="#overview" data-bs-toggle="tab"
-                                            class="nav-link active">Overview</a>
-                                    </li>
-                                    <li class="nav-item"><a href="#holidays" data-bs-toggle="tab"
-                                            class="nav-link ">Holidays</a>
-                                    </li>
-                                    <li class="nav-item"><a href="#teams" data-bs-toggle="tab" class="nav-link">Teams</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
+        <!-- Page Header -->
+        <div class="page-header" style="margin-bottom: 10px;">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title"></h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item active">Holidays & Leaves</li>
+                    </ul>
                 </div>
-            </div>
-            <!-- /Page Header -->
 
-            <div class="tab-content">
-
-                <div id="holidays" class="pro-overview tab-pane fade show">
-                    <div class="row">
-                        <div class="col-auto float-end ms-auto" style="margin-bottom: 10px;">
-
-                            <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_event"><i
-                                    class="fa fa-plus"></i> Add Holiday</a>
-
-                        </div>
-                        <div class="view-toggle" style="margin-bottom: 10px;">
-
-                            <button onclick="toggleView('list')" class="btn calendar-btn list-view"><i
-                                    class="fa fa-list"></i></button>
-                            <button onclick="toggleView('calendar')" class="btn calendar-btn calendar-view"><i
-                                    class="fa fa-calendar" aria-hidden="true"></i></button>
+                <div class="card tab-box" style="margin-top: 20px;">
+                    <div class="row user-tabs">
+                        <div class="col-lg-12 col-md-12 col-sm-12 line-tabs">
+                            <ul class="nav nav-tabs nav-tabs-bottom">
+                                <li class="nav-item"><a href="#overview" data-bs-toggle="tab"
+                                        class="nav-link active">Overview</a>
+                                </li>
+                                <li class="nav-item"><a href="#holidays" data-bs-toggle="tab"
+                                        class="nav-link ">Holidays</a>
+                                </li>
+                                <li class="nav-item"><a href="#teams" data-bs-toggle="tab" class="nav-link">Teams</a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
+                </div>
 
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="card mb-0">
-                                <div class="card-body" id="calendar-view" style="display: none">
-                                    <div class="row">
-                                        <div class="col-md-12">
+            </div>
+        </div>
+        <!-- /Page Header -->
 
-                                            <!-- Calendar -->
-                                            <div id="calendar"></div>
-                                            <!-- /Calendar -->
+        <div class="tab-content">
 
-                                        </div>
+            <div id="holidays" class="pro-overview tab-pane fade show">
+                <div class="row">
+                    <div class="col-auto float-end ms-auto" style="margin-bottom: 10px;">
+
+                        <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_event"><i
+                                class="fa fa-plus"></i> Add Holiday</a>
+
+                    </div>
+                    <div class="view-toggle" style="margin-bottom: 10px;">
+
+                        <button onclick="toggleView('list')" class="btn calendar-btn list-view"><i
+                                class="fa fa-list"></i></button>
+                        <button onclick="toggleView('calendar')" class="btn calendar-btn calendar-view"><i
+                                class="fa fa-calendar" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card mb-0">
+                            <div class="card-body" id="calendar-view" style="display: none">
+                                <div class="row">
+                                    <div class="col-md-12">
+
+                                        <!-- Calendar -->
+                                        <div id="calendar"></div>
+                                        <!-- /Calendar -->
+
                                     </div>
                                 </div>
-                                <div class="card-body" id="list-view">
-                                    <div class="row">
-                                        <div class="col-md-12">
+                            </div>
+                            <div class="card-body" id="list-view">
+                                <div class="row">
+                                    <div class="col-md-12">
 
-                                            <!-- Calendar -->
-                                            <div class="month-list">
-                                                <button class="active" onclick="activateMonth(this, 0)">Jan</button>
-                                                <button onclick="activateMonth(this, 1)">Feb</button>
-                                                <button onclick="activateMonth(this, 2)">Mar</button>
-                                                <button onclick="activateMonth(this, 3)">Apr</button>
-                                                <button onclick="activateMonth(this, 4)">May</button>
-                                                <button onclick="activateMonth(this, 5)">Jun</button>
-                                                <button onclick="activateMonth(this, 6)">Jul</button>
-                                                <button onclick="activateMonth(this, 7)">Aug</button>
-                                                <button onclick="activateMonth(this, 8)">Sep</button>
-                                                <button onclick="activateMonth(this, 9)">Oct</button>
-                                                <button onclick="activateMonth(this, 10)">Nov</button>
-                                                <button onclick="activateMonth(this, 11)">Dec</button>
-                                            </div>
-                                            <div class="section">
-                                                <div class="section-header">
-                                                    <h2>Holiday List</h2>
-
-                                                </div>
-                                                <table class="table table-striped custom-table mb-0 datatable">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>#</th>
-                                                            <th>Country</th>
-                                                            <th>State</th>
-                                                            <th>Holiday Name</th>
-                                                            <th>Holiday Date</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody id="events-table-body">
-                                                        @foreach ($holidays as $data)
-                                                            <tr
-                                                                data-month="{{ date('n', strtotime($data->holiday_date)) - 1 }}">
-
-                                                                <td>{{ $data->id }}</td>
-                                                                <td>{{ $data->country }}</td>
-                                                                <td>{{ $data->state }}</td>
-                                                                <td>{{ $data->title }}</td>
-                                                                <td>{{ $data->holiday_date }}</td>
-                                                            </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <!-- /Calendar -->
-
+                                        <!-- Calendar -->
+                                        <div class="month-list">
+                                            <button class="active" onclick="activateMonth(this, 0)">Jan</button>
+                                            <button onclick="activateMonth(this, 1)">Feb</button>
+                                            <button onclick="activateMonth(this, 2)">Mar</button>
+                                            <button onclick="activateMonth(this, 3)">Apr</button>
+                                            <button onclick="activateMonth(this, 4)">May</button>
+                                            <button onclick="activateMonth(this, 5)">Jun</button>
+                                            <button onclick="activateMonth(this, 6)">Jul</button>
+                                            <button onclick="activateMonth(this, 7)">Aug</button>
+                                            <button onclick="activateMonth(this, 8)">Sep</button>
+                                            <button onclick="activateMonth(this, 9)">Oct</button>
+                                            <button onclick="activateMonth(this, 10)">Nov</button>
+                                            <button onclick="activateMonth(this, 11)">Dec</button>
                                         </div>
+                                        <div class="section">
+                                            <div class="section-header">
+                                                <h2>Holiday List</h2>
+
+                                            </div>
+                                            <table class="table table-striped custom-table mb-0 datatable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Country</th>
+                                                        <th>State</th>
+                                                        <th>Holiday Name</th>
+                                                        <th>Holiday Date</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="events-table-body">
+                                                    @foreach ($holidays as $data)
+                                                    <tr
+                                                        data-month="{{ date('n', strtotime($data->holiday_date)) - 1 }}">
+
+                                                        <td>{{ $data->id }}</td>
+                                                        <td>{{ $data->country }}</td>
+                                                        <td>{{ $data->state }}</td>
+                                                        <td>{{ $data->title }}</td>
+                                                        <td>{{ $data->holiday_date }}</td>
+                                                    </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <!-- /Calendar -->
+
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- /Page Content -->
+                <!-- /Page Content -->
 
-                    <!-- Add Holiday Modal -->
-                    <div id="add_event" class="modal custom-modal fade" role="dialog">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Add Holiday</h5>
-                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="{{ route('admin.holidays.store') }}" method="POST">
-                                        @csrf <!-- Include CSRF token -->
+                <!-- Add Holiday Modal -->
+                <div id="add_event" class="modal custom-modal fade" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Holiday</h5>
+                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('admin.holidays.store') }}" method="POST">
+                                    @csrf
+                                    <!-- Include CSRF token -->
 
-                                        <div class="form-group">
-                                            <label>Country <span class="text-danger">*</span></label>
-                                            <div class="">
-                                                <input class="form-control" name="country" type="text">
-                                            </div>
+                                    <div class="form-group">
+                                        <label>Country <span class="text-danger">*</span></label>
+                                        <div class="">
+                                            <input class="form-control" name="country" type="text">
                                         </div>
-                                        <div class="form-group">
-                                            <label>State <span class="text-danger">*</span></label>
-                                            <div class="">
-                                                <input class="form-control" name="state" type="text">
-                                            </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>State <span class="text-danger">*</span></label>
+                                        <div class="">
+                                            <input class="form-control" name="state" type="text">
                                         </div>
-                                        <div class="form-group">
-                                            <label>Holiday Name <span class="text-danger">*</span></label>
-                                            <input class="form-control" name="title" type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Holiday Name <span class="text-danger">*</span></label>
+                                        <input class="form-control" name="title" type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Holiday Date <span class="text-danger">*</span></label>
+                                        <div class="">
+                                            <input class="form-control" name="holiday_date" type="datetime-local">
                                         </div>
-                                        <div class="form-group">
-                                            <label>Holiday Date <span class="text-danger">*</span></label>
-                                            <div class="">
-                                                <input class="form-control" name="holiday_date" type="datetime-local">
-                                            </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label">Category</label>
+                                        <select class="select form-control" name="category">
+                                            <option value='bg-danger'>Danger</option>
+                                            <option value='bg-success'>Success</option>
+                                            <option value='bg-purple'>Purple</option>
+                                            <option value='bg-primary'>Primary</option>
+                                            <option value='bg-pink'>Pink</option>
+                                            <option value='bg-info'>Info</option>
+                                            <option value='bg-inverse'>Inverse</option>
+                                            <option value='bg-orange'>Orange</option>
+                                            <option value='bg-brown'>Brown</option>
+                                            <option value='bg-teal'>Teal</option>
+                                            <option value='bg-warning'>Warning</option>
+                                        </select>
+                                    </div>
+                                    <div class="submit-section">
+                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Add Event Modal -->
+
+                <!-- Event Modal -->
+                <div class="modal custom-modal fade" id="event-modal">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Event</h5>
+                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body"></div>
+                            <div class="modal-footer text-center">
+                                <button type="button" class="btn btn-success submit-btn save-event">Create
+                                    event</button>
+                                <button type="button" class="btn btn-danger submit-btn delete-event"
+                                    data-bs-dismiss="modal">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Event Modal -->
+
+                <!-- Add Category Modal-->
+                <div class="modal custom-modal fade" id="add-category">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Add a category</h4>
+                            </div>
+                            <div class="modal-body p-20">
+                                <form>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="col-form-label">Category Name</label>
+                                            <input class="form-control" placeholder="Enter name" type="text"
+                                                name="category-name">
                                         </div>
-                                        <div class="form-group">
-                                            <label class="control-label">Category</label>
-                                            <select class="select form-control" name="category">
-                                                <option value='bg-danger'>Danger</option>
-                                                <option value='bg-success'>Success</option>
-                                                <option value='bg-purple'>Purple</option>
-                                                <option value='bg-primary'>Primary</option>
-                                                <option value='bg-pink'>Pink</option>
-                                                <option value='bg-info'>Info</option>
-                                                <option value='bg-inverse'>Inverse</option>
-                                                <option value='bg-orange'>Orange</option>
-                                                <option value='bg-brown'>Brown</option>
-                                                <option value='bg-teal'>Teal</option>
-                                                <option value='bg-warning'>Warning</option>
+                                        <div class="col-md-6">
+                                            <label class="col-form-label">Choose Category Color</label>
+                                            <select class="form-control form-select"
+                                                data-placeholder="Choose a color..." name="category-color">
+                                                <option value="success">Success</option>
+                                                <option value="danger">Danger</option>
+                                                <option value="info">Info</option>
+                                                <option value="pink">Pink</option>
+                                                <option value="primary">Primary</option>
+                                                <option value="warning">Warning</option>
+                                                <option value="orange">Orange</option>
+                                                <option value="brown">Brown</option>
+                                                <option value="teal">Teal</option>
                                             </select>
                                         </div>
-                                        <div class="submit-section">
-                                            <button class="btn btn-primary" type="submit">Submit</button>
-                                        </div>
-                                    </form>
-                                </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-white" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-danger save-category"
+                                    data-bs-dismiss="modal">Save</button>
                             </div>
                         </div>
                     </div>
-                    <!-- /Add Event Modal -->
-
-                    <!-- Event Modal -->
-                    <div class="modal custom-modal fade" id="event-modal">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Event</h5>
-                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body"></div>
-                                <div class="modal-footer text-center">
-                                    <button type="button" class="btn btn-success submit-btn save-event">Create
-                                        event</button>
-                                    <button type="button" class="btn btn-danger submit-btn delete-event"
-                                        data-bs-dismiss="modal">Delete</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /Event Modal -->
-
-                    <!-- Add Category Modal-->
-                    <div class="modal custom-modal fade" id="add-category">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Add a category</h4>
-                                </div>
-                                <div class="modal-body p-20">
-                                    <form>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label class="col-form-label">Category Name</label>
-                                                <input class="form-control" placeholder="Enter name" type="text"
-                                                    name="category-name">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="col-form-label">Choose Category Color</label>
-                                                <select class="form-control form-select"
-                                                    data-placeholder="Choose a color..." name="category-color">
-                                                    <option value="success">Success</option>
-                                                    <option value="danger">Danger</option>
-                                                    <option value="info">Info</option>
-                                                    <option value="pink">Pink</option>
-                                                    <option value="primary">Primary</option>
-                                                    <option value="warning">Warning</option>
-                                                    <option value="orange">Orange</option>
-                                                    <option value="brown">Brown</option>
-                                                    <option value="teal">Teal</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-white" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-danger save-category"
-                                        data-bs-dismiss="modal">Save</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /Add Category Modal-->
                 </div>
+                <!-- /Add Category Modal-->
+            </div>
 
-                <div id="overview" class="pro-overview tab-pane fade show active">
+            <div id="overview" class="pro-overview tab-pane fade show active">
 
-                    <div class="content container-fluid">
+                <div class="content container-fluid">
 
-                        <div class="page-header">
-                            <h3 class="page-title">Staff Leave Overview</h3>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="table-responsive">
-                                    <table class="table table-striped custom-table mb-0 datatable">
-                                        <thead>
-                                            <tr>
-                                                <th>First Name</th>
-                                                <th>Last Name</th>
-                                                <th>Designation</th>
-                                                <th>Department</th>
-                                                <th>Contact</th>
-                                                <th>Leave Account</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($employees as $data)
-                                                <tr>
-                                                    <td>{{ $data->user->first_name }}</td>
-                                                    <td>{{ $data->user->last_name }}</td>
-                                                    <td>{{ $data->user->position }}</td>
-                                                    <td>{{ $data->user->department }}</td>
-                                                    <td><b>Phone No.:</b> {{ $data->user->phone }} <br /> <b>Email:</b>
-                                                        {{ $data->user->email }}</td>
-                                                    @php
-                                                        $annualLeave = $data->user->leave_count;
-                                                        $usedAnnualLeave = App\Models\EmployeeLeave::where(
-                                                            'employee_id',
-                                                            $data->user->id,
-                                                        )
-                                                            ->where('status', 3)
-                                                            ->sum('no_of_days');
-                                                        $remainingLeave = $annualLeave - $usedAnnualLeave;
-                                                    @endphp
-                                                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <div class="page-header">
+                        <h3 class="page-title">Staff Leave Overview</h3>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table class="table table-striped custom-table mb-0 datatable">
+                                    <thead>
+                                        <tr>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Designation</th>
+                                            <th>Department</th>
+                                            <th>Contact</th>
+                                            <th>Leave Account</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($employees as $data)
+                                        <tr>
+                                            <td>{{ $data->user->first_name }}</td>
+                                            <td>{{ $data->user->last_name }}</td>
+                                            <td>{{ $data->user->position }}</td>
+                                            <td>{{ $data->user->department }}</td>
+                                            <td><b>Phone No.:</b> {{ $data->user->phone }} <br /> <b>Email:</b>
+                                                {{ $data->user->email }}</td>
+                                            @php
+                                            $annualLeave = $data->user->leave_count;
+                                            $usedAnnualLeave = App\Models\EmployeeLeave::where(
+                                            'employee_id',
+                                            $data->user->id,
+                                            )
+                                            ->where('status', 3)
+                                            ->sum('no_of_days');
+                                            $remainingLeave = $annualLeave - $usedAnnualLeave;
+                                            @endphp
+                                            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-                                                    <script>
-                                                        document.addEventListener("DOMContentLoaded", function() {
+                                            <script>
+                                                document.addEventListener("DOMContentLoaded", function() {
                                                             var ctx = document.getElementById('leaveProgress_' + {{ $data->user->id }}).getContext('2d');
 
                                                             // Get dynamic values
@@ -362,332 +363,370 @@
                                                                 }
                                                             });
                                                         });
-                                                    </script>
-                                                    <td class="text-danger">
-                                                        <div style="position: relative; width: 100px; height: 100px;">
-                                                            <canvas id="leaveProgress_{{ $data->user->id }}"></canvas>
-                                                            <div
-                                                                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 14px;">
-                                                                {{ $usedAnnualLeave }}/{{ $data->user->leave_count ?? 0 }}
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
+                                            </script>
+                                            <td class="text-danger">
+                                                <div style="position: relative; width: 100px; height: 100px;">
+                                                    <canvas id="leaveProgress_{{ $data->user->id }}"></canvas>
+                                                    <div
+                                                        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 14px;">
+                                                        {{ $usedAnnualLeave }}/{{ $data->user->leave_count ?? 0 }}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
 
 
-                <div id="teams" class="pro-overview tab-pane fade show ">
-                    <!-- Page Content -->
-                    <div class="content container-fluid">
+            <div id="teams" class="pro-overview tab-pane fade show ">
+                <!-- Page Content -->
+                <div class="content container-fluid">
 
-                        <div class="page-header">
-                            <div class="row align-items-center">
-                                <div class="col">
-                                    <h3 class="page-title">My Teams </h3>
-                                </div>
-                                <div class="col-auto float-end ms-auto">
+                    <div class="page-header">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h3 class="page-title">My Teams </h3>
+                            </div>
+                            <div class="col-auto float-end ms-auto">
 
-                                    <a class="btn add-btn ms-2" data-bs-toggle="modal" data-bs-target="#new_absence"><i
-                                            class="fa fa-plus"></i> New Absence</a>
-                                    <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#report_sick"><i
-                                            class="fa fa-plus"></i> Report Sick</a>
+                                <a class="btn add-btn ms-2" data-bs-toggle="modal" data-bs-target="#new_absence"><i
+                                        class="fa fa-plus"></i> New Absence</a>
+                                <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#report_sick"><i
+                                        class="fa fa-plus"></i> Report Sick</a>
 
-                                    <!-- Request Absence Modal -->
-                                    <div id="new_absence" class="modal custom-modal fade" role="dialog">
-                                        <div class="modal-dialog modal-dialog-centered modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Request Absence</h5>
-                                                    <button type="button" class="close" data-bs-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form method="post"
-                                                        action ="{{ route('admin.newabsence.store') }}#leaves">
-                                                        @csrf
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <div class="form-group">
-                                                                    <label>Select Employee <span
-                                                                            class="text-danger">*</span></label>
-                                                                    <select class="select form-control"
-                                                                        name="employee_id">
-                                                                        <option>Select Employee</option>
-                                                                        @foreach ($employees as $data)
-                                                                            <option value="{{ $data->id }}">
-                                                                                {{ $data->first_name }}
-                                                                                {{ $data->last_name }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
+                                <!-- Request Absence Modal -->
+                                <div id="new_absence" class="modal custom-modal fade" role="dialog">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Request Absence</h5>
+                                                <button type="button" class="close" data-bs-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form method="post"
+                                                    action="{{ route('admin.newabsence.store') }}#leaves">
+                                                    @csrf
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <label>Select Employee <span
+                                                                        class="text-danger">*</span></label>
+                                                                <select class="select form-control" name="employee_id">
+                                                                    <option>Select Employee</option>
+                                                                    @foreach ($employees as $data)
+                                                                    <option value="{{ $data->id }}">
+                                                                        {{ $data->first_name }}
+                                                                        {{ $data->last_name }}</option>
+                                                                    @endforeach
+                                                                </select>
                                                             </div>
-                                                            <div class="col-md-12">
-                                                                <div class="form-group">
-                                                                    <label>Absence type</label>
-                                                                    <select class="form-control select" name="leave_type">
-                                                                        @foreach ($leavetypes as $leavetype)
-                                                                            <option value="{{ $leavetype->name }}">
-                                                                                {{ $leavetype->name }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <label>Absence type</label>
+                                                                <select class="form-control select" name="leave_type">
+                                                                    @foreach ($leavetypes as $leavetype)
+                                                                    <option value="{{ $leavetype->name }}">
+                                                                        {{ $leavetype->name }}</option>
+                                                                    @endforeach
+                                                                </select>
                                                             </div>
-                                                            <div class="col-sm-6">
-                                                                <div class="form-group">
-                                                                    <label class="col-form-label">From</label>
-                                                                    <input class="form-control" type="date"
-                                                                        name="from" onchange="calculateDays()">
-                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">From</label>
+                                                                <input class="form-control" type="date" name="from"
+                                                                    onchange="calculateDays()">
                                                             </div>
+                                                        </div>
 
-                                                            <div class="col-sm-6">
-                                                                <div class="form-group">
-                                                                    <label class="col-form-label">Until</label>
-                                                                    <input class="form-control" type="date"
-                                                                        name="to" onchange="calculateDays()">
-                                                                </div>
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Until</label>
+                                                                <input class="form-control" type="date" name="to"
+                                                                    onchange="calculateDays()">
                                                             </div>
-                                                            <div class="col-sm-12">
-                                                                <div class="form-group">
-                                                                    <label>Number of days <span
-                                                                            class="text-danger">*</span></label>
-                                                                    <input class="form-control" readonly type="text"
-                                                                        name="no_of_days">
-                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-12">
+                                                            <div class="form-group">
+                                                                <label>Number of days <span
+                                                                        class="text-danger">*</span></label>
+                                                                <input class="form-control" readonly type="text"
+                                                                    name="no_of_days">
                                                             </div>
-                                                            <div class="col-sm-4">
-                                                                <div class="form-group d-flex">
-                                                                    <input type="checkbox" name="half" id="half-day">
-                                                                    <label class="col-form-label ms-3">Half Day </label>
-                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group d-flex">
+                                                                <input type="checkbox" name="half" id="half-day">
+                                                                <label class="col-form-label ms-3">Half Day </label>
                                                             </div>
-                                                            <div class="col-sm-4">
-                                                                <div class="form-group d-flex">
-                                                                    <input type="radio" name="formerly" id="formerly">
-                                                                    <label class="col-form-label ms-3">Formerly </label>
-                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group d-flex">
+                                                                <input type="radio" name="formerly" id="formerly">
+                                                                <label class="col-form-label ms-3">Formerly </label>
                                                             </div>
-                                                            <div class="col-sm-4">
-                                                                <div class="form-group d-flex">
-                                                                    <input type="radio" name="afternoon"
-                                                                        id="afternoon">
-                                                                    <label class="col-form-label ms-3">Afternoon </label>
-                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group d-flex">
+                                                                <input type="radio" name="afternoon" id="afternoon">
+                                                                <label class="col-form-label ms-3">Afternoon </label>
                                                             </div>
-                                                            <div class="col-sm-12">
-                                                                <div class="form-group">
-                                                                    <label class="col-form-label">Absence Series </label>
-                                                                    <input type="text" class="form-control"
-                                                                        name="absence_series">
-                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-12">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Absence Series </label>
+                                                                <input type="text" class="form-control"
+                                                                    name="absence_series">
                                                             </div>
-                                                            <div class="col-sm-12">
-                                                                <div class="form-group">
-                                                                    <label class="col-form-label">note </label>
-                                                                    <textarea class="form-control" name="note" cols="3" rows="3"></textarea>
-                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-12">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">note </label>
+                                                                <textarea class="form-control" name="note" cols="3"
+                                                                    rows="3"></textarea>
                                                             </div>
-                                                            <div class="col-sm-12">
-                                                                <div class="form-group">
-                                                                    <label class="col-form-label">Representation </label>
-                                                                    <input type="text" class="form-control"
-                                                                        name="representation">
-                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-12">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Representation </label>
+                                                                <input type="text" class="form-control"
+                                                                    name="representation">
                                                             </div>
-                                                            {{-- <div class="col-sm-12">
-                                                    <div class="form-group d-flex">
-                                                        <input type="checkbox" name="half">
-                                                        <label class="col-form-label ms-3">Reserved | will not be sent to
-                                                            approved </label>
+                                                        </div>
+                                                        {{-- <div class="col-sm-12">
+                                                            <div class="form-group d-flex">
+                                                                <input type="checkbox" name="half">
+                                                                <label class="col-form-label ms-3">Reserved | will not
+                                                                    be sent to
+                                                                    approved </label>
+                                                            </div>
+                                                        </div> --}}
                                                     </div>
-                                                </div> --}}
-                                                        </div>
-                                                        <div class="submit-section">
-                                                            <button class="btn btn-primary " type="submit">Apply
-                                                                For</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
+                                                    <div class="submit-section">
+                                                        <button class="btn btn-primary " type="submit">Apply
+                                                            For</button>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- /Request Absence Modal -->
+                                </div>
+                                <!-- /Request Absence Modal -->
 
-                                    <!-- Report Sick Modal -->
-                                    <div id="report_sick" class="modal custom-modal fade" role="dialog">
-                                        <div class="modal-dialog modal-dialog-centered modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Report Sick</h5>
-                                                    <button type="button" class="close" data-bs-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form method="post"
-                                                        action ="{{ route('admin.reportsick.store') }}#leaves"
-                                                        enctype="multipart/form-data">
-                                                        @csrf
-                                                        <input type="hidden" name="no_of_days" value="0">
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <div class="form-group">
-                                                                    <label>Select Employee <span
-                                                                            class="text-danger">*</span></label>
-                                                                    <select class="select form-control"
-                                                                        name="employee_id">
-                                                                        @foreach ($employees as $data)
-                                                                            <option value="{{ $data->id }}">
-                                                                                {{ $data->first_name }}
-                                                                                {{ $data->last_name }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
+                                <!-- Report Sick Modal -->
+                                <div id="report_sick" class="modal custom-modal fade" role="dialog">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Report Sick</h5>
+                                                <button type="button" class="close" data-bs-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form method="post"
+                                                    action="{{ route('admin.reportsick.store') }}#leaves"
+                                                    enctype="multipart/form-data">
+                                                    @csrf
+                                                    <input type="hidden" name="no_of_days" value="0">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <label>Select Employee <span
+                                                                        class="text-danger">*</span></label>
+                                                                <select class="select form-control" name="employee_id">
+                                                                    @foreach ($employees as $data)
+                                                                    <option value="{{ $data->id }}">
+                                                                        {{ $data->first_name }}
+                                                                        {{ $data->last_name }}</option>
+                                                                    @endforeach
+                                                                </select>
                                                             </div>
-                                                            <div class="col-md-12">
-                                                                <div class="form-group">
-                                                                    <label>Absence type</label>
-                                                                    <select class="form-control select" name="leave_type">
-                                                                        @foreach ($leavetypes as $leavetype)
-                                                                            <option value="{{ $leavetype->name }}">
-                                                                                {{ $leavetype->name }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <label>Absence type</label>
+                                                                <select class="form-control select" name="leave_type">
+                                                                    @foreach ($leavetypes as $leavetype)
+                                                                    <option value="{{ $leavetype->name }}">
+                                                                        {{ $leavetype->name }}</option>
+                                                                    @endforeach
+                                                                </select>
                                                             </div>
-                                                            <div class="col-sm-6">
-                                                                <div class="form-group">
-                                                                    <label class="col-form-label">From</label>
-                                                                    <input class="form-control" type="date"
-                                                                        name="from">
-                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">From</label>
+                                                                <input class="form-control" type="date" name="from">
                                                             </div>
+                                                        </div>
 
-                                                            <div class="col-sm-6">
-                                                                <div class="form-group">
-                                                                    <label class="col-form-label">Until</label>
-                                                                    <input class="form-control" type="date"
-                                                                        name="to">
-                                                                </div>
+                                                        <div class="col-sm-6">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Until</label>
+                                                                <input class="form-control" type="date" name="to">
                                                             </div>
-                                                            <div class="col-sm-4">
-                                                                <div class="form-group d-flex">
-                                                                    <input type="checkbox" name="half" id="half-day">
-                                                                    <label class="col-form-label ms-3">Half Day </label>
-                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group d-flex">
+                                                                <input type="checkbox" name="half" id="half-day">
+                                                                <label class="col-form-label ms-3">Half Day </label>
                                                             </div>
-                                                            <div class="col-sm-4">
-                                                                <div class="form-group d-flex">
-                                                                    <input type="radio" name="formerly" id="formerly">
-                                                                    <label class="col-form-label ms-3">Formerly </label>
-                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group d-flex">
+                                                                <input type="radio" name="formerly" id="formerly">
+                                                                <label class="col-form-label ms-3">Formerly </label>
                                                             </div>
-                                                            <div class="col-sm-4">
-                                                                <div class="form-group d-flex">
-                                                                    <input type="radio" name="afternoon"
-                                                                        id="afternoon">
-                                                                    <label class="col-form-label ms-3">Afternoon </label>
-                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group d-flex">
+                                                                <input type="radio" name="afternoon" id="afternoon">
+                                                                <label class="col-form-label ms-3">Afternoon </label>
                                                             </div>
-                                                            <div class="col-sm-12">
-                                                                <div class="form-group">
-                                                                    <label class="col-form-label">note </label>
-                                                                    <textarea class="form-control" name="note" cols="3" rows="3"></textarea>
-                                                                </div>
+                                                        </div>
+                                                        <div class="col-sm-12">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">note </label>
+                                                                <textarea class="form-control" name="note" cols="3"
+                                                                    rows="3"></textarea>
                                                             </div>
-                                                            <div class="col-sm-12">
-                                                                <div class="form-group">
-                                                                    <label class="col-form-label">Add Attachment</label>
+                                                        </div>
+                                                        <div class="col-sm-12">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Add Attachment</label>
 
-                                                                    <!-- Custom file input container -->
-                                                                    <div class="custom-file-upload">
-                                                                        <input type="file" class="file-input"
-                                                                            name="attachment" id="fileUpload" />
-                                                                        <i class="fa fa-file-o file-icon"></i>
-                                                                        <span class="file-text">Click to upload</span>
-                                                                    </div>
+                                                                <!-- Custom file input container -->
+                                                                <div class="custom-file-upload">
+                                                                    <input type="file" class="file-input"
+                                                                        name="attachment" id="fileUpload" />
+                                                                    <i class="fa fa-file-o file-icon"></i>
+                                                                    <span class="file-text">Click to upload</span>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="submit-section">
-                                                            <button class="btn btn-primary " type="submit">Report
-                                                                Sick</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
+                                                    </div>
+                                                    <div class="submit-section">
+                                                        <button class="btn btn-primary " type="submit">Report
+                                                            Sick</button>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- /Report Sick Modal -->
                                 </div>
+                                <!-- /Report Sick Modal -->
                             </div>
                         </div>
+                    </div>
 
-                        <h3 class="text-center mt-3" id="currentMonth">{{ \Carbon\Carbon::now()->format('F Y') }}</h3>
-                        <div class="row mt-5 mb-5">
-                            <div class="col-md-4">
-                                <div class="input-group">
-                                    <select class="form-control" id="coworkerSelect" aria-label="Add Coworker">
-                                        <option value="" selected>Add Colleagues</option>
+                    <div class="text-center mt-3">
+                        <button id="prevMonth" class="btn btn-outline-primary">&larr;</button>
+                        <h3 class="d-inline mx-3" id="currentMonth">{{ \Carbon\Carbon::now()->format('F Y') }}</h3>
+                        <button id="nextMonth" class="btn btn-outline-primary">&rarr;</button>
+                    </div><input type="hidden" id="currentMonthValue"
+                        value="{{ \Carbon\Carbon::now()->format('Y-m') }}">
+                    <div class="row mt-5 mb-5">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <select class="form-control" id="coworkerSelect" aria-label="Add Coworker">
+                                    <option value="" selected>Add Colleagues</option>
 
-                                        <!-- Add more coworker options as needed -->
-                                    </select>
-                                    <span class="input-group-text">
-                                        <i class="fa fa-plus"></i>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="input-group">
-                                    <select class="form-control"id="teamSelect" aria-label="Add Team">
-                                        <option value="" selected>Add Team</option>
-
-                                    </select>
-                                    <span class="input-group-text">
-                                        <i class="fa fa-plus"></i>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="input-group">
-                                    <select class="form-control" id="browseListSelect" aria-label="Browse List">
-                                        <option value="" disabled selected>Browse List</option>
-                                        @foreach ($users as $data => $user)
-                                            @foreach ($user as $dataUser)
-                                                <option value="{{ $dataUser->id }}">{{ $dataUser->first_name }}
-                                                    {{ $dataUser->first_name }} - {{ $dataUser->department }}</option>
-                                            @endforeach
-                                        @endforeach
-                                        <!-- Add more coworker options as needed -->
-                                    </select>
-                                    <span class="input-group-text">
-                                        <i class="fa fa-plus"></i>
-                                    </span>
-                                </div>
+                                    <!-- Add more coworker options as needed -->
+                                </select>
+                                <span class="input-group-text">
+                                    <i class="fa fa-plus"></i>
+                                </span>
                             </div>
                         </div>
-                        <!-- Day numbers header -->
-                        <div class="row mb-3">
-                            <div class="row" id="departmentContainer"></div>
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <select class="form-control" id="teamSelect" aria-label="Add Team">
+                                    <option value="" selected>Add Team</option>
 
+                                </select>
+                                <span class="input-group-text">
+                                    <i class="fa fa-plus"></i>
+                                </span>
+                            </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <select class="form-control" id="browseListSelect" aria-label="Browse List">
+                                    <option value="" disabled selected>Browse List</option>
+                                    @foreach ($users as $data => $user)
+                                    @foreach ($user as $dataUser)
+                                    <option value="{{ $dataUser->id }}">{{ $dataUser->first_name }}
+                                        {{ $dataUser->first_name }} - {{ $dataUser->department }}</option>
+                                    @endforeach
+                                    @endforeach
+                                    <!-- Add more coworker options as needed -->
+                                </select>
+                                <span class="input-group-text">
+                                    <i class="fa fa-plus"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Day numbers header -->
+                    <div class="row mb-3">
+                        <div class="row" id="departmentContainer"></div>
+
+                    </div>
 
 
 
-                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-                        <script>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const currentMonthElement = document.getElementById('currentMonth');
+                            const currentMonthValue = document.getElementById('currentMonthValue');
+
+                            // Function to update the displayed month and hidden value
+                            const updateMonthDisplay = (date) => {
+                                const options = { year: 'numeric', month: 'long' };
+                                currentMonthElement.textContent = date.toLocaleDateString('en-US', options);
+                                currentMonthValue.value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                            };
+
+                            // Parse the initial hidden input value as a Date
+                            const parseDate = (value) => {
+                                const [year, month] = value.split('-');
+                                return new Date(year, month - 1, 1); // Month is zero-based in JavaScript
+                            };
+
+                            // Set up event listeners for buttons
+                            document.getElementById('prevMonth').addEventListener('click', () => {
+                                const currentDate = parseDate(currentMonthValue.value);
+                                currentDate.setMonth(currentDate.getMonth() - 1);
+                                updateMonthDisplay(currentDate);
+                            });
+
+                            document.getElementById('nextMonth').addEventListener('click', () => {
+                                const currentDate = parseDate(currentMonthValue.value);
+                                currentDate.setMonth(currentDate.getMonth() + 1);
+                                updateMonthDisplay(currentDate);
+                            });
+
+                            // Initialize the display
+                            updateMonthDisplay(parseDate(currentMonthValue.value));
+                        });
+
+
                             $(document).ready(function() {
                                 const baseUrl = "{{ url('/') }}";
 
@@ -845,12 +884,35 @@
                                         }
                                     });
                                 }
-
                                 // Generate calendar HTML
                                 function generateCalendar(user, department) {
-                                    const currentMonth = new Date().getMonth() + 1;
-                                    const daysInMonth = new Date(new Date().getFullYear(), currentMonth, 0).getDate();
-                                    const firstDayOfMonth = new Date(new Date().getFullYear(), currentMonth - 1, 1).getDay();
+                                // Assuming the text content is "December 2024"
+                                const textContent = document.getElementById('currentMonth').textContent;
+
+                                // Split the text into month and year
+                                const [monthName, dynaYear] = textContent.split(" ");
+
+                                // Map month names to their respective numbers
+                                const monthMap = {
+                                    January: 1,
+                                    February: 2,
+                                    March: 3,
+                                    April: 4,
+                                    May: 5,
+                                    June: 6,
+                                    July: 7,
+                                    August: 8,
+                                    September: 9,
+                                    October: 10,
+                                    November: 11,
+                                    December: 12
+                                };
+
+                                // Get the numerical value of the month
+                                const currentMonth = monthMap[monthName];
+                                    //const currentMonth = new Date().getMonth() + 1;
+                                    const daysInMonth = new Date(dynaYear, currentMonth, 0).getDate();
+                                    const firstDayOfMonth = new Date(dynaYear, currentMonth - 1, 1).getDay();
                                     const leaveDays = user.leaveDays || [];
 
                                     let calendarHtml = `
@@ -895,16 +957,13 @@
                                     return calendarHtml;
                                 }
                             });
-                        </script>
+                    </script>
+
+                    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 
-
-
-                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-
-                        <script>
-                            // JavaScript to toggle calendar visibility for each department
+                    <script>
+                        // JavaScript to toggle calendar visibility for each department
                             document.querySelectorAll('.toggle-dropdown').forEach(function(toggleElement) {
                                 toggleElement.addEventListener('click', function() {
                                     const targetSelector = toggleElement.getAttribute('data-target');
@@ -946,150 +1005,150 @@
                                     }
                                 });
                             });
-                        </script>
+                    </script>
 
 
 
-                        <style>
-                            /* Custom styles for the file input field */
-                            .custom-file-upload {
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                flex-direction: column;
-                                border: 2px dashed #ccc;
-                                border-radius: 5px;
-                                padding: 30px;
-                                text-align: center;
-                                cursor: pointer;
-                                position: relative;
-                                transition: border-color 0.3s ease;
-                            }
+                    <style>
+                        /* Custom styles for the file input field */
+                        .custom-file-upload {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            flex-direction: column;
+                            border: 2px dashed #ccc;
+                            border-radius: 5px;
+                            padding: 30px;
+                            text-align: center;
+                            cursor: pointer;
+                            position: relative;
+                            transition: border-color 0.3s ease;
+                        }
 
-                            .custom-file-upload:hover {
-                                border-color: #007bff;
-                            }
+                        .custom-file-upload:hover {
+                            border-color: #007bff;
+                        }
 
-                            .file-input {
-                                position: absolute;
-                                top: 0;
-                                left: 0;
-                                width: 100%;
-                                height: 100%;
-                                opacity: 0;
-                                cursor: pointer;
-                            }
+                        .file-input {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            opacity: 0;
+                            cursor: pointer;
+                        }
 
-                            .file-icon {
-                                font-size: 40px;
-                                color: #007bff;
-                            }
+                        .file-icon {
+                            font-size: 40px;
+                            color: #007bff;
+                        }
 
-                            .file-text {
-                                margin-top: 10px;
-                                font-size: 14px;
-                                color: #666;
-                            }
+                        .file-text {
+                            margin-top: 10px;
+                            font-size: 14px;
+                            color: #666;
+                        }
 
-                            /* File upload text and icon on hover */
-                            .custom-file-upload:hover .file-text {
-                                color: #007bff;
-                            }
+                        /* File upload text and icon on hover */
+                        .custom-file-upload:hover .file-text {
+                            color: #007bff;
+                        }
 
-                            .rounded-circle {
-                                border-radius: 50% !important;
-                                width: 100%;
-                                height: 100%;
-                            }
+                        .rounded-circle {
+                            border-radius: 50% !important;
+                            width: 100%;
+                            height: 100%;
+                        }
 
-                            .leave-card {
+                        .leave-card {
 
-                                width: 40px;
-                                height: 40px;
-                                padding: 9px;
-                                top: 11px;
-                            }
+                            width: 40px;
+                            height: 40px;
+                            padding: 9px;
+                            top: 11px;
+                        }
 
-                            .employee-profile {
-                                background: #ff9b44;
-                            }
+                        .employee-profile {
+                            background: #ff9b44;
+                        }
 
-                            .day {
-                                width: 25px;
-                                height: 25px;
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                border-radius: 5px;
-                                border: 1px outset;
-                                /* background-color: #e3e3e3; */
-                            }
+                        .day {
+                            width: 25px;
+                            height: 25px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            border-radius: 5px;
+                            border: 1px outset;
+                            /* background-color: #e3e3e3; */
+                        }
 
-                            .day.present {
-                                background-color: hsl(223.33deg 28.12% 87.45%);
-                                color: black;
-                            }
+                        .day.present {
+                            background-color: hsl(223.33deg 28.12% 87.45%);
+                            color: black;
+                        }
 
-                            .day.absent {
-                                background-color: #f39c12;
-                                color: white;
-                            }
+                        .day.absent {
+                            background-color: #f39c12;
+                            color: white;
+                        }
 
-                            .day.sick {
-                                border: 2px solid red;
-                                color: red;
-                            }
+                        .day.sick {
+                            border: 2px solid red;
+                            color: red;
+                        }
 
-                            .calendar-header {
-                                display: grid;
-                                grid-template-columns: repeat(30, 30px);
-                                gap: 5px;
-                                margin-bottom: 10px;
-                            }
+                        .calendar-header {
+                            display: grid;
+                            grid-template-columns: repeat(30, 30px);
+                            gap: 5px;
+                            margin-bottom: 10px;
+                        }
 
-                            .day-header {
-                                font-weight: bold;
-                                text-align: center;
-                            }
+                        .day-header {
+                            font-weight: bold;
+                            text-align: center;
+                        }
 
-                            /* .calendar {
+                        /* .calendar {
                                                 display: flex;
                                             } */
 
-                            .input-group-text {
+                        .input-group-text {
 
-                                border: none;
-                                cursor: pointer;
-                            }
+                            border: none;
+                            cursor: pointer;
+                        }
 
-                            .input-group-text i {
-                                color: #000;
-                                /* Set the icon color */
-                            }
+                        .input-group-text i {
+                            color: #000;
+                            /* Set the icon color */
+                        }
 
-                            .form-control {
-                                border-right: none;
-                            }
+                        .form-control {
+                            border-right: none;
+                        }
 
-                            .input-group .form-control:focus {
-                                box-shadow: none;
-                            }
-                        </style>
+                        .input-group .form-control:focus {
+                            box-shadow: none;
+                        }
+                    </style>
 
-                    </div>
-                    <!-- Page Content -->
                 </div>
-
+                <!-- Page Content -->
             </div>
-            <!-- /Page Wrapper -->
 
-            <!-- /Page Wrapper -->
+        </div>
+        <!-- /Page Wrapper -->
 
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.7.0/main.min.js"></script>
-            <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.7.0/main.min.css" rel="stylesheet">
+        <!-- /Page Wrapper -->
 
-            <script>
-                $(document).ready(function() {
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.7.0/main.min.js"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.7.0/main.min.css" rel="stylesheet">
+
+        <script>
+            $(document).ready(function() {
                     var CalendarApp = function() {
                         this.$calendar = $('#calendar'),
                             this.$calendarObj = null
@@ -1158,10 +1217,10 @@
                     activateMonth(currentMonthButton, currentMonth);
                     currentMonthButton.classList.add('active');
                 });
-            </script>
+        </script>
 
-            <script>
-                function toggleView(view) {
+        <script>
+            function toggleView(view) {
                     const listView = document.getElementById('list-view');
                     const calendarView = document.getElementById('calendar-view');
                     if (view === 'list') {
@@ -1188,9 +1247,9 @@
                         }
                     });
                 }
-            </script>
-            <script>
-                function calculateDays() {
+        </script>
+        <script>
+            function calculateDays() {
                     const fromDate = document.querySelector('input[name="from"]').value;
                     const toDate = document.querySelector('input[name="to"]').value;
                     const noOfDaysInput = document.querySelector('input[name="no_of_days"]');
@@ -1206,10 +1265,10 @@
                         noOfDaysInput.value = '';
                     }
                 }
-            </script>
+        </script>
 
-            <script>
-                document.addEventListener("DOMContentLoaded", function() {
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
                     let currentDate = new Date(); // Initialize with the current date
                     let today = new Date();
 
@@ -1286,5 +1345,5 @@
                     // Initial render
                     renderCalendar(currentDate);
                 });
-            </script>
+        </script>
         @endsection
