@@ -1240,7 +1240,7 @@ class EmployeeController extends Controller
 
         foreach ($users as $user) {
             $employeeLeaves = DB::table('employee_leaves')
-                ->where('employee_id', $user->id)
+                ->where('employee_id', $user->id)->where('status',3)
                 ->get();
 
             $leaveDays = [];
@@ -1270,7 +1270,7 @@ class EmployeeController extends Controller
 
         foreach ($users as $user) {
             $employeeLeaves = DB::table('employee_leaves')
-                ->where('employee_id', $user->id)
+                ->where('employee_id', $user->id)->where('status',3)
                 ->get();
 
             $leaveDays = [];
