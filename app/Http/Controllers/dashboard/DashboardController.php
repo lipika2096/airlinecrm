@@ -34,11 +34,9 @@ class DashboardController extends Controller
         $tomorrow_leave = EmployeeLeave::whereDate('from', '<=', now()->addDay()->toDateString())
         ->whereDate('to', '>=', now()->addDay()->toDateString())->where('status',3)
         ->get()->unique('employee_id');
-        $next_seven_days = EmployeeLeave::whereBetween('from', [now()->toDateString(), now()->addDays(7)->toDateString()])
-        ->whereYear('from', now()->year)
-        ->whereYear('to', now()->year)
-        ->where('status', 3)
-        ->orderBy('from', 'asc')
+        $next_seven_days = EmployeeLeave::whereDate('from', '<', now()->addDays(7)->toDateString())
+        ->whereDate('to', '>', now()->toDateString())->whereYear('from', now()->year)
+        ->whereYear('to', now()->year)->where('status',3)->orderBy('from','asc')
         ->get();
 
 
