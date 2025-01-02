@@ -1441,13 +1441,13 @@ use Carbon\Carbon;
                             </div>
                             <div class="col-auto float-end ms-auto">
 
-                                <a class="btn add-btn ms-2" data-bs-toggle="modal" data-bs-target="#new_absence"><i
+                                <a class="btn add-btn ms-2" data-bs-toggle="modal" data-bs-target="#new_absence_teams"><i
                                         class="fa fa-plus"></i> New Absence</a>
-                                <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#report_sick"><i
+                                <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#report_sick_teams"><i
                                         class="fa fa-plus"></i> Report Sick</a>
 
                                 <!-- Request Absence Modal -->
-                                <div id="new_absence" class="modal custom-modal fade" role="dialog">
+                                <div id="new_absence_teams" class="modal custom-modal fade" role="dialog">
                                     <div class="modal-dialog modal-dialog-centered modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -1570,7 +1570,7 @@ use Carbon\Carbon;
                                 <!-- /Request Absence Modal -->
 
                                 <!-- Report Sick Modal -->
-                                <div id="report_sick" class="modal custom-modal fade" role="dialog">
+                                <div id="report_sick_teams" class="modal custom-modal fade" role="dialog">
                                     <div class="modal-dialog modal-dialog-centered modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
