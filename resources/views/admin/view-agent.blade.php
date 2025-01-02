@@ -759,9 +759,9 @@
                                                     </td>
 
                                                     <td>{{ $contact->created_at }}</td>
-                                                    <td>{{ $contact->createdBy->first_name?? 'N/A' }} {{ $contact->createdBy->last_name }}</td>
+                                                    <td>{{ $contact->createdBy->first_name?? 'N/A' }} {{ $contact->createdBy->last_name??'' }}</td>
                                                     <td>{{ $contact->updated_at }}</td>
-                                                    <td>{{ $contact->updatedBy->last_name??'N/A' }} {{ $contact->updatedBy->last_name }}</td><!-- Edit Icon -->
+                                                    <td>{{ $contact->updatedBy->first_name??'N/A' }} {{ $contact->updatedBy->last_name??'' }}</td><!-- Edit Icon -->
                                                     <td>
                                                         <a data-bs-toggle="modal"
                                                             data-bs-target="#edit_contact{{ $contact->id }}"><i
