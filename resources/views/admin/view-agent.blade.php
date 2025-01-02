@@ -1551,7 +1551,7 @@
                                                                                 class="form-label">Update Status</label>
                                                                             <select name="status" id="status"
                                                                                 class="form-select">
-                                                                                <option value="Update">Re-open</option>
+                                                                                <option value="Update">Update</option>
                                                                                 <option value="Close">Close</option>
                                                                             </select>
                                                                         </div>
