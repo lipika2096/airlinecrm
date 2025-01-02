@@ -863,7 +863,7 @@ use Carbon\Carbon;
                                             <td>{{ $data->doc_name }}</td>
                                             {{-- <td><a href="{{asset('public/assets/docs/'.$data->attachment)}}">view
                                                     {{ $data->attachment }}</a></td> --}}
-                                            <td>{{ $data->airline->airline_name }}</td>
+                                            <td>{{ $data->airline->airline_name??'' }}</td>
                                             <td>{{ $data->created_at }}</td>
                                             <td>{{ $data->created_by }}</td>
                                             <td>{{ $data->updated_at }}</td>
@@ -1928,78 +1928,93 @@ use Carbon\Carbon;
                                         }
                                     });
                                 }
-                                // Generate calendar HTML
-                                function generateCalendar(user, department) {
-                                // Assuming the text content is "December 2024"
-                                const textContent = document.getElementById('currentMonth').textContent;
+                                function processLeavesData(leavesData) {
+                                            const processedData = [];
 
-                                // Split the text into month and year
-                                const [monthName, dynaYear] = textContent.split(" ");
+                                            leavesData.forEach(leave => {
+                                                const leaveType = leave.leave_type;
+                                                const fromDate = new Date(leave.from);
+                                                const toDate = new Date(leave.to);
 
-                                // Map month names to their respective numbers
-                                const monthMap = {
-                                    January: 1,
-                                    February: 2,
-                                    March: 3,
-                                    April: 4,
-                                    May: 5,
-                                    June: 6,
-                                    July: 7,
-                                    August: 8,
-                                    September: 9,
-                                    October: 10,
-                                    November: 11,
-                                    December: 12
-                                };
+                                                // Generate dates between 'from' and 'to'
+                                                for (let date = new Date(fromDate); date <= toDate; date.setDate(date.getDate() + 1)) {
+                                                    processedData.push({
+                                                        day: date.getDate(), // Extract day
+                                                        month: date.getMonth() + 1, // Extract month (0-based)
+                                                        year: date.getFullYear(), // Extract year
+                                                        type: leaveType // Leave type
+                                                    });
+                                                }
+                                            });
 
-                                // Get the numerical value of the month
-                                const currentMonth = monthMap[monthName];
-                                    //const currentMonth = new Date().getMonth() + 1;
-                                    const daysInMonth = new Date(dynaYear, currentMonth, 0).getDate();
-                                    const firstDayOfMonth = new Date(dynaYear, currentMonth - 1, 1).getDay();
-                                    const leaveDays = user.leaveDays || [];
-
-                                    let calendarHtml = `
-                                        <div class="employee-card card mb-3 col-6">
-                                            <div class="card-body">
-                                                <h5 class="card-title">${user.first_name} ${user.last_name}</h5>
-                                                <div class="calendar">
-                                                    <div class="week-days my-2 d-flex justify-content-between">
-                                                        ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => `
-                                                            <div class="day-header" style="width: 14%; font-weight: bold; text-align: center;">${day}</div>
-                                                        `).join('')}
-                                                    </div>
-                                                    <div class="month-weeks">
-                                    `;
-
-                                    for (let week = 0; week < Math.ceil((daysInMonth + firstDayOfMonth) / 7); week++) {
-                                        calendarHtml += '<div class="week d-flex">';
-                                        for (let day = 0; day < 7; day++) {
-                                            const currentDay = week * 7 + day - firstDayOfMonth + 1;
-                                            const isLeaveDay = leaveDays.includes(currentDay);
-
-                                            if (currentDay > 0 && currentDay <= daysInMonth) {
-                                                calendarHtml += `
-                                                    <div class="day mb-2 ms-2" style="width: 14%; height: 40px; text-align: center; line-height: 50px; ${isLeaveDay ? 'background-color: black; font-weight: bold; color: white;' : ''}">
-                                                        ${currentDay}
-                                                    </div>
-                                                `;
-                                            } else {
-                                                calendarHtml += '<div class="day empty-day mb-2 ms-2" style="width: 14%; height: 40px;"></div>';
-                                            }
+                                            return processedData;
                                         }
-                                        calendarHtml += '</div>';
-                                    }
 
-                                    calendarHtml += `
+                                        function generateCalendar(user, department) {
+                                            // Get the month and year from the DOM
+                                            const textContent = document.getElementById('currentMonth').textContent;
+                                            const [monthName, dynaYear] = textContent.split(" ");
+
+                                            const monthMap = {
+                                                January: 1, February: 2, March: 3, April: 4,
+                                                May: 5, June: 6, July: 7, August: 8,
+                                                September: 9, October: 10, November: 11, December: 12
+                                            };
+
+                                            const currentMonth = monthMap[monthName];
+                                            const currentYear = parseInt(dynaYear);
+
+                                            // Preprocess the user's leave data
+                                            const leaveDays = processLeavesData(user.leavesData).filter(leave =>
+                                                leave.month === currentMonth && leave.year === currentYear
+                                            );
+
+                                            // Rest of the generateCalendar function
+                                            const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+                                            const firstDayOfMonth = new Date(currentYear, currentMonth - 1, 1).getDay();
+
+                                            let calendarHtml = `
+                                                <div class="employee-card card mb-3 col-6">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">${user.first_name} ${user.last_name}</h5>
+                                                        <div class="calendar" style="float:none!important;">
+                                                            <div class="week-days my-2 d-flex justify-content-between">
+                                                                ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => `
+                                                                    <div class="day-header" style="width: 14%; font-weight: bold; text-align: center;">${day}</div>
+                                                                `).join('')}
+                                                            </div>
+                                                            <div class="month-weeks">
+                                            `;
+
+                                            for (let week = 0; week < Math.ceil((daysInMonth + firstDayOfMonth) / 7); week++) {
+                                                calendarHtml += '<div class="week d-flex">';
+                                                for (let day = 0; day < 7; day++) {
+                                                    const currentDay = week * 7 + day - firstDayOfMonth + 1;
+                                                    const leaveDayData = leaveDays.find(leave => leave.day === currentDay);
+                                                    const leaveColor = leaveDayData ? getLeaveTypeColor(leaveDayData.type) : '';
+
+                                                    if (currentDay > 0 && currentDay <= daysInMonth) {
+                                                        calendarHtml += `
+                                                            <div class="day mb-2 ms-2" style="width: 30%; height: 40px; text-align: center; line-height: 50px; ${leaveColor ? `background-color: ${leaveColor}; font-weight: bold; color: white;` : ''}">
+                                                                ${currentDay}
+                                                            </div>
+                                                        `;
+                                                    } else {
+                                                        calendarHtml += '<div class="day empty-day mb-2 ms-2" style="width: 30%; height: 40px;"></div>';
+                                                    }
+                                                }
+                                                calendarHtml += '</div>';
+                                            }
+
+                                            calendarHtml += `
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    `;
+                                            `;
 
-                                    return calendarHtml;
-                                }
+                                            return calendarHtml;
+                                        }
                             });
                     </script>
 

@@ -1274,9 +1274,11 @@ class EmployeeController extends Controller
                 ->get();
 
             $leaveDays = [];
+            $leavesData = [];
             $currentMonth = Carbon::now()->month;
 
             foreach ($employeeLeaves as $leave) {
+                $leavesData[] = $leave;
                 $fromDate = Carbon::parse($leave->from);
                 $toDate = Carbon::parse($leave->to);
 
@@ -1289,6 +1291,7 @@ class EmployeeController extends Controller
             }
 
             $user->leaveDays = $leaveDays;
+            $user->leavesData = $leavesData;
         }
 
         return response()->json(['users' => $users]);
