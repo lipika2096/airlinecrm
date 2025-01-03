@@ -898,10 +898,18 @@ class EmployeeController extends Controller
             ->whereDate('to', '>=', now()->toDateString())->where('leave_type', 'Annual Leave')->count();
         $total_pending_leaves = EmployeeLeave::where('status', 2)->where('leave_type', 'Annual Leave')->count();
         //$employee_leaves = EmployeeLeave::latest()->get();
-        $employee_leaves = EmployeeLeave::where('status', 1)->get();
-        $pending_employee_leaves = EmployeeLeave::where('status', 2)->get();
-        $approved_employee_leaves = EmployeeLeave::where('status', 3)->get();
-        $rejected_employee_leaves = EmployeeLeave::where('status', 4)->get();
+        $employee_leaves = EmployeeLeave::where('status', 1)
+        ->orderBy('from', 'desc')
+        ->orderBy('to', 'desc')->get();
+        $pending_employee_leaves = EmployeeLeave::where('status', 2)
+        ->orderBy('from', 'desc')
+        ->orderBy('to', 'desc')->get();
+        $approved_employee_leaves = EmployeeLeave::where('status', 3)
+        ->orderBy('from', 'desc')
+        ->orderBy('to', 'desc')->get();
+        $rejected_employee_leaves = EmployeeLeave::where('status', 4)
+        ->orderBy('from', 'desc')
+        ->orderBy('to', 'desc')->get();
         // Number of employees on leave today
         $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
             ->whereDate('to', '>=', now()->toDateString())->where('leave_type', 'Annual Leave')
