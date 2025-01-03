@@ -85,6 +85,7 @@
                                             <th class="text-danger">Total Annual Leaves</th>
                                             <th class="text-danger">Available Leaves</th>
                                             <th>Reason</th>
+                                            <th>Date Of Application</th>
                                             <th class="text-center">Status</th>
                                         </tr>
                                     </thead>
@@ -125,6 +126,7 @@
                                                         {{ $data->reason }}
                                                     @endif
                                                 </td>
+                                                <td>{{$data->created_at}}</td>
                                                 <td class="text-center">
                                                     <div class="dropdown action-label">
                                                         @if ($data->status == 1)
