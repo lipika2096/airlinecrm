@@ -138,7 +138,7 @@
                                                                                 <label>Category</label>
                                                                                 <input class="form-control" name="category" value="{{ $data->category }}" type="text">
                                                                             </div>
-                                                                            <div class="form-group">
+                                                                            {{-- <div class="form-group">
                                                                                 @foreach ($allEmployee as $elData)
                                                                                     <label class="form-label">
                                                                                         {{ $elData->user->first_name . ' ' . $elData->user->last_name }}
@@ -148,7 +148,24 @@
                                                                                         name="staff[{{ $elData->user->id }}]"
                                                                                         value="1"
                                                                                         @if(!empty($data->staff_names) && str_contains($data->staff_names, $elData->user->first_name . ' ' . $elData->user->last_name)) checked @endif>
-                                                                                @endforeach
+                                                                                @endforeach --}}
+                                                                                <div class="form-group col-sm-4">
+                                                                                    <label class="col-form-label">Assign Staff</label>
+                                                                                    <br>
+                                                                                    <details class="dropdown-checkbox cstm-btn">
+                                                                                        <summary class="dropdown-summary">Select Staff</summary>
+                                                                                        <div class="dropdown-content">
+                                                                                            @foreach ($allEmployee as $elData)
+                                                                                                <div class="form-check">
+                                                                                                    <input class="form-check-input staff-checkbox1" type="checkbox" name="staff[{{ $elData->user->id }}]" value="1"  @if(!empty($data->staff_names) && str_contains($data->staff_names, $elData->user->first_name . ' ' . $elData->user->last_name)) checked @endif>
+                                                                                                    <label class="form-check-label" >
+                                                                                                        {{ $elData->user->first_name . " " . $elData->user->last_name }}
+                                                                                                    </label>
+                                                                                                </div>
+                                                                                            @endforeach
+                                                                                        </div>
+                                                                                    </details>
+                                                                                </div>
                                                                             </div>
                                                                             <div class="form-group col-sm-12">
                                                                                 <label>Remarks</label>
@@ -266,7 +283,7 @@
                                                                                 <label>Category</label>
                                                                                 <input class="form-control" name="category" value="{{ $data->category }}" type="text">
                                                                             </div>
-                                                                            <div class="form-group">
+                                                                            {{-- <div class="form-group">
                                                                                 @foreach ($allEmployee as $elData)
                                                                                     <label class="form-label">
                                                                                         {{ $elData->user->first_name . ' ' . $elData->user->last_name }}
@@ -277,6 +294,23 @@
                                                                                         value="1"
                                                                                         @if(!empty($data->staff_names) && str_contains($data->staff_names, $elData->user->first_name . ' ' . $elData->user->last_name)) checked @endif>
                                                                                 @endforeach
+                                                                            </div> --}}
+                                                                            <div class="form-group col-sm-4">
+                                                                                <label class="col-form-label">Assign Staff</label>
+                                                                                <br>
+                                                                                <details class="dropdown-checkbox cstm-btn">
+                                                                                    <summary class="dropdown-summary">Select Staff</summary>
+                                                                                    <div class="dropdown-content">
+                                                                                        @foreach ($allEmployee as $elData)
+                                                                                            <div class="form-check">
+                                                                                                <input class="form-check-input staff-checkbox2" type="checkbox" name="staff[{{ $elData->user->id }}]" value="1" @if(!empty($data->staff_names) && str_contains($data->staff_names, $elData->user->first_name . ' ' . $elData->user->last_name)) checked @endif>
+                                                                                                <label class="form-check-label" >
+                                                                                                    {{ $elData->user->first_name . " " . $elData->user->last_name }}
+                                                                                                </label>
+                                                                                            </div>
+                                                                                        @endforeach
+                                                                                    </div>
+                                                                                </details>
                                                                             </div>
                                                                             <div class="form-group col-sm-12">
                                                                                 <label>Remarks</label>
@@ -345,16 +379,33 @@
                                     <label>Category</label>
                                     <input class="form-control" name="category" type="text">
                                 </div>
-                                <div class="form-group col-sm-12">
+                                {{-- <div class="form-group col-sm-12">
                                     <label>Assign Staff</label>
                                     <div class="form-group">
                                         @foreach ($allEmployee as $elData)
                                             <label class="form-label">
-                                                <input type="checkbox" name="staff[{{ $elData->user->id }}]" value="active">
+                                                <input type="checkbox" name="staff[{{ $elData->user->id }}]" value="1">
                                                 {{ $elData->user->first_name . " " . $elData->user->last_name }}
                                             </label>
                                         @endforeach
                                     </div>
+                                </div> --}}
+                                <div class="form-group col-sm-4">
+                                    <label class="col-form-label">Assign Staff</label>
+                                    <br>
+                                    <details class="dropdown-checkbox cstm-btn">
+                                        <summary class="dropdown-summary">Select Staff</summary>
+                                        <div class="dropdown-content">
+                                            @foreach ($allEmployee as $elData)
+                                                <div class="form-check">
+                                                    <input class="form-check-input staff-checkbox" type="checkbox" name="staff[{{ $elData->user->id }}]" value="1" id="staff_{{ $elData->user->id }}">
+                                                    <label class="form-check-label" for="staff_{{ $elData->user->id }}">
+                                                        {{ $elData->user->first_name . " " . $elData->user->last_name }}
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </details>
                                 </div>
                                 <div class="form-group col-sm-12">
                                     <label>Remarks</label>
@@ -400,4 +451,89 @@
 
     </div>
     <!-- /Page Wrapper -->
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            function updateSummaryText() {
+                var selectedStaff = [];
+                $('.staff-checkbox:checked').each(function() {
+                    selectedStaff.push($(this).next('label').text().trim());
+                });
+                var summaryText = selectedStaff.length > 0 ? selectedStaff.join(', ') : 'Select Staff';
+                $('summary').text(summaryText);
+            }
+            $('.staff-checkbox').change(function() {
+                updateSummaryText();
+                $('details').prop('open', false);
+            });
+
+            function updateSummaryText1() {
+                var selectedStaff = [];
+                $('.staff-checkbox1:checked').each(function() {
+                    selectedStaff.push($(this).next('label').text().trim());
+                });
+                var summaryText = selectedStaff.length > 0 ? selectedStaff.join(', ') : 'Select Staff';
+                $('summary').text(summaryText);
+            }
+            $('.staff-checkbox1').change(function() {
+                updateSummaryText1();
+                $('details').prop('open', false);
+            });
+
+            function updateSummaryText2() {
+                var selectedStaff = [];
+                $('.staff-checkbox2:checked').each(function() {
+                    selectedStaff.push($(this).next('label').text().trim());
+                });
+                var summaryText = selectedStaff.length > 0 ? selectedStaff.join(', ') : 'Select Staff';
+                $('summary').text(summaryText);
+            }
+            $('.staff-checkbox2').change(function() {
+                updateSummaryText2();
+                $('details').prop('open', false);
+            });
+        });
+    </script>
+    <style>
+        .cstm-btn{
+border: 1px solid #ced4da !important;
+border-radius: 5px !important;}
+
+.dropdown-checkbox {
+    display: inline-block;
+    max-width: 100%;
+    width: auto;
+}
+
+.dropdown-summary {
+    cursor: pointer;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    word-wrap: break-word;
+    white-space: normal;
+min-width:739px;
+    text-align: left;
+}
+
+.dropdown-content {
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    max-height: 200px;
+    overflow-y: auto;
+    word-wrap: break-word;
+}
+
+.form-check {
+    margin-bottom: 10px;
+}
+
+.form-check-label {
+    word-wrap: break-word;
+    display: block;
+}
+
+    </style>
 @endsection
