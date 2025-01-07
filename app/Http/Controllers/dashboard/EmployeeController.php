@@ -897,7 +897,6 @@ class EmployeeController extends Controller
         $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
             ->whereDate('to', '>=', now()->toDateString())->where('leave_type', 'Annual Leave')->count();
         $total_pending_leaves = EmployeeLeave::where('status', 2)->where('leave_type', 'Annual Leave')->count();
-        //$employee_leaves = EmployeeLeave::latest()->get();
         $employee_leaves = EmployeeLeave::where('status', 1)
         ->orderBy('from', 'desc')
         ->orderBy('to', 'desc')->get();
@@ -910,14 +909,11 @@ class EmployeeController extends Controller
         $rejected_employee_leaves = EmployeeLeave::where('status', 4)
         ->orderBy('from', 'desc')
         ->orderBy('to', 'desc')->get();
-        // Number of employees on leave today
         $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
             ->whereDate('to', '>=', now()->toDateString())->where('leave_type', 'Annual Leave')
             ->count();
-        // Number of present employees today
         $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
-        // Add your logic for leaves admin view
-        return view('admin.leaves', compact('total_employee', 'employees', 'total_pending_leaves', 'total_leaves', 'employee_leaves', 'leavetypes', 'noofpresentemployeestoday', 'rejected_employee_leaves', 'approved_employee_leaves', 'pending_employee_leaves')); // Example view path, adjust as per your structure
+        return view('admin.leaves', compact('total_employee', 'employees', 'total_pending_leaves', 'total_leaves', 'employee_leaves', 'leavetypes', 'noofpresentemployeestoday', 'rejected_employee_leaves', 'approved_employee_leaves', 'pending_employee_leaves')); 
     }
 
     public function leavesAdminStore(Request $request)
@@ -930,6 +926,16 @@ class EmployeeController extends Controller
             'no_of_days' => $request->input('no_of_days'),
             'reason' => $request->input('reason'),
             'status' => 1
+        ]);
+        $fromYear = Carbon::now()->subYear()->year;
+        $leave_bal_lastyear = EmployeeLeave::where('employee_id', $request->employee_id)
+        ->where('status', 3)
+        ->where('leave_type', 'Annual Leave')
+        ->whereYear('from', $fromYear)
+        ->sum('no_of_days');
+        $employeeData = User::find($request->input('employee_id'));
+        $employeeData->update([
+            'leave_count' => $employeeData->leave_count + $leave_bal_lastyear
         ]);
         // Add your logic for leaves admin view
         return redirect()->route('admin.leaves')->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
