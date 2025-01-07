@@ -891,7 +891,7 @@ class EmployeeController extends Controller
     {
 
         $leavetypes = LeaveType::where('status', 1)->get();
-        $total_employee = Client::count();
+        $total_employee = User::count();
         $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
             ->get(['clients.*', 'users.*']);
         $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
@@ -909,9 +909,13 @@ class EmployeeController extends Controller
         $rejected_employee_leaves = EmployeeLeave::where('status', 4)
         ->orderBy('from', 'desc')
         ->orderBy('to', 'desc')->get();
-        $employees_on_leave_today = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
-            ->whereDate('to', '>=', now()->toDateString())->where('leave_type', 'Annual Leave')
-            ->count();
+        $employees_on_leave_today = EmployeeLeave::select('employee_id')
+        ->whereDate('from', '<=', now()->toDateString())
+        ->whereDate('to', '>=', now()->toDateString())
+        ->where('leave_type', 'Annual Leave')
+        ->groupBy('employee_id')
+        ->get()
+        ->count();
         $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
         return view('admin.leaves', compact('total_employee', 'employees', 'total_pending_leaves', 'total_leaves', 'employee_leaves', 'leavetypes', 'noofpresentemployeestoday', 'rejected_employee_leaves', 'approved_employee_leaves', 'pending_employee_leaves')); 
     }

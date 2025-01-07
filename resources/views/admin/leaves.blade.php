@@ -102,29 +102,43 @@
                                                 <td>{{ $data->from }}</td>
                                                 <td>{{ $data->to }}</td>
                                                 <td>{{ $data->no_of_days }} days</td>
-                                                <td class="text-danger">{{ $data->user->leave_count }} leaves</td>
+                                                
                                                 @php
                                                     $annualLeave = $data->user->leave_count;
                                                     $currentYear = now()->year;
                                                     $fromYear = \Carbon\Carbon::parse($data->from)->year;
                                                     $toYear = \Carbon\Carbon::parse($data->to)->year;
                                                     $usedAnnualLeave = 0;
-                                                    if ($fromYear == $toYear) {
-                                                       $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
+
+                                                    if ($fromYear == $toYear && $fromYear == $currentYear) {
+                                                        // Both from and to years are the current year
+                                                        $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
                                                             ->where('status', 3)
                                                             ->where('leave_type', 'Annual Leave')
                                                             ->whereYear('from', $fromYear)
                                                             ->sum('no_of_days');
                                                     } else {
+                                                        // Handle when either fromYear or toYear is not equal to the current year
                                                         $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
                                                             ->where('status', 3)
                                                             ->where('leave_type', 'Annual Leave')
                                                             ->whereYear('from', $fromYear)
                                                             ->orWhereYear('to', $toYear)
                                                             ->sum('no_of_days');
+                                                        
+                                                        $leave_bal_lastyear = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
+                                                            ->where('status', 3)
+                                                            ->where('leave_type', 'Annual Leave')
+                                                            ->whereYear('from', $fromYear)
+                                                            ->sum('no_of_days');
+                                                        
+                                                        $annualLeave -= $leave_bal_lastyear;
+                                                        
                                                     }
+
                                                     $remainingLeave = $annualLeave - $usedAnnualLeave;
                                                 @endphp
+                                                <td class="text-danger">{{ $annualLeave }} leaves</td>
                                                 <td class="text-danger">{{ $remainingLeave }} leaves left for {{$fromYear}}</td>
                                                 <td>
                                                     @php
@@ -254,29 +268,43 @@
                                                 <td>{{ $data->from }}</td>
                                                 <td>{{ $data->to }}</td>
                                                 <td>{{ $data->no_of_days }} days</td>
-                                                <td class="text-danger">{{ $data->user->leave_count }} leaves</td>
+                                                
                                                 @php
                                                     $annualLeave = $data->user->leave_count;
                                                     $currentYear = now()->year;
                                                     $fromYear = \Carbon\Carbon::parse($data->from)->year;
                                                     $toYear = \Carbon\Carbon::parse($data->to)->year;
                                                     $usedAnnualLeave = 0;
-                                                    if ($fromYear == $toYear) {
-                                                       $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
+
+                                                    if ($fromYear == $toYear && $fromYear == $currentYear) {
+                                                        // Both from and to years are the current year
+                                                        $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
                                                             ->where('status', 3)
                                                             ->where('leave_type', 'Annual Leave')
                                                             ->whereYear('from', $fromYear)
                                                             ->sum('no_of_days');
                                                     } else {
+                                                        // Handle when either fromYear or toYear is not equal to the current year
                                                         $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
                                                             ->where('status', 3)
                                                             ->where('leave_type', 'Annual Leave')
                                                             ->whereYear('from', $fromYear)
                                                             ->orWhereYear('to', $toYear)
                                                             ->sum('no_of_days');
+                                                        
+                                                        $leave_bal_lastyear = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
+                                                            ->where('status', 3)
+                                                            ->where('leave_type', 'Annual Leave')
+                                                            ->whereYear('from', $fromYear)
+                                                            ->sum('no_of_days');
+                                                        
+                                                        $annualLeave -= $leave_bal_lastyear;
+                                                        
                                                     }
+
                                                     $remainingLeave = $annualLeave - $usedAnnualLeave;
                                                 @endphp
+                                                <td class="text-danger">{{ $annualLeave }} leaves</td>
                                                 <td class="text-danger">{{ $remainingLeave }} leaves left for {{$fromYear}}</td>
                                                 <td>
                                                     @php
@@ -406,29 +434,42 @@
                                                 <td>{{ $data->from }}</td>
                                                 <td>{{ $data->to }}</td>
                                                 <td>{{ $data->no_of_days }} days</td>
-                                                <td class="text-danger">{{ $data->user->leave_count }} leaves</td>
                                                 @php
                                                     $annualLeave = $data->user->leave_count;
                                                     $currentYear = now()->year;
                                                     $fromYear = \Carbon\Carbon::parse($data->from)->year;
                                                     $toYear = \Carbon\Carbon::parse($data->to)->year;
                                                     $usedAnnualLeave = 0;
-                                                    if ($fromYear == $toYear) {
-                                                       $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
+
+                                                    if ($fromYear == $toYear && $fromYear == $currentYear) {
+                                                        // Both from and to years are the current year
+                                                        $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
                                                             ->where('status', 3)
                                                             ->where('leave_type', 'Annual Leave')
                                                             ->whereYear('from', $fromYear)
                                                             ->sum('no_of_days');
                                                     } else {
+                                                        // Handle when either fromYear or toYear is not equal to the current year
                                                         $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
                                                             ->where('status', 3)
                                                             ->where('leave_type', 'Annual Leave')
                                                             ->whereYear('from', $fromYear)
                                                             ->orWhereYear('to', $toYear)
                                                             ->sum('no_of_days');
+                                                        
+                                                        $leave_bal_lastyear = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
+                                                            ->where('status', 3)
+                                                            ->where('leave_type', 'Annual Leave')
+                                                            ->whereYear('from', $fromYear)
+                                                            ->sum('no_of_days');
+                                                        
+                                                        $annualLeave -= $leave_bal_lastyear;
+                                                        
                                                     }
+
                                                     $remainingLeave = $annualLeave - $usedAnnualLeave;
                                                 @endphp
+                                                <td class="text-danger">{{ $annualLeave }} leaves</td>
                                                 <td class="text-danger">{{ $remainingLeave }} leaves left for {{$fromYear}}</td>
                                                 <td>
                                                     @php
@@ -556,29 +597,43 @@
                                                 <td>{{ $data->from }}</td>
                                                 <td>{{ $data->to }}</td>
                                                 <td>{{ $data->no_of_days }} days</td>
-                                                <td class="text-danger">{{ $data->user->leave_count }} leaves</td>
+                                                
                                                 @php
                                                     $annualLeave = $data->user->leave_count;
                                                     $currentYear = now()->year;
                                                     $fromYear = \Carbon\Carbon::parse($data->from)->year;
                                                     $toYear = \Carbon\Carbon::parse($data->to)->year;
                                                     $usedAnnualLeave = 0;
-                                                    if ($fromYear == $toYear) {
-                                                       $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
+
+                                                    if ($fromYear == $toYear && $fromYear == $currentYear) {
+                                                        // Both from and to years are the current year
+                                                        $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
                                                             ->where('status', 3)
                                                             ->where('leave_type', 'Annual Leave')
                                                             ->whereYear('from', $fromYear)
                                                             ->sum('no_of_days');
                                                     } else {
+                                                        // Handle when either fromYear or toYear is not equal to the current year
                                                         $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
                                                             ->where('status', 3)
                                                             ->where('leave_type', 'Annual Leave')
                                                             ->whereYear('from', $fromYear)
                                                             ->orWhereYear('to', $toYear)
                                                             ->sum('no_of_days');
+                                                        
+                                                        $leave_bal_lastyear = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
+                                                            ->where('status', 3)
+                                                            ->where('leave_type', 'Annual Leave')
+                                                            ->whereYear('from', $fromYear)
+                                                            ->sum('no_of_days');
+                                                        
+                                                        $annualLeave -= $leave_bal_lastyear;
+                                                        
                                                     }
+
                                                     $remainingLeave = $annualLeave - $usedAnnualLeave;
                                                 @endphp
+                                                <td class="text-danger">{{ $annualLeave }} leaves</td>
                                                 <td class="text-danger">{{ $remainingLeave }} leaves left for {{$fromYear}}</td>
                                                 <td>
                                                     @php
