@@ -757,7 +757,7 @@ use Carbon\Carbon;
                                     <!--    <input class="form-control" readonly value="12" type="text">-->
                                     <!--</div>-->
                                     <div class="form-group">
-                                        <label>Leave Reason <span class="text-danger">*</span></label>
+                                        <label>Leave Reason </label>
                                         <textarea rows="4" name="reason" class="form-control"></textarea>
                                     </div>
                                     <div class="submit-section">
@@ -1389,7 +1389,7 @@ use Carbon\Carbon;
                                     <!--    <input class="form-control" readonly value="12" type="text">-->
                                     <!--</div>-->
                                     <div class="form-group">
-                                        <label>Leave Reason <span class="text-danger">*</span></label>
+                                        <label>Leave Reason </label>
                                         <textarea rows="4" name="reason" class="form-control"></textarea>
                                     </div>
                                     <div class="submit-section">
@@ -2389,7 +2389,7 @@ use Carbon\Carbon;
                                     <!--    <input class="form-control" readonly value="12" type="text">-->
                                     <!--</div>-->
                                     <div class="form-group">
-                                        <label>Leave Reason <span class="text-danger">*</span></label>
+                                        <label>Leave Reason</label>
                                         <textarea rows="4" name="reason" class="form-control"></textarea>
                                     </div>
                                     <div class="submit-section">

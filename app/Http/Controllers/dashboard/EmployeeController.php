@@ -617,7 +617,7 @@ class EmployeeController extends Controller
             'leave_type' => $request->input('leave_type'),
             'from' => $request->input('from'),
             'to' => $request->input('to'),
-            'reason' => $request->input('reason'),
+            'reason' => $request->input('reason')??'N/A',
             'status' => 1
         ]);
 
@@ -980,7 +980,7 @@ class EmployeeController extends Controller
             'from' => $request->input('from'),
             'to' => $request->input('to'),
             'no_of_days' => $request->input('no_of_days'),
-            'reason' => $request->input('reason'),
+            'reason' => $request->input('reason')??'N/A',
             'status' => 1
         ]);
         // Add your logic for leaves admin view
@@ -1047,7 +1047,7 @@ class EmployeeController extends Controller
             'from' => $request->input('from'),
             'to' => $request->input('to'),
             'no_of_days' => $request->input('no_of_days'),
-            'reason' => $request->input('reason'),
+            'reason' => $request->input('reason')??'N/A',
             'status' => 1
         ]);
 
@@ -1128,7 +1128,7 @@ class EmployeeController extends Controller
             'from' => $request->input('from'),
             'to' => $request->input('to'),
             'no_of_days' => $request->input('no_of_days'),
-            'reason' => $request->input('reason'),
+            'reason' => $request->input('reason')??'N/A',
             'status' => 1
         ]);
 
