@@ -22,19 +22,19 @@ class AppServiceProvider extends ServiceProvider
         $currentYear = Carbon::now()->year;
         $fromYear = Carbon::now()->subYear()->year;
 
-        User::whereNull('last_leave_update_year')
-            ->orWhere('last_leave_update_year', '<', $currentYear)
-            ->each(function ($employee) use ($fromYear, $currentYear) {
-                $leave_bal_lastyear = EmployeeLeave::where('employee_id', $employee->id)
-                    ->where('status', 3)
-                    ->where('leave_type', 'Annual Leave')
-                    ->whereYear('from', $fromYear)
-                    ->sum('no_of_days');
+        // User::whereNull('last_leave_update_year')
+        //     ->orWhere('last_leave_update_year', '<', $currentYear)
+        //     ->each(function ($employee) use ($fromYear, $currentYear) {
+        //         $leave_bal_lastyear = EmployeeLeave::where('employee_id', $employee->id)
+        //             ->where('status', 3)
+        //             ->where('leave_type', 'Annual Leave')
+        //             ->whereYear('from', $fromYear)
+        //             ->sum('no_of_days');
 
-                $employee->update([
-                    'leave_count' => $employee->leave_count + $leave_bal_lastyear,
-                    'last_leave_update_year' => $currentYear,
-                ]);
-            });
+        //         $employee->update([
+        //             'leave_count' => $employee->leave_count + $leave_bal_lastyear,
+        //             'last_leave_update_year' => $currentYear,
+        //         ]);
+        //     });
     }
 }
