@@ -586,6 +586,32 @@ class EmployeeController extends Controller
             'reason' => 'nullable|string',
         ]);
 
+        $employeeId = $request->input('employee_id');
+        $fromDate = $request->input('from');
+        $toDate = $request->input('to');
+
+        // Check if any leave overlaps with the requested range
+        $overlappingLeaves = EmployeeLeave::where('employee_id', $employeeId)
+            ->where(function ($query) use ($fromDate, $toDate) {
+                $query->whereBetween('from', [$fromDate, $toDate])
+                    ->orWhereBetween('to', [$fromDate, $toDate])
+                    ->orWhere(function ($query) use ($fromDate, $toDate) {
+                        $query->where('from', '<=', $fromDate)
+                                ->where('to', '>=', $toDate);
+                    });
+            })
+            ->get();
+
+        if ($overlappingLeaves->isNotEmpty()) {
+            // Collect overlapping dates
+            $overlappingDates = [];
+            foreach ($overlappingLeaves as $leave) {
+                $overlappingDates[] = $leave->from . ' to ' . $leave->to;
+            }
+
+            return redirect()->back()->with('error', 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates));
+        }
+
         EmployeeLeave::create([
             'employee_id' => $request->input('employee_id'),
             'leave_type' => $request->input('leave_type'),
@@ -594,7 +620,7 @@ class EmployeeController extends Controller
             'reason' => $request->input('reason'),
             'status' => 1
         ]);
-        
+
 
         return redirect()->route('admin.view-staff', ['id' => $request->input('employee_id')]);
     }
@@ -918,11 +944,36 @@ class EmployeeController extends Controller
         ->get()
         ->count();
         $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
-        return view('admin.leaves', compact('total_employee', 'employees', 'total_pending_leaves', 'total_leaves', 'employee_leaves', 'leavetypes', 'noofpresentemployeestoday', 'rejected_employee_leaves', 'approved_employee_leaves', 'pending_employee_leaves')); 
+        return view('admin.leaves', compact('total_employee', 'employees', 'total_pending_leaves', 'total_leaves', 'employee_leaves', 'leavetypes', 'noofpresentemployeestoday', 'rejected_employee_leaves', 'approved_employee_leaves', 'pending_employee_leaves'));
     }
 
     public function leavesAdminStore(Request $request)
     {
+        $employeeId = $request->input('employee_id');
+        $fromDate = $request->input('from');
+        $toDate = $request->input('to');
+
+        // Check if any leave overlaps with the requested range
+        $overlappingLeaves = EmployeeLeave::where('employee_id', $employeeId)
+            ->where(function ($query) use ($fromDate, $toDate) {
+                $query->whereBetween('from', [$fromDate, $toDate])
+                    ->orWhereBetween('to', [$fromDate, $toDate])
+                    ->orWhere(function ($query) use ($fromDate, $toDate) {
+                        $query->where('from', '<=', $fromDate)
+                                ->where('to', '>=', $toDate);
+                    });
+            })
+            ->get();
+
+        if ($overlappingLeaves->isNotEmpty()) {
+            // Collect overlapping dates
+            $overlappingDates = [];
+            foreach ($overlappingLeaves as $leave) {
+                $overlappingDates[] = $leave->from . ' to ' . $leave->to;
+            }
+
+            return redirect()->back()->with('error', 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates));
+        }
         EmployeeLeave::create([
             'employee_id' => $request->input('employee_id'),
             'leave_type' => $request->input('leave_type'),
@@ -965,6 +1016,31 @@ class EmployeeController extends Controller
     {
         $email = session('email');
         $employee = Employee::where('email', $email)->first();
+        $employeeId = $employee->id;
+        $fromDate = $request->input('from');
+        $toDate = $request->input('to');
+
+        // Check if any leave overlaps with the requested range
+        $overlappingLeaves = EmployeeLeave::where('employee_id', $employeeId)
+            ->where(function ($query) use ($fromDate, $toDate) {
+                $query->whereBetween('from', [$fromDate, $toDate])
+                    ->orWhereBetween('to', [$fromDate, $toDate])
+                    ->orWhere(function ($query) use ($fromDate, $toDate) {
+                        $query->where('from', '<=', $fromDate)
+                                ->where('to', '>=', $toDate);
+                    });
+            })
+            ->get();
+
+        if ($overlappingLeaves->isNotEmpty()) {
+            // Collect overlapping dates
+            $overlappingDates = [];
+            foreach ($overlappingLeaves as $leave) {
+                $overlappingDates[] = $leave->from . ' to ' . $leave->to;
+            }
+
+            return redirect()->back()->with('error', 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates));
+        }
         EmployeeLeave::create([
             'employee_id' => $employee->id,
             'leave_type' => $request->input('leave_type'),
@@ -974,7 +1050,7 @@ class EmployeeController extends Controller
             'reason' => $request->input('reason'),
             'status' => 1
         ]);
-        
+
         // Add your logic for leaves admin view
         return redirect()->route('employee.leaves')->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
     }
@@ -1021,6 +1097,31 @@ class EmployeeController extends Controller
 
     public function leavesEmployeeViewStore(Request $request)
     {
+        $employeeId = $request->input('employee_id');
+        $fromDate = $request->input('from');
+        $toDate = $request->input('to');
+
+        // Check if any leave overlaps with the requested range
+        $overlappingLeaves = EmployeeLeave::where('employee_id', $employeeId)
+            ->where(function ($query) use ($fromDate, $toDate) {
+                $query->whereBetween('from', [$fromDate, $toDate])
+                    ->orWhereBetween('to', [$fromDate, $toDate])
+                    ->orWhere(function ($query) use ($fromDate, $toDate) {
+                        $query->where('from', '<=', $fromDate)
+                                ->where('to', '>=', $toDate);
+                    });
+            })
+            ->get();
+
+        if ($overlappingLeaves->isNotEmpty()) {
+            // Collect overlapping dates
+            $overlappingDates = [];
+            foreach ($overlappingLeaves as $leave) {
+                $overlappingDates[] = $leave->from . ' to ' . $leave->to;
+            }
+
+            return redirect()->back()->with('error', 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates));
+        }
         EmployeeLeave::create([
             'employee_id' => $request->input('employee_id'),
             'leave_type' => $request->input('leave_type'),
@@ -1030,7 +1131,7 @@ class EmployeeController extends Controller
             'reason' => $request->input('reason'),
             'status' => 1
         ]);
-        
+
         // Add your logic for leaves admin view
         return redirect()->back()->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
     }
@@ -1184,6 +1285,31 @@ class EmployeeController extends Controller
         } else {
             $path = null; // Handle accordingly
         }
+        $employeeId = $request->input('employee_id');
+        $fromDate = $request->input('from');
+        $toDate = $request->input('to');
+
+        // Check if any leave overlaps with the requested range
+        $overlappingLeaves = EmployeeLeave::where('employee_id', $employeeId)
+            ->where(function ($query) use ($fromDate, $toDate) {
+                $query->whereBetween('from', [$fromDate, $toDate])
+                    ->orWhereBetween('to', [$fromDate, $toDate])
+                    ->orWhere(function ($query) use ($fromDate, $toDate) {
+                        $query->where('from', '<=', $fromDate)
+                                ->where('to', '>=', $toDate);
+                    });
+            })
+            ->get();
+
+        if ($overlappingLeaves->isNotEmpty()) {
+            // Collect overlapping dates
+            $overlappingDates = [];
+            foreach ($overlappingLeaves as $leave) {
+                $overlappingDates[] = $leave->from . ' to ' . $leave->to;
+            }
+
+            return redirect()->back()->with('error', 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates));
+        }
 
         EmployeeLeave::create([
             'employee_id' => $request->input('employee_id'),
@@ -1195,7 +1321,7 @@ class EmployeeController extends Controller
             'attachment' => $path,
             'status' => 1
         ]);
-        
+
 
         return redirect()->back()->with('success', 'Sick Report added successfully');
     }
@@ -1216,6 +1342,32 @@ class EmployeeController extends Controller
             'reason' => 'nullable|string',
         ]);
 
+        $employeeId = $request->input('employee_id');
+        $fromDate = $request->input('from');
+        $toDate = $request->input('to');
+
+        // Check if any leave overlaps with the requested range
+        $overlappingLeaves = EmployeeLeave::where('employee_id', $employeeId)
+            ->where(function ($query) use ($fromDate, $toDate) {
+                $query->whereBetween('from', [$fromDate, $toDate])
+                    ->orWhereBetween('to', [$fromDate, $toDate])
+                    ->orWhere(function ($query) use ($fromDate, $toDate) {
+                        $query->where('from', '<=', $fromDate)
+                                ->where('to', '>=', $toDate);
+                    });
+            })
+            ->get();
+
+        if ($overlappingLeaves->isNotEmpty()) {
+            // Collect overlapping dates
+            $overlappingDates = [];
+            foreach ($overlappingLeaves as $leave) {
+                $overlappingDates[] = $leave->from . ' to ' . $leave->to;
+            }
+
+            return redirect()->back()->with('error', 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates));
+        }
+
         EmployeeLeave::create([
             'employee_id' => $request->input('employee_id'),
             'leave_type' => $request->input('leave_type'),
@@ -1227,7 +1379,7 @@ class EmployeeController extends Controller
             'representation' => $request->input('representation'),
             'status' => 1
         ]);
-        
+
         // Add your logic for leaves admin view
         return redirect()->back()->with('success', 'New Absence added successfully');
     }
