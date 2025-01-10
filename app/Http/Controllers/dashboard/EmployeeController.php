@@ -595,16 +595,6 @@ class EmployeeController extends Controller
             'status' => 1
         ]);
         
-        $fromYear = Carbon::now()->subYear()->year;
-        $leave_bal_lastyear = EmployeeLeave::where('employee_id', $request->employee_id)
-        ->where('status', 3)
-        ->where('leave_type', 'Annual Leave')
-        ->whereYear('from', $fromYear)
-        ->sum('no_of_days');
-        $employeeData = User::find($request->input('employee_id'));
-        $employeeData->update([
-            'leave_count' => $employeeData->leave_count + $leave_bal_lastyear
-        ]);
 
         return redirect()->route('admin.view-staff', ['id' => $request->input('employee_id')]);
     }
@@ -942,16 +932,6 @@ class EmployeeController extends Controller
             'reason' => $request->input('reason'),
             'status' => 1
         ]);
-        $fromYear = Carbon::now()->subYear()->year;
-        $leave_bal_lastyear = EmployeeLeave::where('employee_id', $request->employee_id)
-        ->where('status', 3)
-        ->where('leave_type', 'Annual Leave')
-        ->whereYear('from', $fromYear)
-        ->sum('no_of_days');
-        $employeeData = User::find($request->input('employee_id'));
-        $employeeData->update([
-            'leave_count' => $employeeData->leave_count + $leave_bal_lastyear
-        ]);
         // Add your logic for leaves admin view
         return redirect()->route('admin.leaves')->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
     }
@@ -995,16 +975,6 @@ class EmployeeController extends Controller
             'status' => 1
         ]);
         
-        $fromYear = Carbon::now()->subYear()->year;
-        $leave_bal_lastyear = EmployeeLeave::where('employee_id', $employee->id)
-        ->where('status', 3)
-        ->where('leave_type', 'Annual Leave')
-        ->whereYear('from', $fromYear)
-        ->sum('no_of_days');
-        $employeeData = User::find($request->input('employee_id'));
-        $employeeData->update([
-            'leave_count' => $employeeData->leave_count + $leave_bal_lastyear
-        ]);
         // Add your logic for leaves admin view
         return redirect()->route('employee.leaves')->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
     }
@@ -1061,16 +1031,6 @@ class EmployeeController extends Controller
             'status' => 1
         ]);
         
-        $fromYear = Carbon::now()->subYear()->year;
-        $leave_bal_lastyear = EmployeeLeave::where('employee_id', $request->employee_id)
-        ->where('status', 3)
-        ->where('leave_type', 'Annual Leave')
-        ->whereYear('from', $fromYear)
-        ->sum('no_of_days');
-        $employeeData = User::find($request->input('employee_id'));
-        $employeeData->update([
-            'leave_count' => $employeeData->leave_count + $leave_bal_lastyear
-        ]);
         // Add your logic for leaves admin view
         return redirect()->back()->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
     }
@@ -1236,16 +1196,6 @@ class EmployeeController extends Controller
             'status' => 1
         ]);
         
-        $fromYear = Carbon::now()->subYear()->year;
-        $leave_bal_lastyear = EmployeeLeave::where('employee_id', $request->employee_id)
-        ->where('status', 3)
-        ->where('leave_type', 'Annual Leave')
-        ->whereYear('from', $fromYear)
-        ->sum('no_of_days');
-        $employeeData = User::find($request->input('employee_id'));
-        $employeeData->update([
-            'leave_count' => $employeeData->leave_count + $leave_bal_lastyear
-        ]);
 
         return redirect()->back()->with('success', 'Sick Report added successfully');
     }
@@ -1278,16 +1228,6 @@ class EmployeeController extends Controller
             'status' => 1
         ]);
         
-        $fromYear = Carbon::now()->subYear()->year;
-        $leave_bal_lastyear = EmployeeLeave::where('employee_id', $request->employee_id)
-        ->where('status', 3)
-        ->where('leave_type', 'Annual Leave')
-        ->whereYear('from', $fromYear)
-        ->sum('no_of_days');
-        $employeeData = User::find($request->input('employee_id'));
-        $employeeData->update([
-            'leave_count' => $employeeData->leave_count + $leave_bal_lastyear
-        ]);
         // Add your logic for leaves admin view
         return redirect()->back()->with('success', 'New Absence added successfully');
     }
