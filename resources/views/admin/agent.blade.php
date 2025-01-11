@@ -116,6 +116,9 @@
                                     <th>Company Name</th>
                                     <th>Brand Name</th>
                                     <th>Group</th>
+                                    <th>Country</th>
+                                    <th>State</th>
+                                    <th>City</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -125,6 +128,9 @@
                                         <td>{{ $agent->company_name }}</td>
                                         <td>{{ $agent->owner_name }}</td>
                                         <td>{{ $agent->agency_name }}</td>
+                                        <td>{{ $agent->country }}</td>
+                                        <td>{{ $agent->state }}</td>
+                                        <td>{{ $agent->city }}</td>
                                         {{-- <td>Taj Travels</td> --}}
                                         <td>
                                             <div class="action-icons">
