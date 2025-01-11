@@ -51,9 +51,9 @@ use Carbon\Carbon;
                                         class="nav-link active">Overview</a>
                                 </li>
                                 <li class="nav-item"><a href="#holidays" data-bs-toggle="tab"
-                                        class="nav-link ">Holidays</a>
+                                        class="nav-link ">Public Holidays</a>
                                 </li>
-                                <li class="nav-item"><a href="#teams" data-bs-toggle="tab" class="nav-link">Teams</a>
+                                <li class="nav-item"><a href="#teams" data-bs-toggle="tab" class="nav-link">My Teams</a>
                                 </li>
                             </ul>
                         </div>

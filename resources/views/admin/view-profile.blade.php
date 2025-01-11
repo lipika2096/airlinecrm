@@ -48,7 +48,7 @@ use Carbon\Carbon;
                                 <li class="nav-item"><a href="#applications" data-bs-toggle="tab"
                                         class="nav-link">Applications</a>
                                 </li>
-                                <li class="nav-item"><a href="#teams" data-bs-toggle="tab" class="nav-link">Teams</a>
+                                <li class="nav-item"><a href="#teams" data-bs-toggle="tab" class="nav-link">My Teams</a>
                                 </li>
                                 <li class="nav-item"><a href="#approved-airlines" data-bs-toggle="tab"
                                         class="nav-link">Approved Airline Duties</a>
