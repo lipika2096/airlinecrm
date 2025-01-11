@@ -30,10 +30,10 @@
                     <div class="col-lg-12 col-md-12 col-sm-12 line-tabs">
                         <ul class="nav nav-tabs nav-tabs-bottom">
                             <li class="nav-item">
-                                <a href="#allocated-leads" data-bs-toggle="tab" class="nav-link active">Allocated Leads</a>
+                                <a href="#unallocated-leads" data-bs-toggle="tab" class="nav-link active">Un-allocated Leads</a>
                             </li>
                             <li class="nav-item">
-                                <a href="#unallocated-leads" data-bs-toggle="tab" class="nav-link">Un-allocated Leads</a>
+                                <a href="#allocated-leads" data-bs-toggle="tab" class="nav-link ">Allocated Leads</a>
                             </li>
                         </ul>
                     </div>
