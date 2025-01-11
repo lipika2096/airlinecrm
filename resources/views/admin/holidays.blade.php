@@ -194,7 +194,7 @@ use Carbon\Carbon;
                                             <input class="form-control" name="holiday_date" type="datetime-local">
                                         </div>
                                     </div>
-                                    <div class="form-group">
+                                    {{-- <div class="form-group">
                                         <label class="control-label">Category</label>
                                         <select class="select form-control" name="category">
                                             <option value='bg-danger'>Danger</option>
@@ -209,7 +209,7 @@ use Carbon\Carbon;
                                             <option value='bg-teal'>Teal</option>
                                             <option value='bg-warning'>Warning</option>
                                         </select>
-                                    </div>
+                                    </div> --}}
                                     <div class="submit-section">
                                         <button class="btn btn-primary" type="submit">Submit</button>
                                     </div>
