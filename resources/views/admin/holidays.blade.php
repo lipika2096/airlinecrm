@@ -921,9 +921,18 @@ use Carbon\Carbon;
                                     const currentYear = parseInt(dynaYear);
 
                                     // Preprocess the user's leave data
-                                    const leaveDays = processLeavesData(user.leavesData).filter(leave =>
-                                        leave.month === currentMonth && leave.year === currentYear
-                                    );
+                                    const leaveDays = processLeavesData(user.leavesData)
+                                                .filter(leave => leave.month === currentMonth && leave.year === currentYear)
+                                                .reduce((acc, leave) => {
+                                                    const existingLeave = acc.find(l => l.day === leave.day);
+                                                    if (!existingLeave) {
+                                                        acc.push(leave);
+                                                    } else if (existingLeave.type === 'Annual Leave' && leave.type !== 'Annual Leave') {
+                                                        acc = acc.filter(l => l.day !== leave.day);
+                                                        acc.push(leave);
+                                                    }
+                                                    return acc;
+                                                }, []);
 
                                     const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
                                     const firstDayOfMonth = new Date(currentYear, currentMonth - 1, 1).getDay();
