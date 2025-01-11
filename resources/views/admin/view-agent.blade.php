@@ -123,9 +123,9 @@
                                                 <tr>
                                                     <th class="text-red">IATA Number:</th>
                                                     <td class="text-red">{{ $agent->iata }}</td>
-                                                    <th>GSD Type:</th>
+                                                    <th>GDS Type:</th>
                                                     <td>{{ $agent->gds_type }}</td>
-                                                    <th>PCC/Off ice ID:</th>
+                                                    <th>PCC/Office ID:</th>
                                                     <td>{{ $agent->pcc_office_id }}</td>
                                                 </tr>
                                                 <tr>
