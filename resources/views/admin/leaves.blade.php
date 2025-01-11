@@ -78,6 +78,7 @@
                                     <thead>
                                         <tr>
                                             <th>Employee</th>
+                                            <th>Date Of Application</th>
                                             <th>Leave Type</th>
                                             <th>From</th>
                                             <th>To</th>
@@ -98,6 +99,7 @@
                                                             {{ $data->user->last_name }} </a>
                                                     </h2>
                                                 </td>
+                                                <td>{{ $data->created_at }}</td>
                                                 <td>{{ $data->leave_type }}</td>
                                                 <td>{{ $data->from }}</td>
                                                 <td>{{ $data->to }}</td>
@@ -245,6 +247,7 @@
                                     <thead>
                                         <tr>
                                             <th>Employee</th>
+                                            <th>Date Of Application</th>
                                             <th>Leave Type</th>
                                             <th>From</th>
                                             <th>To</th>
@@ -264,6 +267,7 @@
                                                             {{ $data->user->last_name }} </a>
                                                     </h2>
                                                 </td>
+                                                <td>{{$data->created_at}}</td>
                                                 <td>{{ $data->leave_type }}</td>
                                                 <td>{{ $data->from }}</td>
                                                 <td>{{ $data->to }}</td>
@@ -411,6 +415,7 @@
                                     <thead>
                                         <tr>
                                             <th>Employee</th>
+                                            <th>Date Of Application</th>
                                             <th>Leave Type</th>
                                             <th>From</th>
                                             <th>To</th>
@@ -430,6 +435,8 @@
                                                             {{ $data->user->last_name }} </a>
                                                     </h2>
                                                 </td>
+
+                                                <td>{{ $data->created_at }}</td>
                                                 <td>{{ $data->leave_type }}</td>
                                                 <td>{{ $data->from }}</td>
                                                 <td>{{ $data->to }}</td>
@@ -574,6 +581,7 @@
                                     <thead>
                                         <tr>
                                             <th>Employee</th>
+                                            <th>Date Of Application</th>
                                             <th>Leave Type</th>
                                             <th>From</th>
                                             <th>To</th>
@@ -593,6 +601,7 @@
                                                             {{ $data->user->last_name }} </a>
                                                     </h2>
                                                 </td>
+                                                <td>{{ $data->created_at }}</td>
                                                 <td>{{ $data->leave_type }}</td>
                                                 <td>{{ $data->from }}</td>
                                                 <td>{{ $data->to }}</td>
