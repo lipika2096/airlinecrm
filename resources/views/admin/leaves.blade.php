@@ -95,8 +95,8 @@
                                             <tr>
                                                 <td>
                                                     <h2 class="table-avatar">
-                                                        <a href="#">{{ $data->user->first_name }}
-                                                            {{ $data->user->last_name }} </a>
+                                                        <a href="#">{{ $data->user->first_name ?? 'N/A' }}
+                                                            {{ $data->user->last_name??'' }} </a>
                                                     </h2>
                                                 </td>
                                                 <td>{{ $data->created_at }}</td>
@@ -106,7 +106,7 @@
                                                 <td>{{ $data->no_of_days }} days</td>
 
                                                 @php
-                                                    $annualLeave = $data->user->leave_count;
+                                                    $annualLeave = $data->user->leave_count?? 0;
                                                     $currentYear = now()->year;
                                                     $fromYear = \Carbon\Carbon::parse($data->from)->year;
                                                     $toYear = \Carbon\Carbon::parse($data->to)->year;
@@ -874,40 +874,35 @@
             }
         }
 
-        // Function to ensure the date input meets the requirements
-        document.getElementById('from').addEventListener('input', function() {
-            const dateInput = this;
-            const today = new Date();
-            const currentYear = today.getFullYear();
-            const currentDate = today.toISOString().split('T')[0]; // Gets current date in YYYY-MM-DD format
 
-            // Set the minimum date to today's date
-            dateInput.setAttribute('min', currentDate);
+        // document.getElementById('from').addEventListener('input', function() {
+        //     const dateInput = this;
+        //     const today = new Date();
+        //     const currentYear = today.getFullYear();
+        //     const currentDate = today.toISOString().split('T')[0];
 
-            // Check if the entered date has a valid year
-            const enteredDate = new Date(dateInput.value);
-            if (enteredDate.getFullYear() > currentYear || enteredDate.getFullYear() < 1000) {
-                alert("Please enter a valid year between 1000 and the current year.");
-                dateInput.value = ''; // Clear the invalid input
-            }
-        });
+        //     dateInput.setAttribute('min', currentDate);
+        //     const enteredDate = new Date(dateInput.value);
+        //     if (enteredDate.getFullYear() > currentYear || enteredDate.getFullYear() < 1000) {
+        //         alert("Please enter a valid year between 1000 and the current year.");
+        //         dateInput.value = '';
+        //     }
+        // });
 
-        // Function to ensure the date input meets the requirements
-        document.getElementById('to').addEventListener('input', function() {
-            const dateInput = this;
-            const today = new Date();
-            const currentYear = today.getFullYear();
-            const currentDate = today.toISOString().split('T')[0]; // Gets current date in YYYY-MM-DD format
 
-            // Set the minimum date to today's date
-            dateInput.setAttribute('min', currentDate);
+        // document.getElementById('to').addEventListener('input', function() {
+        //     const dateInput = this;
+        //     const today = new Date();
+        //     const currentYear = today.getFullYear();
+        //     const currentDate = today.toISOString().split('T')[0];
 
-            // Check if the entered date has a valid year
-            const enteredDate = new Date(dateInput.value);
-            if (enteredDate.getFullYear() < currentYear) {
-                alert("Please enter a valid year either with current year or with future year.");
-                dateInput.value = ''; // Clear the invalid input
-            }
-        });
+        //     dateInput.setAttribute('min', currentDate);
+
+        //     const enteredDate = new Date(dateInput.value);
+        //     if (enteredDate.getFullYear() < currentYear) {
+        //         alert("Please enter a valid year either with current year or with future year.");
+        //         dateInput.value = '';
+        //     }
+        // });
     </script>
 @endsection

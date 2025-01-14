@@ -609,7 +609,11 @@ class EmployeeController extends Controller
                 $overlappingDates[] = $leave->from . ' to ' . $leave->to;
             }
 
-            return redirect()->back()->with('error', 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates));
+
+            return redirect()->back()->with([
+                'showModal' => true,
+                'modalMessage' => 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates),
+            ]);
         }
 
         EmployeeLeave::create([
@@ -972,7 +976,11 @@ class EmployeeController extends Controller
                 $overlappingDates[] = $leave->from . ' to ' . $leave->to;
             }
 
-            return redirect()->back()->with('error', 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates));
+
+            return redirect()->back()->with([
+                'showModal' => true,
+                'modalMessage' => 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates),
+            ]);
         }
         EmployeeLeave::create([
             'employee_id' => $request->input('employee_id'),
@@ -1039,7 +1047,11 @@ class EmployeeController extends Controller
                 $overlappingDates[] = $leave->from . ' to ' . $leave->to;
             }
 
-            return redirect()->back()->with('error', 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates));
+
+            return redirect()->back()->with([
+                'showModal' => true,
+                'modalMessage' => 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates),
+            ]);
         }
         EmployeeLeave::create([
             'employee_id' => $employee->id,
@@ -1120,7 +1132,11 @@ class EmployeeController extends Controller
                 $overlappingDates[] = $leave->from . ' to ' . $leave->to;
             }
 
-            return redirect()->back()->with('error', 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates));
+
+            return redirect()->back()->with([
+                'showModal' => true,
+                'modalMessage' => 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates),
+            ]);
         }
         EmployeeLeave::create([
             'employee_id' => $request->input('employee_id'),
@@ -1308,7 +1324,11 @@ class EmployeeController extends Controller
                 $overlappingDates[] = $leave->from . ' to ' . $leave->to;
             }
 
-            return redirect()->back()->with('error', 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates));
+
+            return redirect()->back()->with([
+                'showModal' => true,
+                'modalMessage' => 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates),
+            ]);
         }
 
         EmployeeLeave::create([
@@ -1365,7 +1385,11 @@ class EmployeeController extends Controller
                 $overlappingDates[] = $leave->from . ' to ' . $leave->to;
             }
 
-            return redirect()->back()->with('error', 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates));
+
+            return redirect()->back()->with([
+                'showModal' => true,
+                'modalMessage' => 'The requested leave overlaps with existing leaves: ' . implode(', ', $overlappingDates),
+            ]);
         }
 
         EmployeeLeave::create([
