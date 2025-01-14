@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\User;
 use App\Models\AssignLeadStaff;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class SalesLeadController extends Controller
 {
@@ -80,7 +81,8 @@ class SalesLeadController extends Controller
             'category' => $request->input('category') ?? 'null',
             'remarks' => $request->input('remarks') ?? 'null',
             'created_by' => auth()->user()->name,
-            'updated_at' => now(), // Use the current timestamp for `updated_at`
+            'updated_at' => now(),
+            'unique_id' => Str::uuid()->toString()
         ]);
 
         // Save data to the assignstaffs table if staff data is provided
