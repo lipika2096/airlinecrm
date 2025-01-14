@@ -696,7 +696,7 @@ class EmployeeController extends Controller
             'work_type' => $request->input('work_type'),
             'dob' => $request->input('dob')
         ]);
-        return redirect()->route('admin.employees')->with('success', 'Employee added successfully');
+        return redirect()->route('admin.employees')->with('success', 'Employee updated successfully');
     }
 
     public function destroy($id)

@@ -111,9 +111,9 @@
                                                 <th>Department</th>
                                                 <th>Position</th>
                                                 <th>Staff No</th>
-                                                {{-- <th>DOJ</th>
+                                                <th>DOJ</th>
                                                 <th>Min Hrs</th>
-                                                <th>Max Hrs</th> --}}
+                                                <th>Max Hrs</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -137,9 +137,9 @@
                                                     <td>{{ $data->department }}</td>
                                                     <td>{{ $data->position }}</td>
                                                     <td>{{ $data->unique_id }}</td>
-                                                    {{-- <td>{{ $data->joining_date }}</td>
+                                                    <td>{{ $data->joining_date }}</td>
                                                     <td>{{ $data->min_hrs }}</td>
-                                                    <td>{{ $data->max_hrs }}</td> --}}
+                                                    <td>{{ $data->max_hrs }}</td>
                                                     <td>
                                                         <div class="action-icons" style="display: flex; flex-direction: row;">
                                                         <a class="action-icon" href="{{ route('admin.view-staff', ['id' => $data->id]) }}">
@@ -152,7 +152,7 @@
                                                         </div>
                                                     </td>
                                                 </tr>
-
+{{-- edit employee --}}
                 <div id="edit_employee{{$data->id}}" class="modal custom-modal fade" role="dialog">
                     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                         <div class="modal-content">
@@ -168,79 +168,130 @@
                                 @method('patch')
                                 @csrf
                                     <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
+                                        <div class="col-sm-4">
+                                            <!-- <div class="form-group"> -->
                                                 <label class="form-label">First Name <span class="text-danger">*</span></label>
-                                                <input class="form-control"name="first_name"  value="{{$data->first_name}}" type="text">
+                                                <input class="form-control" type="text" name="first_name" value="{{$data->first_name}}">
                                             </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
+                                        <!-- </div> -->
+                                        <div class="col-sm-4">
+                                            <!-- <div class="form-group"> -->
                                                 <label class="form-label">Last Name</label>
-                                                <input class="form-control" name="last_name" value="{{$data->last_name}}" type="text">
+                                                <input class="form-control" type="text" name="last_name" value="{{$data->last_name}}">
                                             </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="form-label">Email <span class="text-danger">*</span></label>
-                                                <input class="form-control" name="email"  value="{{$data->email}}" type="email">
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
+                                        <!-- </div> -->
+                                        <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label class="form-label">Employee ID <span class="text-danger">*</span></label>
-                                                <input type="text" name="employee_id" value="{{$data->unique_id}}" class="form-control floating">
+                                                <input type="text" class="form-control" name="employee_id"  value="{{$data->unique_id}}" >
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        
+
+                                        <div class="col-sm-8">
+                                            <!-- <div class="form-group"> -->
+                                                <label class="form-label">Email <span class="text-danger">*</span></label>
+                                                <input class="form-control" type="email" name="email" value="{{$data->email}}">
+                                            </div>
+                                        <!-- </div> -->
+                                        <div class="col-sm-4">
+                                            <!-- <div class="form-group"> -->
+                                                <label class="form-label">Password</label>
+                                                <input class="form-control" type="password" name="password" value="{{$data->password}}" >
+                                            </div>
+                                        <!-- </div> -->
+
+                                        <!-- </div> -->
+                                        <div class="col-sm-4">
+                                            <!-- <div class="form-group"> -->
+                                                <label class="form-label">Total Leave <span class="text-danger">*</span></label>
+                                                <input type="number" class="form-control" name="leave_count" value="{{$data->leave_count}}">
+                                            </div>
+                                        <!-- </div> -->
+                                        <div class="col-sm-4">
+                                            <!-- <div class="form-group"> -->
+                                                <label class="form-label">Phone </label>
+                                                <input class="form-control" name="phone" type="text" value="{{$data->phone}}">
+                                            </div>
+                                        <!-- </div> -->
+                                        <div class="col-sm-4">
+                                            <!-- <div class="form-group"> -->
+                                                <label class="form-label">Personal Mobile </label>
+                                                <input class="form-control" name="personal_phone" type="text" value="{{$data->personal_phone}}">
+                                            </div>
+                                        <!-- </div> -->
+                                        <div class="col-sm-4">
+                                            <!-- <div class="form-group"> -->
+                                                <label class="form-label">Company Mobile </label>
+                                                <input class="form-control" name="company_mobile" type="text" value="{{$data->company_mobile}}">
+                                            </div>
+                                        <!-- </div> -->
+
+                                        <div class="col-sm-4">
+                                            <!-- <div class="form-group"> -->
+                                                <label class="form-label">Work Type </label>
+                                                <input class="form-control" name="work_type" type="text" value="{{$data->work_type}}">
+                                            </div>
+                                        <!-- </div> -->
+
+                                        <div class="col-sm-4">
+                                            <!-- <div class="form-group"> -->
+                                                <label class="form-label">Branch </label>
+                                                <input class="form-control" name="branch" type="text" value="{{$data->branch}}">
+                                            </div>
+                                        <!-- </div> -->
+
+                                        <div class="col-sm-4">
+                                            <!-- <div class="form-group"> -->
+                                                <label class="form-label">Date of Birth </label>
+                                                <input class="form-control" name="dob" type="date" value="{{$data->dob}}">
+                                            </div>
+                                        <!-- </div> -->
+                                        <div class="col-sm-4">
+                                            <!-- <div class="form-group"> -->
+                                                <label class="form-label">Joining Date <span class="text-danger">*</span></label>
+                                                <div class=""><input class="form-control" type="date" name="joining_date" value="{{$data->joining_date}}"></div>
+                                            </div>
+                                        <!-- </div> -->
+                                        <div class="col-sm-4">
                                             <div class="form-group">
-                                                <label class="form-label"></label>Joining Date<span class="text-danger">*</span></label>
-                                                <input type="date" name="joining_date" value="{{$data->joining_date}}" class="form-control floating">
+                                            <!-- <div class="form-group"> -->
+                                                <label class="form-label">Min Hrs </label>
+                                                <input class="form-control" name="min_hrs" type="text" value="{{$data->min_hrs}}">
                                             </div>
                                         </div>
-                                        <div class="col-sm-6">
+                                        <!-- </div> -->
+                                        <div class="col-sm-4">
                                             <div class="form-group">
-                                                <label class="form-label" style="margin-bottom: 0px;">Phone </label>
-                                                <input class="form-control" name="phone"  value="{{$data->phone}}" type="text">
+                                                <label class="form-label">Max Hrs </label>
+                                                <input class="form-control" name="max_hrs"  type="text" value="{{$data->max_hrs}}">
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
+                                        <div class="col-md-4">
+                                            <!-- <div class="form-group"> -->
                                                 <label>Department <span class="text-danger">*</span></label>
-                                                <select class="select" name="department">
+                                                <select class="select form-control" name="department">
                                                     <option>Select Department</option>
                                                     @foreach($department as $department_data)
                                                         <option value="{{$department_data->department_name}}" @if ($data->department == $department_data->department_name) selected @endif>{{$department_data->department_name}}</option>
                                                     @endforeach
                                                 </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
+                                         </div>
+                                        <!-- </div> -->
+                                        <div class="col-md-4">
+                                            <!-- <div class="form-group"> -->
                                                 <label>Designation <span class="text-danger">*</span></label>
-                                                <select class="select" name="designation">
+                                                <select class="select form-control" name="designation" value="{{$data->designation}}">
                                                     <option>Select Designation</option>
-                                                    @foreach($designation as $designation_data)
-                                                        <option value="{{$designation_data->designation}}" @if ($data->position == $designation_data->designation) selected @endif>{{$designation_data->designation}}</option>
+                                                    @foreach($designation as $data)
+                                                        <option value="{{$data->designation}}" @if ($data->designation == $data->designation) selected @endif>{{$data->designation}}</option>
                                                     @endforeach
                                                 </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="form-label">Min Hrs </label>
-                                                <input class="form-control" name="min_hrs"  value="{{$data->min_hrs}}" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="form-label">Max Hrs </label>
-                                                <input class="form-control" name="max_hrs"  value="{{$data->max_hrs}}" type="text">
-                                            </div>
-                                        </div>
+                                    </div>
+                                        <!-- </div> -->
                                     </div>
                                     <div class="submit-section">
-                                        <button class="btn btn-primary" type="submit">Update</button>
+                                        <button class="btn btn-primary" type="submit" >Update</button>
                                     </div>
                                 </form>
                             </div>
@@ -272,6 +323,8 @@
                         </div>
                     </div>
                 </div>
+                
+                
                                             @endforeach
                                         </tbody>
                                     </table>
@@ -331,6 +384,10 @@
                                                                     <td>{{ $data->min_hrs }}</td>
                                                                     <td>{{ $data->max_hrs }}</td> --}}
                                                                     <td>
+
+                                                                        <a class="action-icon" href="{{ route('admin.view-staff', ['id' => $employee->id]) }}">
+                                                                            <i class="fa fa-eye m-r-5"></i>
+                                                                        </a>
                                                                             <a class="action-icon" href="#" data-bs-toggle="modal" data-bs-target="#editemployee_modal{{$employee->id}}"><i class="fa fa-pencil"></i></a>
                                                                             <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#deleteemployee_modal_{{ $employee->id }}" style="">
                                                                                 <i class="fa fa-trash"></i>
@@ -338,7 +395,7 @@
                                                                     </td>
                                                                 </tr>
 
-                <!-- Edit Employee Modal -->
+                <!-- Edit Department Modal -->
                 <div id="editemployee_modal{{$employee->id}}" class="modal custom-modal fade" role="dialog">
                     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                         <div class="modal-content">
@@ -353,78 +410,127 @@
 
                                 @method('patch')
                                 @csrf
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="form-label">First Name <span class="text-danger">*</span></label>
-                                                <input class="form-control"name="first_name"  value="{{$employee->first_name}}" type="text">
-                                            </div>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <!-- <div class="form-group"> -->
+                                            <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                            <input class="form-control" type="text" name="first_name" value="{{$employee->first_name}}">
                                         </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="form-label">Last Name</label>
-                                                <input class="form-control" name="last_name" value="{{$employee->last_name}}" type="text">
-                                            </div>
+                                    <!-- </div> -->
+                                    <div class="col-sm-4">
+                                        <!-- <div class="form-group"> -->
+                                            <label class="form-label">Last Name</label>
+                                            <input class="form-control" type="text" name="last_name" value="{{$employee->last_name}}">
                                         </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="form-label">Email <span class="text-danger">*</span></label>
-                                                <input class="form-control" name="email"  value="{{$employee->email}}" type="email">
-                                            </div>
+                                    <!-- </div> -->
+                                    <div class="col-sm-4">
+                                        <!-- <div class="form-group"> -->
+                                            <label class="form-label">Employee ID <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" name="unique_id"value="{{$employee->unique_id}}">
                                         </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="form-label">Employee ID <span class="text-danger">*</span></label>
-                                                <input type="text" name="employee_id" value="{{$employee->unique_id}}" class="form-control floating">
-                                            </div>
+
+                                    <div class="col-sm-8">
+                                        <!-- <div class="form-group"> -->
+                                            <label class="form-label">Email <span class="text-danger">*</span></label>
+                                            <input class="form-control" type="email" name="email" value="{{$employee->email}}">
                                         </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="form-label"></label>Joining Date<span class="text-danger">*</span></label>
-                                                <input type="date" name="joining_date" value="{{$employee->joining_date}}" class="form-control floating">
-                                            </div>
+                                    <!-- </div> -->
+                                    <div class="col-sm-4">
+                                        <!-- <div class="form-group"> -->
+                                            <label class="form-label">Password</label>
+                                            <input class="form-control" type="password" name="password" value="{{$employee->password}}" >
                                         </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="form-label" style="margin-bottom: 0px;">Phone </label>
-                                                <input class="form-control" name="phone"  value="{{$employee->phone}}" type="text">
-                                            </div>
+                                    <!-- </div> -->
+
+                                    <!-- </div> -->
+                                    <div class="col-sm-4">
+                                        <!-- <div class="form-group"> -->
+                                            <label class="form-label">Total Leave <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control" name="leave_count" value="{{$employee->leave_count}}">
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label>Department <span class="text-danger">*</span></label>
-                                                <select class="select" name="department">
-                                                    <option>Select Department</option>
-                                                    @foreach($department as $department_data)
-                                                        <option value="{{$department_data->department_name}}" @if ($employee->department == $department_data->department_name) selected @endif>{{$department_data->department_name}}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
+                                    <!-- </div> -->
+                                    <div class="col-sm-4">
+                                        <!-- <div class="form-group"> -->
+                                            <label class="form-label">Phone </label>
+                                            <input class="form-control" name="phone" type="text" value="{{$employee->phone}}">
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label>Designation <span class="text-danger">*</span></label>
-                                                <select class="select" name="designation">
-                                                    <option>Select Designation</option>
-                                                    @foreach($designation as $designation_data)
-                                                        <option value="{{$designation_data->designation}}" @if ($employee->position == $designation_data->designation) selected @endif>{{$designation_data->designation}}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
+                                    <!-- </div> -->
+                                    <div class="col-sm-4">
+                                        <!-- <div class="form-group"> -->
+                                            <label class="form-label">Personal Mobile </label>
+                                            <input class="form-control" name="personal_phone" type="text" value="{{$employee->personal_phone}}">
                                         </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="form-label">Min Hrs </label>
-                                                <input class="form-control" name="min_hrs"  value="{{$employee->min_hrs}}" type="text">
-                                            </div>
+                                    <!-- </div> -->
+                                    <div class="col-sm-4">
+                                        <!-- <div class="form-group"> -->
+                                            <label class="form-label">Company Mobile </label>
+                                            <input class="form-control" name="company_mobile" type="text" value="{{$employee->company_mobile}}">
                                         </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label class="form-label">Max Hrs </label>
-                                                <input class="form-control" name="max_hrs"  value="{{$employee->max_hrs}}" type="text">
-                                            </div>
+                                    <!-- </div> -->
+
+                                    <div class="col-sm-4">
+                                        <!-- <div class="form-group"> -->
+                                            <label class="form-label">Work Type </label>
+                                            <input class="form-control" name="work_type" type="text" value="{{$employee->work_type}}">
+                                        </div>
+                                    <!-- </div> -->
+
+                                    <div class="col-sm-4">
+                                        <!-- <div class="form-group"> -->
+                                            <label class="form-label">Branch </label>
+                                            <input class="form-control" name="branch" type="text" value="{{$employee->branch}}">
+                                        </div>
+                                    <!-- </div> -->
+
+                                    <div class="col-sm-4">
+                                        <!-- <div class="form-group"> -->
+                                            <label class="form-label">Date of Birth </label>
+                                            <input class="form-control" name="dob" type="date" value="{{$employee->dob}}">
+                                        </div>
+                                    <!-- </div> -->
+                                    <div class="col-sm-4">
+                                        <!-- <div class="form-group"> -->
+                                            <label class="form-label">Joining Date <span class="text-danger">*</span></label>
+                                            <div class=""><input class="form-control" type="date" name="joining_date" value="{{$employee->joining_date}}"></div>
+                                        </div>
+                                    <!-- </div> -->
+                                    <div class="col-md-4">
+                                        <!-- <div class="form-group"> -->
+                                            <label>Department <span class="text-danger">*</span></label>
+                                            <select class="select" name="department">
+                                                <option>Select Department</option>
+                                                @foreach($department as $department_data)
+                                                    <option value="{{$department_data->department_name}}" @if ($data->department == $department_data->department_name) selected @endif>{{$department_data->department_name}}</option>
+                                                @endforeach
+                                            </select>
+                                     </div>
+                                    <!-- </div> -->
+                                    <div class="col-md-4">
+                                        <!-- <div class="form-group"> -->
+                                            <label>Designation <span class="text-danger">*</span></label>
+                                            <select class="select form-control" name="designation" value="{{$employee->designation}}">
+                                                <option>Select Designation</option>
+                                                @foreach($designation as $data)
+                                                    <option value="{{$data->designation}}" @if ($data->designation == $data->designation) selected @endif>{{$data->designation}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    <!-- </div> -->
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                        <!-- <div class="form-group"> -->
+                                            <label class="form-label">Min Hrs </label>
+                                            <input class="form-control" name="min_hrs" type="text" value="{{$employee->min_hrs}}">
                                         </div>
                                     </div>
+                                    <!-- </div> -->
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label class="form-label">Max Hrs </label>
+                                            <input class="form-control" name="max_hrs"  type="text" value="{{$employee->max_hrs}}">
+                                        </div>
+                                    </div>
+                                </div>
                                     <div class="submit-section">
                                         <button class="btn btn-primary" type="submit">Update</button>
                                     </div>
@@ -578,7 +684,7 @@
                                         <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label class="form-label">Min Hrs </label>
-                                                <input class="form-control" name="min_hrs"  value="{{$data->min_hrs}}" type="text">
+                                                <input class="form-control" name="min_hrs"  value="{{$data}}" type="text">
                                             </div>
                                         </div>
                                         <div class="col-sm-6">
@@ -596,6 +702,8 @@
                         </div>
                     </div>
                 </div>
+                <!-- /Edit Employee Modal -->
+               
                 <!-- /Edit Employee Modal -->
                 <div id="delete_modal_{{ $data->id }}" class="modal custom-modal fade" role="dialog">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -632,7 +740,7 @@
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Add Employee</h5>
+                                <h5 class="modal-title">Add Employee </h5>
                                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -656,7 +764,7 @@
                                         <div class="col-sm-4">
                                             <!-- <div class="form-group"> -->
                                                 <label class="form-label">Employee ID <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" name="employee_id">
+                                                <input type="text" class="form-control" name="employee_id ">
                                             </div>
 
                                         <div class="col-sm-8">
@@ -749,7 +857,7 @@
                                         <div class="col-sm-4">
                                             <!-- <div class="form-group"> -->
                                                 <label class="form-label">Min Hrs </label>
-                                                <input class="form-control" name="min_hrs" type="text">
+                                                <input class="form-control" name="min_hrs" type="text"> 
                                             </div>
                                         <!-- </div> -->
                                         <div class="col-sm-4">
