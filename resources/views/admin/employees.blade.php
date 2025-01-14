@@ -331,12 +331,133 @@
                                                                     <td>{{ $data->min_hrs }}</td>
                                                                     <td>{{ $data->max_hrs }}</td> --}}
                                                                     <td>
-                                                                            <a class="action-icon" href="#" data-bs-toggle="modal" data-bs-target="#edit_employee{{$employee->id}}"><i class="fa fa-pencil"></i></a>
-                                                                            <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_modal_{{ $employee->id }}" style="">
+                                                                            <a class="action-icon" href="#" data-bs-toggle="modal" data-bs-target="#editemployee_modal{{$employee->id}}"><i class="fa fa-pencil"></i></a>
+                                                                            <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#deleteemployee_modal_{{ $employee->id }}" style="">
                                                                                 <i class="fa fa-trash"></i>
                                                                             </a>
                                                                     </td>
                                                                 </tr>
+
+                <!-- Edit Employee Modal -->
+                <div id="editemployee_modal{{$data->id}}" class="modal custom-modal fade" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Employee</h5>
+                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('admin.employees.edit', ['id' => $data->id]) }}" method="POST" enctype="multipart/form-data">
+
+                                @method('patch')
+                                @csrf
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                                <input class="form-control"name="first_name"  value="{{$data->first_name}}" type="text">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Last Name</label>
+                                                <input class="form-control" name="last_name" value="{{$data->last_name}}" type="text">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Email <span class="text-danger">*</span></label>
+                                                <input class="form-control" name="email"  value="{{$data->email}}" type="email">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Employee ID <span class="text-danger">*</span></label>
+                                                <input type="text" name="employee_id" value="{{$data->unique_id}}" class="form-control floating">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="form-label"></label>Joining Date<span class="text-danger">*</span></label>
+                                                <input type="date" name="joining_date" value="{{$data->joining_date}}" class="form-control floating">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="form-label" style="margin-bottom: 0px;">Phone </label>
+                                                <input class="form-control" name="phone"  value="{{$data->phone}}" type="text">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Department <span class="text-danger">*</span></label>
+                                                <select class="select" name="department">
+                                                    <option>Select Department</option>
+                                                    @foreach($department as $department_data)
+                                                        <option value="{{$department_data->department_name}}" @if ($data->department == $department_data->department_name) selected @endif>{{$department_data->department_name}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Designation <span class="text-danger">*</span></label>
+                                                <select class="select" name="designation">
+                                                    <option>Select Designation</option>
+                                                    @foreach($designation as $designation_data)
+                                                        <option value="{{$designation_data->designation}}" @if ($data->position == $designation_data->designation) selected @endif>{{$designation_data->designation}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Min Hrs </label>
+                                                <input class="form-control" name="min_hrs"  value="{{$data->min_hrs}}" type="text">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Max Hrs </label>
+                                                <input class="form-control" name="max_hrs"  value="{{$data->max_hrs}}" type="text">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="submit-section">
+                                        <button class="btn btn-primary" type="submit">Update</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Edit Employee Modal -->
+                <div id="deleteemployee_modal_{{ $data->id }}" class="modal custom-modal fade" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Delete Employee</h5>
+                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('admin.employee.destroy', $data->id) }}" method="POST"
+                                    onsubmit="return confirm('Are you sure you want to delete this?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <p>Are you sure want to delete?</p>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                                                             @endforeach
                                                         </tbody>
                                                     </table>
