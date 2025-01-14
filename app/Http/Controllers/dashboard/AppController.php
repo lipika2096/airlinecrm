@@ -6,16 +6,32 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Calender; // Import Event model
 use App\Models\EventStatus;
+use App\Models\SalesLead;
+use App\Models\AssignLeadStaff;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AppController extends Controller
 {
     public function calendar()
     {
-        $username = Auth::user()->first_name." ".Auth::user()->last_name;
+        $username = Auth::user()->name;
         $events = Calender::where('created_by',$username)->get(); // Assuming Event is the correct model name
         $eventStatus = EventStatus::orderBy('status_type')->get();
-        return view('admin.events', compact('events', 'eventStatus')); // Ensure the view path is correct
+        $salesLead = SalesLead::leftJoin('assign_lead_staffs', function ($join) {
+            $join->on('sales_leads.id', '=', 'assign_lead_staffs.lead_id')
+                 ->where('assign_lead_staffs.status', 1);
+        })
+        ->leftJoin('users', 'assign_lead_staffs.staff_id', '=', 'users.id')
+        ->select(
+            'sales_leads.*',
+            DB::raw('GROUP_CONCAT(CONCAT(users.first_name, " ", users.last_name) SEPARATOR ", ") as staff_names')
+        )
+        ->groupBy('sales_leads.id')->havingRaw('staff_names IS NOT NULL AND staff_names != ""')
+        ->orderBy('sales_leads.created_at', 'desc')
+        ->get();
+        $combinedData = collect($events)->merge($salesLead);
+        return view('admin.events', compact('combinedData', 'eventStatus')); // Ensure the view path is correct
     }
 
 
@@ -48,11 +64,21 @@ class AppController extends Controller
     }
     public function update(Request $request, $id){
         $eventStatus = Calender::find($id);
-        $eventStatus->update([
-            'status' => $request->input('status'),
-            'updated_by' => auth()->user()->id,
-            'updated_at' => now()
-        ]);
-        return redirect()->back()->with('success', 'Event added successfully.');
+        $salesLead = SalesLead::where('unique_id',$id);
+        if($eventStatus !== null){
+            $eventStatus->update([
+                'status' => $request->input('status'),
+                'updated_by' => auth()->user()->id,
+                'updated_at' => now()
+            ]);
+        }
+        else{
+            $salesLead->update([
+                'status' => $request->input('status'),
+                'updated_by' => auth()->user()->id,
+                'updated_at' => now()
+            ]);
+        }
+        return redirect()->back()->with('success', 'Event status updated successfully.');
     }
 }

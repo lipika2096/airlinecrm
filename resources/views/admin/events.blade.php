@@ -95,14 +95,14 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody id="events-table-body">
-                                                    @foreach ($events as $data)
-                                                    <tr data-month="{{ date('n', strtotime($data->event_date)) - 1 }}"
-                                                        data-year="{{ date('Y', strtotime($data->event_date)) }}">
-                                                        <td>{{ $data->event_name }}</td>
-                                                        <td>{{ $data->event_date }}</td>
+                                                    @foreach ($combinedData as $data)
+                                                    <tr data-month="{{ date('n', strtotime($data->event_date ?? $data->created_at)) - 1 }}"
+                                                        data-year="{{ date('Y', strtotime($data->event_date ?? $data->created_at)) }}">
+                                                        <td>{{ $data->event_name ?? $data->company_name}}</td>
+                                                        <td>{{ $data->event_date??$data->created_at }}</td>
                                                         <td>{{ $data->website }}</td>
                                                         <td>{{ $data->email_id }}</td>
-                                                        <td>{{ $data->phone_no }}</td>
+                                                        <td>{{ $data->phone_no??$data->phone }}</td>
                                                         <td>{{ $data->contact_person }}</td>
                                                         <td>{{ $data->category }}</td>
                                                         <td>{{ $data->remarks }}</td>
@@ -116,7 +116,7 @@
                                                             <div class="dropdown action-label dropdown-item">
                                                                 <a class="btn btn-white btn-sm btn-rounded"
                                                                     data-bs-toggle="modal"
-                                                                    data-bs-target="#edit_employee{{ $data->id }}"
+                                                                    data-bs-target="#edit_employee{{ $data->unique_id ?? $data->id }}"
                                                                     style="text-transform:capitalize;">
                                                                     <i class="fa fa-dot-circle-o text-purple"></i>
                                                                     {{ $data->statusId->status_type ?? 'No status
@@ -126,6 +126,45 @@
                                                             </div>
                                                         </td>
                                                     </tr>
+
+                                                    <div id="edit_employee{{  $data->unique_id ?? $data->id  }}"
+                                                        class="modal custom-modal fade" role="dialog">
+                                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title">Edit Todo Status</h5>
+                                                                    <button type="button" class="close"
+                                                                        data-bs-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">&times;</span>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <form
+                                                                        action="{{ route('admin.events.update', ['id' =>  $data->unique_id ?? $data->id ]) }}"
+                                                                        method="POST" enctype="multipart/form-data">
+                                                                        @method('patch')
+                                                                        @csrf
+                                                                        <div class="form-group">
+                                                                            <label>Status<span
+                                                                                    class="text-danger">*</span></label>
+                                                                            <select class="form-control" name="status"
+                                                                                required>
+                                                                                <option>Select Status</option>
+                                                                                @foreach ($eventStatus as $status)
+                                                                                    <option value="{{ $status->id }}"  @if($data->status_id == $status->id) selected @endif>
+                                                                                        {{ $status->status_type }}</option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                        </div>
+                                                                        <div class="submit-section">
+                                                                            <button class="btn btn-primary"
+                                                                                type="submit">Update</button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     @endforeach
                                                 </tbody>
                                             </table>
@@ -239,6 +278,22 @@
         </div>
     </div>
     <!-- /Event Modal -->
+<!-- Bootstrap Modal -->
+<div id="eventModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalLabel">Event Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Event details will be dynamically injected here -->
+            </div>
+        </div>
+    </div>
+</div>
 
 </div>
 <!-- /Page Wrapper -->
@@ -251,64 +306,92 @@
 
 <script>
     $(document).ready(function() {
-            var CalendarApp = function() {
-                this.$calendar = $('#calendar'),
-                    this.$calendarObj = null
-            };
+    var CalendarApp = function() {
+        this.$calendar = $('#calendar'),
+            this.$calendarObj = null
+    };
 
-            /* Initializing */
-            CalendarApp.prototype.init = function() {
-                var $this = this;
+    /* Initializing */
+    CalendarApp.prototype.init = function() {
+        var $this = this;
 
-                var defaultEvents = [
-                    @foreach ($events as $event)
-                        {
-                            title: '{{ $event->event_name }}',
-                            start: '{{ $event->event_date }}',
-                            className: '{{ $event->category }}'
-                        }
-                        @if (!$loop->last)
-                            ,
-                        @endif
-                    @endforeach
-                ];
+        var defaultEvents = [
+            @foreach ($combinedData as $event)
+                {
+                    title: '{{ $event->event_name ?? $event->company_name }}',
+                    start: '{{ $event->event_date ?? $event->created_at }}',
+                    className: '{{ $event->category }}',
+                    description: '{{ $event->remarks ?? "No description available" }}', // Add any additional data you need
+                    location: '{{ $event->location ?? "N/A" }}',
+                    contactPerson: '{{ $event->contact_person }}',
+                    email: '{{ $event->event_date ?? $event->created_at }}',
+                    phone: '{{ $event->phone?? $event->phone_no }}',
+                    website: '{{ $event->website }}',
+                }
+                @if (!$loop->last)
+                    ,
+                @endif
+            @endforeach
+        ];
 
+        $this.$calendarObj = $this.$calendar.fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            events: defaultEvents,
+            selectable: true,
+            select: function(start, end) {
+                var title = prompt('Event Title:');
+                var eventData;
+                if (title) {
+                    eventData = {
+                        title: title,
+                        start: start,
+                        end: end,
+                        className: className,
+                        description: description,
+                        contactPerson: contactPerson,
+                        email:  email,
+                        phone: phone,
+                        website: website,
+                    };
+                    $this.$calendarObj.fullCalendar('renderEvent', eventData, true);
+                }
+                $this.$calendarObj.fullCalendar('unselect');
+            },
+            eventClick: function(calEvent, jsEvent, view) {
+                // Set modal title and content with event data
+                $('#eventModal .modal-title').text(calEvent.title);
+                $('#eventModal .modal-body').html(`
+                    <p><strong>Date:</strong> ${calEvent.start.format('MMMM Do YYYY, h:mm a')}</p>
+                    <p><strong>Category:</strong> ${calEvent.className}</p>
+                    <p><strong>Remarks:</strong> ${calEvent.description}</p>
+                    <p><strong>Contact Person:</strong> ${calEvent.contactPerson}</p>
+                    <p><strong>Email:</strong> ${calEvent.email}</p>
+                    <p><strong>Phone No:</strong> ${calEvent.phone}</p>
+                    <p><strong>Website:</strong> ${calEvent.website}</p>
+                `);
 
-                $this.$calendarObj = $this.$calendar.fullCalendar({
-                    header: {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'month,agendaWeek,agendaDay'
-                    },
-                    events: defaultEvents,
-                    selectable: true,
-                    select: function(start, end) {
-                        var title = prompt('Event Title:');
-                        var eventData;
-                        if (title) {
-                            eventData = {
-                                title: title,
-                                start: start,
-                                end: end
-                            };
-                            $this.$calendarObj.fullCalendar('renderEvent', eventData, true);
-                        }
-                        $this.$calendarObj.fullCalendar('unselect');
-                    }
-                });
-            };
-
-            // Init CalendarApp
-            $.CalendarApp = new CalendarApp;
-            $.CalendarApp.Constructor = CalendarApp;
-            $.CalendarApp.init();
-
-            // Activate current month by default
-            const currentMonth = new Date().getMonth();
-            const currentMonthButton = document.querySelectorAll('.month-list button')[currentMonth];
-            activateMonth(currentMonthButton, currentMonth);
-            currentMonthButton.classList.add('active');
+                // Show the modal
+                $('#eventModal').modal('show');
+            }
         });
+    };
+
+    // Init CalendarApp
+    $.CalendarApp = new CalendarApp;
+    $.CalendarApp.Constructor = CalendarApp;
+    $.CalendarApp.init();
+
+    // Activate current month by default
+    const currentMonth = new Date().getMonth();
+    const currentMonthButton = document.querySelectorAll('.month-list button')[currentMonth];
+    activateMonth(currentMonthButton, currentMonth);
+    currentMonthButton.classList.add('active');
+});
+
 </script>
 <script>
     function toggleView(view) {
@@ -324,7 +407,7 @@
         }
 
     let displayedYear = new Date().getFullYear();
-    let selectedMonth = null;  
+    let selectedMonth = null;
 
     function updateYearDisplay() {
         for (let i = 0; i < 12; i++) {
@@ -336,15 +419,15 @@
     function changeYear(direction) {
         displayedYear += direction;
         updateYearDisplay();
-        filterEvents(); 
+        filterEvents();
     }
     function activateMonth(button, index) {
         const buttons = document.querySelectorAll('.month-list button');
         buttons.forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
 
-        selectedMonth = index; 
-        filterEvents();  
+        selectedMonth = index;
+        filterEvents();
     }
 
     function filterEvents() {
@@ -373,7 +456,7 @@
         padding: 7px;
         margin-left: -6px;
         border-radius: 92px !important;
-        margin-top: 12px !important;
+        margin-top: 0px !important;
     }
 </style>
 @endsection
