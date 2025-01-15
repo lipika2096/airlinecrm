@@ -89,7 +89,7 @@ class AirlineController extends Controller
                     if (isset($searchParts[$index])) {
                         $searchTerm = '%' . $searchParts[$index] . '%';
 
-                        if (in_array($type, ['company_name', 'pincode', 'city', 'state', 'country', 'account_code', 'iata', 'agency_name'])) {
+                        if (in_array($type, ['company_name', 'pincode', 'city', 'state', 'country', 'account_code', 'iata', 'agency_name','pcc_office_id'])) {
                             $q->whereHas('agent', function ($subQuery) use ($type, $searchTerm) {
                                 $subQuery->where($type, 'like', $searchTerm);
                             });

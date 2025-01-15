@@ -55,7 +55,7 @@ class AgentController extends Controller
                 foreach ($searchTypes as $index => $type) {
                     if (isset($searchParts[$index])) {
                         $searchTerm = '%' . $searchParts[$index] . '%';
-                        if (in_array($type, ['city', 'pincode', 'state', 'country','company_name', 'agency_name','company_registration_no','iata','gds_type','focus_destinations', 'business_mode', 'website', 'account_code',''])) {
+                        if (in_array($type, ['city', 'pincode', 'state', 'country','company_name', 'agency_name','company_registration_no','iata','gds_type','focus_destinations', 'business_mode', 'website', 'account_code','pcc_office_id',''])) {
                             $q->orWhere($type, 'like', $searchTerm);
                         }
 

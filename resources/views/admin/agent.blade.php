@@ -82,6 +82,7 @@
                                     <option value="ticket_no" @if (request()->search_type && in_array('ticket_no', request()->search_type)) selected @endif>Ticket No</option>
                                     <option value="pnr" @if (request()->search_type && in_array('pnr', request()->search_type)) selected @endif>PNR No</option>
                                     <option value="gds_type" @if (request()->search_type && in_array('gds_type', request()->search_type)) selected @endif>GDS Type</option>
+                                    <option value="pcc_office_id" @if (request()->search_type && in_array('pcc_office_id', request()->search_type)) selected @endif>GDS Number</option>
                                     <option value="focus_destinations" @if (request()->search_type && in_array('focus_destinations', request()->search_type)) selected @endif>Focus Destinations</option>
                                     <option value="business_mode" @if (request()->search_type && in_array('business_mode', request()->search_type)) selected @endif>Agent Type</option>
                                     <option value="website" @if (request()->search_type && in_array('website', request()->search_type)) selected @endif>Website</option>

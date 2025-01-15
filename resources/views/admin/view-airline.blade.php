@@ -2493,6 +2493,7 @@ use Carbon\Carbon;
                                             <option value="product_type">Product Type</option>
                                             <option value="fare_type">Fare Type</option>
                                             <option value="gds_type">GDS Type</option>
+                                            <option value="pcc_office_id">GDS Number</option>
                                             <option value="focus_destinations">Focus Destinations</option>
                                             <option value="business_mode">Agent Type</option>
                                             <option value="website">Website</option>
