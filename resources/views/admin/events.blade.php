@@ -74,101 +74,137 @@
                                     <div class="section-header">
                                         <h2>My Todo's</h2>
                                     </div>
-                                    <div class="table-responsive">
-                                        <div class="table-responsive">
-                                            <table class="table table-striped custom-table mb-0 datatable">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Title</th>
-                                                        <th>Schedule Date</th>
-                                                        <th>Website</th>
-                                                        <th>Email</th>
-                                                        <th>Phone No</th>
-                                                        <th>Contact Person</th>
-                                                        <th>Category</th>
-                                                        <th>Remarks</th>
-                                                        <th>Created On</th>
-                                                        <th>Created By</th>
-                                                        <th>Updated On</th>
-                                                        <th>Updated By</th>
-                                                        <th>Status</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="events-table-body">
-                                                    @foreach ($combinedData as $data)
-                                                    <tr data-month="{{ date('n', strtotime($data->event_date ?? $data->created_at)) - 1 }}"
-                                                        data-year="{{ date('Y', strtotime($data->event_date ?? $data->created_at)) }}">
-                                                        <td>{{ $data->event_name ?? $data->company_name}}</td>
-                                                        <td>{{ $data->event_date??$data->created_at }}</td>
-                                                        <td>{{ $data->website }}</td>
-                                                        <td>{{ $data->email_id }}</td>
-                                                        <td>{{ $data->phone_no??$data->phone }}</td>
-                                                        <td>{{ $data->contact_person }}</td>
-                                                        <td>{{ $data->category }}</td>
-                                                        <td>{{ $data->remarks }}</td>
-                                                        <td>{{ $data->created_at }}</td>
-                                                        <td>{{ $data->createdBy->first_name ?? 'N/A' }} {{
-                                                            $data->createdBy->last_name ?? '' }}</td>
-                                                        <td>{{ $data->updated_at }}</td>
-                                                        <td>{{ $data->updatedBy->first_name ?? 'N/A' }} {{
-                                                            $data->updatedBy->last_name ?? '' }}</td>
-                                                        <td>
-                                                            <div class="dropdown action-label dropdown-item">
-                                                                <a class="btn btn-white btn-sm btn-rounded"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#edit_employee{{ $data->unique_id ?? $data->id }}"
-                                                                    style="text-transform:capitalize;">
-                                                                    <i class="fa fa-dot-circle-o text-purple"></i>
-                                                                    {{ $data->statusId->status_type ?? 'No status
-                                                                    Assigned'
-                                                                    }}
-                                                                </a>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-
-                                                    <div id="edit_employee{{  $data->unique_id ?? $data->id  }}"
-                                                        class="modal custom-modal fade" role="dialog">
-                                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title">Edit Todo Status</h5>
-                                                                    <button type="button" class="close"
-                                                                        data-bs-dismiss="modal" aria-label="Close">
-                                                                        <span aria-hidden="true">&times;</span>
-                                                                    </button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <form
-                                                                        action="{{ route('admin.events.update', ['id' =>  $data->unique_id ?? $data->id ]) }}"
-                                                                        method="POST" enctype="multipart/form-data">
-                                                                        @method('patch')
-                                                                        @csrf
-                                                                        <div class="form-group">
-                                                                            <label>Status<span
-                                                                                    class="text-danger">*</span></label>
-                                                                            <select class="form-control" name="status"
-                                                                                required>
-                                                                                <option>Select Status</option>
-                                                                                @foreach ($eventStatus as $status)
-                                                                                    <option value="{{ $status->id }}"  @if($data->status_id == $status->id) selected @endif>
-                                                                                        {{ $status->status_type }}</option>
-                                                                                @endforeach
-                                                                            </select>
-                                                                        </div>
-                                                                        <div class="submit-section">
-                                                                            <button class="btn btn-primary"
-                                                                                type="submit">Update</button>
-                                                                        </div>
-                                                                    </form>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                    <div class="card tab-box">
+                                        <div class="row user-tabs">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 line-tabs">
+                                                <ul class="nav nav-tabs nav-tabs-bottom">
+                                                    @foreach($eventStatus as $index => $statusData)
+                                                        <li class="nav-item">
+                                                            <a href="#event{{$statusData->id}}" data-bs-toggle="tab" class="nav-link @if($index === 0) active @endif">{{$statusData->status_type}}</a>
+                                                        </li>
                                                     @endforeach
-                                                </tbody>
-                                            </table>
+                                                </ul>
+                                            </div>
                                         </div>
+                                    </div>
+                                    <div class="tab-content">
+                                    @foreach($eventStatus as $index => $statusData)
+                                        <div id="event{{$statusData->id}}" class="pro-overview tab-pane fade show @if($index === 0) active @endif">
+                                            <div class="row">
+                                                {{-- <div class="col-md-12 text-right mb-2">
+                                                    {{$statusData->status_type}}
+                                                </div> --}}
+                                                <div class="col-md-12">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-striped custom-table mb-0 datatable">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Title</th>
+                                                                    <th>Schedule Date</th>
+                                                                    <th>Website</th>
+                                                                    <th>Email</th>
+                                                                    <th>Phone No</th>
+                                                                    <th>Contact Person</th>
+                                                                    <th>Category</th>
+                                                                    <th>Remarks</th>
+                                                                    <th>Created On</th>
+                                                                    <th>Created By</th>
+                                                                    <th>Updated On</th>
+                                                                    <th>Updated By</th>
+                                                                    <th>Status</th>
+                                                                    {{-- <th>Action</th> --}}
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="events-table-body">                    
+                                                                    @php
+                                                                        $filteredData = $combinedData->filter(fn($data) => $data->status == $statusData->id);
+                                                                    @endphp
+                                                                    @foreach ($filteredData as $data)
+                                                                    <tr data-month="{{ date('n', strtotime($data->event_date ?? $data->created_at)) - 1 }}"
+                                                                        data-year="{{ date('Y', strtotime($data->event_date ?? $data->created_at)) }}">
+                                                                        <td>{{ $data->event_name ?? $data->company_name }}</td>
+                                                                        <td>{{ $data->event_date ?? $data->created_at }}</td>
+                                                                        <td>{{ $data->website }}</td>
+                                                                        <td>{{ $data->email_id }}</td>
+                                                                        <td>{{ $data->phone_no ?? $data->phone }}</td>
+                                                                        <td>{{ $data->contact_person }}</td>
+                                                                        <td>{{ $data->category }}</td>
+                                                                        <td>{{ $data->remarks }}</td>
+                                                                        <td>{{ $data->created_at }}</td>
+                                                                        <td>{{ $data->createdBy->first_name ?? 'N/A' }}
+                                                                            {{ $data->createdBy->last_name ?? '' }}</td>
+                                                                        <td>{{ $data->updated_at }}</td>
+                                                                        <td>{{ $data->updatedBy->first_name ?? 'N/A' }}
+                                                                            {{ $data->updatedBy->last_name ?? '' }}</td>
+                                                                        <td>
+                                                                            <div class="dropdown action-label dropdown-item">
+                                                                                <a class="btn btn-white btn-sm btn-rounded"
+                                                                                    data-bs-toggle="modal"
+                                                                                    data-bs-target="#edit_employee{{ $data->unique_id ?? $data->id }}"
+                                                                                    style="text-transform:capitalize;">
+                                                                                    <i
+                                                                                        class="fa fa-dot-circle-o text-purple"></i>
+                                                                                    {{ $data->statusId->status_type ??
+                                                                                        'No status
+                                                                                                                                                        Assigned' }}
+                                                                                </a>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+        
+                                                                    <div id="edit_employee{{ $data->unique_id ?? $data->id }}"
+                                                                        class="modal custom-modal fade" role="dialog">
+                                                                        <div class="modal-dialog modal-dialog-centered"
+                                                                            role="document">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title">Edit Todo Status
+                                                                                    </h5>
+                                                                                    <button type="button" class="close"
+                                                                                        data-bs-dismiss="modal"
+                                                                                        aria-label="Close">
+                                                                                        <span aria-hidden="true">&times;</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                                <div class="modal-body">
+                                                                                    <form
+                                                                                        action="{{ route('admin.events.update', ['id' => $data->unique_id ?? $data->id]) }}"
+                                                                                        method="POST"
+                                                                                        enctype="multipart/form-data">
+                                                                                        @method('patch')
+                                                                                        @csrf
+                                                                                        <div class="form-group">
+                                                                                            <label>Status<span
+                                                                                                    class="text-danger">*</span></label>
+                                                                                            <select class="form-control"
+                                                                                                name="status" required>
+                                                                                                <option>Select Status</option>
+                                                                                                @foreach ($eventStatus as $status)
+                                                                                                    <option
+                                                                                                        value="{{ $status->id }}"
+                                                                                                        @if ($data->status_id == $status->id) selected @endif>
+                                                                                                        {{ $status->status_type }}
+                                                                                                    </option>
+                                                                                                @endforeach
+                                                                                            </select>
+                                                                                        </div>
+                                                                                        <div class="submit-section">
+                                                                                            <button class="btn btn-primary"
+                                                                                                type="submit">Update</button>
+                                                                                        </div>
+                                                                                    </form>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
                                     </div>
                                 </div>
                                 <!-- /Calendar -->
