@@ -85,7 +85,7 @@
                             <div class="card profile-box flex-fill">
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table class="table table-striped mb-0 datatable">
+                                        <table class="table table-striped  ">
                                             <tbody>
                                                 <tr></tr>
                                                 <tr>
@@ -434,151 +434,6 @@
                     </div>
                 </div>
 
-                {{-- <div id="address" class="pro-overview tab-pane fade show">
-                    <div class="row">
-                        <div class="col-md-12 d-flex">
-                            <div class="card profile-box flex-fill"
-                                style="    background: none; border: none !important; box-shadow: none;">
-                                <div class="card-header">
-                                    <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_address"><i
-                                            class="fa fa-plus"></i> Add Address</a>
-                                </div>
-
-                                <div class="card profile-box flex-fill">
-                                    <div class="card-body">
-                                        <ul class="personal-info">
-                                            <li>
-                                                <div class="title">Street Address</div>
-                                                <div class="text">{{ $agent->address ?? 'null' }}</div>
-                                            </li>
-                                            <li>
-                                                <div class="title">City</div>
-                                                <div class="text">{{ $agent->city ?? 'null' }}</div>
-                                            </li>
-                                            <li>
-                                                <div class="title">State</div>
-                                                <div class="text">{{ $agent->state?? 'null' }}</div>
-                                            </li>
-                                            <li>
-                                                <div class="title">Country</div>
-                                                <div class="text">{{ $agent->country ?? 'null' }}</div>
-                                            </li>
-                                            <li>
-                                                <div class="title">Pincode</div>
-                                                <div class="text">{{ $agent->pincode ?? 'null' }}</div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                @foreach ($agentAddress as $address)
-                                    <div class="card profile-box flex-fill">
-                                        <div class="card-body">
-                                            <ul class="personal-info">
-                                                <li>
-                                                    <div class="title">Street Address</div>
-                                                    <div class="text">{{ $address->street }}</div>
-                                                </li>
-                                                <li>
-                                                    <div class="title">City</div>
-                                                    <div class="text">{{ $address->city }}</div>
-                                                </li>
-                                                <li>
-                                                    <div class="title">State</div>
-                                                    <div class="text">{{ $address->state }}</div>
-                                                </li>
-                                                <li>
-                                                    <div class="title">Country</div>
-                                                    <div class="text">{{ $address->country }}</div>
-                                                </li>
-                                                <li>
-                                                    <div class="title">Pincode</div>
-                                                    <div class="text">{{ $address->pincode }}</div>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <!-- Edit Icon -->
-                                        <i class="fas fa-edit position-absolute top-0 end-0 m-3" data-bs-toggle="modal"
-                                            data-bs-target="#edit_address{{ $address->id }}"></i>
-                                        <div id="edit_address{{ $address->id }}" class="modal custom-modal fade"
-                                            role="dialog">
-                                            <div class="modal-dialog modal-dialog-centered modal-lg">
-                                                <div class="modal-content">
-                                                    <div class="modal-header" style="margin-bottom:-25px;">
-                                                        <h5 class="modal-title">Edit Address</h5>
-                                                        <button type="button" class="close" data-bs-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <form
-                                                            action="{{ route('admin.agent.address.update', ['id' => $address->id]) }}#address"
-                                                            method="POST" enctype="multipart/form-data">
-                                                            @csrf
-                                                            <div class="row">
-
-                                                                    <div class="form-group">
-                                                                        <input class="form-control" type="hidden"
-                                                                            name="agent_id" value="{{ $agent->id }}">
-                                                                    </div>
-                                                                    <div class="col-sm-6">
-                                                                    <div class="form-group">
-                                                                        <label class="col-form-label">Street Address <span
-                                                                                class="text-danger">*</span></label>
-                                                                        <input class="form-control"
-                                                                            value="{{ $address->street }}"type="text"
-                                                                            name="street">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-6">
-                                                                    <div class="form-group">
-                                                                        <label class="col-form-label">City</label>
-                                                                        <input class="form-control"
-                                                                            value="{{ $address->city }}" type="text"
-                                                                            name="city">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-6">
-                                                                    <div class="form-group">
-                                                                        <label class="col-form-label">State</label>
-                                                                        <input class="form-control"
-                                                                            value="{{ $address->state }}" type="text"
-                                                                            name="state">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-sm-6">
-                                                                    <div class="form-group">
-                                                                        <label class="col-form-label">Country</label>
-                                                                        <input class="form-control"
-                                                                            value="{{ $address->country }}"
-                                                                            type="text" name="country">
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="col-sm-6">
-                                                                    <div class="form-group">
-                                                                        <label class="col-form-label">Pincode</label>
-                                                                        <input class="form-control" type="text"
-                                                                            required value="{{ $address->pincode }}"
-                                                                            name="pincode">
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="submit-section">
-                                                                <button class="btn btn-primary"
-                                                                    type="submit">Submit</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div> --}}
                 <div id="address" class="pro-overview tab-pane fade show">
                     <div class="row">
                         <div class="col-md-12 d-flex">
@@ -590,7 +445,7 @@
                                 </div>
 
                                 <div class="table-responsive">
-                                    <table class="table table-striped custom-table mb-0 datatable">
+                                    <table class="table table-striped datatable">
                                         <thead>
                                             <tr>
                                                 <th>Street Address</th>
@@ -727,7 +582,7 @@
                                             class="fa fa-plus"></i> Add Contacts</a>
                                 </div>
                                 <div class="table-responsive">
-                                    <table class="table table-striped custom-table mb-0 datatable">
+                                    <table class="table table-striped datatable">
                                         <thead>
                                             <tr>
                                                 <th>S.No.</th>
@@ -901,7 +756,7 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="table-responsive">
-                                                        <table class="table table-striped custom-table mb-0 datatable">
+                                                        <table class="table table-striped  datatable">
                                                             <thead>
                                                                 <tr>
                                                                     <th>Airline</th>
@@ -1125,7 +980,7 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="table-responsive">
-                                                        <table class="table table-striped custom-table mb-0 datatable">
+                                                        <table class="table table-striped  datatable">
                                                             <thead>
                                                                 <tr>
                                                                     <th>List of Products </th>
@@ -1394,7 +1249,7 @@
                                 <div class="card-body">
 
                                     <div class="table-responsive">
-                                        <table class="table custom-table mb-0 datatable">
+                                        <table class="table datatable">
                                             <thead>
                                                 <tr>
                                                     <th class="fw-bold">Case Status</th>
@@ -1448,7 +1303,7 @@
 
                                                                             <div class="table-responsive">
                                                                                 <table
-                                                                                    class="table table-bordered custom-table mb-0 datatable">
+                                                                                    class="table table-bordered datatable">
                                                                                     <thead>
                                                                                         <tr>
                                                                                             <th scope="col">Date</th>
@@ -1758,7 +1613,7 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table class="table custom-table mb-0 datatable">
+                                        <table class="table datatable">
                                             <thead>
                                                 <tr>
                                                     <th>Date</th>
@@ -1868,7 +1723,7 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="table-responsive">
-                                                        <table class="table custom-table mb-0 datatable">
+                                                        <table class="table  datatable">
                                                             <thead>
                                                                 <tr>
                                                                     <th rowspan="2" style="padding-bottom: 70px;">
@@ -2114,7 +1969,7 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="table-responsive">
-                                                        <table class="table custom-table mb-0 datatable">
+                                                        <table class="table datatable">
                                                             <thead>
                                                                 <tr>
                                                                     <th rowspan="2" style="padding-bottom: 70px;">
@@ -2686,4 +2541,7 @@
                     });
                 });
             </script>
+
+            
+            
         @endsection

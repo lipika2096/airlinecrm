@@ -40,7 +40,7 @@ $currentRoute = Route::currentRouteName();
     'admin.offer-approvals', 'admin.experience-level', 'admin.candidates',
     'admin.schedule-timing', 'admin.aptitude-results', 'admin.users',
     'admin.settings', 'admin.profile', 'admin.subscribed-companies',
-    'admin.components', 'form-horizontal', 'form-vertical',  'admin.groups','admin.employee.view-profile'
+    'admin.components', 'form-horizontal', 'form-vertical',  'admin.groups','admin.employee.view-profile','admin.view-staff','admin.agent.view','admin.airlines.view'
 ]))
 <!-- Select2 CSS -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
@@ -87,16 +87,18 @@ $currentRoute = Route::currentRouteName();
     'admin.resignation', 'admin.termination', 'admin.assets', 'admin.jobs',
     'admin.manage-resumes', 'admin.shortlist-candidates', 'admin.interview-questions',
     'admin.offer-approvals', 'admin.experience-level', 'admin.candidates',
-    'admin.schedule-timing', 'admin.aptitude-results', 'admin.users','admin.discounts','admin.deleted.airlines',
+    'admin.schedule-timing', 'admin.aptitude-results', 'admin.users','admin.discounts','admin.deleted.airlines','admin.view-staff','admin.agent.view','admin.airlines.view',
     'admin.leave-type', 'admin.subscribed-companies', 'data-tables', 'admin.events', 'admin.holidays', 'admin.attendance','airlines.view','admin.agents','admin.airlines-details', 'admin.airline-library','admin.airline-reports', 'admin.deleted.agents', 'admin.agent-library','admin.agent-reports','admin.view.case-history', 'admin.saleslead', 'admin.air-tickets', 'admin.groups','admin.accounts.view','admin.accounts.all','admin.categories.view','admin.faretypes','admin.duties', 'admin.events.status','admin.events','admin.manage-staff','admin.employee.view-profile','admin.employee.rights','admin.staff-reports'
 ]))
 <!-- Datatable CSS -->
 <link rel="stylesheet" href="{{ asset('public/assets/css/dataTables.bootstrap4.min.css') }}">
+
 <style>
 tr {
     text-align: center;
 }</style>
 @endif
+
 
 @if ($currentRoute == 'admin.leave-settings')
 <!-- Tagsinput CSS -->

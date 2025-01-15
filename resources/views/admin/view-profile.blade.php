@@ -805,8 +805,8 @@ use Carbon\Carbon;
             <div id="training-certficates" class="pro-overview tab-pane fade show">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="table-responsive">
-                            <table class="table table-striped">
+                        <div class="table-responsive ">
+                            <table class="table table-striped datatable">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
@@ -820,7 +820,13 @@ use Carbon\Carbon;
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td colspan="7">No data found</td>
+                                        <td>No data found</td>
+                                        <td>No data found</td>
+                                        <td>No data found</td>
+                                        <td>No data found</td>
+                                        <td>No data found</td>
+                                        <td>No data found</td>
+                                        <td>No data found</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -849,11 +855,10 @@ use Carbon\Carbon;
                     <div class="row">
                         <div class="col-md-12">
                             <div class="table-responsive">
-                                <table class="table table-striped custom-table mb-0 datatable">
+                                <table class="table table-striped datatable">
                                     <thead>
                                         <tr>
                                             <th>Name</th>
-                                            {{-- <th>Document</th> --}}
                                             <th>Airline</th>
                                             <th>Created On</th>
                                             <th>Created By</th>
@@ -866,8 +871,6 @@ use Carbon\Carbon;
                                         @foreach ($staffReadSign as $data)
                                         <tr>
                                             <td>{{ $data->doc_name }}</td>
-                                            {{-- <td><a href="{{asset('public/assets/docs/'.$data->attachment)}}">view
-                                                    {{ $data->attachment }}</a></td> --}}
                                             <td>{{ $data->airline->airline_name??'' }}</td>
                                             <td>{{ $data->created_at }}</td>
                                             <td>{{ $data->created_by }}</td>
@@ -980,7 +983,7 @@ use Carbon\Carbon;
                     </div>
                     <div class="col-md-12">
                         <div class="table-responsive">
-                            <table class="table table-striped custom-table mb-0 datatable">
+                            <table class="table table-striped datatable">
                                 <thead>
                                     <tr>
                                         <th>No.</th>
@@ -1006,7 +1009,6 @@ use Carbon\Carbon;
                                         <th>User</th>
                                         <th>DateTime</th>
                                         <th>User</th>
-                                        <th></th>
                                         <th></th>
                                         <th></th>
                                     </tr>
@@ -2225,7 +2227,7 @@ use Carbon\Carbon;
                         </div>
                         <div class="col-md-12">
                             <div class="table-responsive text-nowrap">
-                                <table class="table">
+                                <table class="table datatable">
                                     <thead>
                                         <tr>
                                             <th class="fw-bold">Airline
@@ -2294,7 +2296,7 @@ use Carbon\Carbon;
                                     method="POST" enctype="multipart/form-data">
                                     @csrf
                                     <div class="table-responsive text-nowrap">
-                                        <table class="table">
+                                        <table class="table datatable">
                                             <thead>
                                                 <tr>
                                                     <th class="fw-bold">Airline
@@ -2398,10 +2400,7 @@ use Carbon\Carbon;
                                         <label>Number of days <span class="text-danger">*</span></label>
                                         <input class="form-control" readonly type="text" name="no_of_days">
                                     </div>
-                                    <!--<div class="form-group">-->
-                                    <!--    <label>Remaining Leaves <span class="text-danger">*</span></label>-->
-                                    <!--    <input class="form-control" readonly value="12" type="text">-->
-                                    <!--</div>-->
+                                 
                                     <div class="form-group">
                                         <label>Leave Reason</label>
                                         <textarea rows="4" name="reason" class="form-control"></textarea>
@@ -2620,104 +2619,8 @@ use Carbon\Carbon;
             }
     </script>
 
-    <script>
-        // document.addEventListener("DOMContentLoaded", function() {
-            //     let currentDate = new Date(); // Initialize with the current date
-            //     let today = new Date();
-
-            //     // Example leave days array
-            //     let leaveDays = [2, 5, 12, 18]; // Modify this array or pass it dynamically from your backend
-
-            //     // Function to render the calendar
-            //     function renderCalendar(date) {
-
-            //         const monthYearDisplay = document.getElementById('currentMonth');
-            //         const calendarContainer = document.getElementById('calendarContainer');
-            //         const prevButton = document.getElementById('prevMonth');
-
-            //         const month = date.getMonth(); // Current month (0-11)
-            //         const year = date.getFullYear(); // Current year
-            //         const daysInMonth = new Date(year, month, 0).getDate(); // Get days in month
-            //         const startOfMonth = new Date(year, month, 1).getDay(); // Get first day of the month (0-6)
-
-            //         // Update the month and year display
-            //         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August",
-            //             "September", "October", "November", "December"
-            //         ];
-            //         monthYearDisplay.textContent = `${monthNames[month]} ${year}`;
-
-            //         // Disable the "Previous" button if viewing the current month
-            //         // if (date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()) {
-            //         //     prevButton.disabled = true;
-            //         // } else {
-            //         //     prevButton.disabled = false;
-            //         // }
-
-            //         // Create the calendar HTML
-            //         let calendarHTML = '<div class="row">';
-            //         const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-            //         weekdays.forEach(day => calendarHTML += `<div class="day mb-2">${day}</div>`);
-            //         calendarHTML += '</div><div class="row">';
-
-            //         // Add empty cells for days before the first day of the month
-            //         let emptyCells = (startOfMonth === 0 ? 6 : startOfMonth - 1); // Adjust for Sunday (0 index in JS)
-            //         for (let i = 0; i < emptyCells; i++) {
-            //             calendarHTML += '<div class="day mb-2"></div>';
-            //         }
-
-            //         // Add the days of the month with leave day highlighting
-            //         for (let i = 1; i <= daysInMonth; i++) {
-            //             // Check if it's a leave day
-            //             let isLeaveDay = leaveDays.includes(i);
-
-            //             // Apply styles for leave days
-            //             let dayStyle = isLeaveDay ? 'style="background-color: black; color: white;"' : '';
-            //             calendarHTML += `<div class="day mb-2" ${dayStyle}>${i}</div>`;
-
-            //             // Break row after every 7 days
-            //             if ((i + emptyCells) % 7 === 0) {
-            //                 calendarHTML += '</div><div class="row">';
-            //             }
-            //         }
-            //         calendarHTML += '</div>';
-
-            //         // Update the calendar container with the new HTML
-            //         calendarContainer.innerHTML = calendarHTML;
-            //     }
-
-            //     // Event listeners for prev/next buttons
-            //     document.getElementById('prevMonth').addEventListener('click', function() {
-            //         currentDate.setMonth(currentDate.getMonth() - 1); // Move to the previous month
-            //         renderCalendar(currentDate);
-            //     });
-
-            //     document.getElementById('nextMonth').addEventListener('click', function() {
-            //         currentDate.setMonth(currentDate.getMonth() + 1); // Move to the next month
-            //         renderCalendar(currentDate);
-            //     });
-
-            //     // Initial render
-            //     renderCalendar(currentDate);
-            // });
-    </script>
-    <script>
-        // function calculateDays() {
-            //     const fromDate = document.querySelector('input[name="from"]').value;
-            //     const toDate = document.querySelector('input[name="to"]').value;
-            //     const noOfDaysInput = document.querySelector('input[name="no_of_days"]');
-
-            //     if (fromDate && toDate) {
-            //         const from = new Date(fromDate);
-            //         const to = new Date(toDate);
-            //         const timeDifference = to - from;
-            //         const daysDifference = timeDifference / (1000 * 3600 * 24);
-
-            //         noOfDaysInput.value = daysDifference >= 0 ? daysDifference + 1 : 0;
-            //     } else {
-            //         noOfDaysInput.value = '';
-            //     }
-            // }
-    </script>
+   
+    
     <script>
         document.addEventListener("DOMContentLoaded", function() {
                 // Check if there's a hash in the URL
@@ -2742,33 +2645,5 @@ use Carbon\Carbon;
                 });
             });
 
-
-//   document.getElementById('from').addEventListener('input', function () {
-//     const dateInput = this;
-//     const today = new Date();
-//     const currentYear = today.getFullYear();
-//     const currentDate = today.toISOString().split('T')[0];
-//     dateInput.setAttribute('min', currentDate);
-
-//     const enteredDate = new Date(dateInput.value);
-//     if (enteredDate.getFullYear() > currentYear || enteredDate.getFullYear() < 1000) {
-//       alert("Please enter a valid year between 1000 and the current year.");
-//       dateInput.value = '';
-//     }
-//   });
-
-//    document.getElementById('to').addEventListener('input', function () {
-//     const dateInput = this;
-//     const today = new Date();
-//     const currentYear = today.getFullYear();
-//     const currentDate = today.toISOString().split('T')[0];
-//     dateInput.setAttribute('min', currentDate);
-
-//     const enteredDate = new Date(dateInput.value);
-//     if (enteredDate.getFullYear() < currentYear ) {
-//       alert("Please enter a valid year either with current year or with future year.");
-//       dateInput.value = '';
-//     }
-//   });
     </script>
     @endsection
