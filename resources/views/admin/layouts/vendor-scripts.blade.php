@@ -107,7 +107,7 @@ $routesWithDatatable = [
     'admin.training', 'admin.trainers', 'admin.training-type', 'admin.promotion', 'admin.resignation',
     'admin.termination', 'admin.assets', 'admin.jobs', 'admin.job-applicants', 'admin.manage-resumes',
     'admin.shortlist-candidates', 'admin.interview-questions', 'admin.offer-approvals', 'admin.experience-level',
-    'admin.candidates', 'admin.schedule-timing', 'admin.aptitude-results', 'admin.users', 'admin.leave-type',
+    'admin.candidates', 'admin.schedule-timing', 'admin.aptitude-results', 'admin.users', 'admin.leave-type','admin.discounts','admin.deleted.airlines',
     'admin.subscribed-companies', 'data-tables','admin.holidays',  'admin.attendance','airlines.view', 'admin.agents', 'admin.airlines-details', 'admin.airline-library', 'admin.airline-reports', 'admin.deleted.agents', 'admin.agent-library', 'admin.agent-reports','admin.view.case-history', 'admin.saleslead', 'admin.air-tickets', 'admin.groups', 'admin.accounts.view','admin.accounts.all','admin.categories.view', 'admin.faretypes', 'admin.duties', 'admin.events.status','admin.events','admin.manage-staff','admin.employee.view-profile','admin.employee.rights','admin.staff-reports'
 ];
 @endphp

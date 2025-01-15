@@ -46,7 +46,7 @@
                                     </h2>
                                     <div id="collapse{{ $airlineId }}" class="accordion-collapse collapse" aria-labelledby="heading{{ $airlineId }}" data-bs-parent="#discountAccordion">
                                         <div class="accordion-body p-0">
-                                            <table class="table table-striped custom-table mb-0">
+                                            <table class="table table-striped custom-table mb-0 datatable">
                                                 <thead>
                                                     <tr>
                                                         <th>#</th>
