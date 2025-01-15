@@ -105,7 +105,7 @@
                                                 <td>{{ $data->to }}</td>
                                                 <td>{{ $data->no_of_days }} days</td>
 
-                                                @php
+                                                {{-- @php
                                                     $annualLeave = $data->user->leave_count?? 0;
                                                     $currentYear = now()->year;
                                                     $fromYear = \Carbon\Carbon::parse($data->from)->year;
@@ -141,7 +141,31 @@
                                                     $remainingLeave = $annualLeave - $usedAnnualLeave;
                                                 @endphp
                                                 <td class="text-danger">{{ $annualLeave }} leaves</td>
-                                                <td class="text-danger">{{ $remainingLeave }} leaves left for {{$fromYear}}</td>
+                                                <td class="text-danger">{{ $remainingLeave }} leaves left for {{$fromYear}}</td> --}}
+                                                @php
+                                                    $annualLeave = $data->user->leave_count; // Total annual leaves allotted
+                                                    $currentYear = now()->year;
+
+                                                    // Get all approved annual leaves for the employee in the current year
+                                                    $approvedLeaves = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
+                                                        ->where('status', 3)
+                                                        ->where('leave_type', 'Annual Leave')
+                                                        ->orderBy('from', 'asc')
+                                                        ->get();
+
+                                                    $usedAnnualLeave = 0; // Initialize used leave count
+                                                    $remainingLeave = $annualLeave; // Start with total annual leave
+
+                                                    foreach ($approvedLeaves as $leave) {
+                                                        $usedAnnualLeave += $leave->no_of_days; // Add current leave days
+                                                        $remainingLeave = $annualLeave - $usedAnnualLeave; // Calculate remaining leave
+                                                        if ($leave->id == $data->id) {
+                                                            break; // Stop when the current leave is reached
+                                                        }
+                                                    }
+                                                @endphp
+                                                <td class="text-danger">{{ $annualLeave }} leaves</td>
+                                                <td class="text-danger">{{ $remainingLeave }} leaves </td>
                                                 <td>
                                                     @php
                                                         $wordCount = str_word_count($data->reason);
@@ -273,7 +297,7 @@
                                                 <td>{{ $data->to }}</td>
                                                 <td>{{ $data->no_of_days }} days</td>
 
-                                                @php
+                                                {{-- @php
                                                     $annualLeave = $data->user->leave_count;
                                                     $currentYear = now()->year;
                                                     $fromYear = \Carbon\Carbon::parse($data->from)->year;
@@ -309,7 +333,31 @@
                                                     $remainingLeave = $annualLeave - $usedAnnualLeave;
                                                 @endphp
                                                 <td class="text-danger">{{ $annualLeave }} leaves</td>
-                                                <td class="text-danger">{{ $remainingLeave }} leaves left for {{$fromYear}}</td>
+                                                <td class="text-danger">{{ $remainingLeave }} leaves left for {{$fromYear}}</td> --}}
+                                                @php
+                                                    $annualLeave = $data->user->leave_count; // Total annual leaves allotted
+                                                    $currentYear = now()->year;
+
+                                                    // Get all approved annual leaves for the employee in the current year
+                                                    $approvedLeaves = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
+                                                        ->where('status', 3)
+                                                        ->where('leave_type', 'Annual Leave')
+                                                        ->orderBy('from', 'asc')
+                                                        ->get();
+
+                                                    $usedAnnualLeave = 0; // Initialize used leave count
+                                                    $remainingLeave = $annualLeave; // Start with total annual leave
+
+                                                    foreach ($approvedLeaves as $leave) {
+                                                        $usedAnnualLeave += $leave->no_of_days; // Add current leave days
+                                                        $remainingLeave = $annualLeave - $usedAnnualLeave; // Calculate remaining leave
+                                                        if ($leave->id == $data->id) {
+                                                            break; // Stop when the current leave is reached
+                                                        }
+                                                    }
+                                                @endphp
+                                                <td class="text-danger">{{ $annualLeave }} leaves</td>
+                                                <td class="text-danger">{{ $remainingLeave }} leaves </td>
                                                 <td>
                                                     @php
                                                         $wordCount = str_word_count($data->reason);
@@ -442,42 +490,30 @@
                                                 <td>{{ $data->to }}</td>
                                                 <td>{{ $data->no_of_days }} days</td>
                                                 @php
-                                                    $annualLeave = $data->user->leave_count;
+                                                    $annualLeave = $data->user->leave_count; // Total annual leaves allotted
                                                     $currentYear = now()->year;
-                                                    $fromYear = \Carbon\Carbon::parse($data->from)->year;
-                                                    $toYear = \Carbon\Carbon::parse($data->to)->year;
-                                                    $usedAnnualLeave = 0;
 
-                                                    if ($fromYear == $toYear && $fromYear == $currentYear) {
-                                                        // Both from and to years are the current year
-                                                        $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
-                                                            ->where('status', 3)
-                                                            ->where('leave_type', 'Annual Leave')
-                                                            ->whereYear('from', $fromYear)
-                                                            ->sum('no_of_days');
-                                                    } else {
-                                                        // Handle when either fromYear or toYear is not equal to the current year
-                                                        $usedAnnualLeave = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
-                                                            ->where('status', 3)
-                                                            ->where('leave_type', 'Annual Leave')
-                                                            ->whereYear('from', $fromYear)
-                                                            ->orWhereYear('to', $toYear)
-                                                            ->sum('no_of_days');
+                                                    // Get all approved annual leaves for the employee in the current year
+                                                    $approvedLeaves = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
+                                                        ->where('status', 3)
+                                                        ->where('leave_type', 'Annual Leave')
+                                                        ->orderBy('from', 'asc')
+                                                        ->get();
 
-                                                        $leave_bal_lastyear = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
-                                                            ->where('status', 3)
-                                                            ->where('leave_type', 'Annual Leave')
-                                                            ->whereYear('from', $fromYear)
-                                                            ->sum('no_of_days');
+                                                    $usedAnnualLeave = 0; // Initialize used leave count
+                                                    $remainingLeave = $annualLeave; // Start with total annual leave
 
-                                                        $annualLeave -= $leave_bal_lastyear;
-
+                                                    foreach ($approvedLeaves as $leave) {
+                                                        $usedAnnualLeave += $leave->no_of_days; // Add current leave days
+                                                        $remainingLeave = $annualLeave - $usedAnnualLeave; // Calculate remaining leave
+                                                        if ($leave->id == $data->id) {
+                                                            break; // Stop when the current leave is reached
+                                                        }
                                                     }
-
-                                                    $remainingLeave = $annualLeave - $usedAnnualLeave;
                                                 @endphp
                                                 <td class="text-danger">{{ $annualLeave }} leaves</td>
-                                                <td class="text-danger">{{ $remainingLeave }} leaves left for {{$fromYear}}</td>
+                                                <td class="text-danger">{{ $remainingLeave }} leaves </td>
+
                                                 <td>
                                                     @php
                                                         $wordCount = str_word_count($data->reason);
@@ -597,8 +633,7 @@
                                             <tr>
                                                 <td>
                                                     <h2 class="table-avatar">
-                                                        <a href="#">{{ $data->user->first_name }}
-                                                            {{ $data->user->last_name }} </a>
+                                                        {{ $data->user->first_name??'N/A' }} {{ $data->user->last_name??'' }}
                                                     </h2>
                                                 </td>
                                                 <td>{{ $data->created_at }}</td>
@@ -607,8 +642,8 @@
                                                 <td>{{ $data->to }}</td>
                                                 <td>{{ $data->no_of_days }} days</td>
 
-                                                @php
-                                                    $annualLeave = $data->user->leave_count;
+                                                {{-- @php
+                                                    $annualLeave = $data->user->leave_count??0;
                                                     $currentYear = now()->year;
                                                     $fromYear = \Carbon\Carbon::parse($data->from)->year;
                                                     $toYear = \Carbon\Carbon::parse($data->to)->year;
@@ -643,7 +678,31 @@
                                                     $remainingLeave = $annualLeave - $usedAnnualLeave;
                                                 @endphp
                                                 <td class="text-danger">{{ $annualLeave }} leaves</td>
-                                                <td class="text-danger">{{ $remainingLeave }} leaves left for {{$fromYear}}</td>
+                                                <td class="text-danger">{{ $annualLeave - $data->no_of_days }} leaves </td> --}}
+                                                @php
+                                                    $annualLeave = $data->user->leave_count; // Total annual leaves allotted
+                                                    $currentYear = now()->year;
+
+                                                    // Get all approved annual leaves for the employee in the current year
+                                                    $approvedLeaves = App\Models\EmployeeLeave::where('employee_id', $data->employee_id)
+                                                        ->where('status', 3)
+                                                        ->where('leave_type', 'Annual Leave')
+                                                        ->orderBy('from', 'asc')
+                                                        ->get();
+
+                                                    $usedAnnualLeave = 0; // Initialize used leave count
+                                                    $remainingLeave = $annualLeave; // Start with total annual leave
+
+                                                    foreach ($approvedLeaves as $leave) {
+                                                        $usedAnnualLeave += $leave->no_of_days; // Add current leave days
+                                                        $remainingLeave = $annualLeave - $usedAnnualLeave; // Calculate remaining leave
+                                                        if ($leave->id == $data->id) {
+                                                            break; // Stop when the current leave is reached
+                                                        }
+                                                    }
+                                                @endphp
+                                                <td class="text-danger">{{ $annualLeave }} leaves</td>
+                                                <td class="text-danger">{{ $remainingLeave }} leaves </td>
                                                 <td>
                                                     @php
                                                         $wordCount = str_word_count($data->reason);
