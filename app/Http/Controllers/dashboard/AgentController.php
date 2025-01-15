@@ -313,16 +313,30 @@ class AgentController extends Controller
         foreach ($request->input('airline') as $airlineId => $fareTypes) {
             foreach ($fareTypes as $fareType => $status) {
 
-                SpecialFare::updateOrCreate(
-                    [
-                        'agent_id' => $request->input('agent_id'),
-                        'fare_type' => $fareType,
-                        'airline_id' => $airlineId
-                    ],
-                    [
-                        'status' => $status
-                    ]
-                );
+                // Check if a record exists for the given airline, fare type, and agent
+                $specialFare = SpecialFare::where('agent_id', $request->input('agent_id'))
+                    ->where('airline_id', $airlineId)
+                    ->where('fare_type', $fareType)
+                    ->first();
+                // If no record exists, create a new one
+                if (!$specialFare) {
+                    $specialFare = new SpecialFare();
+                    $specialFare->agent_id = $request->input('agent_id');
+                    $specialFare->airline_id = $airlineId;
+                    $specialFare->fare_type = $fareType;
+                    $specialFare->status = $status;
+                    $specialFare->created_by = Auth()->user()->name;
+                    $specialFare->updated_at = $request->input('updated_at');
+                    $specialFare->save();
+                } else {
+                    // If the status has changed, update the necessary fields
+                    if ($specialFare->status != $status) {
+                        $specialFare->status = $status;
+                        $specialFare->updated_by = Auth()->user()->name;
+                        $specialFare->updated_at = now();
+                        $specialFare->save();
+                    }
+                }
             }
         }
 

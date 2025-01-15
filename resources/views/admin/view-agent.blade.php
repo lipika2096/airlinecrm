@@ -57,9 +57,9 @@
                             <li class="nav-item"><a href="#airline_activation" data-bs-toggle="tab" class="nav-link">Airline
                                     Activation </a></li>
 
-                            <li class="nav-item"><a href="#special_fares" data-bs-toggle="tab" class="nav-link">Special
+                            {{-- <li class="nav-item"><a href="#special_fares" data-bs-toggle="tab" class="nav-link">Special
                                     Fares
-                                </a></li>
+                                </a></li> --}}
                             <li class="nav-item"><a href="#provision" data-bs-toggle="tab" class="nav-link">Provision / PLI
                                 </a></li>
                             <li class="nav-item"><a href="#conversation" data-bs-toggle="tab" class="nav-link">Conversations
@@ -2095,34 +2095,57 @@
                                                         @foreach ($fareType as $ft)
                                                             <th class="fw-bold">{{ $ft->fare_type }}</th>
                                                         @endforeach
+                                                        <th>IATA</th>
+                                                        <th>PCC/ Office Id</th>
+                                                        <th>Account Code</th>
+                                                        <th>Discount</th>
+                                                        <th>Remarks</th>
+                                                        <th>Created By</th>
+                                                        <th>Created On</th>
+                                                        <th>Updated On</th>
+                                                        <th>Updated By</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     @foreach ($airline as $air)
                                                         <tr>
                                                             <div class="form-group">
-                                                                <input class="form-control" type="hidden"
-                                                                    name="agent_id" value="{{ $agent->id }}">
+                                                                <input class="form-control" type="hidden" name="agent_id" value="{{ $agent->id }}">
                                                             </div>
                                                             <th class="fw-bold">{{ $air->airline_name }}</th>
                                                             @foreach ($fareType as $ft)
                                                                 @php
-                                                                    $status = DB::table('special_fares')
-                                                                        ->where('airline_id', $air->id)
-                                                                        ->where('fare_type', $ft->fare_type_name)
-                                                                        ->where('agent_id', $agent->id)
-                                                                        ->value('status');
+                                                                    $specialFareData = \App\Models\SpecialFare::where([
+                                                                            ['fare_type', $ft->fare_type_name],
+                                                                            ['airline_id', $air->id],
+                                                                            ['agent_id', $agent->id]
+                                                                        ])
+                                                                        ->latest('updated_at') // Get the latest record based on updated_at
+                                                                        ->first();
+                                                                        $specialFareRcd = \App\Models\SpecialFare::where([
+                                                                            ['airline_id', $air->id],
+                                                                            ['agent_id', $agent->id]
+                                                                        ])
+                                                                        ->latest('updated_at') // Get the latest record based on updated_at
+                                                                        ->first();
                                                                 @endphp
-                                                                <input type="hidden"
-                                                                    name="airline[{{ $air->id }}][{{ $ft->fare_type_name }}]"
-                                                                    value="2">
+                                                                <input type="hidden" name="airline[{{ $air->id }}][{{ $ft->fare_type_name }}]" value="2">
                                                                 <th>
                                                                     <input type="checkbox"
                                                                         name="airline[{{ $air->id }}][{{ $ft->fare_type_name }}]"
                                                                         value="1"
-                                                                        {{ $status == 1 ? 'checked' : '' }}>
+                                                                        {{ $specialFareData && $specialFareData->status == 1 ? 'checked' : '' }}>
                                                                 </th>
                                                             @endforeach
+                                                            <td>{{ $agent->iata ?? 'N/A' }}</td>
+                                                            <td>{{ $agent->pcc_office_id ?? 'N/A' }}</td>
+                                                            <td>{{ $agent->account_code ?? 'N/A' }}</td>
+                                                            <td>{{ $agent->discount ?? 'N/A' }}</td>
+                                                            <td>{{ $agent->remarks ?? 'N/A' }}</td>
+                                                            <td>{{ $specialFareRcd->created_by ?? 'N/A' }}</td>
+                                                            <td>{{ $specialFareRcd->created_at ? $specialFareRcd->created_at->format('d-m-Y H:i') : 'N/A' }}</td>
+                                                            <td>{{ $specialFareRcd->updated_at ? $specialFareRcd->updated_at->format('d-m-Y H:i') : 'N/A' }}</td>
+                                                            <td>{{ $specialFareRcd->updated_by ?? 'N/A' }}</td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>
@@ -2542,6 +2565,6 @@
                 });
             </script>
 
-            
-            
+
+
         @endsection
