@@ -26,6 +26,7 @@ class LeaveTypeController extends Controller
         $leave = new LeaveType();
         $leave->name = $request->name;
         $leave->days = $request->days;
+        $leave->color = $request->color;
         $leave->save();
 
         return redirect()->route('admin.leave-type')->with('success', 'Leave Type created successfully.');
@@ -36,6 +37,7 @@ class LeaveTypeController extends Controller
         $leave = LeaveType::findorFail($id);
         $leave->name = $request->name;
         $leave->days = $request->days;
+        $leave->color = $request->color;
         $leave->save();
 
         return redirect()->route('admin.leave-type')->with('success', 'Leave Type updated successfully.');

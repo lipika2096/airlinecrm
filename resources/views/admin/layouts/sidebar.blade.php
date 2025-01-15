@@ -360,7 +360,7 @@
                             <li><a class="{{ request()->routeIs('admin.designations') ? 'active' : '' }}" href="{{route('admin.designations')}}">Add Designations</a></li>
                             <li><a class="{{ request()->routeIs('admin.categories.view') ? 'active' : '' }}" href="{{route('admin.categories.view')}}">Add Category</a></li>
                             <li><a class="{{ request()->routeIs('admin.faretypes') ? 'active' : '' }}" href="{{route('admin.faretypes')}}">Add Fare Types</a></li>
-                            <li><a class="{{ request()->routeIs('admin.discounts') ? 'active' : '' }}" href="{{route('admin.discounts')}}">Add Dsicounts</a></li>
+                            <li><a class="{{ request()->routeIs('admin.discounts') ? 'active' : '' }}" href="{{route('admin.discounts')}}">Add Discounts</a></li>
 
                             <li><a class="{{ request()->routeIs('admin.duties') ? 'active' : '' }}" href="{{route('admin.duties')}}">Add Duties</a></li>
                             <!-- <li><a class="" href="javascript:void(0);">Add Public Holidays</a></li> -->
