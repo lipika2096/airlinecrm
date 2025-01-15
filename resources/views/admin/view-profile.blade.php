@@ -135,6 +135,11 @@ use Carbon\Carbon;
                                                 <td>{{ $employees->max_hrs }}</td>
                                             </tr>
 
+                                            <tr>
+                                                <td class="fw-bold">Date of Resignation</td>
+                                                <td>{{ $employees->date_of_resignation }}</td>
+                                            </tr>
+
                                         </tbody>
                                     </table>
                                 </div>

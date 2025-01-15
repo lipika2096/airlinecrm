@@ -670,6 +670,7 @@ class EmployeeController extends Controller
         $user->work_type = $request->work_type;
         $user->branch = $request->branch;
         $user->company_mobile = $request->company_mobile;
+        $user->date_of_resignation = $request->date_of_resignation;
 
         $user->save();
 
@@ -694,7 +695,8 @@ class EmployeeController extends Controller
             'company_mobile' => $request->input('company_mobile'),
             'branch' => $request->input('branch'),
             'work_type' => $request->input('work_type'),
-            'dob' => $request->input('dob')
+            'dob' => $request->input('dob'),
+            'date_of_resignation' => $request->input('date_of_resignation')
         ]);
         return redirect()->route('admin.employees')->with('success', 'Employee updated successfully');
     }

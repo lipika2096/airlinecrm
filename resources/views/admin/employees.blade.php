@@ -267,6 +267,12 @@
                                                 <input class="form-control" name="max_hrs"  type="text" value="{{$data->max_hrs}}">
                                             </div>
                                         </div>
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label class="form-label">Date of Resignation </label>
+                                                <input class="form-control" name="date_of_resignation"  type="text" value="{{$data->date_of_resignation}}">
+                                            </div>
+                                        </div>
                                         <div class="col-md-4">
                                             <!-- <div class="form-group"> -->
                                                 <label>Department <span class="text-danger">*</span></label>
@@ -528,6 +534,13 @@
                                         <div class="form-group">
                                             <label class="form-label">Max Hrs </label>
                                             <input class="form-control" name="max_hrs"  type="text" value="{{$employee->max_hrs}}">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label class="form-label">Date of Resignation </label>
+                                            <input class="form-control" name="date_of_resignation"  type="text" value="{{$employee->date_of_resignation}}">
                                         </div>
                                     </div>
                                 </div>
@@ -864,6 +877,13 @@
                                             <div class="form-group">
                                                 <label class="form-label">Max Hrs </label>
                                                 <input class="form-control" name="max_hrs"  type="text">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label class="form-label">Date of Resignation</label>
+                                                <input class="form-control" name="date_of_resignation" type="text">
                                             </div>
                                         </div>
                                     <!-- </div> -->
