@@ -704,29 +704,32 @@ class AirlineController extends Controller
         foreach ($request->input('agent') as $agentId => $fareTypes) {
             foreach ($fareTypes as $fareType => $status) {
 
-                $specialFare =  SpecialFare::updateOrCreate(
-                    [
-                        'airline_id' => $request->input('airline_id'),
-                        'fare_type' => $fareType,
-                        'agent_id' => $agentId
-                    ],
-                    [
-                        'status' => $status
-                    ]
-                );
-
-                if ($specialFare->wasRecentlyCreated) {
+                // Check if a record exists for the given airline, fare type, and agent
+                $specialFare = SpecialFare::where('agent_id', $agentId)
+                    ->where('airline_id', $request->input('airline_id'))
+                    ->where('fare_type', $fareType)
+                    ->first();
+                // If no record exists, create a new one
+                if (!$specialFare) {
+                    $specialFare = new SpecialFare();
+                    $specialFare->airline_id = $request->input('airline_id');
+                    $specialFare->agent_id = $agentId;
+                    $specialFare->fare_type = $fareType;
+                    $specialFare->status = $status;
                     $specialFare->created_by = Auth()->user()->name;
-                    $specialFare->updated_at = $request->input('updated_at'); // Assuming user authentication is used
+                    $specialFare->updated_at = $request->input('updated_at');
+                    $specialFare->save();
                 } else {
-                    $specialFare->updated_by = auth()->user()->name;
+                    // If the status has changed, update the necessary fields
+                    if ($specialFare->status != $status) {
+                        $specialFare->status = $status;
+                        $specialFare->updated_by = Auth()->user()->name;
+                        $specialFare->updated_at = now();
+                        $specialFare->save();
+                    }
                 }
-
-                // Save the changes
-                $specialFare->save();
             }
         }
-
         return redirect()->back()->with('success', 'Special fares updated successfully.');
     }
 
@@ -736,31 +739,34 @@ class AirlineController extends Controller
         foreach ($request->input('staff') as $satffId => $duties) {
             foreach ($duties as $duty => $status) {
 
-                $specialFare =  ApprovedStaff::updateOrCreate(
-                    [
-                        'airline_id' => $request->input('airline_id'),
-                        'duties' => $duty,
-                        'staff_id' => $satffId
-                    ],
-                    [
-                        'status' => $status
-                    ]
-                );
-
-                if ($specialFare->wasRecentlyCreated) {
+                // Check if a record exists for the given airline, fare type, and agent
+                $specialFare = ApprovedStaff::where('staff_id', $satffId)
+                    ->where('airline_id', $request->input('airline_id'))
+                    ->where('duties', $duty)
+                    ->first();
+                // If no record exists, create a new one
+                if (!$specialFare) {
+                    $specialFare = new ApprovedStaff();
+                    $specialFare->airline_id = $request->input('airline_id');
+                    $specialFare->staff_id = $satffId;
+                    $specialFare->duties = $duty;
+                    $specialFare->status = $status;
                     $specialFare->created_by = Auth()->user()->name;
-                    $specialFare->updated_at = $request->input('updated_at'); // Assuming user authentication is used
+                    $specialFare->updated_at = $request->input('updated_at');
+                    $specialFare->save();
                 } else {
-                    $specialFare->updated_by = auth()->user()->name;
-                    $specialFare->updated_at = now();
+                    // If the status has changed, update the necessary fields
+                    if ($specialFare->status != $status) {
+                        $specialFare->status = $status;
+                        $specialFare->updated_by = Auth()->user()->name;
+                        $specialFare->updated_at = now();
+                        $specialFare->save();
+                    }
                 }
-
-                // Save the changes
-                $specialFare->save();
             }
         }
 
-        return redirect()->back()->with('success', 'Approved Staff data updated successfully.');
+        return redirect()->back()->with('success', 'Special fares updated successfully.');
     }
     public function specialfaresUpdate(Request $request, $id)
     {
