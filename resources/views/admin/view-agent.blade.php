@@ -79,7 +79,7 @@
             <div class="tab-content">
                 <!-- Profile Info Tab -->
 
-                <div id="general" class="pro-overview tab-pane fade show active">
+                <div id="general" class="pro-overview tab-pane fade show active" class="customizeData">
                     <div class="row">
                         <div class="col-md-12 d-flex">
                             <div class="card profile-box flex-fill">
@@ -87,40 +87,40 @@
                                     <div class="table-responsive">
                                         <table class="table table-striped  ">
                                             <tbody>
-                                                <tr></tr>
-                                                <tr>
+                                               
+                                                <tr class="alignedText">
                                                     <th>Company name</th>
                                                     <td colspan="5">{{ $agent->company_name }}</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th>Brand name</th>
                                                     <td colspan="5">{{ $agent->owner_name }}</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th>Group</th>
                                                     <td colspan="5">{{ $agent->agency_name }}</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th>Street</th>
                                                     <td colspan="5">{{ $agent->address }}</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th>City</th>
                                                     <td colspan="5">{{ $agent->city }}</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th>Pincode</th>
                                                     <td colspan="5">{{ $agent->pincode }}</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th>Country</th>
                                                     <td colspan="5">{{ $agent->country }}</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th>Company Reg. No.</th>
                                                     <td colspan="5">{{ $agent->company_registration_no }}</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th class="text-red">IATA Number:</th>
                                                     <td class="text-red">{{ $agent->iata }}</td>
                                                     <th>GDS Type:</th>
@@ -128,7 +128,7 @@
                                                     <th>PCC/Office ID:</th>
                                                     <td>{{ $agent->pcc_office_id }}</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th class="text-red">Account Code</th>
                                                     <td colspan="5" class="text-red">{{ $agent->account_code }}</td>
                                                 </tr>
@@ -136,15 +136,15 @@
                                                     <th class="text-red">Discount</th>
                                                     <td colspan="5" class="text-red">{{ $agent->discount }}</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th class="text-red">Remarks</th>
                                                     <td colspan="5" class="text-red">{{ $agent->remarks }}</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th class="text-red">Business Model:</th>
                                                     <td colspan="5" class="text-red">{{ $agent->business_mode }}</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th>Focused Destinations</th>
                                                     <td colspan="5">
                                                         <ul style="margin-left: -20px;">
@@ -155,19 +155,19 @@
                                                         </ul>
                                                     </td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th>Key People</th>
                                                     <td colspan="5">{{ $agent->key_people }}</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th>Parent Company</th>
                                                     <td colspan="5">{{ $agent->parent_company }}</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th>Headquarters</th>
                                                     <td colspan="5">{{ $agent->headquarters }}</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th>Website</th>
                                                     <td colspan="5">
 
@@ -179,7 +179,7 @@
                                                         </ul>
                                                     </td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th>Employees</th>
                                                     <td colspan="5">{{ $agent->no_of_employees }}</td>
                                                 </tr>
@@ -2145,8 +2145,8 @@
                                                             <td>{{ $agent->discount ?? 'N/A' }}</td>
                                                             <td>{{ $agent->remarks ?? 'N/A' }}</td>
                                                             <td>{{ $specialFareRcd->created_by ?? 'N/A' }}</td>
-                                                            <td>{{ $specialFareRcd->created_at ? $specialFareRcd->created_at->format('d-m-Y H:i') : 'N/A' }}</td>
-                                                            <td>{{ $specialFareRcd->updated_at ? $specialFareRcd->updated_at->format('d-m-Y H:i') : 'N/A' }}</td>
+                                                            <td>{{ $specialFareRcd->created_at??"" ? $specialFareRcd->created_at->format('d-m-Y H:i') : 'N/A' }}</td>
+                                                            <td>{{ $specialFareRcd->updated_at ??""? $specialFareRcd->updated_at->format('d-m-Y H:i') : 'N/A' }}</td>
                                                             <td>{{ $specialFareRcd->updated_by ?? 'N/A' }}</td>
                                                         </tr>
                                                     @endforeach
@@ -2567,6 +2567,10 @@
                 });
             </script>
 
-
+<style>
+.alignedText{
+    text-align: justify!important;
+}
+</style>
 
         @endsection

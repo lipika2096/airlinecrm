@@ -180,6 +180,10 @@ use Carbon\Carbon;
         a {
             text-decoration: none;
         }
+
+        .alignedText {
+            text-align: justify;
+        }
     </style>
     <div class="content container-fluid">
         <div class="page-header">
@@ -243,32 +247,31 @@ use Carbon\Carbon;
                                 <div class="table-responsive">
                                     <table class="table table-striped">
                                         <tbody>
-                                            <tr></tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th>Airline</th>
                                                 <td>{{ $airlineDetails->airline->airline_name ?? 'none' }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th>Country</th>
                                                 <td>{{ $airlineDetails->country ?? 'none' }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th> Founded</th>
                                                 <td>{{ $airlineDetails->founded_on ?? 'none' }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th>Commenced</th>
                                                 <td>{{ $airlineDetails->commenced_on ?? 'none' }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th>Hub</th>
                                                 <td>{{ $airlineDetails->hubs ?? 'none' }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th>Secondary Hub</th>
                                                 <td>{{ $airlineDetails->secondary_hubs ?? 'none' }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th>Focus Cities</th>
                                                 <td> @if (!empty($airlineDetails->focus_cities))
                                                     @foreach (json_decode($airlineDetails->focus_cities) as $fc)
@@ -278,43 +281,43 @@ use Carbon\Carbon;
                                                     No focus cities available.
                                                     @endif</td>
                                             </tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th>Frequent-flyer Program</th>
                                                 <td> {{ $airlineDetails->frequent_flyer_program ?? 'none' }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th>Alliance</th>
                                                 <td>{{ $airlineDetails->alliance ?? 'none' }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th>Subsidiaries</th>
                                                 <td>{{ $airlineDetails->subsidiaries ?? 'none' }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th>Fleet Size</th>
                                                 <td>{{ $airlineDetails->fleet_size ?? 'none' }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th>Destinations</th>
                                                 <td>{{ $airlineDetails->destinations ?? 'none' }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th>Slogan</th>
                                                 <td>{{ $airlineDetails->slogan ?? 'none' }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th>Key People</th>
                                                 <td>{{ $airlineDetails->key_people ?? 'none' }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th>Parent Company</th>
                                                 <td>{{ $airlineDetails->parent_company ?? 'none' }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th>Headquarters</th>
                                                 <td>{{ $airlineDetails->head_quarters ?? 'none' }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr class="alignedText">
                                                 <th>Website</th>
                                                 <td class="text-danger"><a href="{{ $airlineDetails->website }}"
                                                         target="_blank">{{ $airlineDetails->website }}</a></td>
@@ -1293,8 +1296,8 @@ use Carbon\Carbon;
                                         <th class="fw-bold">Staff
                                         </th>
                                         @foreach ($duty as $ft)
-                                            <th class="fw-bold">
-                                                {{ $ft->name }}</th>
+                                        <th class="fw-bold">
+                                            {{ $ft->name }}</th>
                                         @endforeach
                                         <th>Created On</th>
                                         <th>Created By</th>
@@ -1304,50 +1307,42 @@ use Carbon\Carbon;
                                 </thead>
                                 <tbody>
                                     @foreach ($Staffs as $air)
-                                        <tr>
-                                            <div class="form-group">
-                                                <input class="form-control"
-                                                    type="hidden"
-                                                    name="airline_id"
-                                                    value="{{ $airlineDetails->airline_id }}">
+                                    <tr>
+                                        <div class="form-group">
+                                            <input class="form-control" type="hidden" name="airline_id"
+                                                value="{{ $airlineDetails->airline_id }}">
 
-                                                    <input class="form-control"
-                                                    type="hidden"
-                                                    name="updated_at"
-                                                    value="  ">
-                                            </div>
-                                            <th class="fw-bold">
-                                                {{ $air->first_name }}</th>
-                                            @foreach ($duty as $ft)
-                                                @php
-                                                    $approvedStaff = DB::table('approved_staffs')
-                                                                        ->where('staff_id', $air->id)
-                                                                        ->where('duties', $ft->name)
-                                                                        ->where('airline_id', $airlineDetails->airline_id)
-                                                                        ->first();
+                                            <input class="form-control" type="hidden" name="updated_at" value="  ">
+                                        </div>
+                                        <th class="fw-bold">
+                                            {{ $air->first_name }}</th>
+                                        @foreach ($duty as $ft)
+                                        @php
+                                        $approvedStaff = DB::table('approved_staffs')
+                                        ->where('staff_id', $air->id)
+                                        ->where('duties', $ft->name)
+                                        ->where('airline_id', $airlineDetails->airline_id)
+                                        ->first();
 
-                                                $approvedStaffRcd = \App\Models\ApprovedStaff::where([
-                                                                        ['airline_id',$airlineDetails->airline_id],
-                                                                        ['staff_id', $air->id]
-                                                                    ])
-                                                                    ->latest('updated_at') // Get the latest record based on updated_at
-                                                                    ->first();
-                                                @endphp
-                                                <input type="hidden"
-                                                    name="staff[{{ $air->id }}][{{ $ft->name }}]"
-                                                    value="2">
-                                                <th>
-                                                    <input type="checkbox"
-                                                        name="staff[{{ $air->id }}][{{ $ft->name }}]"
-                                                        value="1"
-                                                        {{ $approvedStaff && $approvedStaff->status == 1 ? 'checked' : '' }}>
-                                                </th>
-                                            @endforeach
-                                            <td>{{ $approvedStaffRcd->created_at ?? 'N/A' }}</td>
-                                            <td>{{ $approvedStaffRcd->created_by ?? 'N/A' }}</td>
-                                            <td>{{ $approvedStaffRcd->updated_at ?? 'N/A' }}</td>
-                                            <td>{{ $approvedStaffRcd->updated_by ?? 'N/A' }}</td>
-                                        </tr>
+                                        $approvedStaffRcd = \App\Models\ApprovedStaff::where([
+                                        ['airline_id',$airlineDetails->airline_id],
+                                        ['staff_id', $air->id]
+                                        ])
+                                        ->latest('updated_at') // Get the latest record based on updated_at
+                                        ->first();
+                                        @endphp
+                                        <input type="hidden" name="staff[{{ $air->id }}][{{ $ft->name }}]" value="2">
+                                        <th>
+                                            <input type="checkbox" name="staff[{{ $air->id }}][{{ $ft->name }}]"
+                                                value="1" {{ $approvedStaff && $approvedStaff->status == 1 ? 'checked' :
+                                            '' }}>
+                                        </th>
+                                        @endforeach
+                                        <td>{{ $approvedStaffRcd->created_at ?? 'N/A' }}</td>
+                                        <td>{{ $approvedStaffRcd->created_by ?? 'N/A' }}</td>
+                                        <td>{{ $approvedStaffRcd->updated_at ?? 'N/A' }}</td>
+                                        <td>{{ $approvedStaffRcd->updated_by ?? 'N/A' }}</td>
+                                    </tr>
                                     @endforeach
                                 </tbody>
                             </table>
@@ -2530,9 +2525,9 @@ use Carbon\Carbon;
                                         <th class="fw-bold">
                                             Agent</th>
                                         @foreach ($fareType as $ft)
-                                            <th class="fw-bold">
-                                                {{ $ft->fare_type }}
-                                            </th>
+                                        <th class="fw-bold">
+                                            {{ $ft->fare_type }}
+                                        </th>
                                         @endforeach
 
                                         <th>IATA</th>
@@ -2548,48 +2543,47 @@ use Carbon\Carbon;
                                 </thead>
                                 <tbody>
                                     @foreach ($agents as $air)
-                                        <tr>
+                                    <tr>
 
-                                            <input class="form-control" type="hidden" name="airline_id"
-                                                value="{{ $airlineDetails->airline_id }}">
+                                        <input class="form-control" type="hidden" name="airline_id"
+                                            value="{{ $airlineDetails->airline_id }}">
 
-                                            <th class="fw-bold">
-                                                {{ $air->company_name }}
-                                            </th>
-                                            @foreach ($fareType as $ft)
-                                                @php
-                                                    $specialFareData = \App\Models\SpecialFare::where('agent_id', $air->id)
-                                                    ->where('fare_type', $ft->fare_type_name)
-                                                    ->where('airline_id', $airlineDetails->airline_id)
-                                                    ->with('agent') // Eager load the agent relationship
-                                                    ->first();
-                                                    $specialFareRcd = \App\Models\SpecialFare::where([
-                                                                            ['airline_id',$airlineDetails->airline_id],
-                                                                            ['agent_id', $air->id]
-                                                                        ])
-                                                                        ->latest('updated_at') // Get the latest record based on updated_at
-                                                                        ->first();
-                                                @endphp
-                                                <input type="hidden"
-                                                    name="agent[{{ $air->id }}][{{ $ft->fare_type_name }}]"
-                                                    value="2">
-                                                <th>
-                                                    <input type="checkbox"
-                                                        name="agent[{{ $air->id }}][{{ $ft->fare_type_name }}]"
-                                                        value="1" {{ $specialFareData &&  $specialFareData->status == 1 ? 'checked' : '' }}>
-                                                </th>
-                                            @endforeach
-                                            <td>{{ $specialFareData->agent->iata ?? 'N/A' }}</td>
-                                            <td>{{ $specialFareData->agent->pcc_office_id ?? 'N/A' }}</td>
-                                            <td>{{ $specialFareData->agent->account_code ?? 'N/A' }}</td>
-                                            <td>{{ $specialFareData->agent->discount ?? 'N/A' }}</td>
-                                            <td>{{ $specialFareData->agent->remarks ?? 'N/A' }}</td>
-                                            <td>{{ $specialFareRcd->created_by ?? 'N/A' }}</td>
-                                            <td>{{ $specialFareRcd->created_at?? 'N/A' }}</td>
-                                            <td>{{ $specialFareRcd->updated_at ?? 'N/A' }}</td>
-                                            <td>{{ $specialFareRcd->updated_by ?? 'N/A' }}</td>
+                                        <th class="fw-bold">
+                                            {{ $air->company_name }}
+                                        </th>
+                                        @foreach ($fareType as $ft)
+                                        @php
+                                        $specialFareData = \App\Models\SpecialFare::where('agent_id', $air->id)
+                                        ->where('fare_type', $ft->fare_type_name)
+                                        ->where('airline_id', $airlineDetails->airline_id)
+                                        ->with('agent') // Eager load the agent relationship
+                                        ->first();
+                                        $specialFareRcd = \App\Models\SpecialFare::where([
+                                        ['airline_id',$airlineDetails->airline_id],
+                                        ['agent_id', $air->id]
+                                        ])
+                                        ->latest('updated_at') // Get the latest record based on updated_at
+                                        ->first();
+                                        @endphp
+                                        <input type="hidden" name="agent[{{ $air->id }}][{{ $ft->fare_type_name }}]"
+                                            value="2">
+                                        <th>
+                                            <input type="checkbox"
+                                                name="agent[{{ $air->id }}][{{ $ft->fare_type_name }}]" value="1" {{
+                                                $specialFareData && $specialFareData->status == 1 ? 'checked' : '' }}>
+                                        </th>
+                                        @endforeach
+                                        <td>{{ $specialFareData->agent->iata ?? 'N/A' }}</td>
+                                        <td>{{ $specialFareData->agent->pcc_office_id ?? 'N/A' }}</td>
+                                        <td>{{ $specialFareData->agent->account_code ?? 'N/A' }}</td>
+                                        <td>{{ $specialFareData->agent->discount ?? 'N/A' }}</td>
+                                        <td>{{ $specialFareData->agent->remarks ?? 'N/A' }}</td>
+                                        <td>{{ $specialFareRcd->created_by ?? 'N/A' }}</td>
+                                        <td>{{ $specialFareRcd->created_at?? 'N/A' }}</td>
+                                        <td>{{ $specialFareRcd->updated_at ?? 'N/A' }}</td>
+                                        <td>{{ $specialFareRcd->updated_by ?? 'N/A' }}</td>
 
-                                        </tr>
+                                    </tr>
                                     @endforeach
                                 </tbody>
                             </table>
@@ -3078,7 +3072,6 @@ $(document).ready(function() {
                     });
                 });
 </script>
-
 
 
 @endsection
