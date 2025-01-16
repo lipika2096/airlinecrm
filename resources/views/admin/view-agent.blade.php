@@ -1681,16 +1681,18 @@
                                                         </div>
                                                         <div class="col-sm-4">
                                                             <div class="form-group">
-                                                                <label class="col-form-label">Transaction Date</label>
+                                                                <label class="col-form-label">Transaction Date<span
+                                                                    class="text-danger">*</span></label>
                                                                 <input class="form-control" type="date"
-                                                                    name="tr_date">
+                                                                    name="tr_date" required>
                                                             </div>
                                                         </div>
 
                                                         <div class="col-sm-12">
                                                             <div class="form-group">
-                                                                <label class="col-form-label">Remarks</label>
-                                                                <textarea class="form-control" type="text" name="tr_type"></textarea>
+                                                                <label class="col-form-label">Remarks<span
+                                                                    class="text-danger">*</span></label>
+                                                                <textarea class="form-control" type="text" name="tr_type" required></textarea>
                                                             </div>
                                                         </div>
 
