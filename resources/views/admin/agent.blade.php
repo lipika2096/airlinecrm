@@ -31,6 +31,12 @@
                 border-radius: 50px;
                 font-size: 13px;
             }
+            span.select2-selection.select2-selection--multiple {
+                height: 44px;
+            }
+            .select2-container--bootstrap-5.select2-container--focus .select2-selection, .select2-container--bootstrap-5.select2-container--open .select2-selection{
+                box-shadow:none !important;
+            }
         </style>
         <!-- Page Content -->
         <div class="content container-fluid">
@@ -65,50 +71,49 @@
             <!-- /Page Header -->
             <div class="row">
                 <div class="col-md-12">
-                    <form action="{{ route('admin.agents') }}" method="get">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <input type="text" name="search" class="form-control" placeholder="Search"
-                                    value="{{ request()->search ?? '' }}">
-                            </div>
+                    <div class="row" style="margin-left: 36%;margin-top: -2%;width: 100%;position: absolute;">
+                        <div class="col-md-12">
+                            <form action="{{ route('admin.agents') }}" method="get">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <input type="text" name="search" class="form-control" placeholder="Search"
+                                            value="{{ request()->search ?? '' }}">
+                                    </div>
 
-                            <div class="col-md-3">
-                                <select class="form-select" name="search_type[]" id="search_type" data-placeholder="Select Type" multiple>
-                                    <option value="company_name" @if (request()->search_type && in_array('company_name', request()->search_type)) selected @endif>Agent Name</option>
-                                    <option value="agency_name " @if (request()->search_type && in_array('agency_name', request()->search_type)) selected @endif>Agent Group</option>
-                                    <option value="company_registration_no" @if (request()->search_type && in_array('company_registration_no', request()->search_type)) selected @endif>Company Registration No</option>
-                                    <option value="iata" @if (request()->search_type && in_array('iata', request()->search_type)) selected @endif>IATA Number</option>
-                                    <option value="id" @if (request()->search_type && in_array('id', request()->search_type)) selected @endif>Case ID</option>
-                                    <option value="ticket_no" @if (request()->search_type && in_array('ticket_no', request()->search_type)) selected @endif>Ticket No</option>
-                                    <option value="pnr" @if (request()->search_type && in_array('pnr', request()->search_type)) selected @endif>PNR No</option>
-                                    <option value="gds_type" @if (request()->search_type && in_array('gds_type', request()->search_type)) selected @endif>GDS Type</option>
-                                    <option value="pcc_office_id" @if (request()->search_type && in_array('pcc_office_id', request()->search_type)) selected @endif>GDS Number</option>
-                                    <option value="focus_destinations" @if (request()->search_type && in_array('focus_destinations', request()->search_type)) selected @endif>Focus Destinations</option>
-                                    <option value="business_mode" @if (request()->search_type && in_array('business_mode', request()->search_type)) selected @endif>Agent Type</option>
-                                    <option value="website" @if (request()->search_type && in_array('website', request()->search_type)) selected @endif>Website</option>
-                                    <option value="account_code" @if (request()->search_type && in_array('account_code', request()->search_type)) selected @endif>Account Code</option>
-                                    <option value="pincode" @if (request()->search_type && in_array('pincode', request()->search_type)) selected @endif>Pincode</option>
-                                    <option value="city" @if (request()->search_type && in_array('city', request()->search_type)) selected @endif>City</option>
-                                    <option value="state" @if (request()->search_type && in_array('state', request()->search_type)) selected @endif>State</option>
-                                    <option value="country" @if (request()->search_type && in_array('country', request()->search_type)) selected @endif>Country</option>
-                                    <option value="phone_number" @if (request()->search_type && in_array('phone_number', request()->search_type)) selected @endif>Phone</option>
-                                    <option value="email_address" @if (request()->search_type && in_array('email_address', request()->search_type)) selected @endif>Email Address</option>
-                                    <option value="first_name" @if (request()->search_type && in_array('first_name', request()->search_type)) selected @endif>Contact Person First Name</option>
+                                    <div class="col-md-3">
+                                        <select class="form-control" name="search_type[]" id="search_type" data-placeholder="Select Type" multiple>
+                                            <option value="company_name" @if (request()->search_type && in_array('company_name', request()->search_type)) selected @endif>Agent Name</option>
+                                            <option value="agency_name " @if (request()->search_type && in_array('agency_name', request()->search_type)) selected @endif>Agent Group</option>
+                                            <option value="company_registration_no" @if (request()->search_type && in_array('company_registration_no', request()->search_type)) selected @endif>Company Registration No</option>
+                                            <option value="iata" @if (request()->search_type && in_array('iata', request()->search_type)) selected @endif>IATA Number</option>
+                                            <option value="id" @if (request()->search_type && in_array('id', request()->search_type)) selected @endif>Case ID</option>
+                                            <option value="ticket_no" @if (request()->search_type && in_array('ticket_no', request()->search_type)) selected @endif>Ticket No</option>
+                                            <option value="pnr" @if (request()->search_type && in_array('pnr', request()->search_type)) selected @endif>PNR No</option>
+                                            <option value="gds_type" @if (request()->search_type && in_array('gds_type', request()->search_type)) selected @endif>GDS Type</option>
+                                            <option value="pcc_office_id" @if (request()->search_type && in_array('pcc_office_id', request()->search_type)) selected @endif>GDS Number</option>
+                                            <option value="focus_destinations" @if (request()->search_type && in_array('focus_destinations', request()->search_type)) selected @endif>Focus Destinations</option>
+                                            <option value="business_mode" @if (request()->search_type && in_array('business_mode', request()->search_type)) selected @endif>Agent Type</option>
+                                            <option value="website" @if (request()->search_type && in_array('website', request()->search_type)) selected @endif>Website</option>
+                                            <option value="account_code" @if (request()->search_type && in_array('account_code', request()->search_type)) selected @endif>Account Code</option>
+                                            <option value="pincode" @if (request()->search_type && in_array('pincode', request()->search_type)) selected @endif>Pincode</option>
+                                            <option value="city" @if (request()->search_type && in_array('city', request()->search_type)) selected @endif>City</option>
+                                            <option value="state" @if (request()->search_type && in_array('state', request()->search_type)) selected @endif>State</option>
+                                            <option value="country" @if (request()->search_type && in_array('country', request()->search_type)) selected @endif>Country</option>
+                                            <option value="phone_number" @if (request()->search_type && in_array('phone_number', request()->search_type)) selected @endif>Phone</option>
+                                            <option value="email_address" @if (request()->search_type && in_array('email_address', request()->search_type)) selected @endif>Email Address</option>
+                                            <option value="first_name" @if (request()->search_type && in_array('first_name', request()->search_type)) selected @endif>Contact Person First Name</option>
 
-                                </select>
-                            </div>
+                                        </select>
+                                    </div>
 
 
-                            <div class="col-md-3">
-                                <button type="submit" class="btn btn-primary">Search</button>
-                            </div>
+                                    <div class="col-md-3">
+                                        <button type="submit" class="btn btn-primary">Search</button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-12">
+                    </div>
                     <div class="table-responsive">
 
                         <table class="table table-striped custom-table mb-0 datatable">
