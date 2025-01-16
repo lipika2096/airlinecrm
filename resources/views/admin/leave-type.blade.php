@@ -34,7 +34,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>Leave Type</th>
-                                <th>Leave Days</th>
+                                <th>Leave Colors</th>
                                 <th>Status</th>
                                 <th class="text-end">Action</th>
                             </tr>
@@ -46,7 +46,7 @@
                                     {{ $index + 1 }}
                                 </td>
                                 <td>{{$leave->name}}</td>
-                                <td>{{$leave->days}}</td>
+                                <td>{{$leave->color}}</td>
                                 <td>
                                     <!-- Toggle Switch -->
                                     <div class="form-check form-switch">
@@ -86,11 +86,7 @@
                                                     <input class="form-control" name="name" type="text"
                                                         value="{{$leave->name}}">
                                                 </div>
-                                                <div class="form-group">
-                                                    <label>Number of days <span class="text-danger">*</span></label>
-                                                    <input class="form-control" name="days" type="text"
-                                                        value="{{$leave->days}}">
-                                                </div>
+
                                                 <div class="form-group">
 
                                                     <label for="colorPicker">Choose a color:</label>
@@ -164,10 +160,7 @@
                             <label>Leave Type <span class="text-danger">*</span></label>
                             <input class="form-control" name="name" type="text">
                         </div>
-                        <div class="form-group">
-                            <label>Number of days <span class="text-danger">*</span></label>
-                            <input class="form-control" name="days" type="text">
-                        </div>
+
                         <div class="form-group">
 
                             <label for="colorPicker">Choose a color:</label>
@@ -223,7 +216,7 @@
             var status = $(this).is(':checked') ? 1 : 0;
 
             $.ajax({
-                url: '{{ route("admin.leave-type.updateStatus") }}', 
+                url: '{{ route("admin.leave-type.updateStatus") }}',
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
@@ -242,7 +235,7 @@
     });
 </script>
 <script>
-    document.getElementById('colorPicker').value = '#00FF00'; 
+    document.getElementById('colorPicker').value = '#00FF00';
 </script>
 
 @endsection

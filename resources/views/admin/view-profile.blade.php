@@ -1942,6 +1942,7 @@ use Carbon\Carbon;
                                                 const leaveType = leave.leave_type;
                                                 const fromDate = new Date(leave.from);
                                                 const toDate = new Date(leave.to);
+                                                const leavecolor = leave.color;
 
                                                 // Generate dates between 'from' and 'to'
                                                 for (let date = new Date(fromDate); date <= toDate; date.setDate(date.getDate() + 1)) {
@@ -1950,6 +1951,7 @@ use Carbon\Carbon;
                                                         month: date.getMonth() + 1, // Extract month (0-based)
                                                         year: date.getFullYear(), // Extract year
                                                         type: leaveType // Leave type
+                                                        color: leavecolor // Leave color
                                                     });
                                                 }
                                             });
@@ -2011,7 +2013,7 @@ use Carbon\Carbon;
 
                                                     if (currentDay > 0 && currentDay <= daysInMonth) {
                                                         calendarHtml += `
-                                                            <div class="day mb-2 ms-2" style="width: 30%; height: 40px; text-align: center; line-height: 50px; ${leaveColor ? `background-color: ${leaveColor}; font-weight: bold; color: white;` : ''}">
+                                                            <div class="day mb-2 ms-2" style="width: 30%; height: 40px; text-align: center; line-height: 50px; ${leaveDayData?.color ? `background-color: ${leaveDayData?.color}; font-weight: bold; color: white;` : ''}">
                                                                 ${currentDay}
                                                             </div>
                                                         `;
@@ -2400,7 +2402,7 @@ use Carbon\Carbon;
                                         <label>Number of days <span class="text-danger">*</span></label>
                                         <input class="form-control" readonly type="text" name="no_of_days">
                                     </div>
-                                 
+
                                     <div class="form-group">
                                         <label>Leave Reason</label>
                                         <textarea rows="4" name="reason" class="form-control"></textarea>
@@ -2619,8 +2621,8 @@ use Carbon\Carbon;
             }
     </script>
 
-   
-    
+
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
                 // Check if there's a hash in the URL
