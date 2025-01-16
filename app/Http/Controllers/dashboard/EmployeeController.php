@@ -1434,8 +1434,11 @@ class EmployeeController extends Controller
 
         foreach ($users as $user) {
             $employeeLeaves = DB::table('employee_leaves')
-                ->where('employee_id', $user->id)->where('status',3)
-                ->get();
+            ->join('leave_types', 'employee_leaves.leave_type', '=', 'leave_types.name')
+            ->where('employee_leaves.employee_id', $user->id)
+            ->where('employee_leaves.status', 3)
+            ->select('employee_leaves.*', 'leave_types.color')
+            ->get();
 
             $leaveDays = [];
             $currentMonth = Carbon::now()->month;

@@ -645,45 +645,51 @@ use Carbon\Carbon;
 
                                     $('#currentYearDisplay').text(currentYear);
 
-                                    // Loop through each month
                                     monthNames.forEach((month, index) => {
-                                            const monthDateDiv = document.createElement("div");
-                                            monthDateDiv.classList.add("month-date");
+                                        const monthDateDiv = document.createElement("div");
+                                        monthDateDiv.classList.add("month-date");
 
-                                            const monthDiv = document.createElement("div");
-                                            monthDiv.classList.add("month");
-                                            monthDiv.textContent = month;
+                                        const monthDiv = document.createElement("div");
+                                        monthDiv.classList.add("month");
+                                        monthDiv.textContent = month;
 
-                                            const datesDiv = document.createElement("div");
-                                            datesDiv.classList.add("dates");
+                                        const datesDiv = document.createElement("div");
+                                        datesDiv.classList.add("dates");
 
-                                            // Get the number of days in the month
-                                            const days = new Date(currentYear, index+1 , 0).getDate();
-                                            for (let day = 1; day <= days; day++) {
-                                                const dateDiv = document.createElement("div");
-                                                dateDiv.classList.add("date");
-                                                dateDiv.textContent = day;
+                                        // Get the number of days in the month
+                                        const days = new Date(currentYear, index+1, 0).getDate();
+                                        for (let day = 1; day <= days; day++) {
+                                            const dateDiv = document.createElement("div");
+                                            dateDiv.classList.add("date");
+                                            dateDiv.textContent = day;
 
-                                                // Check if the date falls within any leave range and apply the leave color
-                                                leaveData.forEach(leave => {
-                                                const leaveStart = new Date(leave.from);
-                                                const leaveEnd = new Date(leave.to);
-                                                const currentDate = new Date(currentYear, index, day);
+                                            const currentDate = new Date(currentYear, index, day);
+                                            const dayOfWeek = currentDate.getDay();
+
+                                            // Set transparent background and black text color for weekends
+                                            if (dayOfWeek === 0 || dayOfWeek === 6) {
+                                                dateDiv.style.backgroundColor = "transparent";
+                                                dateDiv.style.color = "#000000";
+                                            } else {
+                                                    leaveData.forEach(leave => {
+                                                    const leaveStart = new Date(leave.from);
+                                                    const leaveEnd = new Date(leave.to);
+                                                    const currentDate = new Date(currentYear, index, day);
                                                 leaveStart.setDate(leaveStart.getDate() - 1);
 
-                                                if (currentDate >= leaveStart && currentDate <= leaveEnd) {
-                                                    const leaveColor = leave.color;
-                                                    if (leaveColor !== 'transparent') {
-                                                        dateDiv.style.backgroundColor = leaveColor;
-                                                        dateDiv.style.color = "#fff"; // Make the text white for better contrast
+                                                    if (currentDate >= leaveStart && currentDate <= leaveEnd) {
+                                                        const leaveColor = leave.color;
+                                                        if (leaveColor !== 'transparent') {
+                                                            dateDiv.style.backgroundColor = leaveColor;
+                                                            dateDiv.style.color = "#fff"; // White text for contrast
+                                                        }
                                                     }
-                                                }
-                                                if (currentDate === leaveStart) {
-                                                        dateDiv.style.backgroundColor =
-                                                        leaveColor; // Apply blue color for holidays
-                                                        dateDiv.style.color = "#fff"; // Make the text white
+
+                                                    if (currentDate.toDateString() === leaveStart.toDateString()) {
+                                                        dateDiv.style.backgroundColor = leave.color;
+                                                        dateDiv.style.color = "#fff";
                                                     }
-                                            });
+                                                });
 
                                                 // Check if the current date is a holiday
                                                 holidays.forEach(holiday => {
@@ -691,19 +697,19 @@ use Carbon\Carbon;
                                                     if (holidayDate.getFullYear() === currentYear &&
                                                         holidayDate.getMonth() === index &&
                                                         holidayDate.getDate() === day) {
-                                                        dateDiv.style.backgroundColor =
-                                                        '#206eb6'; // Apply blue color for holidays
-                                                        dateDiv.style.color = "#fff"; // Make the text white
+                                                        dateDiv.style.backgroundColor = '#206eb6';
+                                                        dateDiv.style.color = "#fff";
                                                     }
                                                 });
-
-                                                datesDiv.appendChild(dateDiv);
                                             }
 
-                                            monthDateDiv.appendChild(monthDiv);
-                                            monthDateDiv.appendChild(datesDiv);
-                                            monthDateList.appendChild(monthDateDiv);
-                                        });
+                                            datesDiv.appendChild(dateDiv);
+                                        }
+
+                                        monthDateDiv.appendChild(monthDiv);
+                                        monthDateDiv.appendChild(datesDiv);
+                                        monthDateList.appendChild(monthDateDiv);
+                                    });
                                 }
 
                                 // Call updateYearDisplay to show data for the default current year
@@ -1950,7 +1956,7 @@ use Carbon\Carbon;
                                                         day: date.getDate(), // Extract day
                                                         month: date.getMonth() + 1, // Extract month (0-based)
                                                         year: date.getFullYear(), // Extract year
-                                                        type: leaveType // Leave type
+                                                        type: leaveType, // Leave type
                                                         color: leavecolor // Leave color
                                                     });
                                                 }
