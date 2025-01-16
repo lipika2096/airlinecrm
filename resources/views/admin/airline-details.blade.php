@@ -72,10 +72,10 @@
                                                     <i class="fa fa-eye"></i>
                                                 </a>
                                                 @if (!request()->is('admin/deleted/airlines'))
-                                                    <a data-bs-toggle="modal" data-bs-target="#edit_airline{{ $detail->id }}"
+                                                    {{-- <a data-bs-toggle="modal" data-bs-target="#edit_airline{{ $detail->id }}"
                                                         class="action-icon" style="margin-right: 10px;">
                                                         <i class="fa fa-edit"></i>
-                                                    </a>
+                                                    </a> --}}
                                                     <a data-bs-toggle="modal" data-bs-target="#delete_airline{{$detail->id}}" class="action-icon" style="margin-right: 10px;">
                                                         <i class="fa fa-trash"></i>
                                                     </a>
@@ -167,13 +167,17 @@
                                                                 </div>
                                                             <!-- </div> -->
                                                             <!-- <div class="col-md-6"> -->
-                                                                <div class="col-sm-4">
                                                                     <label for="focus_cities">Focus Cities</label>
-                                                                    <input type="text" class="form-control"
-                                                                        id="focus_cities" name="focus_cities[]"
-                                                                        value="@foreach (json_decode($detail->focus_cities) as $fc){{ $fc }}<br> @endforeach"
-                                                                        placeholder="Enter focus cities separated by commas">
-                                                                </div>
+                                                                    @foreach (json_decode($detail->focus_cities) as $fc)
+                                                                        <div class="col-sm-4 focus-destination-item">
+                                                                            <input type="text" class="form-control"  id="focus_cities" name="edit_focus_cities[]" value="{{ $fc }}"
+                                                                            placeholder="Enter focus cities separated by commas">
+                                                                            <button class="btn btn-danger remove-destination" type="button">Remove</button>
+                                                                        </div>
+                                                                    @endforeach
+                                                                    <div class="col-sm-4" id="focus-destinations-container">
+                                                                        <button class="btn btn-primary" type="button" id="edit-destination">Add More</button>
+                                                                    </div>
                                                             <!-- </div> -->
                                                         <!-- </div> -->
 
@@ -612,95 +616,6 @@
         </div>
     @endforeach
 
-    @foreach ($airlineDetails as $detail)
-        <div id="edit_modal_{{ $detail->id }}" class="modal custom-modal fade" role="dialog">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Airline Details</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="{{ route('admin.airlines-details.update', $detail->id) }}" method="POST">
-                            @csrf
-                            @method('PATCH')
-                            <div class="row">
-                                <!-- Column 1 -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="airline_id">Airline</label>
-                                        <select class="form-control" id="airline_id" name="airline_id">
-                                            @foreach ($airlines as $airline)
-                                                <option value="{{ $airline->id }}"
-                                                    {{ $detail->airline_id == $airline->id ? 'selected' : '' }}>
-                                                    {{ $airline->airline_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="airline_ticketing_code">Airline Ticketing Code</label>
-                                        <input type="text" class="form-control" id="airline_ticketing_code"
-                                            name="airline_ticketing_code"
-                                            value="{{ old('airline_ticketing_code', $detail->airline_ticketing_code) }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="airline_contact_details">Airline Contact Details</label>
-                                        <input type="text" class="form-control" id="airline_contact_details"
-                                            name="airline_contact_details"
-                                            value="{{ old('airline_contact_details', $detail->airline_contact_details) }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="rules_do">Rules Do</label>
-                                        <input type="text" class="form-control" id="rules_do" name="rules_do"
-                                            value="{{ old('rules_do', $detail->rules_do) }}">
-                                    </div>
-                                </div>
-                                <!-- Column 2 -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="rules_dont">Rules Don't</label>
-                                        <input type="text" class="form-control" id="rules_dont" name="rules_dont"
-                                            value="{{ old('rules_dont', $detail->rules_dont) }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="standard_cancellation_charges">Standard Cancellation
-                                            Charges</label>
-                                        <input type="text" class="form-control" id="standard_cancellation_charges"
-                                            name="standard_cancellation_charges"
-                                            value="{{ old('standard_cancellation_charges', $detail->standard_cancellation_charges) }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="date_change_charges">Date Change Charges</label>
-                                        <input type="text" class="form-control" id="date_change_charges"
-                                            name="date_change_charges"
-                                            value="{{ old('date_change_charges', $detail->date_change_charges) }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="routes_flown_from">Routes Flown From</label>
-                                        <input type="text" class="form-control" id="routes_flown_from"
-                                            name="routes_flown_from"
-                                            value="{{ old('routes_flown_from', $detail->routes_flown_from) }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="routes_flown_to">Routes Flown To</label>
-                                        <input type="text" class="form-control" id="routes_flown_to"
-                                            name="routes_flown_to"
-                                            value="{{ old('routes_flown_to', $detail->routes_flown_to) }}">
-                                    </div>
-
-                                </div>
-                                <div class="submit-section">
-                                    <button class="btn btn-primary" type="submit">Update</button>
-                                </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endforeach
 
     @foreach ($airlineDetails as $detail)
         <div id="delete_modal_{{ $detail->id }}" class="modal custom-modal fade" role="dialog">
@@ -732,6 +647,21 @@
     @endforeach
 
     <script>
+        document.getElementById('edit-destination').addEventListener('click', function() {
+            const container = document.getElementById('focus-destinations-container');
+            const newInputGroup = document.createElement('div');
+            newInputGroup.classList.add('input-group', 'mb-2');
+            newInputGroup.innerHTML = `
+                <input type="text" class="form-control" name="edit_focus_cities[]" placeholder="Enter focus cities separated by commas">
+                <button class="btn btn-danger remove-destination" type="button">Remove</button>
+            `;
+            container.appendChild(newInputGroup);
+
+            // Add event listener to the remove button
+            newInputGroup.querySelector('.remove-destination').addEventListener('click', function() {
+                container.removeChild(newInputGroup);
+            });
+        });
         document.getElementById('add-destination').addEventListener('click', function() {
             const container = document.getElementById('focus-destinations-container');
             const newInputGroup = document.createElement('div');

@@ -266,7 +266,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form action="{{ route('admin.airlines-details.update', $detail->id) }}" method="POST">
+                        <form action="" method="POST">
                             @csrf
                             @method('PATCH')
                             <div class="row">

@@ -155,8 +155,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
 
 	Route::get('airlines-details', [AirlineDetailController::class, 'index'])->name('airlines-details');
     Route::post('airlines-details/store', [AirlineController::class, 'store'])->name('airlines-details.store');
-    Route::patch('/admin/airline-details/{airlineDetail}', [AirlineController::class, 'update'])->name('airlines-details.update');
-    Route::delete('/admin/airline-details/delete/{airlineDetail}', [AirlineController::class, 'delete'])->name('airlines-details.delete');
+    Route::patch('/airline-details/{airlineDetail}', [AirlineController::class, 'update'])->name('airlines-details.update');
+    Route::delete('/airline-details/delete/{airlineDetail}', [AirlineController::class, 'delete'])->name('airlines-details.delete');
     Route::delete('/admin/airline-details/{airlineDetail}', [AirlineDetailController::class, 'destroy'])->name('airlines-details.destroy');
 
 

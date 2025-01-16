@@ -253,7 +253,7 @@ class AirlineController extends Controller
             'commenced_on' => $validatedData['commenced_on'],
             'hubs' => $validatedData['hubs'],
             'secondary_hubs' => $validatedData['secondary_hub'],
-            'focus_cities' => json_encode($validatedData['focus_cities']), // Assuming focus_cities is an array
+            'focus_cities' => json_encode($validatedData['edit_focus_cities']), // Assuming focus_cities is an array
             'frequent_flyer_program' => $validatedData['frequent_flyer_program'],
             'alliance' => $validatedData['alliance'],
             'subsidiaries' => $validatedData['subsidiaries'],

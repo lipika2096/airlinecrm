@@ -325,6 +325,263 @@ use Carbon\Carbon;
                                         </tbody>
                                     </table>
                                 </div>
+
+
+                                <!-- Edit Icon -->
+                                <i class="fas fa-edit position-absolute top-0 end-0 m-3" data-bs-toggle="modal"
+                                    data-bs-target="#edit_airline{{ $airlineDetails->airline_id }}"></i>
+
+                                    <div id="edit_airline{{ $airlineDetails->id }}" class="modal custom-modal fade"
+                                        role="dialog">
+                                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Edit Airline</h5>
+                                                    <button type="button" class="close" data-bs-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form
+                                                        action="{{ route('admin.airlines-details.update', ['airlineDetail' => $airlineDetails->id]) }}"
+                                                        method="POST" enctype="multipart/form-data">
+                                                        @csrf
+                                                        @method('PATCH')
+
+                                                        <div class="row form-group">
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="airline_name">Airline Name</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="airline_name" name="airline_name"
+                                                                        value="{{ $airlineDetails->airline->airline_name }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="airline_code">Airline Code</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="airline_code" name="airline_code"
+                                                                        value="{{ $airlineDetails->airline->airline_code }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                        <!-- </div> -->
+                                                        <!-- <div class="row"> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="country">Country</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="country" name="country"
+                                                                        value="{{ $airlineDetails->country }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="founded_on">Founded On</label>
+                                                                    <input type="date" class="form-control"
+                                                                        id="founded_on" name="founded_on"
+                                                                        value="{{ $airlineDetails->founded_on }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                        <!-- </div> -->
+
+                                                        <!-- <div class="row"> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="commenced_on">Commenced On</label>
+                                                                    <input type="date" class="form-control"
+                                                                        id="commenced_on" name="commenced_on"
+                                                                        value="{{ $airlineDetails->commenced_on }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="hubs">Hubs</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="hubs" name="hubs"
+                                                                        value="{{ $airlineDetails->hubs }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                        <!-- </div> -->
+
+                                                        <!-- <div class="row"> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="secondary_hub">Secondary Hub</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="secondary_hub" name="secondary_hub"
+                                                                        value="{{ $airlineDetails->secondary_hubs }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                    <label for="focus_cities">Focus Cities</label>
+                                                                    @foreach (json_decode($airlineDetails->focus_cities) as $fc)
+                                                                        <div class="col-sm-4 focus-destination-item">
+                                                                            <input type="text" class="form-control"  id="focus_cities" name="edit_focus_cities[]" value="{{ $fc }}"
+                                                                            placeholder="Enter focus cities separated by commas">
+                                                                            <button class="btn btn-danger remove-destination" type="button">Remove</button>
+                                                                        </div>
+                                                                    @endforeach
+                                                                    <div class="col-sm-4" id="focus-destinations-container">
+                                                                        <button class="btn btn-primary" type="button" id="edit-destination">Add More</button>
+                                                                    </div>
+                                                            <!-- </div> -->
+                                                        <!-- </div> -->
+
+                                                        <!-- <div class="row"> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="frequent_flyer_program">Frequent Flyer
+                                                                        Program</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="frequent_flyer_program"
+                                                                        name="frequent_flyer_program"
+                                                                        value="{{ $airlineDetails->frequent_flyer_program }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="alliance">Alliance</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="alliance" name="alliance"
+                                                                        value="{{ $airlineDetails->alliance }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                        <!-- </div> -->
+
+                                                        <!-- <div class="row"> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="subsidiaries">Subsidiaries</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="subsidiaries" name="subsidiaries"
+                                                                        value="{{ $airlineDetails->subsidiaries }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="fleet_size">Fleet Size</label>
+                                                                    <input type="number" class="form-control"
+                                                                        id="fleet_size" name="fleet_size"
+                                                                        value="{{ $airlineDetails->fleet_size }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                        <!-- </div> -->
+
+                                                        <!-- <div class="row"> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                            <div class="col-sm-8">
+                                                                    <label for="logo">Logo</label>
+                                                                    <input type="file" class="form-control"
+                                                                        id="logo" name="logo">
+                                                                    <img style="height:50px; width:50px;"
+                                                                        src="{{ asset($airlineDetails->airline->logo_path) }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="slogan">Slogan</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="slogan" name="slogan"
+                                                                        value="{{ $airlineDetails->slogan }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                            <div class="col-sm-4">
+                                                                    <label for="destinations">Destinations</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="destinations" name="destinations"
+                                                                        value="{{ $airlineDetails->destinations }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                        <!-- </div> -->
+
+                                                        <!-- <div class="row"> -->
+
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="key_people">Key People</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="key_people" name="key_people"
+                                                                        value="{{ old('key_people', $airlineDetails->key_people) }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                        <!-- </div> -->
+
+                                                        <!-- <div class="row"> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="parent_company">Parent Company</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="parent_company" name="parent_company"
+                                                                        value="{{ old('parent_company', $airlineDetails->parent_company) }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="head_quarters">Headquarters</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="head_quarters" name="head_quarters"
+                                                                        value="{{ old('head_quarters', $airlineDetails->head_quarters) }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                        <!-- </div> -->
+
+                                                        <!-- <div class="row"> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="website">Website</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="website" name="website"
+                                                                        value="{{ old('website', $airlineDetails->website) }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="IATA">IATA</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="IATA" name="IATA"
+                                                                        value="{{ old('IATA', $airlineDetails->IATA) }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="ICAO">ICAO</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="ICAO" name="ICAO"
+                                                                        value="{{ old('ICAO', $airlineDetails->ICAO) }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="callsign">Callsign</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="callsign" name="callsign"
+                                                                        value="{{ old('callsign', $airlineDetails->callsign) }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                            <!-- <div class="col-md-6"> -->
+                                                                <div class="col-sm-4">
+                                                                    <label for="numeric_code">Numeric Code</label>
+                                                                    <input type="number" class="form-control"
+                                                                        id="numeric_code" name="numeric_code"
+                                                                        value="{{ old('numeric_code', $airlineDetails->numeric_code) }}">
+                                                                </div>
+                                                            <!-- </div> -->
+                                                        <!-- </div> -->
+
+                                                        <div class="submit-section">
+                                                            <button class="btn btn-primary" type="submit">Submit</button>
+                                                        </div>
+                                                     </div>
+                                                    </form>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                             </div>
                         </div>
                     </div>
@@ -3071,6 +3328,22 @@ $(document).ready(function() {
                         });
                     });
                 });
+
+                document.getElementById('edit-destination').addEventListener('click', function() {
+            const container = document.getElementById('focus-destinations-container');
+            const newInputGroup = document.createElement('div');
+            newInputGroup.classList.add('input-group', 'mb-2');
+            newInputGroup.innerHTML = `
+                <input type="text" class="form-control" name="edit_focus_cities[]" placeholder="Enter focus cities separated by commas">
+                <button class="btn btn-danger remove-destination" type="button">Remove</button>
+            `;
+            container.appendChild(newInputGroup);
+
+            // Add event listener to the remove button
+            newInputGroup.querySelector('.remove-destination').addEventListener('click', function() {
+                container.removeChild(newInputGroup);
+            });
+        });
 </script>
 
 
