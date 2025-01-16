@@ -361,12 +361,16 @@
                                                     <div class="row form-group">
                                                         <lable class="form-lable">Focused Destinations</lable>
                                                         @foreach (json_decode($agent->focus_destinations) as $destination)
-                                                            <div class=col-sm-4>
+                                                            <div class="col-sm-4  focus-destination-item">
                                                                 <input type="text" class="form-control"
                                                                     name="focus_destinations[]"
                                                                     value="{{ $destination }}">
+                                                                <button class="btn btn-danger remove-destination" type="button">Remove</button>
                                                             </div>
                                                         @endforeach
+                                                        <div class="col-sm-4" id="focus-destinations-container">
+                                                            <button class="btn btn-primary" type="button" id="add-destination">Add More</button>
+                                                        </div>
                                                     </div>
                                                     <!-- </div> -->
                                                     <!-- </li> -->
@@ -406,11 +410,15 @@
                                                         <lable class="form-lable">Website</lable>
 
                                                         @foreach (json_decode($agent->websites) as $awebsites)
-                                                            <div class="col-sm-4">
+                                                            <div class="col-sm-4 website-address-item">
                                                                 <input type="text" class="form-control"
                                                                     name="websites[]" value="{{ $awebsites }}">
+                                                                    <button class="btn btn-danger remove-website-address" type="button">Remove</button>
                                                             </div>
                                                         @endforeach
+                                                        <div class="col-sm-4" id="website-address-container">
+                                                            <button class="btn btn-primary" type="button" id="add-website-address">Add More</button>
+                                                        </div>
 
                                                         <!-- {{-- <input type="text" class="form-control"
                                                                     name="websites" value="{{ $agent->websites }}"
@@ -463,11 +471,11 @@
                                         <tbody>
 
                                             <tr>
-                                                <td>{{ $agent->address ?? 'null' }}</td>
-                                                <td>{{ $agent->city ?? 'null' }}</td>
-                                                <td>{{ $agent->state ?? 'null' }}</td>
-                                                <td>{{ $agent->country ?? 'null' }}</td>
-                                                <td>{{ $agent->pincode ?? 'null' }}</td>
+                                                <td>{{ $agent->address ?? 'N/A' }}</td>
+                                                <td>{{ $agent->city ?? 'N/A' }}</td>
+                                                <td>{{ $agent->state ?? 'N/A' }}</td>
+                                                <td>{{ $agent->country ?? 'N/A' }}</td>
+                                                <td>{{ $agent->pincode ?? 'N/A' }}</td>
                                                 <td><span class="badge badge-success p-2"> By default</span></td>
 
                                             </tr>
@@ -2517,13 +2525,55 @@
                 }
             </style>
             <script>
+                document.addEventListener('click', function (event) {
+                    if (event.target && event.target.classList.contains('remove-destination')) {
+                        // Remove the closest parent element with class "focus-destination-item"
+                        event.target.closest('.focus-destination-item').remove();
+                    }
+                });
+                document.getElementById('add-destination').addEventListener('click', function() {
+                    const container = document.getElementById('focus-destinations-container');
+                    const newInputGroup = document.createElement('div');
+                    newInputGroup.classList.add('input-group', 'mb-2');
+                    newInputGroup.innerHTML = `
+                        <input type="text" class="form-control" name="focus_destinations[]" placeholder="Enter destination">
+                        <button class="btn btn-danger remove-destination" type="button">Remove</button>
+                    `;
+                    container.appendChild(newInputGroup);
+
+                    // Add event listener to the remove button
+                    newInputGroup.querySelector('.remove-destination').addEventListener('click', function() {
+                        container.removeChild(newInputGroup);
+                    });
+                });
+
+                document.addEventListener('click', function (event) {
+                    if (event.target && event.target.classList.contains('remove-website-address')) {
+                        // Remove the closest parent element with class "focus-destination-item"
+                        event.target.closest('.website-address-item').remove();
+                    }
+                });
+                document.getElementById('add-website-address').addEventListener('click', function() {
+                    const container = document.getElementById('website-address-container');
+                    const newInputGroup = document.createElement('div');
+                    newInputGroup.classList.add('input-group', 'mb-2');
+                    newInputGroup.innerHTML = `
+                        <input type="text" class="form-control" name="websites[]" placeholder="Enter Website Address">
+                        <button class="btn btn-danger remove-website-address" type="button">Remove</button>
+                    `;
+                    container.appendChild(newInputGroup);
+
+                    // Add event listener to the remove button
+                    newInputGroup.querySelector('.remove-website-address').addEventListener('click', function() {
+                        container.removeChild(newInputGroup);
+                    });
+                });
+
                 document.addEventListener('input', function(e) {
                     if (e.target.type === 'number') {
                         e.target.value = e.target.value.replace(/[^0-9]/g, '');
                     }
                 });
-            </script>
-            <script>
                 document.addEventListener("DOMContentLoaded", function() {
                     // Check if there's a hash in the URL
                     if (window.location.hash) {
