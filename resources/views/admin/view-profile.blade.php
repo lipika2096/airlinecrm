@@ -672,7 +672,7 @@ use Carbon\Carbon;
                                                 leaveStart.setDate(leaveStart.getDate() - 1);
 
                                                 if (currentDate >= leaveStart && currentDate <= leaveEnd) {
-                                                    const leaveColor = getLeaveTypeColor(leave.leave_type);
+                                                    const leaveColor = leave.color;
                                                     if (leaveColor !== 'transparent') {
                                                         dateDiv.style.backgroundColor = leaveColor;
                                                         dateDiv.style.color = "#fff"; // Make the text white for better contrast

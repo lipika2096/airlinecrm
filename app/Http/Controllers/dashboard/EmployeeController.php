@@ -457,8 +457,11 @@ class EmployeeController extends Controller
         // Calculate approved leaves for the current month
 
         // Fetch leaves by type for the authenticated user
-        $leaveData = EmployeeLeave::where('employee_id', $id)->where('status', 3)
-            ->get();
+        $leaveData = EmployeeLeave::where('employee_leaves.employee_id', $id)
+        ->join('leave_types', 'employee_leaves.leave_type', '=', 'leave_types.name')
+        ->where('employee_leaves.status', 3)
+        ->select('employee_leaves.*', 'leave_types.color')
+        ->get();;
         $userData = User::where('id', $id)->first();
         $annualLeave = $userData->leave_count ?? 0;
         $absencePerMonth = EmployeeLeave::where('employee_id', $id)
