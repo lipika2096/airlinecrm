@@ -8,6 +8,10 @@
     <!-- Page Wrapper -->
     <div class="page-wrapper">
         <style>
+            .card-header{
+                border-bottom:none !important;
+                background:none !important;
+            }
             input[type=checkbox][disabled] {
                 outline: 1px solid grey;
             }
@@ -87,7 +91,7 @@
                                     <div class="table-responsive">
                                         <table class="table table-striped  ">
                                             <tbody>
-                                               
+
                                                 <tr class="alignedText">
                                                     <th>Company name</th>
                                                     <td colspan="5">{{ $agent->company_name }}</td>
@@ -132,7 +136,7 @@
                                                     <th class="text-red">Account Code</th>
                                                     <td colspan="5" class="text-red">{{ $agent->account_code }}</td>
                                                 </tr>
-                                                <tr>
+                                                <tr class="alignedText">
                                                     <th class="text-red">Discount</th>
                                                     <td colspan="5" class="text-red">{{ $agent->discount }}</td>
                                                 </tr>
@@ -147,7 +151,7 @@
                                                 <tr class="alignedText">
                                                     <th>Focused Destinations</th>
                                                     <td colspan="5">
-                                                        <ul style="margin-left: -20px;">
+                                                        <ul>
                                                             @foreach (json_decode($agent->focus_destinations) as $destination)
                                                                 <li style="list-style:disc !important;">{{ $destination }}
                                                                 </li>
@@ -171,7 +175,7 @@
                                                     <th>Website</th>
                                                     <td colspan="5">
 
-                                                        <ul style="margin-left: -20px;">
+                                                        <ul >
                                                             @foreach (json_decode($agent->websites) as $websites)
                                                                 <li style="list-style:disc !important;">{{ $websites }}
                                                                 </li>
