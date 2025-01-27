@@ -500,9 +500,15 @@ class EmployeeController extends Controller
             $calendarData = [];
             foreach ($filteredData as $employee) {
                 // Fetching leave dates for the employee
+                // $employeeLeaves = DB::table('employee_leaves')
+                //     ->where('employee_id', $employee->id)
+                //     ->get();
                 $employeeLeaves = DB::table('employee_leaves')
-                    ->where('employee_id', $employee->id)
-                    ->get();
+                ->join('leave_types', 'employee_leaves.leave_type', '=', 'leave_types.name')
+                ->where('employee_leaves.employee_id', $employee->id)
+                ->where('employee_leaves.status', 3)
+                ->select('employee_leaves.*', 'leave_types.color')
+                ->get();
 
                 // Create an array of leave days
                 $leaveDays = [];
@@ -839,9 +845,15 @@ class EmployeeController extends Controller
             $calendarData = [];
             foreach ($filteredData as $employee) {
                 // Fetching leave dates for the employee
+                // $employeeLeaves = DB::table('employee_leaves')
+                //     ->where('employee_id', $employee->id)
+                //     ->get();
                 $employeeLeaves = DB::table('employee_leaves')
-                    ->where('employee_id', $employee->id)
-                    ->get();
+                ->join('leave_types', 'employee_leaves.leave_type', '=', 'leave_types.name')
+                ->where('employee_leaves.employee_id', $employee->id)
+                ->where('employee_leaves.status', 3)
+                ->select('employee_leaves.*', 'leave_types.color')
+                ->get();
 
                 // Create an array of leave days
                 $leaveDays = [];

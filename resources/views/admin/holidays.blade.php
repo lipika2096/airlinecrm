@@ -909,81 +909,87 @@ use Carbon\Carbon;
                                 }
 
                                 function generateCalendar(user, department) {
-                                    // Get the month and year from the DOM
-                                    const textContent = document.getElementById('currentMonth').textContent;
-                                    const [monthName, dynaYear] = textContent.split(" ");
+                                        // Get the month and year from the DOM
+                                        const textContent = document.getElementById('currentMonth').textContent;
+                                        const [monthName, dynaYear] = textContent.split(" ");
 
-                                    const monthMap = {
-                                        January: 1, February: 2, March: 3, April: 4,
-                                        May: 5, June: 6, July: 7, August: 8,
-                                        September: 9, October: 10, November: 11, December: 12
-                                    };
+                                        const monthMap = {
+                                            January: 1, February: 2, March: 3, April: 4,
+                                            May: 5, June: 6, July: 7, August: 8,
+                                            September: 9, October: 10, November: 11, December: 12
+                                        };
 
-                                    const currentMonth = monthMap[monthName];
-                                    const currentYear = parseInt(dynaYear);
+                                        const currentMonth = monthMap[monthName];
+                                        const currentYear = parseInt(dynaYear);
 
-                                    // Preprocess the user's leave data
-                                    const leaveDays = processLeavesData(user.leavesData)
-                                                .filter(leave => leave.month === currentMonth && leave.year === currentYear)
-                                                .reduce((acc, leave) => {
-                                                    const existingLeave = acc.find(l => l.day === leave.day);
-                                                    if (!existingLeave) {
-                                                        acc.push(leave);
-                                                    } else if (existingLeave.type === 'Annual Leave' && leave.type !== 'Annual Leave') {
-                                                        acc = acc.filter(l => l.day !== leave.day);
-                                                        acc.push(leave);
-                                                    }
-                                                    return acc;
-                                                }, []);
+                                        // Preprocess the user's leave data
+                                        const leaveDays = processLeavesData(user.leavesData)
+                                            .filter(leave => leave.month === currentMonth && leave.year === currentYear)
+                                            .reduce((acc, leave) => {
+                                                const existingLeave = acc.find(l => l.day === leave.day);
+                                                if (!existingLeave) {
+                                                    acc.push(leave);
+                                                } else if (existingLeave.type === 'Annual Leave' && leave.type !== 'Annual Leave') {
+                                                    acc = acc.filter(l => l.day !== leave.day);
+                                                    acc.push(leave);
+                                                }
+                                                return acc;
+                                            }, []);
 
-                                    const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
-                                    const firstDayOfMonth = new Date(currentYear, currentMonth - 1, 1).getDay();
+                                        // Calculate days in month and first day of month
+                                        const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+                                        const firstDayOfMonth = new Date(currentYear, currentMonth - 1, 1).getDay();
 
-                                    let calendarHtml = `
-                                        <div class="employee-card card mb-3 col-6">
-                                            <div class="card-body">
-                                                <h5 class="card-title">${user.first_name} ${user.last_name}</h5>
-                                                <div class="calendar" style="float:none!important;">
-                                                    <div class="week-days my-2 d-flex justify-content-between">
-                                                        ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => `
-                                                            <div class="day-header" style="width: 14%; font-weight: bold; text-align: center;">${day}</div>
-                                                        `).join('')}
-                                                    </div>
-                                                    <div class="month-weeks">
-                                    `;
+                                        // Initialize calendar HTML
+                                        let calendarHtml = `
+                                            <div class="employee-card card mb-3 col-12">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">${user.first_name} ${user.last_name}</h5>
+                                                    <div class="calendar" style="float:none!important;">
+                                                        <div class="month-days my-2 d-flex flex-wrap">
+                                        `;
 
-                                    for (let week = 0; week < Math.ceil((daysInMonth + firstDayOfMonth) / 7); week++) {
-                                        calendarHtml += '<div class="week d-flex">';
-                                        for (let day = 0; day < 7; day++) {
-                                            const currentDay = week * 7 + day - firstDayOfMonth + 1;
-                                            const leaveDayData = leaveDays.find(leave => leave.day === currentDay);
+                                        // Add empty days for the first row if needed
+                                        let dayCounter = 1;
+                                        // for (let i = 0; i < firstDayOfMonth; i++) {
+                                        //     calendarHtml += '<div class="day empty-day mb-2 ms-2" style="width: 14%; height: 40px;"></div>';
+                                        // }
+
+                                        // Generate days for the month
+                                        for (let day = dayCounter; day <= daysInMonth; day++) {
+                                            const leaveDayData = leaveDays.find(leave => leave.day === day);
                                             const leaveColor = leaveDayData ? getLeaveTypeColor(leaveDayData.type) : '';
-                                            console.log(leaveDayData?.color);
 
-                                            if (currentDay > 0 && currentDay <= daysInMonth) {
-                                                calendarHtml += `
-                                                    <div class="day mb-2 ms-2" style="width: 30%; height: 40px; text-align: center; line-height: 50px; ${leaveDayData?.color ? `background-color: ${leaveDayData?.color}; font-weight: bold; color: white;` : ''}">
-                                                        ${currentDay}
-                                                    </div>
-                                                `;
-                                            } else {
-                                                calendarHtml += '<div class="day empty-day mb-2 ms-2" style="width: 30%; height: 40px;"></div>';
-                                            }
+                                            // Determine if it's Saturday or Sunday
+                                            const dayOfWeek = (firstDayOfMonth + day - 1) % 7;
+                                            const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);  // 0 = Sunday, 6 = Saturday
+
+                                            // Apply different styles for weekends
+                                            const weekendStyle = isWeekend
+                                            ? 'background-color: #ccc; color: black;'
+                                            : leaveDayData
+                                            ? `background-color: ${leaveDayData.color}; font-weight: bold; color: white;`
+                                            : 'background-color: white; color: black;';
+
+
+                                            calendarHtml += `
+                                                <div class="day mb-2 ms-2" style="text-align: center; line-height: 50px;  ${weekendStyle ?? 'color:black;'} ">
+                                                    ${day}
+                                                </div>
+                                            `;
                                         }
-                                        calendarHtml += '</div>';
-                                    }
 
-                                    calendarHtml += `
+                                        // Close calendar HTML
+                                        calendarHtml += `
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    `;
+                                        `;
 
-                                    return calendarHtml;
-                                }
-
-                            });
+                                        return calendarHtml;
+                                    }
+                                });
                             function getLeaveTypeColor(type) {
                                 switch (type) {
                                     case 'Annual Leave':
