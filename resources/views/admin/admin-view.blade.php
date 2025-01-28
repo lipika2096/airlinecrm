@@ -1,0 +1,171 @@
+@extends('admin/layouts/head-main')
+@section('content')
+    <title>Admin List</title>
+
+    <!-- Page Wrapper -->
+    <div class="page-wrapper">
+
+        <!-- Page Content -->
+        <div class="content container-fluid">
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h3 class="page-title">Admin List</h3>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{route('admin.dashboard')}}">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Admin List</li>
+                        </ul>
+                    </div>
+                    <div class="col-auto float-end ms-auto">
+                        <a href="#" class="btn btn-primary text-white" data-bs-toggle="modal"
+                            data-bs-target="#add_admin"><i class="fa fa-plus"></i> Add Admin</a>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 d-flex">
+                    <div class="card profile-box flex-fill">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped custom-table mb-0 datatable">
+                                    <thead>
+                                        <tr>
+                                            <th>Full Name</th>
+                                            <th>Email</th>
+                                            <th>Password</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($admin as $data)
+                                            <tr>
+                                                <td>{{ $data->name }}</td>
+                                                <td>{{ $data->email }}</td>
+                                                <td>{{ $data->plain_password }}</td>
+                                                </td>
+                                                <td class="text-end">
+                                                    <div class="dropdown dropdown-action">
+                                                        <a href="#" class="action-icon dropdown-toggle"
+                                                            data-bs-toggle="dropdown" aria-expanded="false"><i
+                                                                class="material-icons">more_vert</i></a>
+                                                        <div class="dropdown-menu dropdown-menu-right">
+                                                            <a class="dropdown-item" href="#"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#edit_admin{{ $data->id }}"><i
+                                                                    class="fa fa-pencil m-r-5"></i> Edit</a>
+                                                            <!-- Add more actions if needed -->
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <!-- Edit Sales Lead Modal -->
+                                            <div id="edit_admin{{ $data->id }}"
+                                                class="modal custom-modal fade" role="dialog">
+                                                <div class="modal-dialog modal-dialog-centered modal-lg"
+                                                    role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Edit Admin</h5>
+                                                            <button type="button" class="close"
+                                                                data-bs-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form
+                                                                action="{{ route('admin.admin.update', ['id' => $data->id]) }}"
+                                                                method="POST" enctype="multipart/form-data">
+                                                                @method('patch')
+                                                                @csrf
+                                                                <div class="form-group col-sm-4">
+                                                                    <label>Full Name</label>
+                                                                    <input class="form-control" name="full_name" type="text" value=
+                                                                    "{{$data->name}}" placeholder="Enter Full Name">
+                                                                </div>
+                                                                <div class="form-group col-sm-4">
+                                                                    <label>Email</label>
+                                                                    <input class="form-control" value=
+                                                                    "{{$data->email}}" name="website" type="email">
+                                                                </div>
+                                                                <div class="form-group col-sm-4">
+                                                                    <label>Password</label>
+                                                                    <input class="form-control" value=
+                                                                    "{{$data->password}}" name="password" type="password">
+                                                                </div>
+                                                                <div class="submit-section">
+                                                                    <button class="btn btn-primary"
+                                                                        type="submit">Update</button>
+                                                                </div>
+                                                        </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                            </div>
+                            <!-- /Edit Sales Lead Modal -->
+                            @endforeach
+                            </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+
+    </div>
+    <!-- /Page Content -->
+
+    <!-- Add Airline Modal -->
+    <div id="add_admin" class="modal custom-modal fade " role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Admin</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body model-md">
+                    <form action="{{ route('admin.admin.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="row">
+                            <div class="form-group col-sm-4">
+                                <label>Full Name</label>
+                                <input class="form-control" name="full_name" type="text" required placeholder="Enter Full Name">
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Email</label>
+                                <input class="form-control" name="email" type="email" required>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Password</label>
+                                <input class="form-control" name="password" type="password" required>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Select Role</label>
+                                <select class="form-control" name="role" required>
+                                    <option>Select Role</option>
+                                    @foreach ($roles as $role)
+                                        <option value="{{$role->id}}">{{$role->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="submit-section">
+                                <button class="btn btn-primary" type="submit">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Add Airline Modal -->
+
+
+    </div>
+@endsection

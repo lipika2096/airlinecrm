@@ -54,55 +54,29 @@ use App\Http\Controllers\dashboard\{
     LicenseApprovalController,
     AgentLibraryController,
     FareTypeController,
-    DiscountController
+    DiscountController,
+    RolePermissionController
 };
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+Route::name('admin.')->middleware(['admin'])->group(function () {
+    Route::get('roles-permissions', [RolePermissionController::class, 'index'])->name('roles-permissions.index');
+    Route::get('/roles/{role}/permissions', [RolePermissionController::class, 'getRolePermissions'])->name('roles.getPermissions');
+    Route::put('/roles/update', [RolePermissionController::class, 'update'])->name('roles.update');
+    Route::post('/roles', [RolePermissionController::class, 'store'])->name('roles.store');
 
-// Home route
-Route::get('/employee', function () {
-    return view('admin.employee-login');
-})->name('employee.login');
+    Route::get('admin-view', [AdminController::class, 'showAllAdmin'])->name('admin.view');
+    Route::post('admin-view/store', [AdminController::class, 'registerAdmin'])->name('admin.store');
+    Route::patch('admin-view/update/{id}', [AdminController::class, 'editAdmin'])->name('admin.update');
 
-Route::post('/employee/login', [EmployeeController::class, 'login'])->name('employee.post.login');
-// Dashboard routes
-Route::prefix('employee')->name('employee.')->middleware(['auth:employee', 'verified'])->group(function () {
-
-    Route::get('dashboard', [DashboardController::class, 'employeeDashboard'])->name('dashboard');
-    Route::get('/logout', [EmployeeController::class, 'logout'])->name('logout');
-
-    Route::get('profile', [ProfileController::class, 'employeeProfile'])->name('profile');
-    Route::get('attendance-employee', [EmployeeController::class, 'attendanceEmployee'])->name('attendance-employee');
-    Route::get('leaves-employee', [EmployeeController::class, 'leavesEmployee'])->name('leaves-employee');
-
-    Route::get('resignation', [HRController::class, 'Employeeresignation'])->name('resignation');
-    Route::post('resignation/store', [HRController::class, 'EmployeeresignationStore'])->name('resignation.store');
-    Route::patch('resignation/update', [HRController::class, 'EmployeeresignationUpdate'])->name('resignation.update');
-
-    Route::post('punch-in', [EmployeeController::class, 'punchIn']);
-    Route::post('punch-out', [EmployeeController::class, 'punchOut']);
-
-    Route::get('leaves', [EmployeeController::class, 'leavesEmployee'])->name('leaves');
-    Route::post('leaves/store', [EmployeeController::class, 'leavesEmployeeStore'])->name('leaves.store');
-    Route::patch('leaves/edit/{id}', [EmployeeController::class, 'leavesEmployeeUpdate'])->name('leaves.update');
 });
 
+// Home route
 Route::get('/', function () {
     return view('admin.index');
 })->name('admin.login');
 
 Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.post.login');
-Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->group(function () {
-
+Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
 
     Route::get('/get-departments', [EmployeeController::class, 'getDepartments']);
     Route::get('/get-employees/{department}', [EmployeeController::class, 'getEmployeesByDepartment']);
@@ -138,7 +112,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin', 'verified'])->
     Route::post('/update-leavetype-status', [LeaveTypeController::class, 'updateStatus'])->name('leave-type.updateStatus');
     Route::get('dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
 
-        Route::get('coming-soon', [DashboardController::class, 'comingSoon'])->name('comingSoon');
+    Route::get('coming-soon', [DashboardController::class, 'comingSoon'])->name('comingSoon');
 
     Route::get('/logout', [AdminController::class, 'logout'])->name('logout');
 

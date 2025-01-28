@@ -6,9 +6,46 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class AdminController extends Controller
 {
+    public function registerAdmin(Request $request){
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+            'full_name' => 'required'
+        ]);
+        $admin = Admin::create([
+            'email' =>  $request->input('email'),
+            'password' =>  Hash::make($request->input('password')),
+            'name' =>  $request->input('full_name'),
+            'plain_password' => $request->password
+        ]);
+
+        $role = Role::findById($request->input('role'),'web');
+        $admin->assignRole($role);
+
+        return redirect()->back()->with('success', 'New Admin created successfully');
+    }
+
+    public function showAllAdmin(Request $request){
+        $admin = Admin::latest()->get();
+        $roles = Role::with('permissions')->where('name', '!=', 'superAdmin')->get();
+        return view('admin.admin-view', compact('admin', 'roles'));
+    }
+
+    public function editAdmin(Request $request, $id){
+        $admin = Admin::find($id);
+        $admin->update([
+            'name' => $request->full_name,
+            'email' => $request->email,
+        ]);
+        return redirect()->back()->with('success', 'Admin updated successfully');
+    }
+
+
     public function login(Request $request){
         $request->validate([
             'email' => 'required|email',
