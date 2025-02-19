@@ -1625,9 +1625,10 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table class="table datatable">
+                                        <table class="table datatable" id="accountDataTable">
                                             <thead>
                                                 <tr>
+                                                    <th>S.No.</th>
                                                     <th>Date</th>
                                                     <th>Remarks</th>
                                                     <th>Credit</th>
@@ -1639,11 +1640,12 @@
                                                 @php
                                                     $balance = $agentAccountBal->balance ?? 0;
                                                 @endphp
-                                                @foreach ($agentAccounts as $account)
+                                                @foreach ($agentAccounts as $index => $account)
                                                     @php
                                                         $balance += $account->credit - $account->debit;
                                                     @endphp
                                                     <tr>
+                                                        <td>{{$index +1}}</td>
                                                         <td>{{ $account->tr_date }}</td>
                                                         <td>{{ $account->tr_type }}</td>
                                                         <td>{{ $account->credit ?? 0 }}</td>
@@ -1651,7 +1653,6 @@
                                                         <td>{{ $account->balance }}</td>
                                                     </tr>
                                                 @endforeach
-                                                <!-- Repeat for other agents -->
                                             </tbody>
                                         </table>
 
@@ -2626,5 +2627,26 @@
     text-align: justify!important;
 }
 </style>
+<!-- Include jQuery & DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
 
+<script>
+    $(document).ready(function () {
+        let table = $('#accountDataTable').DataTable({
+            "responsive": true,
+            "autoWidth": false,
+            "searching" : false
+        });
+
+        // Ensure DataTable is reloaded when there are data changes
+        if (!$.fn.DataTable.isDataTable("#accountDataTable")) {
+            table.destroy();
+            $('#accountDataTable').DataTable({
+                "responsive": true,
+                "autoWidth": false,
+                "searching" : false
+            });
+        }
+    });
+</script>
         @endsection
