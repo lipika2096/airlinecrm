@@ -239,7 +239,7 @@ class AgentController extends Controller
         CaseUpdate::create([
             'case_id' => $case->id,
             'update_date' => $request->input('case_opening_date'),
-            'updated_by' => auth()->user()->name,
+            'updated_by' => auth('admin')->user()->name,
             'comments' => $request->remarks,
             'status' => $request->input('case_status'),
         ]);
@@ -262,7 +262,7 @@ class AgentController extends Controller
         CaseUpdate::create([
             'case_id' => $case->id,
             'update_date' => Carbon::now(),
-            'updated_by' => auth()->user()->name,
+            'updated_by' => auth('admin')->user()->name,
             'comments' => $request->comments,
             'status' => $request->status,
         ]);
@@ -271,7 +271,7 @@ class AgentController extends Controller
         if ($request->status === 'Close') {
             $case->update([
                 'case_status' => 'Closed',
-                'case_closed_by' => auth()->user()->name,
+                'case_closed_by' => auth('admin')->user()->name,
                 'case_closing_date' => Carbon::now(),
             ]);
         } else {
@@ -295,14 +295,14 @@ class AgentController extends Controller
         CaseUpdate::create([
             'case_id' => $case->id,
             'update_date' => Carbon::now(),
-            'updated_by' => auth()->user()->name,
+            'updated_by' => auth('admin')->user()->name,
             'comments' => $request->comments,
             'status' => 'Closed',
         ]);
 
         $case->update([
             'case_status' => 'Closed',
-            'case_closed_by' => auth()->user()->name,
+            'case_closed_by' => auth('admin')->user()->name,
             'case_closing_date' => Carbon::now(),
         ]);
 
@@ -325,14 +325,14 @@ class AgentController extends Controller
                     $specialFare->airline_id = $airlineId;
                     $specialFare->fare_type = $fareType;
                     $specialFare->status = $status;
-                    $specialFare->created_by = Auth()->user()->name;
+                    $specialFare->created_by = auth('admin')->user()->name;
                     $specialFare->updated_at = $request->input('updated_at');
                     $specialFare->save();
                 } else {
                     // If the status has changed, update the necessary fields
                     if ($specialFare->status != $status) {
                         $specialFare->status = $status;
-                        $specialFare->updated_by = Auth()->user()->name;
+                        $specialFare->updated_by = auth('admin')->user()->name;
                         $specialFare->updated_at = now();
                         $specialFare->save();
                     }
@@ -501,7 +501,7 @@ class AgentController extends Controller
             'phone_number' => $request->input('phone_number'),
             'position' => $request->input('position'),
             'add_to_mail_list' => $request->input('add_to_mail_list') == '1' ? 1 : 0,
-            'last_updated_by' => Auth()->user()->id
+            'last_updated_by' => auth('admin')->user()->id
         ]);
         return redirect()->back();
     }
@@ -517,7 +517,7 @@ class AgentController extends Controller
             'agent_id' => $request->input('agent_id'),
             'add_to_mail_list' => $request->input('add_to_mail_list'),
             'updated_at' => $request->input('updated_at'),
-            'created_by' => Auth()->user()->id
+            'created_by' => auth('admin')->user()->id
         ]);
         return redirect()->back();
     }

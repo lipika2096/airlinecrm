@@ -1194,7 +1194,7 @@
                                                     method="POST" enctype="multipart/form-data">
                                                     @csrf
                                                     <input class="form-control" type="hidden" name="from"
-                                                        value="{{ Auth()->user()->name }}">
+                                                        value="{{ auth('admin')->user()->name ?? 'N/A' }}">
                                                     <div class="row">
                                                         <div class="col-sm-4">
                                                             <!-- <div class="form-group"> -->
@@ -1291,7 +1291,7 @@
                                                         <td>{{ $data->opened_by }}</td>
                                                         <td>{{ $data->case_opening_date }}</td>
                                                         <td>{{ $data->case_closed_by }}</td>
-                                                        <td>{{ $data->case_closing_date }}</td>
+                                                        <td>@if ($data->case_status != 'Updated'){{ $data->case_closing_date }}  @endif</td>
                                                         <td>
                                                             <!-- View Button -->
                                                             <button class="btn btn-info text-light btn-sm"
@@ -1535,7 +1535,7 @@
                                                                             class="text-danger">*</span></label>
                                                                     <input class="form-control" type="text" required
                                                                         name="opened_by" readonly
-                                                                        value="{{ auth()->user()->name }}" required>
+                                                                        value="{{ auth('admin')->user()->name ?? 'N/A' }}" required>
                                                                 </div>
                                                             </div>
 
