@@ -433,7 +433,7 @@ use Carbon\Carbon;
                                                         </div>
                                                         <div class="col-md-12">
                                                             <div class="form-group">
-                                                                <label>Absence type</label>
+                                                                <label>Absence Type</label>
                                                                 <select class="form-control select" name="leave_type">
                                                                     @foreach ($leavetypes as $leavetype)
                                                                     <option value="{{ $leavetype->name }}">
@@ -452,7 +452,7 @@ use Carbon\Carbon;
 
                                                         <div class="col-sm-6">
                                                             <div class="form-group">
-                                                                <label class="col-form-label">Until</label>
+                                                                <label class="col-form-label">To</label>
                                                                 <input class="form-control" type="date" name="to"
                                                                     onchange="calculateDays()">
                                                             </div>
@@ -474,13 +474,13 @@ use Carbon\Carbon;
                                                         <div class="col-sm-4">
                                                             <div class="form-group d-flex">
                                                                 <input type="radio" name="formerly" id="formerly">
-                                                                <label class="col-form-label ms-3">Formerly </label>
+                                                                <label class="col-form-label ms-3">am</label>
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-4">
                                                             <div class="form-group d-flex">
                                                                 <input type="radio" name="afternoon" id="afternoon">
-                                                                <label class="col-form-label ms-3">Afternoon </label>
+                                                                <label class="col-form-label ms-3">pm</label>
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-12">
@@ -492,7 +492,7 @@ use Carbon\Carbon;
                                                         </div>
                                                         <div class="col-sm-12">
                                                             <div class="form-group">
-                                                                <label class="col-form-label">note </label>
+                                                                <label class="col-form-label">Note </label>
                                                                 <textarea class="form-control" name="note" cols="3"
                                                                     rows="3"></textarea>
                                                             </div>
@@ -514,8 +514,7 @@ use Carbon\Carbon;
                                                         </div> --}}
                                                     </div>
                                                     <div class="submit-section">
-                                                        <button class="btn btn-primary " type="submit">Apply
-                                                            For</button>
+                                                        <button class="btn btn-primary " type="submit">Apply</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -557,7 +556,7 @@ use Carbon\Carbon;
                                                         </div>
                                                         <div class="col-md-12">
                                                             <div class="form-group">
-                                                                <label>Absence type</label>
+                                                                <label>Absence Type</label>
                                                                 <select class="form-control select" name="leave_type">
                                                                     @foreach ($leavetypes as $leavetype)
                                                                     <option value="{{ $leavetype->name }}">
@@ -575,7 +574,7 @@ use Carbon\Carbon;
 
                                                         <div class="col-sm-6">
                                                             <div class="form-group">
-                                                                <label class="col-form-label">Until</label>
+                                                                <label class="col-form-label">To</label>
                                                                 <input class="form-control" type="date" name="to">
                                                             </div>
                                                         </div>
@@ -588,18 +587,18 @@ use Carbon\Carbon;
                                                         <div class="col-sm-4">
                                                             <div class="form-group d-flex">
                                                                 <input type="radio" name="formerly" id="formerly">
-                                                                <label class="col-form-label ms-3">Formerly </label>
+                                                                <label class="col-form-label ms-3">am</label>
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-4">
                                                             <div class="form-group d-flex">
                                                                 <input type="radio" name="afternoon" id="afternoon">
-                                                                <label class="col-form-label ms-3">Afternoon </label>
+                                                                <label class="col-form-label ms-3">pm</label>
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-12">
                                                             <div class="form-group">
-                                                                <label class="col-form-label">note </label>
+                                                                <label class="col-form-label">Note </label>
                                                                 <textarea class="form-control" name="note" cols="3"
                                                                     rows="3"></textarea>
                                                             </div>

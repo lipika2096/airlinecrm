@@ -404,7 +404,7 @@ class AirlineController extends Controller
             'sales' => $request->input('sales'),
             'airport_operations' => $request->input('airport_operations'),
             'updated_at' => now(),
-            'updated_by' => auth()->user()->name
+            'updated_by' => auth('admin')->user()->name
         ]);
         return redirect()->back();
     }
@@ -438,7 +438,7 @@ class AirlineController extends Controller
                 'content' => $request->input('content'),
                 'document' => $fileName,
                 'updated_at' =>  $request->input('updated_at'),
-                'created_by' => Auth()->user()->name
+                'created_by' => auth('admin')->user()->name
             ]);
 
             return redirect()->back()->with('success', 'SLA added successfully.');
@@ -477,7 +477,7 @@ class AirlineController extends Controller
             'category' => $request->input('category'),
             'content' => $request->input('content'),
             'document' => $fileName,
-            'updated_by' => Auth()->user()->name
+            'updated_by' => auth('admin')->user()->name
         ]);
 
         return redirect()->back()->with('success', 'SLA updated successfully.');
@@ -556,7 +556,7 @@ class AirlineController extends Controller
         ]);
 
 
-        $validated['last_updated_by'] = auth()->user()->name;
+        $validated['last_updated_by'] = auth('admin')->user()->name;
         $validated['last_updated_on'] = now();
         $validated['add_to_mail_list'] = $request->input('add_to_mail_list') == '1' ? 1 : 0;
         $headOffice->update($validated);
@@ -676,7 +676,7 @@ class AirlineController extends Controller
         $document->edition_no = $request->input('edition_no');
 
 
-        $document->updated_by = auth()->user()->id; // Assuming you want to store the user ID
+        $document->updated_by = auth('admin')->user()->id; // Assuming you want to store the user ID
         $document->updated_at = now();
 
 
@@ -716,14 +716,14 @@ class AirlineController extends Controller
                     $specialFare->agent_id = $agentId;
                     $specialFare->fare_type = $fareType;
                     $specialFare->status = $status;
-                    $specialFare->created_by = Auth()->user()->name;
+                    $specialFare->created_by = auth('admin')->user()->name;
                     $specialFare->updated_at = $request->input('updated_at');
                     $specialFare->save();
                 } else {
                     // If the status has changed, update the necessary fields
                     if ($specialFare->status != $status) {
                         $specialFare->status = $status;
-                        $specialFare->updated_by = Auth()->user()->name;
+                        $specialFare->updated_by = auth('admin')->user()->name;
                         $specialFare->updated_at = now();
                         $specialFare->save();
                     }
@@ -751,14 +751,14 @@ class AirlineController extends Controller
                     $specialFare->staff_id = $satffId;
                     $specialFare->duties = $duty;
                     $specialFare->status = $status;
-                    $specialFare->created_by = Auth()->user()->name;
+                    $specialFare->created_by = auth('admin')->user()->name;
                     $specialFare->updated_at = $request->input('updated_at');
                     $specialFare->save();
                 } else {
                     // If the status has changed, update the necessary fields
                     if ($specialFare->status != $status) {
                         $specialFare->status = $status;
-                        $specialFare->updated_by = Auth()->user()->name;
+                        $specialFare->updated_by = auth('admin')->user()->name;
                         $specialFare->updated_at = now();
                         $specialFare->save();
                     }
@@ -957,7 +957,7 @@ class AirlineController extends Controller
             'agreement_status' => $request->input('agreement_status'),
             'type' => 'Agreement',
             'updated_at' => $request->input('updated_at'),
-            'created_by' => Auth()->user()->name
+            'created_by' => auth('admin')->user()->name
         ]);
 
         return redirect()->back()->with('success', 'Rules updated successfully.');
@@ -978,7 +978,7 @@ class AirlineController extends Controller
             'incentive_description' => $request->input('incentive_description'),
             'term' => $request->input('term'),
             'agreement_status' => $request->input('agreement_status'),
-            'updated_by' => Auth()->user()->name
+            'updated_by' => auth('admin')->user()->name
 
         ]);
 
@@ -1031,7 +1031,7 @@ class AirlineController extends Controller
             'valid_till' => $request->input('valid_till'),
             'type' => 'PLI',
             'updated_at' => $request->input('updated_at'),
-            'created_by' => Auth()->user()->name
+            'created_by' => auth('admin')->user()->name
 
         ]);
 

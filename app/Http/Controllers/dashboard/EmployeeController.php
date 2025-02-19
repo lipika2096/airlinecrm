@@ -91,7 +91,7 @@ class EmployeeController extends Controller
         $document->edition_no = $request->input('edition_no');
 
 
-        $document->updated_by = auth()->user()->name; // Assuming you want to store the user ID
+        $document->updated_by = auth('admin')->user()->name; // Assuming you want to store the user ID
         $document->updated_at = now();
 
 
@@ -154,7 +154,7 @@ class EmployeeController extends Controller
             'edition_no' => $request->input('edition_no'),
             'issue_date' => $request->input('issue_date'),
             'attachment' => $fileNamesString,
-            'uploaded_by' => auth()->user()->id,
+            'uploaded_by' => auth('admin')->user()->id,
         ]);
 
 
@@ -380,10 +380,10 @@ class EmployeeController extends Controller
                 );
 
                 if ($specialFare->wasRecentlyCreated) {
-                    $specialFare->created_by = Auth()->user()->name;
+                    $specialFare->created_by = auth('admin')->user()->name;
                     $specialFare->updated_at = $request->input('updated_at'); // Assuming user authentication is used
                 } else {
-                    $specialFare->updated_by = auth()->user()->name;
+                    $specialFare->updated_by = auth('admin')->user()->name;
                     $specialFare->updated_at = now();
                 }
 
@@ -1117,7 +1117,7 @@ class EmployeeController extends Controller
             'staff_id' => $request->input('staff_id'),
             'doc_name' => $request->input('doc_name'),
             'attachment' => 'null',
-            'created_by' => Auth()->user()->name,
+            'created_by' => auth('admin')->user()->name,
             'updated_at' => $request->input('updated_at'),
 
         ]);
@@ -1183,7 +1183,7 @@ class EmployeeController extends Controller
         $read =  StaffReadSign::find($id);
         $read->update([
             'sign_doc' => $request->input('sign_document'),
-            'updated_by' => Auth()->user()->name
+            'updated_by' => auth('admin')->user()->name
         ]);
         // Add your logic for leaves admin view
         return redirect()->back()->with('success', 'Signed Successfully added successfully');

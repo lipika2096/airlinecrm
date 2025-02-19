@@ -55,7 +55,7 @@ class AgentLibraryController extends Controller
             'agent_id' => $request->input('agent_id'),
             'doc_name' => 'null',
             'attachment' => $fileNamesString, // Store filenames as JSON string
-            'uploaded_by' => auth()->user()->id,
+            'uploaded_by' => auth('admin')->user()->id,
         ]);
 
         return redirect()->back();

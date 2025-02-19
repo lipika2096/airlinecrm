@@ -80,7 +80,7 @@ class SalesLeadController extends Controller
             'contact_person' => $request->input('contact_person') ?? 'null',
             'category' => $request->input('category') ?? 'null',
             'remarks' => $request->input('remarks') ?? 'null',
-            'created_by' => auth()->user()->name,
+            'created_by' => auth('admin')->user()->name,
             'updated_at' => now(),
             'unique_id' => Str::uuid()->toString()
         ]);
@@ -116,7 +116,7 @@ class SalesLeadController extends Controller
             'contact_person' => $request->input('contact_person') ?? 'null',
             'category' => $request->input('category') ?? 'null',
             'remarks' => $request->input('remarks') ?? 'null',
-            'updated_by' => auth()->user()->name,
+            'updated_by' => auth('admin')->user()->name,
         ]);
 
         // Get the current assigned staff for this sales lead

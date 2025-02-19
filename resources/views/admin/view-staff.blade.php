@@ -214,7 +214,7 @@
                                     <input type="hidden" name="employee_id" value="{{ $employee->id }}">
                                     <h6 class="card-title">Enter quick absence</h6>
                                     <div class="">
-                                        <label for="absence-type" class="form-label absent">Absence type</label>
+                                        <label for="absence-type" class="form-label absent">Absence Type</label>
                                         <select class="form-select" name="leave_type" id="leave_type">
                                             <option>Select Leave Type</option>
                                             @foreach($leavetypes as $leavetype)

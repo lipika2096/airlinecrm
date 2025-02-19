@@ -256,16 +256,16 @@
                     <a href="#"><i class="la la-dashboard"></i> <span> Dashboard</span> <span
                             class="menu-arrow"></span></a>
                     <ul style="display: none;">
-                        @if (auth()->user()->hasRole('admin'))
+                        @if (auth('admin')->user()->hasRole('admin'))
                             <li><a class="" href="{{ route('admin.dashboard') }}">Admin Dashboard</a></li>
                         @endif
-                        @if (auth()->user()->hasRole('employee'))
+                        @if (auth('admin')->user()->hasRole('employee'))
                             <li><a class="" href="{{ route('employee.dashboard') }}">Employee
                                     Dashboard</a></li>
                         @endif
                     </ul>
                 </li>
-                @if (auth()->user()->hasRole('admin'))
+                @if (auth('admin')->user()->hasRole('admin'))
                 <li class="submenu">
                     <a href="#"><i class="la la-cube"></i> <span> Todo(s)</span> <span
                             class="menu-arrow"></span></a>
@@ -282,27 +282,27 @@
                     <a href="#" class="noti-dot"><i class="la la-user"></i> <span> Employees</span> <span
                             class="menu-arrow"></span></a>
                     <ul style="display: none;">
-                        @if (auth()->user()->hasRole('admin'))
+                        @if (auth('admin')->user()->hasRole('admin'))
                             <li><a class="" href="{{ route('admin.employees') }}">All Employees</a></li>
                             <li><a class="" href="{{ route('admin.holidays') }}">Holidays</a></li>
                             <li><a class="" href="{{ route('admin.leaves') }}">Leaves (Admin) <span
                                         class="badge rounded-pill bg-primary float-end">1</span></a></li>
                         @endif
-                        @if (auth()->user()->hasRole('employee'))
+                        @if (auth('admin')->user()->hasRole('employee'))
                             <li><a class="" href="{{ route('employee.leaves-employee') }}">Leaves (Employee)</a>
                             </li>
                         @endif
-                        @if (auth()->user()->hasRole('admin'))
+                        @if (auth('admin')->user()->hasRole('admin'))
                             <li><a class="" href="{{ route('admin.attendance') }}">Attendance (Admin)</a></li>
                         @endif
-                        @if (auth()->user()->hasRole('employee'))
+                        @if (auth('admin')->user()->hasRole('employee'))
                             <li><a class="" href="{{ route('employee.attendance-employee') }}">Attendance
                                     (Employee)</a></li>
 
                             <li class=""><a href="{{ route('employee.resignation') }}"><i
                                 class="la la-external-link-square"></i> <span>Resignation</span></a></li>
                         @endif
-                        @if (auth()->user()->hasRole('admin'))
+                        @if (auth('admin')->user()->hasRole('admin'))
                             <li><a class="" href="{{ route('admin.departments') }}">Departments</a></li>
                             <li><a class="" href="{{ route('admin.designations') }}">Designations</a></li>
                             {{-- <li><a class="" href="{{ route('admin.timesheet') }}">Timesheet</a></li>
@@ -321,7 +321,7 @@
                         @endif
                     </ul>
                 </li>
-                @if (auth()->user()->hasRole('admin'))
+                @if (auth('admin')->user()->hasRole('admin'))
                     {{-- <li class="submenu">
                 <a href="#"><i class="la la-money"></i> <span> Payroll </span> <span class="menu-arrow"></span></a>
                 <ul style="display: none;">
@@ -355,12 +355,12 @@
                 <a href="{{ route('admin.holdsconfirm') }}"><i class="la la-cog"></i> <span>Confirm Agent Hold</span></a>
             </li> --}}
                 @endif
-                @if (auth()->user()->hasRole('admin'))
+                @if (auth('admin')->user()->hasRole('admin'))
                     <li class="submenu">
                         <a href="#" class="noti-dot"><i class="la la-user"></i> <span> Airline Details</span>
                             <span class="menu-arrow"></span></a>
                         <ul style="display: none;">
-                            @if (auth()->user()->hasRole('admin'))
+                            @if (auth('admin')->user()->hasRole('admin'))
                                 <li><a class="" href="{{ route('admin.airlines') }}">Airlines Details</a></li>
                             @endif
                         </ul>
@@ -369,7 +369,7 @@
                         <a href="#" class="noti-dot"><i class="la la-user"></i> <span> Agent</span> <span
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
-                            @if (auth()->user()->hasRole('admin'))
+                            @if (auth('admin')->user()->hasRole('admin'))
                                 <li><a class="" href="{{ route('admin.agents') }}">Agent Lists</a></li>
                             @endif
                         </ul>
@@ -378,7 +378,7 @@
                         <a href="#" class="noti-dot"><i class="la la-user"></i> <span> Groups</span> <span
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
-                            @if (auth()->user()->hasRole('admin'))
+                            @if (auth('admin')->user()->hasRole('admin'))
                                 <li><a class="" href="{{ route('admin.groups') }}">Manage Groups</a></li>
                             @endif
                         </ul>
@@ -393,13 +393,13 @@
                                 </ul>
                     </li>
                 @endif
-                @if (auth()->user()->hasRole('admin'))
+                @if (auth('admin')->user()->hasRole('admin'))
                     <li class="">
                         <a href="{{ route('admin.air-tickets') }}"><i class="la la-ticket"></i>
                             <span>Tickets</span></a>
                     </li>
                 @endif
-                @if (auth()->user()->hasRole('admin'))
+                @if (auth('admin')->user()->hasRole('admin'))
                     <li class="submenu">
                         <a href="#"><i class="la la-files-o"></i> <span> Sales Lead</span> <span
                                 class="menu-arrow"></span></a>
@@ -420,7 +420,7 @@
                     </ul>
                 </li>
 
-                {{-- @if (auth()->user()->hasRole('admin'))
+                {{-- @if (auth('admin')->user()->hasRole('admin'))
             <li class="submenu">
                 <a href="#"><i class="la la-pie-chart"></i> <span> Reports </span> <span class="menu-arrow"></span></a>
                 <ul style="display: none;">
@@ -515,10 +515,10 @@
             <a href="#"><i class="la la-hand-o-up"></i> <span> Subscriptions </span> <span class="menu-arrow"></span></a>
             <ul style="display: none;">
 
-            @if (auth()->user()->hasRole('admin'))
+            @if (auth('admin')->user()->hasRole('admin'))
                 <li><a class="" href="{{ route('admin.subscriptions') }}"> Subscriptions (Admin) </a></li>
             @endif
-            @if (auth()->user()->hasRole('employee'))
+            @if (auth('admin')->user()->hasRole('employee'))
                 <li><a class="" href="{{ route('admin.subscriptions.company') }}"> Subscriptions (Company) </a></li>
             @endif
                 <li><a class="" href="{{ route('admin.subscribed.companies') }}"> Subscribed Companies</a></li>

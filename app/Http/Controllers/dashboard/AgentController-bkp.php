@@ -126,7 +126,7 @@ public function caseStore(Request $request)
         CaseUpdate::create([
             'case_id' => $case->id,
             'update_date' => Carbon::now(),
-            'updated_by' => auth()->user()->name, // Assuming user is authenticated
+            'updated_by' => auth('admin')->user()->name, // Assuming user is authenticated
             'comments' => $request->comments,
             'status' => $request->status,
         ]);
@@ -135,7 +135,7 @@ public function caseStore(Request $request)
         if ($request->status === 'Close') {
             $case->update([
                 'case_status' => 'Closed',
-                'case_closed_by' => auth()->user()->name,
+                'case_closed_by' => auth('admin')->user()->name,
                 'case_closing_date' => Carbon::now(),
             ]);
         } else {
@@ -158,14 +158,14 @@ public function caseStore(Request $request)
         CaseUpdate::create([
             'case_id' => $case->id,
             'update_date' => Carbon::now(),
-            'updated_by' => auth()->user()->name,
+            'updated_by' => auth('admin')->user()->name,
             'comments' => $request->comments,
             'status' => 'Closed',
         ]);
 
         $case->update([
             'case_status' => 'Closed',
-            'case_closed_by' => auth()->user()->name,
+            'case_closed_by' => auth('admin')->user()->name,
             'case_closing_date' => Carbon::now(),
         ]);
 

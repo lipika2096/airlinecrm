@@ -55,7 +55,7 @@ class AppController extends Controller
             'contact_person' => $request->input('contact_person'),
             'remarks' => $request->input('remarks'),
             'updated_at' => $request->input('updated_at'),
-            'created_by' => auth()->user()->name,
+            'created_by' => auth('admin')->user()->name,
             'category' => $request->input('category')
         ]);
 
@@ -68,14 +68,14 @@ class AppController extends Controller
         if($eventStatus !== null){
             $eventStatus->update([
                 'status' => $request->input('status'),
-                'updated_by' => auth()->user()->id,
+                'updated_by' => auth('admin')->user()->id,
                 'updated_at' => now()
             ]);
         }
         else{
             $salesLead->update([
                 'status' => $request->input('status'),
-                'updated_by' => auth()->user()->id,
+                'updated_by' => auth('admin')->user()->id,
                 'updated_at' => now()
             ]);
         }

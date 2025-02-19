@@ -1114,7 +1114,7 @@ use Carbon\Carbon;
                                                 <div class="form-group">
                                                     {{-- <label for="created_by">Created By</label> --}}
                                                     <input type="hidden" class="form-control" id="created_by"
-                                                        name="created_by" value="{{Auth()->user()->name}}">
+                                                        name="created_by" value="{{auth('admin')->user()->name}}">
                                                 </div>
                                             </div>
                                             <div class="col-sm-12" style="margin-top:-12px;">
@@ -1335,7 +1335,7 @@ use Carbon\Carbon;
                                                             </div>
                                                             <div class="form-group">
                                                                 <input class="form-control" type="hidden"
-                                                                    name="updated_by" value="{{Auth()->user()->name}}">
+                                                                    name="updated_by" value="{{auth('admin')->user()->name}}">
                                                             </div>
                                                         </div>
                                                         <!-- </div> -->
@@ -1447,7 +1447,7 @@ use Carbon\Carbon;
                                             <div class="col-sm-6">
                                                 <div class="form-group">
                                                     <input class="form-control" type="hidden" name="created_by"
-                                                        value="{{Auth()->user()->name}}">
+                                                        value="{{auth('admin')->user()->name}}">
                                                 </div>
                                             </div>
                                         </div>
@@ -1496,7 +1496,7 @@ use Carbon\Carbon;
                                                     <input class="form-control" type="hidden" name="updated_at"
                                                         value="  ">
                                                     <input class="form-control" type="hidden" name="created_by"
-                                                        value="{{auth()->user()->name}}">
+                                                        value="{{auth('admin')->user()->name}}">
                                                 </div>
                                                 <th class="fw-bold">
                                                     {{ $air->first_name }}</th>
@@ -1798,7 +1798,7 @@ use Carbon\Carbon;
                                                                         --}}
                                                                         <input type="hidden" class="form-control"
                                                                             id="created_by" name="updated_by"
-                                                                            value="{{Auth()->user()->name}}">
+                                                                            value="{{auth('admin')->user()->name}}">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1891,7 +1891,7 @@ use Carbon\Carbon;
                                             <div class="col-sm-6">
                                                 {{-- <label for="created_by">Created By</label> --}}
                                                 <input type="hidden" class="form-control" id="created_by"
-                                                    name="created_by" value="{{Auth()->user()->name}}">
+                                                    name="created_by" value="{{auth('admin')->user()->name}}">
                                             </div>
                                         </div>
                                         <!-- </div> -->

@@ -61,7 +61,7 @@ class AirlineLibraryController extends Controller
             'edition_no' => $request->input('edition_no'),
             'issue_date' => $request->input('issue_date'),
             'attachment' => $fileNamesString,
-            'uploaded_by' => auth()->user()->id,
+            'uploaded_by' => auth('admin')->user()->id,
         ]);
 
 
@@ -108,7 +108,7 @@ class AirlineLibraryController extends Controller
             'edition_no' => $request->input('edition_no'),
             'issue_date' => $request->input('issue_date'),
             'attachment' => $fileNamesString,
-            'uploaded_by' => auth()->user()->id,
+            'uploaded_by' => auth('admin')->user()->id,
         ]);
 
 

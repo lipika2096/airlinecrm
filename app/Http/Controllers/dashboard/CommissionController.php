@@ -18,7 +18,7 @@ class CommissionController extends Controller
     $agents = User::where('role_id', 2)->get();
 
     // Fetch commissions where agent_id matches the authenticated user's id
-    $authId = auth()->id(); // Assuming you are using Laravel's built-in authentication
+    $authId = auth('admin')->id(); // Assuming you are using Laravel's built-in authentication
     $commissions = Commission::with('airline', 'agent')
 
                     ->get();
