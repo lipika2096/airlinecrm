@@ -1032,12 +1032,12 @@ use Carbon\Carbon;
                                         <td>{{ $data->effective_date }}</td>
                                         <td>{{ $data->edition_no }}</td>
                                         <td>{{ $data->created_at }}</td>
-                                        <td>{{ $data->admin->name ?? ($data->user->first_name ."
-                                            ".$data->user->last_name) }}</td>
+                                        <td>{{ $data->admin->name ?? (($data->user->first_name ?? 'N/A') ."
+                                            ".($data->user->last_name ?? '')) }}</td>
                                         <td>{{ $data->updated_at }}</td>
                                         <td>
                                             {{ $data->adminUpdated->name ?? ($data->userUpdated ?
-                                            $data->userUpdated->first_name . ' ' . $data->userUpdated->last_name : '')
+                                            ($data->userUpdated->first_name??'N/A') . ' ' . ($data->userUpdated->last_name??'') : '')
                                             }}
                                         </td>
 
@@ -1725,8 +1725,8 @@ use Carbon\Carbon;
                                     <option value="" disabled selected>Browse List</option>
                                     @foreach ($users as $data => $user)
                                     @foreach ($user as $dataUser)
-                                    <option value="{{ $dataUser->id }}">{{ $dataUser->first_name }}
-                                        {{ $dataUser->first_name }} - {{ $dataUser->department }}</option>
+                                    <option value="{{ $dataUser->id }}">{{ $dataUser->first_name ?? 'N/A' }}
+                                        {{ $dataUser->first_name ?? 'N/A'}} - {{ $dataUser->department ?? 'N/A' }}</option>
                                     @endforeach
                                     @endforeach
                                     <!-- Add more coworker options as needed -->
