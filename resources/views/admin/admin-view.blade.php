@@ -36,6 +36,11 @@
                                         <tr>
                                             <th>Full Name</th>
                                             <th>Email</th>
+                                            <th>Company Name</th>
+                                            <th>City</th>
+                                            <th>State</th>
+                                            <th>Country</th>
+                                            <th>Address</th>
                                             <th>Password</th>
                                             <th>Actions</th>
                                         </tr>
@@ -45,6 +50,11 @@
                                             <tr>
                                                 <td>{{ $data->name }}</td>
                                                 <td>{{ $data->email }}</td>
+                                                <td>{{ $data->adminDetail->company_name ??'-' }}</td>
+                                                <td>{{ $data->adminDetail->city ??'-'}}</td>
+                                                <td>{{ $data->adminDetail->state??'-' }}</td>
+                                                <td>{{ $data->adminDetail->country ??'-'}}</td>
+                                                <td>{{ $data->adminDetail->address??'-' }}</td>
                                                 <td>{{ $data->plain_password }}</td>
                                                 </td>
                                                 <td class="text-end">
@@ -141,6 +151,26 @@
                             <div class="form-group col-sm-4">
                                 <label>Email</label>
                                 <input class="form-control" name="email" type="email" required>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Company Name</label>
+                                <input class="form-control" name="company_name" type="company_name" required>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>City</label>
+                                <input class="form-control" name="city" type="city" required>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>State</label>
+                                <input class="form-control" name="state" type="state" required>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Country</label>
+                                <input class="form-control" name="country" type="country" required>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Address</label>
+                                <input class="form-control" name="address" type="address" required>
                             </div>
                             <div class="form-group col-sm-4">
                                 <label>Password</label>

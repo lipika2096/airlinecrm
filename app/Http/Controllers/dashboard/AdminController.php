@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Admin;
+use App\Models\AdminDetail;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -15,13 +16,26 @@ class AdminController extends Controller
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
-            'full_name' => 'required'
+            'full_name' => 'required',
+            'company_name' => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'country' => 'required',
+            'address' => 'required',
         ]);
         $admin = Admin::create([
             'email' =>  $request->input('email'),
             'password' =>  Hash::make($request->input('password')),
             'name' =>  $request->input('full_name'),
             'plain_password' => $request->password
+        ]);
+        AdminDetail::create([
+            'company_name' =>  $request->input('company_name'),
+            'city' =>  $request->input('city'),
+            'state' =>  $request->input('state'),
+            'country' => $request->input('country'),
+            'address' => $request->input('address'),
+            'admin_id' => $admin->id,
         ]);
 
         $role = Role::findById($request->input('role'),'web');
@@ -31,7 +45,8 @@ class AdminController extends Controller
     }
 
     public function showAllAdmin(Request $request){
-        $admin = Admin::latest()->get();
+        $admin = Admin::with('adminDetail')->whereDoesntHave('roles', function ($query) {
+            $query->where('name', 'superAdmin');})->latest()->get();
         $roles = Role::with('permissions')->where('name', '!=', 'superAdmin')->get();
         return view('admin.admin-view', compact('admin', 'roles'));
     }
@@ -41,6 +56,15 @@ class AdminController extends Controller
         $admin->update([
             'name' => $request->full_name,
             'email' => $request->email,
+        ]);
+
+        $admin_detail = AdminDetail::where('admin_id', $id)->first();
+        $admin_detail->update([
+            'company_name' =>  $request->input('company_name'),
+            'city' =>  $request->input('city'),
+            'state' =>  $request->input('state'),
+            'country' => $request->input('country'),
+            'address' => $request->input('address'),
         ]);
         return redirect()->back()->with('success', 'Admin updated successfully');
     }

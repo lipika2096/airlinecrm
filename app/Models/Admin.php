@@ -44,4 +44,9 @@ class Admin extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function adminDetail()
+    {
+        return $this->hasOne(AdminDetail::class, 'admin_id', 'id');
+    }
+
 }
