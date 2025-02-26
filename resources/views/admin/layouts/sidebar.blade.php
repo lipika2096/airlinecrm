@@ -25,6 +25,9 @@
                         <li>
                             <a class="{{ request()->routeIs('admin.admin.view') ? 'active' : '' }}" href="{{ route('admin.admin.view') }}">Manage Admin</a>
                         </li>
+                        <li>
+                            <a class="{{ request()->routeIs('admin.kyc.documents') ? 'active' : '' }}" href="{{ route('admin.kyc.documents') }}">Manage Documents</a>
+                        </li>
                     @endif
 
 
@@ -388,6 +391,9 @@
                     </li>
                     <li>
                         <a class="{{ request()->routeIs('admin.admin.view') ? 'active' : '' }}" href="{{ route('admin.admin.view') }}">Manage Admin</a>
+                    </li>
+                    <li>
+                        <a class="{{ request()->routeIs('admin.kyc.documents') ? 'active' : '' }}" href="{{ route('admin.kyc.documents') }}">Manage Documents</a>
                     </li>
                 @endif
 

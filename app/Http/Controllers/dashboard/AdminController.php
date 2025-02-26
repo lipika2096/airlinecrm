@@ -6,9 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Admin;
 use App\Models\AdminDetail;
+use App\Models\AdminKycDocument;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
@@ -56,17 +60,72 @@ class AdminController extends Controller
         $admin->update([
             'name' => $request->full_name,
             'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'plain_password' => $request->password
         ]);
+        if ($request->has('role')) {
+            $admin->syncRoles($request->role);
+        }
 
         $admin_detail = AdminDetail::where('admin_id', $id)->first();
-        $admin_detail->update([
-            'company_name' =>  $request->input('company_name'),
-            'city' =>  $request->input('city'),
-            'state' =>  $request->input('state'),
-            'country' => $request->input('country'),
-            'address' => $request->input('address'),
-        ]);
+        if($admin_detail == null){
+            AdminDetail::create([
+                'company_name' =>  $request->input('company_name'),
+                'city' =>  $request->input('city'),
+                'state' =>  $request->input('state'),
+                'country' => $request->input('country'),
+                'address' => $request->input('address'),
+                'admin_id' => $id,
+            ]);
+        }
+        else{
+            $admin_detail->update([
+                'company_name' =>  $request->input('company_name'),
+                'city' =>  $request->input('city'),
+                'state' =>  $request->input('state'),
+                'country' => $request->input('country'),
+                'address' => $request->input('address'),
+            ]);
+        }
         return redirect()->back()->with('success', 'Admin updated successfully');
+    }
+
+    public function kycDocumentIndex(Request $request){
+        $admin = AdminKycDocument::with('admin')->latest()->get();
+        $roles = Role::with('permissions')->where('name', '!=', 'superAdmin')->get();
+        return view('admin.admin-kyc', compact('admin', 'roles'));
+    }
+
+    public function kycDocument(Request $request, $id){
+        $fileNames = [];
+
+        if ($request->hasFile('doc_file')) {
+            foreach ($request->file('doc_file') as $docFile) {
+                $fileName = Str::uuid() . '.' . $docFile->getClientOriginalExtension();
+                $storagePath = 'public/assets/docs/';
+
+                // Ensure directory exists
+                if (!File::exists($storagePath)) {
+                    File::makeDirectory($storagePath, 0755, true, true);
+                }
+
+                // Store file
+                $docFile->move($storagePath, $fileName);
+
+                // Store the file path in array
+                $fileNames[] = asset('public/assets/docs/' . $fileName);
+            }
+        }
+
+        // Save the file names as JSON
+        AdminKycDocument::create([
+            'admin_id' => $id,
+            'doc_name' => $request->input('doc_name'),
+            'doc_file' => json_encode($fileNames),
+            'remarks' => $request->input('remarks'),
+        ]);
+
+        return redirect()->back()->with('success', 'Documents uploaded successfully');
     }
 
 

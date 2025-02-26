@@ -34,6 +34,7 @@
                                 <table class="table table-striped custom-table mb-0 datatable">
                                     <thead>
                                         <tr>
+                                            <th>Role</th>
                                             <th>Full Name</th>
                                             <th>Email</th>
                                             <th>Company Name</th>
@@ -48,6 +49,7 @@
                                     <tbody>
                                         @foreach ($admin as $data)
                                             <tr>
+                                                <td>{{ $data->getRoleNames()->implode(', ') }}</td>
                                                 <td>{{ $data->name }}</td>
                                                 <td>{{ $data->email }}</td>
                                                 <td>{{ $data->adminDetail->company_name ??'-' }}</td>
@@ -58,21 +60,13 @@
                                                 <td>{{ $data->plain_password }}</td>
                                                 </td>
                                                 <td class="text-end">
-                                                    <div class="dropdown dropdown-action">
-                                                        <a href="#" class="action-icon dropdown-toggle"
-                                                            data-bs-toggle="dropdown" aria-expanded="false"><i
-                                                                class="material-icons">more_vert</i></a>
-                                                        <div class="dropdown-menu dropdown-menu-right">
-                                                            <a class="dropdown-item" href="#"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#edit_admin{{ $data->id }}"><i
-                                                                    class="fa fa-pencil m-r-5"></i> Edit</a>
-                                                            <!-- Add more actions if needed -->
-                                                        </div>
-                                                    </div>
+                                                    <a class="btn btn-primary" href="#" title="edit profile"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#edit_admin{{ $data->id }}"><i
+                                                            class="fa fa-pencil"></i></a>
                                                 </td>
                                             </tr>
-                                            <!-- Edit Sales Lead Modal -->
+                                            <!-- Edit Admin Modal -->
                                             <div id="edit_admin{{ $data->id }}"
                                                 class="modal custom-modal fade" role="dialog">
                                                 <div class="modal-dialog modal-dialog-centered modal-lg"
@@ -99,12 +93,48 @@
                                                                 <div class="form-group col-sm-4">
                                                                     <label>Email</label>
                                                                     <input class="form-control" value=
-                                                                    "{{$data->email}}" name="website" type="email">
+                                                                    "{{$data->email}}" name="email" type="email">
+                                                                </div>
+                                                                <div class="form-group col-sm-4">
+                                                                    <label>Company Name</label>
+                                                                    <input class="form-control" value=
+                                                                    "{{$data->adminDetail->company_name ?? ''}}" name="company_name" type="company_name" required>
+                                                                </div>
+                                                                <div class="form-group col-sm-4">
+                                                                    <label>City</label>
+                                                                    <input class="form-control" value=
+                                                                    "{{$data->adminDetail->city  ?? ''}}" name="city" type="city" required>
+                                                                </div>
+                                                                <div class="form-group col-sm-4">
+                                                                    <label>State</label>
+                                                                    <input class="form-control" value=
+                                                                    "{{$data->adminDetail->state  ?? ''}}" name="state" type="state" required>
+                                                                </div>
+                                                                <div class="form-group col-sm-4">
+                                                                    <label>Country</label>
+                                                                    <input class="form-control" value=
+                                                                    "{{$data->adminDetail->country  ?? ''}}"name="country" type="country" required>
+                                                                </div>
+                                                                <div class="form-group col-sm-4">
+                                                                    <label>Address</label>
+                                                                    <input class="form-control" value=
+                                                                    "{{$data->adminDetail->address  ?? ''}}" name="address" type="address" required>
                                                                 </div>
                                                                 <div class="form-group col-sm-4">
                                                                     <label>Password</label>
                                                                     <input class="form-control" value=
-                                                                    "{{$data->password}}" name="password" type="password">
+                                                                    "{{$data->plain_password}}" name="password" type="password">
+                                                                </div>
+                                                                <div class="form-group col-sm-4">
+                                                                    <label>Role</label>
+                                                                    <select class="form-control" name="role">
+                                                                        @foreach ($roles as $role)
+                                                                            <option value="{{ $role->name }}"
+                                                                                {{ $data->hasRole($role->name) ? 'selected' : '' }}>
+                                                                                {{ $role->name }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
                                                                 </div>
                                                                 <div class="submit-section">
                                                                     <button class="btn btn-primary"
