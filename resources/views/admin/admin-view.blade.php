@@ -60,96 +60,14 @@
                                                 <td>{{ $data->plain_password }}</td>
                                                 </td>
                                                 <td class="text-end">
-                                                    <a class="btn btn-primary" href="#" title="edit profile"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#edit_admin{{ $data->id }}"><i
-                                                            class="fa fa-pencil"></i></a>
+                                                    <a class="btn btn-primary" href="{{route('admin.customer.view', ['id'=> $data->id])}}" title="view customer profile"><i
+                                                            class="fa fa-eye"></i></a>
                                                 </td>
                                             </tr>
-                                            <!-- Edit Admin Modal -->
-                                            <div id="edit_admin{{ $data->id }}"
-                                                class="modal custom-modal fade" role="dialog">
-                                                <div class="modal-dialog modal-dialog-centered modal-lg"
-                                                    role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Edit Admin</h5>
-                                                            <button type="button" class="close"
-                                                                data-bs-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form
-                                                                action="{{ route('admin.admin.update', ['id' => $data->id]) }}"
-                                                                method="POST" enctype="multipart/form-data">
-                                                                @method('patch')
-                                                                @csrf
-                                                                <div class="form-group col-sm-4">
-                                                                    <label>Full Name</label>
-                                                                    <input class="form-control" name="full_name" type="text" value=
-                                                                    "{{$data->name}}" placeholder="Enter Full Name">
-                                                                </div>
-                                                                <div class="form-group col-sm-4">
-                                                                    <label>Email</label>
-                                                                    <input class="form-control" value=
-                                                                    "{{$data->email}}" name="email" type="email">
-                                                                </div>
-                                                                <div class="form-group col-sm-4">
-                                                                    <label>Company Name</label>
-                                                                    <input class="form-control" value=
-                                                                    "{{$data->adminDetail->company_name ?? ''}}" name="company_name" type="company_name" required>
-                                                                </div>
-                                                                <div class="form-group col-sm-4">
-                                                                    <label>City</label>
-                                                                    <input class="form-control" value=
-                                                                    "{{$data->adminDetail->city  ?? ''}}" name="city" type="city" required>
-                                                                </div>
-                                                                <div class="form-group col-sm-4">
-                                                                    <label>State</label>
-                                                                    <input class="form-control" value=
-                                                                    "{{$data->adminDetail->state  ?? ''}}" name="state" type="state" required>
-                                                                </div>
-                                                                <div class="form-group col-sm-4">
-                                                                    <label>Country</label>
-                                                                    <input class="form-control" value=
-                                                                    "{{$data->adminDetail->country  ?? ''}}"name="country" type="country" required>
-                                                                </div>
-                                                                <div class="form-group col-sm-4">
-                                                                    <label>Address</label>
-                                                                    <input class="form-control" value=
-                                                                    "{{$data->adminDetail->address  ?? ''}}" name="address" type="address" required>
-                                                                </div>
-                                                                <div class="form-group col-sm-4">
-                                                                    <label>Password</label>
-                                                                    <input class="form-control" value=
-                                                                    "{{$data->plain_password}}" name="password" type="password">
-                                                                </div>
-                                                                <div class="form-group col-sm-4">
-                                                                    <label>Role</label>
-                                                                    <select class="form-control" name="role">
-                                                                        @foreach ($roles as $role)
-                                                                            <option value="{{ $role->name }}"
-                                                                                {{ $data->hasRole($role->name) ? 'selected' : '' }}>
-                                                                                {{ $role->name }}
-                                                                            </option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
-                                                                <div class="submit-section">
-                                                                    <button class="btn btn-primary"
-                                                                        type="submit">Update</button>
-                                                                </div>
-                                                        </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
-                            <!-- /Edit Sales Lead Modal -->
-                            @endforeach
-                            </tbody>
-                            </table>
                         </div>
                     </div>
                 </div>
@@ -175,36 +93,101 @@
                         @csrf
                         <div class="row">
                             <div class="form-group col-sm-4">
-                                <label>Full Name</label>
-                                <input class="form-control" name="full_name" type="text" required placeholder="Enter Full Name">
+                                <label>Brand Name</label>
+                                <input class="form-control" name="full_name" type="text" required placeholder="Enter Brand Name">
                             </div>
                             <div class="form-group col-sm-4">
                                 <label>Email</label>
-                                <input class="form-control" name="email" type="email" required>
+                                <input class="form-control" name="email" type="email" required placeholder="Enter Email">
                             </div>
                             <div class="form-group col-sm-4">
                                 <label>Company Name</label>
-                                <input class="form-control" name="company_name" type="company_name" required>
+                                <input class="form-control" name="company_name" type="text" required placeholder="Enter Company Name">
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Group</label>
+                                <input class="form-control" name="group" type="text" required placeholder="Enter Group">
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Street</label>
+                                <input class="form-control" name="address" type="address" required placeholder="Enter Street">
                             </div>
                             <div class="form-group col-sm-4">
                                 <label>City</label>
-                                <input class="form-control" name="city" type="city" required>
+                                <input class="form-control" name="city" type="city" required placeholder="Enter City">
                             </div>
                             <div class="form-group col-sm-4">
                                 <label>State</label>
-                                <input class="form-control" name="state" type="state" required>
+                                <input class="form-control" name="state" type="state" required placeholder="Enter State">
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Pincode</label>
+                                <input class="form-control" name="pincode" type="text" required placeholder="Enter Pincode">
                             </div>
                             <div class="form-group col-sm-4">
                                 <label>Country</label>
-                                <input class="form-control" name="country" type="country" required>
+                                <input class="form-control" name="country" type="text" required placeholder="Enter Country">
                             </div>
                             <div class="form-group col-sm-4">
-                                <label>Address</label>
-                                <input class="form-control" name="address" type="address" required>
+                                <label>Company Registration No</label>
+                                <input class="form-control" name="company_registration_no" type="text" required placeholder="Enter Company Registration No">
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>No. of Modules</label>
+                                <input class="form-control" name="no_modules" type="text" required placeholder="Enter No.of Modules">
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Subscription Type</label>
+                                <input class="form-control" name="subscription_type" type="text" required placeholder="Enter Subscription Type">
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Subscription Charges</label>
+                                <input class="form-control" name="subscription_charge" type="text" required placeholder="Enter Subscription Charges">
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Subscription Expiring</label>
+                                <input class="form-control" name="subscription_expiring" type="text" required placeholder="Enter Subscription Expiring">
+                            </div>
+                            <div class="col-sm-4">
+                                <!-- <div class="form-group"> -->
+                                <label class="col-form-label">Business Focus</label>
+                                <div id="focus-destinations-container">
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control" name="focus_destinations[]"
+                                            placeholder="Enter Business Focus">
+                                        <button class="btn btn-danger remove-destination" type="button">Remove</button>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" type="button" id="add-destination">Add More</button>
+                            </div>
+
+                            <div class="form-group col-sm-4">
+                                <label>Remarks</label>
+                                <input class="form-control" name="remarks" type="text" required placeholder="Enter Remarks">
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Business Mode</label>
+                                <input class="form-control" name="business_mode" type="text" required placeholder="Enter Business Mode">
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Key People</label>
+                                <input class="form-control" name="key_people" type="text" required placeholder="Enter Key People">
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Parent Company</label>
+                                <input class="form-control" name="parent_company" type="text" required placeholder="Enter Parent Company">
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Headquarters</label>
+                                <input class="form-control" name="headquarters" type="text" required placeholder="Enter Headquarter Name">
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>No. of Employees</label>
+                                <input class="form-control" name="no_employees" type="number" required placeholder="Enter No. of employees">
                             </div>
                             <div class="form-group col-sm-4">
                                 <label>Password</label>
-                                <input class="form-control" name="password" type="password" required>
+                                <input class="form-control" name="password" type="password" required placeholder="Enter Password">
                             </div>
                             <div class="form-group col-sm-4">
                                 <label>Select Role</label>
@@ -215,6 +198,18 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="col-sm-8">
+                                <label class="col-form-label">Websites</label>
+                                <div id="website-address-container">
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control" name="websites[]"
+                                            placeholder="Enter website address">
+                                        <button class="btn btn-danger remove-website-address"
+                                            type="button">Remove</button>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" type="button" id="add-website-address">Add More</button>
+                            </div>
                             <div class="submit-section">
                                 <button class="btn btn-primary" type="submit">Submit</button>
                             </div>
@@ -224,8 +219,37 @@
             </div>
         </div>
     </div>
-    <!-- /Add Airline Modal -->
-
-
     </div>
+    <script>
+        document.getElementById('add-destination').addEventListener('click', function() {
+            const container = document.getElementById('focus-destinations-container');
+            const newInputGroup = document.createElement('div');
+            newInputGroup.classList.add('input-group', 'mb-2');
+            newInputGroup.innerHTML = `
+                <input type="text" class="form-control" name="focus_destinations[]" placeholder="Enter destination">
+                <button class="btn btn-danger remove-destination" type="button">Remove</button>
+            `;
+            container.appendChild(newInputGroup);
+
+            // Add event listener to the remove button
+            newInputGroup.querySelector('.remove-destination').addEventListener('click', function() {
+                container.removeChild(newInputGroup);
+            });
+        });
+        document.getElementById('add-website-address').addEventListener('click', function() {
+                const container = document.getElementById('website-address-container');
+                const newInputGroup = document.createElement('div');
+                newInputGroup.classList.add('input-group', 'mb-2');
+                newInputGroup.innerHTML = `
+                    <input type="text" class="form-control" name="websites[]" placeholder="Enter Website address">
+                    <button class="btn btn-danger remove-website-address" type="button">Remove</button>
+                `;
+                container.appendChild(newInputGroup);
+
+                // Add event listener to the remove button
+                newInputGroup.querySelector('.remove-website-address').addEventListener('click', function() {
+                    container.removeChild(newInputGroup);
+                });
+            });
+    </script>
 @endsection

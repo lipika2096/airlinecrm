@@ -40,6 +40,21 @@ class AdminController extends Controller
             'country' => $request->input('country'),
             'address' => $request->input('address'),
             'admin_id' => $admin->id,
+            'group' => $request->input('group'),
+            'pincode' => $request->input('pincode'),
+            'company_registration_no' => $request->input('company_registration_no'),
+            'no_modules' => $request->input('no_modules'),
+            'subscription_type' => $request->input('subscription_type'),
+            'subscription_charge' => $request->input('subscription_charge'),
+            'subscription_expiring' => $request->input('subscription_expiring'),
+            'business_focus' =>json_encode($request->focus_destinations),
+            'remarks' => $request->input('remarks'),
+            'business_mode' => $request->input('business_mode'),
+            'key_people' => $request->input('key_people'),
+            'parent_company' => $request->input('parent_company'),
+            'headquarters' => $request->input('headquarters'),
+            'no_employees' => $request->input('no_employees'),
+            'websites' => json_encode($request->websites),
         ]);
 
         $role = Role::findById($request->input('role'),'web');
@@ -85,6 +100,21 @@ class AdminController extends Controller
                 'state' =>  $request->input('state'),
                 'country' => $request->input('country'),
                 'address' => $request->input('address'),
+                'group' => $request->input('group'),
+                'pincode' => $request->input('pincode'),
+                'company_registration_no' => $request->input('company_registration_no'),
+                'no_modules' => $request->input('no_modules'),
+                'subscription_type' => $request->input('subscription_type'),
+                'subscription_charge' => $request->input('subscription_charge'),
+                'subscription_expiring' => $request->input('subscription_expiring'),
+                'business_focus' =>json_encode($request->focus_destinations),
+                'remarks' => $request->input('remarks'),
+                'business_mode' => $request->input('business_mode'),
+                'key_people' => $request->input('key_people'),
+                'parent_company' => $request->input('parent_company'),
+                'headquarters' => $request->input('headquarters'),
+                'no_employees' => $request->input('no_employees'),
+                'websites' => json_encode($request->websites),
             ]);
         }
         return redirect()->back()->with('success', 'Admin updated successfully');
@@ -159,4 +189,5 @@ class AdminController extends Controller
 
         return view('admin.index'); // Redirect to the login page
     }
+
 }

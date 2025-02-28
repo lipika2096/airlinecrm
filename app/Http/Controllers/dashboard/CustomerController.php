@@ -9,10 +9,31 @@ use Illuminate\Http\Request;
 use App\Models\Admin;
 use App\Models\CustomerCaseHistory;
 use App\Models\CustomerCaseUpdate;
+use App\Models\CustomerAccount;
+use App\Models\CustomerAddress;
+use App\Models\CustomerHeadOfficeContactDetail;
+use App\Models\Designation;
+use App\Models\CustomerConversation;
 use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
+
+    public function customerProfile(Request $request, $id)
+    {
+
+        $customer = Admin::with(['adminDetail', 'kycDocuments'])->find($id);
+        $customerAccounts = CustomerAccount::where('customer_id', $id)->where('acc_no', Null)->get();
+        $customerAccountBal = CustomerAccount::where('customer_id', $id)->where('acc_no', '!=', Null)->first();
+        $customerAddress = CustomerAddress::where('customer_id', $id)->get();
+        $customerContact = CustomerHeadOfficeContactDetail::where('customer_id', $id)->get();
+        $customerConversation = CustomerConversation::where('customer_id', $id)->get();
+
+        $caseData = CustomerCaseHistory::where('customer_id', $id)->get();
+        $designation = Designation::all();
+
+        return view('admin.customer-profile', compact('customerConversation','customer', 'customerAccounts', 'customerAddress', 'customerContact', 'caseData', 'customerAccountBal'));
+    }
     public function caseHistorySearch(Request $request)
     {
         $customers = Admin::whereDoesntHave('roles', function ($query) {
@@ -79,7 +100,7 @@ class CustomerController extends Controller
             'case_status' => 'required|string|max:255',
             'case_closed_by' => 'nullable|string|max:255',
             'case_closing_date' => 'nullable|date',
-            'agent_id' => 'required|integer',
+            'customer_id' => 'required|integer',
             'remarks' => 'required|string',
             'ticket_no' => 'required|string',
             'airline_id' => 'required|string'

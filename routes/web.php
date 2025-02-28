@@ -68,10 +68,11 @@ Route::name('admin.')->middleware(['admin'])->group(function () {
 
     Route::get('admin-view', [AdminController::class, 'showAllAdmin'])->name('admin.view');
     Route::post('admin-view/store', [AdminController::class, 'registerAdmin'])->name('admin.store');
-    Route::patch('admin-view/update/{id}', [AdminController::class, 'editAdmin'])->name('admin.update');
+    Route::patch('admin-view/update/{id}', [AdminController::class, 'editAdmin'])->name('customer.update');
 
     Route::get('admin-view/kyc/document', [AdminController::class, 'kycDocumentIndex'])->name('kyc.documents');
     Route::patch('admin-view/kyc/document/{id}', [AdminController::class, 'kycDocument'])->name('kyc.document.store');
+    Route::get('customer/view/{id}', [CustomerController::class, 'customerProfile'])->name('customer.view');
 
 });
 
