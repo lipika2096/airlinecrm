@@ -18,27 +18,6 @@
                             @endif
                         </ul>
                     </li>
-                    @if(auth('admin')->user()->can('admin-view'))
-                        <li class="menu-title">
-                            <span>Admin View</span>
-                        </li>
-                        <li>
-                            <a class="{{ request()->routeIs('admin.admin.view') ? 'active' : '' }}" href="{{ route('admin.admin.view') }}">Manage Admin</a>
-                        </li>
-                        <li>
-                            <a class="{{ request()->routeIs('admin.kyc.documents') ? 'active' : '' }}" href="{{ route('admin.kyc.documents') }}">Manage Documents</a>
-                        </li>
-                    @endif
-
-
-                    @if(auth('admin')->user()->can('roles-permissions'))
-                        <li class="menu-title">
-                            <span>Roles n Permissions</span>
-                        </li>
-                        <li>
-                            <a class="{{ request()->routeIs('admin.roles-permissions.index') ? 'active' : '' }}" href="{{ route('admin.roles-permissions.index') }}">Manage Roles n Permissions</a>
-                        </li>
-                    @endif
 
                     @if(auth('admin')->user()->can('hr'))
                         <li class="menu-title">
@@ -91,6 +70,23 @@
                                 </li>
                             </ul>
                         </li>
+                    @endif
+                    @if(auth('admin')->user()->can('admin-view'))
+                        <li class="menu-title">
+                            <span>Customer View</span>
+                        </li>
+                        <li>
+                            <a class="{{ request()->routeIs('admin.admin.view') ? 'active' : '' }}" href="{{ route('admin.admin.view') }}">Manage Customer</a>
+                        </li>
+                        <li>
+                            <a class="{{ request()->routeIs('admin.kyc.documents') ? 'active' : '' }}" href="{{ route('admin.kyc.documents') }}">Library</a>
+                        </li>
+
+                        @if(auth('admin')->user()->can('roles-permissions'))
+                            <li>
+                                <a class="{{ request()->routeIs('admin.roles-permissions.index') ? 'active' : '' }}" href="{{ route('admin.roles-permissions.index') }}">Manage Roles n Permissions</a>
+                            </li>
+                        @endif
                     @endif
 
 
@@ -385,27 +381,6 @@
                             </li>
                     </ul>
                 </li>
-                @if(auth('admin')->user()->can('admin-view'))
-                    <li class="menu-title">
-                        <span>Admin View</span>
-                    </li>
-                    <li>
-                        <a class="{{ request()->routeIs('admin.admin.view') ? 'active' : '' }}" href="{{ route('admin.admin.view') }}">Manage Admin</a>
-                    </li>
-                    <li>
-                        <a class="{{ request()->routeIs('admin.kyc.documents') ? 'active' : '' }}" href="{{ route('admin.kyc.documents') }}">Manage Documents</a>
-                    </li>
-                @endif
-
-
-                @if(auth('admin')->user()->can('roles-permissions'))
-                    <li class="menu-title">
-                        <span>Roles n Permissions</span>
-                    </li>
-                    <li>
-                        <a class="{{ request()->routeIs('admin.roles-permissions.index') ? 'active' : '' }}" href="{{ route('admin.roles-permissions.index') }}">Manage Roles n Permissions</a>
-                    </li>
-                @endif
 
                 @if(auth('admin')->user()->can('hr'))
                     <li class="menu-title">
@@ -459,6 +434,35 @@
                         </ul>
                     </li>
                 @endif
+                @if(auth('admin')->user()->can('admin-view'))
+                    <li class="menu-title">
+                        <span>Customer View</span>
+                    </li>
+                    <li class="submenu">
+                        <a href="javascript:void(0);"><i class="la la-cube"></i> <span>Customer</span> <span
+                                class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            <li>
+                                <a class="{{ request()->routeIs('admin.admin.view') ? 'active' : '' }}" href="{{ route('admin.admin.view') }}">Manage Customer</a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('admin.kyc.documents') ? 'active' : '' }}" href="{{ route('admin.kyc.documents') }}">Library</a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('admin.customer-reports') ? 'active' : '' }}" href="{{ route('admin.customer-reports') }}">Reports</a>
+                            </li>
+                             <li>
+                                <a class="{{ request()->routeIs('admin.customer.case-history') ? 'active' : '' }}" href="{{ route('admin.customer.case-history') }}">Case History</a>
+                            </li>
+                            @if(auth('admin')->user()->can('roles-permissions'))
+                                <li>
+                                    <a class="{{ request()->routeIs('admin.roles-permissions.index') ? 'active' : '' }}" href="{{ route('admin.roles-permissions.index') }}">Manage Roles n Permissions</a>
+                                </li>
+                            @endif
+                        </ul>
+                    </li>
+                @endif
+
 
                 @if(auth('admin')->user()->can('admin-menu'))
                     <li class="menu-title">
@@ -471,27 +475,31 @@
                             <li><a class="{{ request()->routeIs('admin.departments') ? 'active' : '' }}" href="{{route('admin.departments')}}">Add Departments</a></li>
                             <li><a class="{{ request()->routeIs('admin.designations') ? 'active' : '' }}" href="{{route('admin.designations')}}">Add Designations</a></li>
                             <li><a class="{{ request()->routeIs('admin.categories.view') ? 'active' : '' }}" href="{{route('admin.categories.view')}}">Add Category</a></li>
-                            <li><a class="{{ request()->routeIs('admin.faretypes') ? 'active' : '' }}" href="{{route('admin.faretypes')}}">Add Fare Types</a></li>
-                            <li><a class="{{ request()->routeIs('admin.discounts') ? 'active' : '' }}" href="{{route('admin.discounts')}}">Add Discounts</a></li>
 
                             <li><a class="{{ request()->routeIs('admin.duties') ? 'active' : '' }}" href="{{route('admin.duties')}}">Add Duties</a></li>
                             <!-- <li><a class="" href="javascript:void(0);">Add Public Holidays</a></li> -->
                             <li><a class="{{ request()->routeIs('admin.events.status') ? 'active' : '' }}" href="{{ route('admin.events.status') }}">Add Status</a></li>
                             <li><a class="{{ request()->routeIs('admin.leave-type') ? 'active' : '' }}" href="{{ route('admin.leave-type') }}">Add Leave Types</a></li>
-                            <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{ route('admin.comingSoon') }}">Add Agent Types</a></li>
-                            <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{ route('admin.comingSoon') }}">Add Report Types</a></li>
-                            <li class="submenu">
-                                <a href="javascript:void(0);"><span>Deleted Data</span> <span
-                                        class="menu-arrow"></span></a>
-                                <ul style="display: none;">
-                                    <li>
-                                        <a class="{{ request()->routeIs('admin.deleted.agents') ? 'active' : '' }}" href="{{route('admin.deleted.agents')}}">Deleted Travel Agents</a>
-                                    </li>
-                                    <li>
-                                       <a class="{{ request()->routeIs('admin.deleted.airlines') ? 'active' : '' }}" href="{{route('admin.deleted.airlines')}}">Deleted Airlines List</a>
-                                    </li>
-                                </ul>
-                            </li>
+                            @if(auth('admin')->user()->getRoleNames()->first() != 'SuperAdmin')
+                                <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{ route('admin.comingSoon') }}">Add Agent Types</a></li>
+                                <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{ route('admin.comingSoon') }}">Add Report Types</a></li>
+                                <li><a class="{{ request()->routeIs('admin.faretypes') ? 'active' : '' }}" href="{{route('admin.faretypes')}}">Add Fare Types</a></li>
+                                <li><a class="{{ request()->routeIs('admin.discounts') ? 'active' : '' }}" href="{{route('admin.discounts')}}">Add Discounts</a></li>
+                                <li class="submenu">
+                                    <a href="javascript:void(0);"><span>Deleted Data</span> <span
+                                            class="menu-arrow"></span></a>
+                                    <ul style="display: none;">
+                                        <li>
+                                            <a class="{{ request()->routeIs('admin.deleted.agents') ? 'active' : '' }}" href="{{route('admin.deleted.agents')}}">Deleted Travel Agents</a>
+                                        </li>
+                                        <li>
+                                           <a class="{{ request()->routeIs('admin.deleted.airlines') ? 'active' : '' }}" href="{{route('admin.deleted.airlines')}}">Deleted Airlines List</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @else
+                                <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{ route('admin.comingSoon') }}">Add Customer Types</a></li>
+                            @endif
                         </ul>
                     </li>
                 @endif

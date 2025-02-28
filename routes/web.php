@@ -55,7 +55,9 @@ use App\Http\Controllers\dashboard\{
     AgentLibraryController,
     FareTypeController,
     DiscountController,
-    RolePermissionController
+    RolePermissionController,
+    CustomerReportController,
+    CustomerController
 };
 
 Route::name('admin.')->middleware(['admin'])->group(function () {
@@ -129,6 +131,12 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
     Route::post('agent/casehistory/store', [AgentController::class, 'caseStore'])->name('agent.case.store');
     Route::patch('agent/casehistory/update/{id}', [AgentController::class, 'caseUpdate'])->name('agent.cases.update');
     Route::post('agent/casehistory/close/{id}', [AgentController::class, 'caseClose'])->name('agent.cases.close');
+
+
+    Route::get('customer/case-history', [CustomerController::class, 'caseHistorySearch'])->name('customer.case-history');
+    Route::post('customer/casehistory/store', [CustomerController::class, 'caseStore'])->name('agent.case.store');
+    Route::patch('customer/casehistory/update/{id}', [CustomerController::class, 'caseUpdate'])->name('agent.cases.update');
+    Route::post('customer/casehistory/close/{id}', [CustomerController::class, 'caseClose'])->name('agent.cases.close');
 
 	Route::get('airlines-details', [AirlineDetailController::class, 'index'])->name('airlines-details');
     Route::post('airlines-details/store', [AirlineController::class, 'store'])->name('airlines-details.store');
@@ -388,6 +396,7 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
     Route::get('staff-reports', [StaffReportController::class, 'index'])->name('staff-reports');
     Route::get('airline-reports', [AirlineController::class, 'report'])->name('airline-reports');
     Route::get('agent-reports', [AgentReportController::class, 'airlineReport'])->name('agent-reports');
+    Route::get('customer-reports', [CustomerReportController::class, 'customerReport'])->name('customer-reports');
 
     // Payroll routes
     Route::get('salary', [PayrollController::class, 'employeeSalary'])->name('salary');

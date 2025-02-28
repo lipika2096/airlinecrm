@@ -51,7 +51,7 @@ class Admin extends Authenticatable
 
     public function kycDocuments()
     {
-        return $this->belongsTo(AdminKycDocument::class, 'admin_id', 'id');
+        return $this->hasMany(AdminKycDocument::class, 'admin_id', 'id');
     }
 
 }

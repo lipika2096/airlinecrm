@@ -48,7 +48,10 @@ class RolePermissionSeeder extends Seeder
                 // Define specific permissions for SuperAdmin
                 $superAdminPermissions = [
                     'admin-view',
-                    'roles-permissions'
+                    'roles-permissions',
+                    'hr',
+                    'accounts',
+                    'admin-menu',
                 ];
 
                 $permissions = Permission::whereIn('name', $superAdminPermissions)

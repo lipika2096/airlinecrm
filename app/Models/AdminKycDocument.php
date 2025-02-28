@@ -15,4 +15,8 @@ class AdminKycDocument extends Model
     {
         return $this->hasOne(Admin::class, 'id', 'admin_id');
     }
+    public function adminData()
+    {
+        return $this->belongsTo(Admin::class, 'id', 'admin_id');
+    }
 }

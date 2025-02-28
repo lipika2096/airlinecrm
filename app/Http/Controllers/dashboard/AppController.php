@@ -15,7 +15,7 @@ class AppController extends Controller
 {
     public function calendar()
     {
-        $username = Auth::user()->name;
+        $username = auth('admin')->user()->id;
         $events = Calender::where('created_by',$username)->get(); // Assuming Event is the correct model name
         $eventStatus = EventStatus::orderBy('status_type')->get();
         $salesLead = SalesLead::leftJoin('assign_lead_staffs', function ($join) {
@@ -55,7 +55,7 @@ class AppController extends Controller
             'contact_person' => $request->input('contact_person'),
             'remarks' => $request->input('remarks'),
             'updated_at' => $request->input('updated_at'),
-            'created_by' => auth('admin')->user()->name,
+            'created_by' => auth('admin')->user()->id,
             'category' => $request->input('category')
         ]);
 
