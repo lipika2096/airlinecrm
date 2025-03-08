@@ -73,9 +73,7 @@ class AdminController extends Controller
     public function editAdmin(Request $request, $id){
         $admin = Admin::find($id);
         $admin->update([
-            'name' => $request->full_name,
-            'password' => Hash::make($request->password),
-            'plain_password' => $request->password
+            'name' => $request->full_name
         ]);
         if ($request->has('role')) {
             $admin->syncRoles($request->role);
