@@ -38,7 +38,7 @@
                             <li class="breadcrumb-item active">Profile</li>
                         </ul>
                         <p class="d-inline text-dark font-weight-bolder"> <b
-                                class="d-inline text-capitalize">{{ $customer->adminDetail->company_name }}</b> profile</p>
+                                class="d-inline text-capitalize">{{ $customer->adminDetail->company_name??'N/A' }}</b> profile</p>
                     </div>
                 </div>
             </div>
