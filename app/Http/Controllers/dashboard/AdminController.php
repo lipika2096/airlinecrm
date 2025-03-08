@@ -74,7 +74,6 @@ class AdminController extends Controller
         $admin = Admin::find($id);
         $admin->update([
             'name' => $request->full_name,
-            'email' => $request->email,
             'password' => Hash::make($request->password),
             'plain_password' => $request->password
         ]);
@@ -107,14 +106,14 @@ class AdminController extends Controller
                 'subscription_type' => $request->input('subscription_type'),
                 'subscription_charge' => $request->input('subscription_charge'),
                 'subscription_expiring' => $request->input('subscription_expiring'),
-                'business_focus' =>json_encode($request->focus_destinations),
+                'business_focus' =>json_encode($request->focus_destinations)??json_encode(['-']),
                 'remarks' => $request->input('remarks'),
                 'business_mode' => $request->input('business_mode'),
                 'key_people' => $request->input('key_people'),
                 'parent_company' => $request->input('parent_company'),
                 'headquarters' => $request->input('headquarters'),
                 'no_employees' => $request->input('no_employees'),
-                'websites' => json_encode($request->websites),
+                'websites' => json_encode($request->websites)??json_encode(['-']),
             ]);
         }
         return redirect()->back()->with('success', 'Admin updated successfully');
