@@ -27,10 +27,10 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use App\Models\AirlineLibrary;
 use App\Models\ApprovedStaff;
+use Illuminate\Support\Facades\Auth;
 
 
 use App\Models\FareType;
-use Illuminate\Support\Facades\Auth;
 
 class EmployeeController extends Controller
 {

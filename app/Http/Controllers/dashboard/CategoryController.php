@@ -9,6 +9,7 @@ use App\Models\Destination;
 use App\Models\Origin;
 use App\Models\Category;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryController extends Controller
 {

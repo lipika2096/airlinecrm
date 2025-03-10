@@ -9,13 +9,14 @@ use App\Models\AirlineDiscount;
 use App\Models\Airline;
 use App\Models\AirlineDetail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class DiscountController extends Controller
 {
     public function index()
     {
         $discounts = AirlineDiscount::with(['airline','faretype'])->get()->groupBy('airline_id');
-        $fare_type = FareType::all();
+        $fare_type = FareType::where('created_by', auth('admin')->user()->id)->get();
         $airline = AirlineDetail::where('deleted_at', NULL)->orWhere('deleted_at', 'null' )->with('airline')->get();
         return view('admin.discounts', compact('fare_type', 'airline','discounts'));
     }
@@ -31,6 +32,7 @@ class DiscountController extends Controller
         $discount->fare_type = $request->input('fare_type_id');
         $discount->airline_id = $request->input('airline_id');
         $discount->discount = $request->input('discount');
+        $discount->created_by = auth('admin')->user()->id;
         $discount->save();
 
         return redirect()->route('admin.discounts')->with('success', 'Discount created successfully.');
@@ -42,6 +44,7 @@ class DiscountController extends Controller
         $discount->fare_type = $request->input('fare_type_id');
         $discount->airline_id = $request->input('airline_id');
         $discount->discount = $request->input('discount');
+        $discount->updated_by = auth('admin')->user()->id;
         $discount->save();
 
         return redirect()->route('admin.discounts')->with('success', 'Discount updated successfully.');

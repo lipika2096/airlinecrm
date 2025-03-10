@@ -9,12 +9,13 @@ use App\Models\AirlineDiscount;
 use App\Models\Airline;
 use App\Models\AirlineDetail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class FareTypeController extends Controller
 {
     public function index()
     {
-        $fare_type = FareType::all();
+        $fare_type = FareType::where('created_by', auth('admin')->user()->id)->get();
         $airline = AirlineDetail::where('deleted_at', NULL)->orWhere('deleted_at', 'null' )->with('airline')->get();
         return view('admin.faretypes', compact('fare_type', 'airline'));
     }
@@ -28,6 +29,7 @@ class FareTypeController extends Controller
 
         $duty = new FareType();
         $duty->fare_type = $request->name;
+        $duty->created_by = auth('admin')->user()->id;
         $duty->fare_type_name = str_replace(' ', '_', $request->name);
         $duty->save();
 
@@ -38,6 +40,7 @@ class FareTypeController extends Controller
     {
         $duty = FareType::findorFail($id);
         $duty->fare_type = $request->name;
+        $duty->updated_by = auth('admin')->user()->id;
         $duty->fare_type_name = str_replace(' ', '_', $request->name);
         $duty->save();
 

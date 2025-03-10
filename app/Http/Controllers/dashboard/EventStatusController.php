@@ -4,6 +4,7 @@ namespace App\Http\Controllers\dashboard;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\EventStatus;
+use Illuminate\Support\Facades\Auth;
 
 class EventStatusController extends Controller{
     public function index(){
