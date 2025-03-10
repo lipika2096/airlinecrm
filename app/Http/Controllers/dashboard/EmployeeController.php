@@ -169,7 +169,7 @@ class EmployeeController extends Controller
 
     public function viewUserProfile()
     {
-        $employees = User::where('role_id', 2)->where('created_by', auth('admin')->user()->id)->get();
+        $employees = User::where('role_id', 2)->where('users.created_by', auth('admin')->user()->id)->get();
         $department = Department::latest()->get();
         $designation = Designation::latest()->get();
 
@@ -351,7 +351,7 @@ class EmployeeController extends Controller
     public function allEmployees(Request $request)
     {
         $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-            ->where('users.role_id', 2)->where('created_by', auth('admin')->user()->id)
+            ->where('users.role_id', 2)->where('users.created_by', auth('admin')->user()->id)
             ->get(['clients.*', 'users.*']);
         $department = Department::latest()->get();
         $designation = Designation::latest()->get();
@@ -743,13 +743,13 @@ class EmployeeController extends Controller
     {
         // Reuse the existing logic to fetch employees
         $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-        ->where('users.role_id', 2)->where('created_by', auth('admin')->user()->id)
+        ->where('users.role_id', 2)->where('users.created_by', auth('admin')->user()->id)
             ->get(['clients.*', 'users.*']);
 
         $department = Department::latest()->get();
         $designation = Designation::latest()->get();
         $total_employee = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-        ->where('users.role_id', 2)->where('created_by', auth('admin')->user()->id)->count();
+        ->where('users.role_id', 2)->where('users.created_by', auth('admin')->user()->id)->count();
         $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
             ->whereDate('to', '>=', now()->toDateString())->count();
         $total_pending_leaves = EmployeeLeave::where('status', 2)->count();
@@ -813,9 +813,9 @@ class EmployeeController extends Controller
     {
         $holidays = Holiday::latest()->get();
         $total_employee = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-        ->where('users.role_id', 2)->where('created_by', auth('admin')->user()->id)->count();
+        ->where('users.role_id', 2)->where('users.created_by', auth('admin')->user()->id)->count();
         $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-        ->where('users.role_id', 2)->where('created_by', auth('admin')->user()->id)
+        ->where('users.role_id', 2)->where('users.created_by', auth('admin')->user()->id)
             ->get(['clients.*', 'users.*']);
         $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
             ->whereDate('to', '>=', now()->toDateString())->count();
@@ -827,7 +827,7 @@ class EmployeeController extends Controller
         $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
         $leavetypes = LeaveType::where('status', 1)->get();
         $departments = Department::get();
-        $users = User::where('department', '!=', null)->where('created_by', auth('admin')->user()->id)->get()->groupBy('department');
+        $users = User::where('department', '!=', null)->where('users.created_by', auth('admin')->user()->id)->get()->groupBy('department');
 
         // If this is an AJAX request
         if ($request->ajax()) {
@@ -838,13 +838,13 @@ class EmployeeController extends Controller
 
             if ($type === 'coworker') {
                 // Filter data based on coworker (employee ID)
-                $filteredData = User::where('id', $value)->where('created_by', auth('admin')->user()->id)->get();
+                $filteredData = User::where('id', $value)->where('users.created_by', auth('admin')->user()->id)->get();
             } elseif ($type === 'team') {
                 // Filter data based on team (department)
-                $filteredData = User::where('department', $value)->where('created_by', auth('admin')->user()->id)->get();
+                $filteredData = User::where('department', $value)->where('users.created_by', auth('admin')->user()->id)->get();
             } elseif ($type === 'browse_list') {
                 // Filter data based on browse list (user ID)
-                $filteredData = User::where('id', $value)->where('created_by', auth('admin')->user()->id)->get();
+                $filteredData = User::where('id', $value)->where('users.created_by', auth('admin')->user()->id)->get();
             }
 
             // Prepare filtered employee leave data for calendar display
@@ -945,8 +945,8 @@ class EmployeeController extends Controller
     {
 
         $leavetypes = LeaveType::where('status', 1)->get();
-        $total_employee = User::where('created_by', auth('admin')->user()->id)->count();
-        $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')->where('created_by', auth('admin')->user()->id)
+        $total_employee = User::where('users.created_by', auth('admin')->user()->id)->count();
+        $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')->where('users.created_by', auth('admin')->user()->id)
             ->get(['clients.*', 'users.*']);
         $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
             ->whereDate('to', '>=', now()->toDateString())->where('leave_type', 'Annual Leave')->count();
@@ -1439,7 +1439,7 @@ class EmployeeController extends Controller
 
     public function getDepartments()
     {
-        $departments = User::whereNotNull('department')->where('created_by', auth('admin')->user()->id)
+        $departments = User::whereNotNull('department')->where('users.created_by', auth('admin')->user()->id)
             ->select('department')
             ->distinct()
             ->pluck('department');
@@ -1448,7 +1448,7 @@ class EmployeeController extends Controller
     }
     public function getEmployeesByUsers($user_id)
     {
-        $users = User::where('id', $user_id)->where('created_by', auth('admin')->user()->id)->get();
+        $users = User::where('id', $user_id)->where('users.created_by', auth('admin')->user()->id)->get();
 
         foreach ($users as $user) {
             $employeeLeaves = DB::table('employee_leaves')
@@ -1481,7 +1481,7 @@ class EmployeeController extends Controller
 
     public function getEmployeesByDepartment($department)
     {
-        $users = User::where('department', $department)->where('created_by', auth('admin')->user()->id)->get();
+        $users = User::where('department', $department)->where('users.created_by', auth('admin')->user()->id)->get();
 
         foreach ($users as $user) {
             $employeeLeaves = DB::table('employee_leaves')
