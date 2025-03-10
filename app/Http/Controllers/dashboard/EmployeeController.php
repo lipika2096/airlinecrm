@@ -52,7 +52,6 @@ class EmployeeController extends Controller
         //     // Update the attachment field
         //     $document->attachment = $fileName;
         // }
-
         $fileNames = []; // Array to hold the filenames
 
         if ($request->hasFile('attachment')) {
@@ -80,14 +79,15 @@ class EmployeeController extends Controller
         // Convert array to a JSON string or comma-separated string
         $fileNamesString = json_encode($fileNames); // Use this if you prefer JSON format
 
-
+        if($request->hasFile('attachment')){
+            $document->attachment = $fileNamesString;
+        }
         // Update other fields
         $document->airline_id = $request->input('airline_id');
         $document->staff_id = $request->input('staff_id');
         $document->doc_name = $request->input('doc_name');
         $document->issue_date = $request->input('issue_date');
         $document->effective_date = now();
-        $document->attachment = $fileNamesString;
         $document->edition_no = $request->input('edition_no');
 
 
