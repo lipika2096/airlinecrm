@@ -10,8 +10,7 @@
         .accordion-button:focus {
             /* color: #0c63e4; */
             /* background-color: #e7f1ff; */
-            /* box-shadow: none;
-        border:none; */
+            /* box-shadow: none; border:none; */
         }
     </style>
     <title>Employees</title>
@@ -371,25 +370,28 @@
                                                     <div class="modal-content">
                                                         <div class="modal-header">
                                                             <h5 class="modal-title">Delete Employee</h5>
-                                                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                                            <button type="button" class="close" data-bs-dismiss="modal"
+                                                                aria-label="Close">
                                                                 <span aria-hidden="true">&times;</span>
                                                             </button>
                                                         </div>
                                                         <div class="modal-body">
-                                                            <form id="deleteForm" method="POST" onsubmit="return confirm('Are you sure you want to delete this?');">
+                                                            <form id="deleteForm" method="POST"
+                                                                onsubmit="return confirm('Are you sure you want to delete this?');">
                                                                 @csrf
                                                                 @method('DELETE')
                                                                 <p>Are you sure want to delete?</p>
                                                                 <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                                    <button type="button" class="btn btn-secondary"
+                                                                        data-bs-dismiss="modal">Cancel</button>
+                                                                    <button type="submit"
+                                                                        class="btn btn-danger">Delete</button>
                                                                 </div>
                                                             </form>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -649,7 +651,7 @@
                                                                                             @foreach ($department as $department_data)
                                                                                                 <option
                                                                                                     value="{{ $department_data->department_name }}"
-                                                                                                    @if ($data->department == $department_data->department_name) selected @endif>
+                                                                                                    @if ($employee->department == $department_data->department_name) selected @endif>
                                                                                                     {{ $department_data->department_name }}
                                                                                                 </option>
                                                                                             @endforeach
@@ -1057,7 +1059,8 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="deleteForm" method="POST" onsubmit="return confirm('Are you sure you want to delete this?');">
+                    <form id="deleteForm" method="POST"
+                        onsubmit="return confirm('Are you sure you want to delete this?');">
                         @csrf
                         @method('DELETE')
                         <p>Are you sure want to delete?</p>
@@ -1073,7 +1076,7 @@
 
     <script>
         document.addEventListener('click', function(event) {
-            if(event.target.closest('.delete-btn')) {
+            if (event.target.closest('.delete-btn')) {
                 var id = event.target.closest('.delete-btn').getAttribute('data-id');
                 var form = document.getElementById('deleteForm');
                 form.action = 'admin/employee/' + id;
