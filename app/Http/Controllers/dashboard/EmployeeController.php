@@ -356,7 +356,7 @@ class EmployeeController extends Controller
         $department = Department::latest()->get();
         $designation = Designation::latest()->get();
 
-        $departmentEmployees = User::where('role_id', 2)
+        $departmentEmployees = User::where('role_id', 2)->where('users.created_by', auth('admin')->user()->id)
             ->get()
             ->groupBy('department');
 
@@ -1231,6 +1231,7 @@ class EmployeeController extends Controller
         // Create a new employee
         $department = new Department();
         $department->department_name = $request->department_name;
+        $department->created_by = auth('admin')->user()->id;
 
         $department->save();
 
@@ -1242,13 +1243,14 @@ class EmployeeController extends Controller
         $department =  Department::find($id);
         $department->update([
             'department_name' => $request->input('department_name'),
+            'updated_by' => auth('admin')->user()->id
         ]);
         return redirect()->route('admin.departments')->with('success', 'Department added successfully');
     }
     public function departments()
     {
         // Add your logic for departments view
-        $department = Department::latest()->get();
+        $department = Department::where('created_by', auth('admin')->user()->id)->latest()->get();
         return view('admin.departments', compact('department')); // Example view path, adjust as per your structure
     }
     public function storeDesignation(Request $request)
@@ -1262,6 +1264,7 @@ class EmployeeController extends Controller
         $department = new Designation();
         $department->department_id = $request->department;
         $department->designation = $request->designation;
+        $department->created_by = auth('admin')->user()->id;
 
         $department->save();
 
@@ -1275,14 +1278,15 @@ class EmployeeController extends Controller
         $designation->update([
             'department_id' => $request->input('department'),
             'designation' => $request->input('designation'),
+            'updated_by' => auth('admin')->user()->id
         ]);
         return redirect()->route('admin.designations')->with('success', 'Department added successfully');
     }
 
     public function designations()
     {
-        $department = Department::latest()->get();
-        $designation = Designation::latest()->get();
+        $department = Department::where('created_by', auth('admin')->user()->id)->latest()->get();
+        $designation = Designation::where('created_by', auth('admin')->user()->id)->latest()->get();
         // Add your logic for designations view
         return view('admin.designations', compact('designation', 'department')); // Example view path, adjust as per your structure
     }

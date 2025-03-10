@@ -11,7 +11,7 @@ class LeaveTypeController extends Controller
 {
     public function leaveType()
     {
-        $leaves = LeaveType::all();
+        $leaves = LeaveType::where('created_by', auth('admin')->user()->id)->get();
         return view('admin.leave-type', compact('leaves'));
     }
 
@@ -27,6 +27,7 @@ class LeaveTypeController extends Controller
         $leave->name = $request->name;
         $leave->days = $request->days;
         $leave->color = $request->color;
+        $leave->created_by = auth('admin')->user()->id;
         $leave->save();
 
         return redirect()->route('admin.leave-type')->with('success', 'Leave Type created successfully.');
@@ -38,6 +39,7 @@ class LeaveTypeController extends Controller
         $leave->name = $request->name;
         $leave->days = $request->days;
         $leave->color = $request->color;
+        $leave->updated_by = auth('admin')->user()->id;
         $leave->save();
 
         return redirect()->route('admin.leave-type')->with('success', 'Leave Type updated successfully.');

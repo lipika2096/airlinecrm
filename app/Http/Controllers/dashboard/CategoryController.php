@@ -126,8 +126,8 @@ class CategoryController extends Controller
     public function categoriesIndex()
     {
         // Add your logic for categories view
-        $categories = Category::latest()->get();
-        
+        $categories = Category::where('created_by', auth('admin')->user()->id)->latest()->get();
+
         return view('admin.categories', compact('categories')); // Example view path, adjust as per your structure
     }
 
@@ -140,6 +140,7 @@ class CategoryController extends Controller
 
         $category = new Category();
         $category->name = $request->name;
+        $category->created_by = auth('admin')->user()->id;
         $category->save();
 
         return redirect()->route('admin.categories.view')->with('success', 'Category created successfully.');
@@ -149,6 +150,7 @@ class CategoryController extends Controller
     {
         $category = Category::findorFail($id);
         $category->name = $request->name;
+        $category->updated_by = auth('admin')->user()->id;
         $category->save();
 
         return redirect()->route('admin.categories.view')->with('success', 'Category updated successfully.');

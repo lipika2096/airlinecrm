@@ -11,7 +11,7 @@ class DutyController extends Controller
 {
     public function duties()
     {
-        $duties = Duty::all();
+        $duties = Duty::where('created_by', auth('admin')->user()->id)->get();
         return view('admin.duties', compact('duties'));
     }
 
@@ -24,6 +24,7 @@ class DutyController extends Controller
 
         $duty = new Duty();
         $duty->name = $request->name;
+        $duty->created_by = auth('admin')->user()->id;
         $duty->save();
 
         return redirect()->route('admin.duties')->with('success', 'Duty created successfully.');
@@ -33,6 +34,7 @@ class DutyController extends Controller
     {
         $duty = Duty::findorFail($id);
         $duty->name = $request->name;
+        $duty->upadted_by = auth('admin')->user()->id;
         $duty->save();
 
         return redirect()->route('admin.duties')->with('success', 'Duty updated successfully.');

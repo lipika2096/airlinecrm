@@ -7,13 +7,14 @@ use App\Models\EventStatus;
 
 class EventStatusController extends Controller{
     public function index(){
-        $eventStatus = EventStatus::latest()->get();
+        $eventStatus = EventStatus::where('created_by', auth('admin')->user()->id)->latest()->get();
         return view('admin.event_status', compact('eventStatus'));
     }
 
     public function store(Request $request){
         EventStatus::create([
-            'status_type' => $request->input('status')
+            'status_type' => $request->input('status'),
+            'created_by' => auth('admin')->user()->id,
         ]);
         return redirect()->route('admin.events.status');
     }
@@ -22,10 +23,11 @@ class EventStatusController extends Controller{
         $eventStatus = EventStatus::find($id);
         $eventStatus->update([
             'status_type' => $request->input('status'),
+            'upadted_by' => auth('admin')->user()->id,
         ]);
         return redirect()->route('admin.events.status');
     }
-    
+
     public function delete(Request $request, $id){
         $eventStatus = EventStatus::find($id);
         $eventStatus->delete();
