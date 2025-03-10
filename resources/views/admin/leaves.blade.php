@@ -479,8 +479,8 @@
                                             <tr>
                                                 <td>
                                                     <h2 class="table-avatar">
-                                                        <a href="#">{{ $data->user->first_name }}
-                                                            {{ $data->user->last_name }} </a>
+                                                        <a href="#">{{ $data->user->first_name??'N/A' }}
+                                                            {{ $data->user->last_name??'' }} </a>
                                                     </h2>
                                                 </td>
 
