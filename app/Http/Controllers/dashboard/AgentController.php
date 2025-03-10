@@ -167,7 +167,7 @@ class AgentController extends Controller
 
     public function caseHistorySearch(Request $request)
     {
-        $agents = Agent::where('deleted_at', 'null')->get();
+        $agents = Agent::where('created_by', auth('admin')->user()->id)->where('deleted_at', 'null')->get();
 
         // Get input values from the request
         $caseId = $request->input('id');
