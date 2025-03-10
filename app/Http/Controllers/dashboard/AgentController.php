@@ -33,14 +33,15 @@ use App\Models\CaseUpdate;
 use App\Models\Agreement;
 use Carbon\Carbon;
 use App\Models\AirlineDetail;
+use Illuminate\Support\Facades\Auth;
 
 
 class AgentController extends Controller
 {
     public function index(Request $request)
     {
-        $designation = Designation::latest()->get();
-        $query = Agent::with('agent_addresses', 'head_office')->whereNull('deleted_at')->orWhere('deleted_at', 'null');
+        $designation = Designation::where('created_by', auth('admin')->user()->id)->latest()->get();
+        $query = Agent::with('agent_addresses', 'head_office')->where('created_by', auth('admin')->user()->id)->whereNull('deleted_at')->orWhere('deleted_at', 'null');
 
 
         if ($request->has('search') && !empty($request->input('search'))) {
@@ -90,29 +91,29 @@ class AgentController extends Controller
 
     public function deletedAgent()
     {
-        $designation = Designation::latest()->get();
-        $agents = Agent::where('deleted_at', '!=', 'null')->orWhere('deleted_at', '!=', null)->get();
+        $designation = Designation::where('created_by', auth('admin')->user()->id)->latest()->get();
+        $agents = Agent::where('created_by', auth('admin')->user()->id)->where('deleted_at', '!=', 'null')->orWhere('deleted_at', '!=', null)->get();
         return view('admin.agent', compact('agents', 'designation'));
     }
 
 
     public function update($id)
     {
-        $designation = Designation::latest()->get();
+        $designation = Designation::where('created_by', auth('admin')->user()->id)->latest()->get();
         $agent = Agent::find($id);
-        $agentAccounts = AgentAccount::where('agent_id', $id)->get();
-        $agentPli = AgentProvisionsPli::latest()->whereNotNull('pli')->where('agent_id', $id)->get();
-        $agentProv = AgentProvisionsPli::latest()->whereNotNull('prov')->where('agent_id', $id)->get();
-        $agentTarget = AgentProvisionsPli::latest()->whereNotNull('target')->where('agent_id', $id)->get();
-        $agentProduct = AgentProductsType::latest()->where('agent_id', $id)->get();
-        $agentConversation = AgentConversation::latest()->get();
+        $agentAccounts = AgentAccount::where('created_by', auth('admin')->user()->id)->where('agent_id', $id)->get();
+        $agentPli = AgentProvisionsPli::where('created_by', auth('admin')->user()->id)->latest()->whereNotNull('pli')->where('agent_id', $id)->get();
+        $agentProv = AgentProvisionsPli::where('created_by', auth('admin')->user()->id)->latest()->whereNotNull('prov')->where('agent_id', $id)->get();
+        $agentTarget = AgentProvisionsPli::where('created_by', auth('admin')->user()->id)->latest()->whereNotNull('target')->where('agent_id', $id)->get();
+        $agentProduct = AgentProductsType::where('created_by', auth('admin')->user()->id)->latest()->where('agent_id', $id)->get();
+        $agentConversation = AgentConversation::where('created_by', auth('admin')->user()->id)->latest()->get();
         return view('admin.edit-agent', compact('agent', 'designation', 'agentAccounts', 'agentPli', 'agentProv', 'agentTarget', 'agentProduct', 'agentConversation'));
     }
 
 
     public function delete($id)
     {
-        $designation = Designation::latest()->get();
+        $designation = Designation::where('created_by', auth('admin')->user()->id)->latest()->get();
         $agents = Agent::find($id);
         $agents->update([
             'deleted_at' => now()
@@ -152,6 +153,7 @@ class AgentController extends Controller
             $agent->remarks = $request->remarks;
             $agent->account_code = $request->account_code;
             $agent->company_registration_no = $request->company_registration_number;
+            $agent->created_by = auth('admin')->user()->id;
             $agent->save();
             toastr()->success('Agent added successfully');
             return redirect()->route('admin.agents');
@@ -671,6 +673,7 @@ class AgentController extends Controller
             $agent->remarks = $request->remarks;
             $agent->account_code = $request->account_code;
             $agent->company_registration_no = $request->company_registration_number;
+            $agent->updated_by = auth('admin')->user()->id;
             $agent->save();
 
             return redirect()->back()->with('success', 'Agent updated successfully');
@@ -691,7 +694,7 @@ class AgentController extends Controller
         $agentProv = Agreement::latest()->where('type', 'Prov')->where('agent_id', $id)->get();
         $agentTarget = AgentProvisionsPli::latest()->whereNotNull('target')->where('agent_id', $id)->get();
         $agentProduct = AgentProductsType::latest()->where('agent_id', $id)->get();
-        $agentConversation = AgentConversation::latest()->get();
+        $agentConversation = AgentConversation::where('created_by', auth('admin')->user()->id)->latest()->get();
         $agentAddress = AgentAddress::where('agent_id', $id)->get();
         $agentContact = HeadOfficeContactDetail::where('agent_id', $id)->get();
         $specialFare = SpecialFare::where('agent_id', $id)->where('status', 1)->get();
@@ -709,11 +712,11 @@ class AgentController extends Controller
         }
 
 
-        $airline = Airline::all();
-        $designation = Designation::all();
+        $airline = Airline::get();
+        $designation = Designation::where('created_by', auth('admin')->user()->id)->get();
         $fareConditions = FareCondition::where('agent_id', $id)->get();
         $group = Group::where('agent_id', $id)->get();
-        $commissions = Commission::all();
+        $commissions = Commission::where('created_by', auth('admin')->user()->id)->get();
         $agents = Agent::where('deleted_at', 'null')->get();
         $airlines = Airline::all();
         $airlineDetailData = AirlineDetail::where('deleted_at', NULL)->orWhere('deleted_at', 'null')->with('airline')->get();
