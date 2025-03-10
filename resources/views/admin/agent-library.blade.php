@@ -52,7 +52,7 @@
                                             @endforeach
                                             </ul>
                                         </td>
-                                        <td>{{ $library->admin->name ??  ($library->user->first_name ." ".$library->user->last_name) }}</td>
+                                        <td>{{ $library->admin->name ??  ($library->user->first_name ?? '-' ." ") }}</td>
 
                                         <td>{{ $library->updated_at->format('d-m-Y') }}</td>
                                     </tr>
