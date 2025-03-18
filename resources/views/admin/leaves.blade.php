@@ -143,7 +143,7 @@
                                                 <td class="text-danger">{{ $annualLeave }} leaves</td>
                                                 <td class="text-danger">{{ $remainingLeave }} leaves left for {{$fromYear}}</td> --}}
                                                 @php
-                                                    $annualLeave = $data->user->leave_count; // Total annual leaves allotted
+                                                    $annualLeave = $data->user->leave_count ?? 0; // Total annual leaves allotted
                                                     $currentYear = now()->year;
 
                                                     // Get all approved annual leaves for the employee in the current year
@@ -335,7 +335,7 @@
                                                 <td class="text-danger">{{ $annualLeave }} leaves</td>
                                                 <td class="text-danger">{{ $remainingLeave }} leaves left for {{$fromYear}}</td> --}}
                                                 @php
-                                                    $annualLeave = $data->user->leave_count; // Total annual leaves allotted
+                                                    $annualLeave = $data->user->leave_count?? 0; // Total annual leaves allotted
                                                     $currentYear = now()->year;
 
                                                     // Get all approved annual leaves for the employee in the current year
@@ -490,7 +490,7 @@
                                                 <td>{{ $data->to }}</td>
                                                 <td>{{ $data->no_of_days }} days</td>
                                                 @php
-                                                    $annualLeave = $data->user->leave_count; // Total annual leaves allotted
+                                                    $annualLeave = $data->user->leave_count ?? 0; // Total annual leaves allotted
                                                     $currentYear = now()->year;
 
                                                     // Get all approved annual leaves for the employee in the current year
@@ -680,7 +680,7 @@
                                                 <td class="text-danger">{{ $annualLeave }} leaves</td>
                                                 <td class="text-danger">{{ $annualLeave - $data->no_of_days }} leaves </td> --}}
                                                 @php
-                                                    $annualLeave = $data->user->leave_count; // Total annual leaves allotted
+                                                    $annualLeave = $data->user->leave_count ?? 0; // Total annual leaves allotted
                                                     $currentYear = now()->year;
 
                                                     // Get all approved annual leaves for the employee in the current year
