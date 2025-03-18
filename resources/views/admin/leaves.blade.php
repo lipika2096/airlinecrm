@@ -294,7 +294,7 @@
                                                 <td>{{$data->created_at}}</td>
                                                 <td>{{ $data->leave_type }}</td>
                                                 <td>{{ $data->from }}</td>
-                                                <td>{{ $data->to }}</td>
+                                     git commit -m           <td>{{ $data->to }}</td>
                                                 <td>{{ $data->no_of_days }} days</td>
 
                                                 {{-- @php
