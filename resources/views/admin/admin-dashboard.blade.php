@@ -154,6 +154,29 @@
                                 </div>
                             </div>
                         </section>
+                        @if (auth('admin')->user()->name == 'Super Admin')
+                            <section>
+                                <h5 class="dash-title">Total Customers</h5>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="time-list">
+                                            <div class="dash-stats-list">
+                                                <h4>{{ $customerCount }}</h4>
+                                                <p>Total No. of Customers</p>
+                                            </div>
+                                            <!-- <div class="dash-stats-list">
+                                                    <h4>12</h4>
+                                                    <p>Remaining</p>
+                                                </div> -->
+                                        </div>
+                                        <div class="request-btn">
+                                            <a class="btn btn-primary" style="font-size: 0.8rem;" href="{{ route('admin.agents') }}">View Agent</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        @else
+
                         <section>
                             <h5 class="dash-title">Total Agents</h5>
                             <div class="card">
@@ -174,22 +197,7 @@
                                 </div>
                             </div>
                         </section>
-                        <section>
-                            <h5 class="dash-title">Total Groups</h5>
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="time-list">
-                                        <div class="dash-stats-list">
-                                            <h4>{{ $groupCount }}</h4>
-                                            <p>Total No. of Groups</p>
-                                        </div>
-                                    </div>
-                                    <div class="request-btn">
-                                        <a class="btn btn-primary" style="font-size: 0.8rem;" href="{{ route('admin.groups') }}">View Groups</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
+                        @endif
                         <section>
                             <h5 class="dash-title">Upcoming Holidays</h5>
                             @if ($upcomingHolidays->isEmpty())

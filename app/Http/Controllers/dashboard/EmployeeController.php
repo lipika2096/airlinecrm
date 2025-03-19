@@ -632,7 +632,8 @@ class EmployeeController extends Controller
             'from' => $request->input('from'),
             'to' => $request->input('to'),
             'reason' => $request->input('reason')??'N/A',
-            'status' => 1
+            'status' => 1,
+            'created_by' =>  auth('admin')->user()->id,
         ]);
 
 
@@ -1012,7 +1013,8 @@ class EmployeeController extends Controller
             'to' => $request->input('to'),
             'no_of_days' => $request->input('no_of_days'),
             'reason' => $request->input('reason')??'N/A',
-            'status' => 1
+            'status' => 1,
+            'created_by' =>  auth('admin')->user()->id,
         ]);
         // Add your logic for leaves admin view
         return redirect()->route('admin.leaves')->with('success', 'Employee added successfully'); // Example view path, adjust as per your structure
@@ -1022,7 +1024,8 @@ class EmployeeController extends Controller
     {
         $leaves =  EmployeeLeave::find($id);
         $leaves->update([
-            'status' => $request->input('status')
+            'status' => $request->input('status'),
+            'updated_by' =>  auth('admin')->user()->id,
         ]);
         // Add your logic for leaves admin view
         return redirect()->route('admin.leaves')->with('success', 'Employee added successfully');
@@ -1083,7 +1086,8 @@ class EmployeeController extends Controller
             'to' => $request->input('to'),
             'no_of_days' => $request->input('no_of_days'),
             'reason' => $request->input('reason')??'N/A',
-            'status' => 1
+            'status' => 1,
+            'created_by' =>  auth('admin')->user()->id,
         ]);
 
         // Add your logic for leaves admin view
@@ -1168,7 +1172,8 @@ class EmployeeController extends Controller
             'to' => $request->input('to'),
             'no_of_days' => $request->input('no_of_days'),
             'reason' => $request->input('reason')??'N/A',
-            'status' => 1
+            'status' => 1,
+            'created_by' =>  auth('admin')->user()->id,
         ]);
 
         // Add your logic for leaves admin view
@@ -1179,7 +1184,8 @@ class EmployeeController extends Controller
     {
         $leaves =  EmployeeLeave::find($id);
         $leaves->update([
-            'status' => $request->input('status')
+            'status' => $request->input('status'),
+            'updated_by' =>  auth('admin')->user()->id,
         ]);
         // Add your logic for leaves admin view
         return redirect()->back()->with('success', 'Employee added successfully');
@@ -1366,7 +1372,8 @@ class EmployeeController extends Controller
             'note' => $request->input('note'),
             'no_of_days' => $request->input('no_of_days'),
             'attachment' => $path,
-            'status' => 1
+            'status' => 1,
+            'created_by' =>  auth('admin')->user()->id,
         ]);
 
 
@@ -1428,7 +1435,8 @@ class EmployeeController extends Controller
             'absence_series' => $request->input('absence_series'),
             'note' => $request->input('note'),
             'representation' => $request->input('representation'),
-            'status' => 1
+            'status' => 1,
+            'created_by' =>  auth('admin')->user()->id,
         ]);
 
         // Add your logic for leaves admin view
