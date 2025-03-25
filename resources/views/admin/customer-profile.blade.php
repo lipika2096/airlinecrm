@@ -1005,18 +1005,13 @@
                                                         @csrf
 
                                                         <div class="row">
-                                                            <div class="col-sm-6">
+                                                            <div class="col-sm-6" style="display:none;">
                                                                 <div class="form-group">
                                                                     <label class="col-form-label">Airline Id <span
                                                                             class="text-danger">*</span></label>
                                                                     <select class="form-control" name="airline_id"
                                                                         required>
-                                                                        <option>Select Airline</option>
-                                                                        @foreach ($airlineDetailData as $airData)
-                                                                            <option value="{{ $airData->airline_id }}">
-                                                                                {{ $airData->airline->airline_name }}
-                                                                            </option>
-                                                                        @endforeach
+                                                                        <option value="0" >Select Airline</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
