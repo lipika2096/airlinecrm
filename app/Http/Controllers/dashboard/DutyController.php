@@ -35,7 +35,7 @@ class DutyController extends Controller
     {
         $duty = Duty::findorFail($id);
         $duty->name = $request->name;
-        $duty->upadted_by = auth('admin')->user()->id;
+        $duty->updated_by = auth('admin')->user()->id;
         $duty->save();
 
         return redirect()->route('admin.duties')->with('success', 'Duty updated successfully.');

@@ -118,7 +118,8 @@ class AdminController extends Controller
     }
 
     public function kycDocumentIndex(Request $request){
-        $admin = AdminKycDocument::with('admin')->latest()->get();
+        $admin =Admin::whereDoesntHave('roles', function ($query) {
+            $query->where('name', 'superAdmin');})->get();
         $roles = Role::with('permissions')->where('name', '!=', 'superAdmin')->get();
         return view('admin.admin-kyc', compact('admin', 'roles'));
     }

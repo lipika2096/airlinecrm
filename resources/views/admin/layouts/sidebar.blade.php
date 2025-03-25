@@ -154,6 +154,8 @@
                                 @endif
                             </ul>
                         </li>
+
+                        @if (auth('admin')->user())
                         <li class="menu-title">
                             <span>Sales & Marketing</span>
                         </li>
@@ -365,7 +367,7 @@
                         </ul>
                     </li>
                 </ul>
-
+@endif
             </nav>
             <ul class="sidebar-vertical">
                 <li class="menu-title">
@@ -568,7 +570,7 @@
                     </li>
 
                 @endif
-                @if(auth('admin')->user()->can('accounts'))
+                @if(auth('admin')->user()->can('accounts') && (auth('admin')->user()->name != 'Super Admin'))
                     <li class="menu-title">
                         <span>Accounts</span>
                     </li>

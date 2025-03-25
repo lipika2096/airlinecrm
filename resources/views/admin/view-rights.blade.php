@@ -26,9 +26,9 @@
             <!-- /Page Header -->
 
 
-           
 
-            
+
+
 
                     <div class="row">
                         <div class="col-md-12 d-flex">
@@ -56,7 +56,7 @@
                                                                     <th>Department</th>
                                                                     <th>Duties</th>
                                                                     <th>Status</th>
-                                                                    
+
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -70,7 +70,7 @@
                                                                             @else
                                                                             Inactive
                                                                             @endif
-                                                                            
+
                                                                         </td>
                                                                     </tr>
                                                                 @endforeach
@@ -161,7 +161,7 @@
                                                     <div class="modal-dialog modal-dialog-centered modal-lg">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
-                                                                <h5 class="modal-title">Add Target</h5>
+                                                                <h5 class="modal-title">View Rights</h5>
                                                                 <button type="button" class="close"
                                                                     data-bs-dismiss="modal" aria-label="Close">
                                                                     <span aria-hidden="true">&times;</span>

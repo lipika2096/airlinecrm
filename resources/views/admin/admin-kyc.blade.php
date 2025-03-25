@@ -36,39 +36,41 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @php
-                                            $groupedData = $admin->groupBy('admin_id');
-                                        @endphp
-
-                                        @foreach ($groupedData as $adminId => $documents)
+                                        @foreach ($admin as $admin)
                                             <tr>
-                                                <td>{{ $documents->first()->admin->name }}</td>
+                                                <td>{{ $admin->name }}</td>
                                                 <td>
                                                     <ul>
-                                                        @foreach ($documents as $data)
+                                                        @forelse ($admin->kycDocuments as $data)
                                                             <li>{{ $data->doc_name ?? '-' }}</li>
-                                                        @endforeach
+                                                        @empty
+                                                            <li>-</li>
+                                                        @endforelse
                                                     </ul>
                                                 </td>
                                                 <td>
                                                     <ul>
-                                                        @foreach ($documents as $data)
-                                                            @foreach (json_decode($data->doc_file, true) as $key => $file)
-                                                                <li style="list-style:disc !important;">{{ $key + 1 }} <a href="{{ $file }}" target="_blank">{{ basename($file) }}</a></li>
+                                                        @forelse ($admin->kycDocuments as $data)
+                                                            @foreach (json_decode($data->doc_file ?? '[]', true) as $key => $file)
+                                                                <li style="list-style:disc !important;">
+                                                                    {{ $key + 1 }} <a href="{{ $file }}" target="_blank">{{ basename($file) }}</a>
+                                                                </li>
                                                             @endforeach
-                                                        @endforeach
+                                                        @empty
+                                                            <li>-</li>
+                                                        @endforelse
                                                     </ul>
                                                 </td>
                                                 <td class="text-end">
-                                                    <a class="btn btn-primary" href="#" title="add/update kyc documents"
-                                                        data-bs-toggle="modal" data-bs-target="#add_kyc_docs{{ $adminId }}">
+                                                    <a class="btn btn-primary" href="#" title="Add/Update KYC Documents"
+                                                        data-bs-toggle="modal" data-bs-target="#add_kyc_docs{{ $admin->id }}">
                                                         Add Documents
                                                     </a>
                                                 </td>
                                             </tr>
 
-                                            <!-- Edit Admin Modal -->
-                                            <div id="add_kyc_docs{{ $adminId }}" class="modal custom-modal fade" role="dialog">
+                                            <!-- Modal -->
+                                            <div id="add_kyc_docs{{ $admin->id }}" class="modal custom-modal fade" role="dialog">
                                                 <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
@@ -78,7 +80,7 @@
                                                             </button>
                                                         </div>
                                                         <div class="modal-body">
-                                                            <form action="{{ route('admin.kyc.document.store', ['id' => $adminId]) }}" method="POST" enctype="multipart/form-data">
+                                                            <form action="{{ route('admin.kyc.document.store', ['id' => $admin->id]) }}" method="POST" enctype="multipart/form-data">
                                                                 @method('patch')
                                                                 @csrf
                                                                 <div class="form-group col-sm-4">
@@ -104,6 +106,7 @@
                                         @endforeach
                                     </tbody>
                                 </table>
+
                             </div>
                         </div>
                     </div>

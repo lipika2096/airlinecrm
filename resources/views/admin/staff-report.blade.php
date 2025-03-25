@@ -158,8 +158,8 @@
                                             @endif
                                             <td class="text-end">
                                                 <div class="action-icons">
-                                                    <a href="#" class="action-icon"><i class="fa fa-eye"></i></a>
-                                                    <a href="#" class="action-icon"><i class="fa fa-pencil"></i></a>
+                                                    {{-- <a href="#" class="action-icon"><i class="fa fa-eye"></i></a>
+                                                    <a href="#" class="action-icon"><i class="fa fa-pencil"></i></a> --}}
                                                     <a class="btn btn-white" id="print-account" onclick="window.print()">
                                                         <i class="fa fa-print fa-lg"></i> Print
                                                     </a>
