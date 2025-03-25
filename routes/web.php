@@ -135,9 +135,9 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
 
 
     Route::get('customer/case-history', [CustomerController::class, 'caseHistorySearch'])->name('customer.case-history');
-    Route::post('customer/casehistory/store', [CustomerController::class, 'caseStore'])->name('agent.case.store');
-    Route::patch('customer/casehistory/update/{id}', [CustomerController::class, 'caseUpdate'])->name('agent.cases.update');
-    Route::post('customer/casehistory/close/{id}', [CustomerController::class, 'caseClose'])->name('agent.cases.close');
+    Route::post('customer/casehistory/store', [CustomerController::class, 'caseStore'])->name('customer.case.store');
+    Route::patch('customer/casehistory/update/{id}', [CustomerController::class, 'caseUpdate'])->name('customer.cases.update');
+    Route::post('customer/casehistory/close/{id}', [CustomerController::class, 'caseClose'])->name('customer.cases.close');
 
 	Route::get('airlines-details', [AirlineDetailController::class, 'index'])->name('airlines-details');
     Route::post('airlines-details/store', [AirlineController::class, 'store'])->name('airlines-details.store');

@@ -50,6 +50,9 @@
                         <ul class="nav nav-tabs nav-tabs-bottom">
                             <li class="nav-item"><a href="#general" data-bs-toggle="tab" class="nav-link active">General</a>
                             </li>
+
+                            <li class="nav-item"><a href="#case_history" data-bs-toggle="tab" class="nav-link">Case History
+                            </a></li>
                         </ul>
 
                     </div>
@@ -753,7 +756,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <div id="case_history" class="pro-overview tab-pane fade show">
                     <div class="row">
@@ -761,7 +764,7 @@
                             <div class="card profile-box flex-fill">
 
                                 <div class="col-auto float-end ms-auto mt-2 mx-2">
-                                    <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="
+                                    <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_case"
                                             class="fa fa-plus"></i> Add Case History
                                         Data</a>
                                 </div>
@@ -808,7 +811,7 @@
                                                             <!-- View Button -->
                                                             <button class="btn btn-info text-light btn-sm"
                                                                 data-bs-toggle="modal"
-                                                                data-bs-target="
+                                                                data-bs-target="#viewCaseModal-{{ $data->id }}"
                                                                     class="fa fa-eye"></i></button>
                                                             <div class="modal fade"
                                                                 id="viewCaseModal-{{ $data->id }}" tabindex="-1"
@@ -873,14 +876,14 @@
 
                                                             <!-- Edit Button -->
                                                             <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                                data-bs-target="
+                                                                data-bs-target="#editCaseModal-{{ $data->id }}"
                                                                     class="fa fa-edit"></i></button>
 
                                                             <!-- Close Button -->
                                                             @if ($data->case_status !== 'Closed')
                                                                 <button class="btn btn-danger btn-sm"
                                                                     data-bs-toggle="modal"
-                                                                    data-bs-target="
+                                                                    data-bs-target="#closeCaseModal-{{ $data->id }}">Close</button>
                                                             @endif
                                                         </td>
                                                     </tr>
@@ -997,7 +1000,7 @@
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="{{ route('admin.agent.case.store') }}
+                                                    <form action="{{ route('admin.customer.case.store') }}"
                                                         method="POST" enctype="multipart/form-data">
                                                         @csrf
 
@@ -1095,7 +1098,7 @@
                         </div>
                     </div>
                 </div>
-
+                {{--
                 <div id="accounts" class="pro-overview tab-pane fade show">
                     <div class="row">
                         <div class="col-md-12 d-flex">
