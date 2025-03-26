@@ -3,7 +3,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CaseUpdate extends Model
+class CustomerCaseUpdate extends Model
 {
     protected $fillable = [
         'case_id',

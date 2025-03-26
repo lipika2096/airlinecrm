@@ -50,8 +50,15 @@
                         <ul class="nav nav-tabs nav-tabs-bottom">
                             <li class="nav-item"><a href="#general" data-bs-toggle="tab" class="nav-link active">General</a>
                             </li>
+                            <li class="nav-item"><a href="#address" data-bs-toggle="tab" class="nav-link">Address</a>
+                            </li>
+                            <li class="nav-item"><a href="#contact_details" data-bs-toggle="tab" class="nav-link">Contact
+                                    Details</a></li>
 
                             <li class="nav-item"><a href="#case_history" data-bs-toggle="tab" class="nav-link">Case History
+                            </a></li>
+
+                            <li class="nav-item"><a href="#conversation" data-bs-toggle="tab" class="nav-link">Conversations
                             </a></li>
                         </ul>
 
@@ -203,7 +210,7 @@
                                             <div class="modal-body">
 
                                                 <form
-                                                    action="{{ route('admin.customer.update', ['id' => $customer->id]) }}"
+                                                    action="{{ route('admin.customer.update', ['id' => $customer->id]) }}#general"
                                                     method="POST" enctype="multipart/form-data">@csrf
                                                     @method('PATCH')
                                                     <div class= "row form-group">
@@ -364,13 +371,13 @@
                     </div>
                 </div>
 
-                {{-- <div id="address" class="pro-overview tab-pane fade show">
+                <div id="address" class="pro-overview tab-pane fade show">
                     <div class="row">
                         <div class="col-md-12 d-flex">
                             <div class="card profile-box flex-fill"
                                 style="background: none; border: none !important; box-shadow: none;">
                                 <div class="card-header">
-                                    <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="
+                                    <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_address"
                                             class="fa fa-plus"></i> Add Address</a>
                                 </div>
 
@@ -389,11 +396,11 @@
                                         <tbody>
 
                                             <tr>
-                                                <td>{{ $customer->address ?? '-' }}</td>
-                                                <td>{{ $customer->city ?? '-' }}</td>
-                                                <td>{{ $customer->state ?? '-' }}</td>
-                                                <td>{{ $customer->country ?? '-' }}</td>
-                                                <td>{{ $customer->pincode ?? '-' }}</td>
+                                                <td>{{ $customer->adminDetail->address ?? '-' }}</td>
+                                                <td>{{ $customer->adminDetail->city ?? '-' }}</td>
+                                                <td>{{ $customer->adminDetail->state ?? '-' }}</td>
+                                                <td>{{ $customer->adminDetail->country ?? '-' }}</td>
+                                                <td>{{ $customer->adminDetail->pincode ?? '-' }}</td>
                                                 <td><span class="badge badge-success p-2"> By default</span></td>
 
                                             </tr>
@@ -406,7 +413,7 @@
                                                     <td>{{ $address->pincode }}</td>
                                                     <td>
                                                         <i class="fas fa-edit m-3" data-bs-toggle="modal"
-                                                            data-bs-target="
+                                                            data-bs-target="#edit_address{{ $address->id }}"></i>
                                                         <div id="edit_address{{ $address->id }}"
                                                             class="modal custom-modal fade" role="dialog">
                                                             <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -421,7 +428,7 @@
                                                                     </div>
                                                                     <div class="modal-body">
                                                                         <form
-                                                                            action="{{ route('admin.agent.address.update', ['id' => $address->id]) }}
+                                                                            action="{{ route('admin.customer.address.update', ['id' => $address->id]) }}#address"
                                                                             method="POST" enctype="multipart/form-data">
                                                                             @csrf
                                                                             <div class="row">
@@ -508,7 +515,7 @@
                             <div class="card profile-box flex-fill"
                                 style="    background: none; border: none !important; box-shadow: none;">
                                 <div class="card-header">
-                                    <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="
+                                    <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_contact"
                                             class="fa fa-plus"></i> Add Contacts</a>
                                 </div>
                                 <div class="table-responsive">
@@ -551,7 +558,7 @@
                                                         {{ $contact->updatedBy->last_name ?? '' }}</td><!-- Edit Icon -->
                                                     <td>
                                                         <a data-bs-toggle="modal"
-                                                            data-bs-target="
+                                                            data-bs-target="#edit_contact{{ $contact->id }}"><i
                                                                 class="fas fa-edit"></i></a>
                                                     </td>
                                                 </tr>
@@ -568,7 +575,7 @@
                                                             </div>
                                                             <div class="modal-body">
                                                                 <form
-                                                                    action="{{ route('admin.agent.contact.update', ['id' => $contact->id]) }}
+                                                                    action="{{ route('admin.customer.contact.update', ['id' => $contact->id]) }}#contact_details"
                                                                     method="POST" enctype="multipart/form-data">
                                                                     @csrf
                                                                     <div class="row">
@@ -672,7 +679,7 @@
                         <div class="col-md-12 d-flex">
                             <div class="card profile-box flex-fill">
                                 <div class="col-auto float-end ms-auto mt-2 mx-2">
-                                    <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="
+                                    <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_comments"
                                             class="fa fa-plus"></i> Add Comments</a>
                                 </div>
                                 <div class="card-body">
@@ -680,7 +687,7 @@
                                         <div class="container">
                                             <div class="conversation-date">{{ $conversation->date_of_contact }}</div>
                                             <div class="conversation-title"><span
-                                                    class="text-danger text-capitalize">{{ $conversation->airline->airline_name ?? '-' }}:
+                                                    class="text-danger text-capitalize">Title:
                                                 </span> {{ $conversation->title }}</div>
                                             <div class="conversation-description">
                                                 {{ $conversation->description }}
@@ -701,27 +708,15 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                <form action="{{ route('admin.agent.conversation.store') }}
+                                                <form action="{{ route('admin.customer.conversation.store') }}#conversation"
                                                     method="POST" enctype="multipart/form-data">
                                                     @csrf
+
+                                                    <input class="form-control" type="hidden" name="customer_id"
+                                                        value="{{ $customer->adminDetail->admin_id }}">
                                                     <input class="form-control" type="hidden" name="from"
                                                         value="{{ auth('admin')->user()->name ?? '-' }}">
                                                     <div class="row">
-                                                        <div class="col-sm-4">
-                                                            <!-- <div class="form-group"> -->
-                                                            <!-- </div> -->
-                                                            <div class="form-group">
-                                                                <label class="col-form-label">Airlines <span
-                                                                        class="text-danger">*</span></label>
-                                                                <select class="form-control" required name="airline_id">
-                                                                    <option>Select Airline</option>
-                                                                    @foreach ($airlineDetailData as $data)
-                                                                        <option value="{{ $data->airline_id }}">
-                                                                            {{ $data->airline->airline_name }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                        </div>
                                                         <div class="col-sm-4">
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Subject <span
@@ -756,7 +751,7 @@
                             </div>
                         </div>
                     </div>
-                </div> --}}
+                </div>
 
                 <div id="case_history" class="pro-overview tab-pane fade show">
                     <div class="row">
@@ -811,7 +806,7 @@
                                                             <!-- View Button -->
                                                             <button class="btn btn-info text-light btn-sm"
                                                                 data-bs-toggle="modal"
-                                                                data-bs-target="#viewCaseModal-{{ $data->id }}"
+                                                                data-bs-target="#viewCaseModal-{{ $data->id }}"><i
                                                                     class="fa fa-eye"></i></button>
                                                             <div class="modal fade"
                                                                 id="viewCaseModal-{{ $data->id }}" tabindex="-1"
@@ -876,7 +871,7 @@
 
                                                             <!-- Edit Button -->
                                                             <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                                data-bs-target="#editCaseModal-{{ $data->id }}"
+                                                                data-bs-target="#editCaseModal-{{ $data->id }}"><i
                                                                     class="fa fa-edit"></i></button>
 
                                                             <!-- Close Button -->
@@ -902,7 +897,7 @@
                                                                 </div>
                                                                 <div class="modal-body">
                                                                     <form
-                                                                        action="{{ route('admin.agent.cases.update', ['id' => $data->id]) }}
+                                                                        action="{{ route('admin.customer.cases.update', ['id' => $data->id]) }}#case_history"
                                                                         method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
@@ -953,7 +948,7 @@
                                                                 </div>
                                                                 <div class="modal-body">
                                                                     <form
-                                                                        action="{{ route('admin.agent.cases.close', ['id' => $data->id]) }}
+                                                                        action="{{ route('admin.customer.cases.close', ['id' => $data->id]) }}#case_history"
                                                                         method="POST">
                                                                         @csrf
                                                                         <div class="mb-3">
@@ -1000,25 +995,17 @@
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="{{ route('admin.customer.case.store') }}"
+                                                    <form action="{{ route('admin.customer.case.store') }}#case_history"
                                                         method="POST" enctype="multipart/form-data">
                                                         @csrf
 
                                                         <div class="row">
-                                                            <div class="col-sm-6" style="display:none;">
-                                                                <div class="form-group">
-                                                                    <label class="col-form-label">Airline Id <span
-                                                                            class="text-danger">*</span></label>
-                                                                    <select class="form-control" name="airline_id"
-                                                                        required>
-                                                                        <option value="0" >Select Airline</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
                                                             <div class="col-sm-6">
                                                                 <div class="form-group">
                                                                     <label class="col-form-label">Case Opening Date <span
                                                                             class="text-danger">*</span></label>
+                                                                            <input class="form-control" type="hidden"
+                                                                            name="customer_id" value="{{$customer->adminDetail->admin_id}}">
                                                                     <input class="form-control" type="date"
                                                                         name="case_opening_date" required>
                                                                 </div>
@@ -1093,115 +1080,6 @@
                         </div>
                     </div>
                 </div>
-                {{--
-                <div id="accounts" class="pro-overview tab-pane fade show">
-                    <div class="row">
-                        <div class="col-md-12 d-flex">
-                            <div class="card profile-box flex-fill">
-                                <div class="col-auto float-end ms-auto mt-2 mx-2">
-                                    <a href="
-                                        data-bs-target="
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table datatable" id="accountDataTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>S.No.</th>
-                                                    <th>Date</th>
-                                                    <th>Remarks</th>
-                                                    <th>Credit</th>
-                                                    <th>Debit</th>
-                                                    <th>Balance</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @php
-                                                    $balance = $customerAccountBal->balance ?? 0;
-                                                @endphp
-                                                @foreach ($customerAccounts as $index => $account)
-                                                    @php
-                                                        $balance += $account->credit - $account->debit;
-                                                    @endphp
-                                                    <tr>
-                                                        <td>{{ $index + 1 }}</td>
-                                                        <td>{{ $account->tr_date }}</td>
-                                                        <td>{{ $account->tr_type }}</td>
-                                                        <td>{{ $account->credit ?? 0 }}</td>
-                                                        <td>{{ $account->debit ?? 0 }}</td>
-                                                        <td>{{ $account->balance }}</td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-
-                                    </div>
-                                </div>
-                                <div id="add_agent" class="modal custom-modal fade" role="dialog">
-                                    <div class="modal-dialog modal-dialog-centered modal-lg">
-                                        <div class="modal-content">
-                                            <div class="modal-header " style="margin-bottom: -25px;">
-                                                <h5 class="modal-title">Add Transactions</h5>
-                                                <button type="button" class="close" data-bs-dismiss="modal"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form action="{{ route('admin.transaction.store') }}
-                                                    method="POST" enctype="multipart/form-data">
-                                                    @csrf
-                                                    <div class="row">
-                                                        <div class="form-group">
-                                                            <input class="form-control" type="hidden" name="agent_id"
-                                                                value="{{ $customer->id }}">
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <div class="form-group">
-                                                                <label class="col-form-label">Debit Amount <span
-                                                                        class="text-danger">*</span></label>
-                                                                <input class="form-control" type="text" required
-                                                                    name="debit" id="debit">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <div class="form-group">
-                                                                <label class="col-form-label">Credit Amount</label>
-                                                                <input class="form-control" type="text" required
-                                                                    name="credit" id="credit">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <div class="form-group">
-                                                                <label class="col-form-label">Transaction Date<span
-                                                                        class="text-danger">*</span></label>
-                                                                <input class="form-control" type="date" name="tr_date"
-                                                                    required>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="col-sm-12">
-                                                            <div class="form-group">
-                                                                <label class="col-form-label">Remarks<span
-                                                                        class="text-danger">*</span></label>
-                                                                <textarea class="form-control" type="text" name="tr_type" required></textarea>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                    <div class="submit-section">
-                                                        <button class="btn btn-primary" type="submit">Submit</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div id="add_address" class="modal custom-modal fade" role="dialog">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
@@ -1212,13 +1090,13 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="{{ route('admin.agent.address.store') }}
+                                <form action="{{ route('admin.customer.address.store') }}#address" method="post"
                                     enctype="multipart/form-data">
                                     @csrf
                                     <div class="row">
                                         <div class="form-group">
-                                            <input class="form-control" type="hidden" name="agent_id"
-                                                value="{{ $customer->id }}">
+                                            <input class="form-control" type="hidden" name="customer_id"
+                                                value="{{ $customer->adminDetail->admin_id }}">
                                         </div>
                                         <div class="col-sm-6">
                                             <div class="form-group">
@@ -1272,13 +1150,13 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="{{ route('admin.agent.contact.store') }}
+                                <form action="{{ route('admin.customer.contact.store') }}#contact_details" method="post"
                                     enctype="multipart/form-data">
                                     @csrf
                                     <div class="row">
                                         <div class="form-group">
-                                            <input class="form-control" type="hidden" name="agent_id"
-                                                value="{{ $customer->id }}">
+                                            <input class="form-control" type="hidden" name="customer_id"
+                                                value="{{ $customer->adminDetail->admin_id }}">
                                             <input class="form-control" type="hidden" required name="updated_at"
                                                 value=" ">
                                         </div>
@@ -1336,7 +1214,7 @@
                             </div>
                         </div>
                     </div>
-                </div> --}}
+                </div>
 
             </div>
 
@@ -1455,12 +1333,27 @@
                 }
             </style>
             <!-- Include jQuery & DataTables -->
-            <script src="https:
 
-                        <script>
-                            $(document).ready(function() {
-                                let table = $('#accountDataTable').DataTable({
-                                    " responsive": true, "autoWidth" : false, "searching" : false }); if
-                (!$.fn.DataTable.isDataTable(" table.destroy(); $('#accountDataTable').DataTable({ "responsive" : true, "autoWidth"
-                : false, "searching" : false }); } }); </script>
+<!-- Include jQuery & DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        let table = $('#accountDataTable').DataTable({
+            "responsive": true,
+            "autoWidth": false,
+            "searching" : false
+        });
+
+        // Ensure DataTable is reloaded when there are data changes
+        if (!$.fn.DataTable.isDataTable("#accountDataTable")) {
+            table.destroy();
+            $('#accountDataTable').DataTable({
+                "responsive": true,
+                "autoWidth": false,
+                "searching" : false
+            });
+        }
+    });
+</script>
         @endsection

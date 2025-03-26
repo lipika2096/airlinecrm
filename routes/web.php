@@ -139,6 +139,14 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
     Route::patch('customer/casehistory/update/{id}', [CustomerController::class, 'caseUpdate'])->name('customer.cases.update');
     Route::post('customer/casehistory/close/{id}', [CustomerController::class, 'caseClose'])->name('customer.cases.close');
 
+
+    Route::post('customer/conversation/store', [CustomerController::class, 'conversationStore'])->name('customer.conversation.store');
+    Route::post('customer/address/store', [CustomerController::class, 'AddressStore'])->name('customer.address.store');
+    Route::post('customer/contact/store', [CustomerController::class, 'ContactStore'])->name('customer.contact.store');
+    Route::post('customer/contact/update/{id}', [CustomerController::class, 'contactUpdate'])->name('customer.contact.update');
+
+    Route::post('customer/address/update/{id}', [CustomerController::class, 'addressUpdate'])->name('customer.address.update');
+
 	Route::get('airlines-details', [AirlineDetailController::class, 'index'])->name('airlines-details');
     Route::post('airlines-details/store', [AirlineController::class, 'store'])->name('airlines-details.store');
     Route::patch('/airline-details/{airlineDetail}', [AirlineController::class, 'update'])->name('airlines-details.update');

@@ -14,6 +14,7 @@ use App\Models\CustomerAddress;
 use App\Models\CustomerHeadOfficeContactDetail;
 use App\Models\Designation;
 use App\Models\CustomerConversation;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
@@ -102,8 +103,7 @@ class CustomerController extends Controller
             'case_closing_date' => 'nullable|date',
             'customer_id' => 'required|integer',
             'remarks' => 'required|string',
-            'ticket_no' => 'required|string',
-            'airline_id' => 'required|string'
+            'ticket_no' => 'required|string'
         ]);
 
         $case = CustomerCaseHistory::create($validatedData);
@@ -116,7 +116,7 @@ class CustomerController extends Controller
             'status' => $request->input('case_status'),
         ]);
 
-        return redirect()->back()->with('success', 'Special fares updated successfully.');
+        return redirect()->back()->with('success', 'Case Created successfully.');
     }
 
 
@@ -178,6 +178,83 @@ class CustomerController extends Controller
             'case_closing_date' => Carbon::now(),
         ]);
 
-        return redirect()->back()->with('success', 'Special fares updated successfully.');
+        return redirect()->back()->with('success', 'Case Closed successfully.');
     }
+
+
+    public function AddressStore(Request $request)
+    {
+        CustomerAddress::create([
+            'city' => $request->input('city'),
+            'state' => $request->input('state'),
+            'street' => $request->input('street'),
+            'country' => $request->input('country'),
+            'pincode' => $request->input('pincode'),
+            'customer_id' => $request->input('customer_id'),
+            'created_by' => auth('admin')->user()->id
+        ]);
+        return redirect()->back()->with('success', 'Address created successfully.');
+    }
+
+    public function addressUpdate(Request $request, $id)
+    {
+
+        $prod = CustomerAddress::find($id);
+        $prod->update([
+            'city' => $request->input('city'),
+            'state' => $request->input('state'),
+            'street' => $request->input('street'),
+            'country' => $request->input('country'),
+            'pincode' => $request->input('pincode'),
+            'updated_by' => auth('admin')->user()->id
+        ]);
+        return redirect()->back()->with('success', 'Address updated successfully.');
+    }
+
+
+    public function contactUpdate(Request $request, $id)
+    {
+        $prod = CustomerHeadOfficeContactDetail::find($id);
+        $prod->update([
+            'title' => $request->input('title'),
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
+            'email_address' => $request->input('email_address'),
+            'phone_number' => $request->input('phone_number'),
+            'position' => $request->input('position'),
+            'add_to_mail_list' => $request->input('add_to_mail_list') == '1' ? 1 : 0,
+            'last_updated_by' => auth('admin')->user()->id,
+            'updated_by' => auth('admin')->user()->id
+        ]);
+        return redirect()->back()->with('success', 'Contact details updated successfully.');
+    }
+    public function ContactStore(Request $request)
+    {
+        CustomerHeadOfficeContactDetail::create([
+            'title' => $request->input('title'),
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
+            'email_address' => $request->input('email_address'),
+            'phone_number' => $request->input('phone_number'),
+            'position' => $request->input('position'),
+            'customer_id' => $request->input('customer_id'),
+            'add_to_mail_list' => $request->input('add_to_mail_list'),
+            'updated_at' => $request->input('updated_at'),
+            'created_by' => auth('admin')->user()->id
+        ]);
+        return redirect()->back()->with('success', 'Contact details created successfully.');
+    }
+    public function conversationStore(Request $request)
+    {
+        CustomerConversation::create([
+            'from' => $request->input('from'),
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'c_date' => now(),
+            'customer_id' => $request->input('customer_id'),
+            'date_of_contact' => $request->input('date_of_contact')
+        ]);
+        return redirect()->back();
+    }
+
 }
