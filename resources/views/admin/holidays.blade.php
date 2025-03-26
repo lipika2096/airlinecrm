@@ -957,6 +957,7 @@ use Carbon\Carbon;
                                         // Generate days for the month
                                         for (let day = dayCounter; day <= daysInMonth; day++) {
                                             const leaveDayData = leaveDays.find(leave => leave.day === day);
+                                            console.log(leaveDays);
                                             const leaveColor = leaveDayData ? getLeaveTypeColor(leaveDayData.type) : '';
 
                                             // Determine if it's Saturday or Sunday

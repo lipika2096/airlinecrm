@@ -255,7 +255,7 @@ class EmployeeController extends Controller
 
     public function viewUserRights()
     {
-        $department_rights = DepartmentRight::where('status', 1)->get();
+        $department_rights = DepartmentRight::where('status', 1)->where('created_by', auth('admin')->user()->id)->get();
         $department = Department::latest()->get();
         $duties = Duty::latest()->get();
 
@@ -280,7 +280,8 @@ class EmployeeController extends Controller
                         'department_id' => $departmentId
                     ],
                     [
-                        'status' => $status
+                        'status' => $status,
+                        'created_by' => auth('admin')->user()->id
                     ]
                 );
             }
@@ -477,7 +478,7 @@ class EmployeeController extends Controller
         $leavetypes = LeaveType::where('status', 1)->get();
         $staffReadSign = StaffReadSign::where('staff_id', $id)->get();
         $employee_leaves_view = EmployeeLeave::where('employee_id', $id)->latest()->get();
-        $users = User::where('department', '!=', null)->get()->groupBy('department');
+        $users = User::where('department', '!=', null)->where('created_by', auth('admin')->user()->id)->get()->groupBy('department');
 
         // If this is an AJAX request
         if ($request->ajax()) {
@@ -1497,16 +1498,16 @@ class EmployeeController extends Controller
 
         foreach ($users as $user) {
             $employeeLeaves = DB::table('employee_leaves')
-                ->join('leave_types', 'employee_leaves.leave_type', '=', 'leave_types.name')
-                ->where('employee_leaves.employee_id', $user->id)
-                ->where('employee_leaves.status', 3)
-                ->select('employee_leaves.*', 'leave_types.color')
-                ->get();
+            ->join('leave_types', 'employee_leaves.leave_type', '=', 'leave_types.name')
+            ->where('employee_leaves.employee_id', $user->id)
+            ->where('employee_leaves.status', 3)
+            ->where('leave_types.created_by', '=', auth('admin')->user()->id)
+            ->select('employee_leaves.*', 'leave_types.color')
+            ->get();
 
             $leaveDays = [];
             $leavesData = [];
             $currentMonth = Carbon::now()->month;
-
             foreach ($employeeLeaves as $leave) {
                 $leavesData[] = $leave;
                 $fromDate = Carbon::parse($leave->from);

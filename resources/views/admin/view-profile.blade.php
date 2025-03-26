@@ -2299,7 +2299,7 @@ use Carbon\Carbon;
                                     method="POST" enctype="multipart/form-data">
                                     @csrf
                                     <div class="table-responsive text-nowrap">
-                                        <table class="table datatable">
+                                        <table class="table">
                                             <thead>
                                                 <tr>
                                                     <th class="fw-bold">Airline

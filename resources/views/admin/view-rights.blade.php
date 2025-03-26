@@ -42,15 +42,15 @@
                                                         style="border-radius:10px;" data-bs-target="#add_target"><i
                                                             class="fa fa-plus"></i> Add / Edit
                                                         User Rights</a>
-
+{{--
                                                     <a class="btn btn-info text-white" data-bs-toggle="modal"
                                                         style="margin-right:10px; border-radius:10px !important;"
                                                         data-bs-target="#view_fares"><i class="fa fa-plus"></i> View
-                                                        User Rights</a>
+                                                        User Rights</a> --}}
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="table-responsive">
-                                                        <table class="table table-striped custom-table mb-0 datatable">
+                                                        {{-- <table class="table table-striped custom-table mb-0 datatable">
                                                             <thead>
                                                                 <tr>
                                                                     <th>Department</th>
@@ -75,6 +75,58 @@
                                                                     </tr>
                                                                 @endforeach
                                                                 <!-- Repeat for other agents -->
+                                                            </tbody>
+                                                        </table> --}}
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="fw-bold">
+                                                                        Department</th>
+                                                                    @foreach ($duties as $ft)
+                                                                        <th class="fw-bold">
+                                                                            {{ $ft->name }}
+                                                                        </th>
+                                                                    @endforeach
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach ($department as $air)
+                                                                    <tr>
+                                                                        <div class="form-group">
+                                                                            <input class="form-control"
+                                                                                type="hidden" name="staff_id"
+                                                                                value="null">
+                                                                        </div>
+                                                                        <th class="fw-bold">
+                                                                            {{ $air->department_name }}
+                                                                        </th>
+                                                                        @foreach ($duties as $ft)
+                                                                            @php
+                                                                                $status = DB::table(
+                                                                                    'department_rights',
+                                                                                )
+                                                                                    ->where(
+                                                                                        'department_id',
+                                                                                        $air->id,
+                                                                                    )
+                                                                                    ->where(
+                                                                                        'duties_id',
+                                                                                        $ft->id,
+                                                                                    )
+                                                                                    ->value('status');
+                                                                            @endphp
+                                                                            <input type="hidden"
+                                                                                name="department[{{ $air->id }}][{{ $ft->id }}]"
+                                                                                value="2">
+                                                                            <th>
+                                                                                <input type="checkbox"
+                                                                                    name="department[{{ $air->id }}][{{ $ft->id }}]"
+                                                                                    value="1"
+                                                                                    {{ $status == 1 ? 'checked' : '' }}>
+                                                                            </th>
+                                                                        @endforeach
+                                                                    </tr>
+                                                                @endforeach
                                                             </tbody>
                                                         </table>
 
@@ -109,42 +161,42 @@
                                                                             </thead>
                                                                             <tbody>
                                                                                 @foreach ($department as $air)
-                                                                                    <tr>
-                                                                                        <div class="form-group">
-                                                                                            <input class="form-control"
-                                                                                                type="hidden"
-                                                                                                name="staff_id"
-                                                                                                value="0">
-                                                                                        </div>
-                                                                                        <th class="fw-bold">
-                                                                                            {{ $air->department_name }}</th>
-                                                                                        @foreach ($duties as $ft)
-                                                                                            @php
-                                                                                                $status = DB::table(
-                                                                                                    'department_rights',
-                                                                                                )
-                                                                                                    ->where(
-                                                                                                        'department_id',
-                                                                                                        $air->id,
-                                                                                                    )
-                                                                                                    ->where(
-                                                                                                        'duties_id',
-                                                                                                        $ft->name,
-                                                                                                    )
-                                                                                                    ->value('status');
-                                                                                            @endphp
-                                                                                            <input type="hidden"
-                                                                                                name="department[{{ $air->id }}][{{ $ft->id }}]"
-                                                                                                value="2">
-                                                                                            <th>
-                                                                                                <input type="checkbox"
-                                                                                                    name="department[{{ $air->id }}][{{ $ft->id }}]"
-                                                                                                    value="1"
-                                                                                                    {{ $status == 1 ? 'checked' : '' }}>
-                                                                                            </th>
-                                                                                        @endforeach
-                                                                                    </tr>
-                                                                                @endforeach
+                                                                    <tr>
+                                                                        <div class="form-group">
+                                                                            <input class="form-control"
+                                                                                type="hidden" name="staff_id"
+                                                                                value="null">
+                                                                        </div>
+                                                                        <th class="fw-bold">
+                                                                            {{ $air->department_name }}
+                                                                        </th>
+                                                                        @foreach ($duties as $ft)
+                                                                            @php
+                                                                                $status = DB::table(
+                                                                                    'department_rights',
+                                                                                )
+                                                                                    ->where(
+                                                                                        'department_id',
+                                                                                        $air->id,
+                                                                                    )
+                                                                                    ->where(
+                                                                                        'duties_id',
+                                                                                        $ft->id,
+                                                                                    )
+                                                                                    ->value('status');
+                                                                            @endphp
+                                                                            <input type="hidden"
+                                                                                name="department[{{ $air->id }}][{{ $ft->id }}]"
+                                                                                value="2">
+                                                                            <th>
+                                                                                <input type="checkbox"
+                                                                                    name="department[{{ $air->id }}][{{ $ft->id }}]"
+                                                                                    value="1"
+                                                                                    {{ $status == 1 ? 'checked' : '' }}>
+                                                                            </th>
+                                                                        @endforeach
+                                                                    </tr>
+                                                                @endforeach
                                                                             </tbody>
                                                                         </table>
                                                                     </div>
