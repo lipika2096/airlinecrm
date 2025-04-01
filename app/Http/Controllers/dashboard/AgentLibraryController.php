@@ -17,8 +17,8 @@ class AgentLibraryController extends Controller
 {
     public function index()
     {
-        $agents = Agent::where('created_by', auth('admin')->user()->id)->where('deleted_at', 'null')->get();
-        $libraries = AgentLibrary::with('agent')->get(); // Fetch libraries with related airlines
+        $agents = Agent::where('deleted_at', 'null')->where('created_by', auth('admin')->user()->id)->get();
+        $libraries = AgentLibrary::with('agent')->where('created_by', auth('admin')->user()->id)->get(); // Fetch libraries with related airlines
         return view('admin.agent-library', compact('agents', 'libraries'));
     }
 

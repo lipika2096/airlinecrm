@@ -31,15 +31,15 @@ class AirlineController extends Controller
     public function index()
     {
 
-        $airlineDetails = AirlineDetail::where('deleted_at', NULL)->with('airline')->get();
-        $airlines = Airline::all();
+        $airlineDetails = AirlineDetail::where('deleted_at', NULL)->where('created_by', auth('admin')->user()->id)->with('airline')->get();
+        $airlines = Airline::where('created_by', auth('admin')->user()->id)->get();
 
         return view('admin.airlines', compact('airlines', 'airlineDetails'));
     }
 
     public function report(Request $request)
     {
-        $airlines = Airline::all();
+        $airlines = Airline::where('created_by', auth('admin')->user()->id)->get();
         $airline_id = $request->airline_id;
         // dd($airline_id);
         $specialFares = SpecialFare::where('airline_id', $request->airline_id)
@@ -169,6 +169,9 @@ class AirlineController extends Controller
             $validatedData['logo_path'] = 'public/assets/img/airlines/' . $fileName; // This is the unique path
         }
 
+        // Add the created_by field
+        $validatedData['created_by'] = auth('admin')->user()->id;
+
         // Create a new airline record
         $airline = Airline::create($validatedData);
 
@@ -194,7 +197,8 @@ class AirlineController extends Controller
             'IATA' => $request->input('IATA'),
             'ICAO' => $request->input('ICAO'),
             'callsign' => $request->input('callsign'),
-            'numeric_code' => $request->input('numeric_code')
+            'numeric_code' => $request->input('numeric_code'),
+            'created_by' => auth('admin')->user()->id,
         ];
 
         // Create a new airlineDetails record

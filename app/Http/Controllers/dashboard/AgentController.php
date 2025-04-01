@@ -41,7 +41,7 @@ class AgentController extends Controller
     public function index(Request $request)
     {
         $designation = Designation::where('created_by', auth('admin')->user()->id)->latest()->get();
-        $query = Agent::with('agent_addresses', 'head_office')->where('created_by', auth('admin')->user()->id)->whereNull('deleted_at')->orWhere('deleted_at', 'null');
+        $query = Agent::with('agent_addresses', 'head_office')->whereNull('deleted_at')->orWhere('deleted_at', 'null')->where('created_by', auth('admin')->user()->id);
 
 
         if ($request->has('search') && !empty($request->input('search'))) {

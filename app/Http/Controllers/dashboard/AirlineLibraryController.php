@@ -18,8 +18,8 @@ class AirlineLibraryController extends Controller
 {
     public function library()
     {
-        $airlines = Airline::all();
-        $libraries = AirlineLibrary::with('airline')->get(); // Fetch libraries with related airlines
+        $airlines = Airline::where('created_by', auth('admin')->user()->id)->get();
+        $libraries = AirlineLibrary::where('created_by', auth('admin')->user()->id)->with('airline')->get(); // Fetch libraries with related airlines
         return view('admin.library', compact('airlines', 'libraries'));
     }
 
@@ -62,6 +62,7 @@ class AirlineLibraryController extends Controller
             'issue_date' => $request->input('issue_date'),
             'attachment' => $fileNamesString,
             'uploaded_by' => auth('admin')->user()->id,
+            'created_by' => auth('admin')->user()->id,
         ]);
 
 

@@ -25,7 +25,7 @@ class SalesLeadController extends Controller
         DB::raw('GROUP_CONCAT(CONCAT(users.first_name, " ", users.last_name) SEPARATOR ", ") as staff_names')
     )
     ->groupBy('sales_leads.id')->havingRaw('staff_names IS NOT NULL AND staff_names != ""')
-    ->orderBy('sales_leads.created_at', 'desc')
+    ->orderBy('sales_leads.created_at', 'desc')->where('sales_leads.created_by', auth('admin')->user()->name)
     ->get();
     $unallocatedsalesLead = SalesLead::leftJoin('assign_lead_staffs', function ($join) {
         $join->on('sales_leads.id', '=', 'assign_lead_staffs.lead_id')
@@ -38,7 +38,7 @@ class SalesLeadController extends Controller
     )
     ->groupBy('sales_leads.id')
     ->havingRaw('staff_names IS NULL OR staff_names = ""') // Only include leads without staff_names
-    ->orderBy('sales_leads.created_at', 'desc')
+    ->orderBy('sales_leads.created_at', 'desc')->where('sales_leads.created_by', auth('admin')->user()->name)
     ->get();
     $salesLead = SalesLead::leftJoin('assign_lead_staffs', function ($join) {
         $join->on('sales_leads.id', '=', 'assign_lead_staffs.lead_id')
@@ -50,7 +50,7 @@ class SalesLeadController extends Controller
         DB::raw('GROUP_CONCAT(CONCAT(users.first_name, " ", users.last_name) SEPARATOR ", ") as staff_names')
     )
     ->groupBy('sales_leads.id')
-    ->orderBy('sales_leads.created_at', 'desc')
+    ->orderBy('sales_leads.created_at', 'desc')->where('sales_leads.created_by', auth('admin')->user()->name)
     ->get();
         $allEmployee = Client::join('users', 'users.clientid', '=', 'clients.client_id')
         ->get(['clients.*', 'users.*']);

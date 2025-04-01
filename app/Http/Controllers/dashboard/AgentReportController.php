@@ -16,7 +16,7 @@ class AgentReportController extends Controller
 {
     public function airlineReport(Request $request)
     {
-        $agents = Agent::where('deleted_at', 'null')->get();
+        $agents = Agent::where('deleted_at', 'null')->where('created_by', auth('admin')->user()->id)->get();
         $agent_id = $request->agent_id;
         $specialFares = SpecialFare::where('agent_id', $request->agent_id)
                         ->groupBy('airline_id')

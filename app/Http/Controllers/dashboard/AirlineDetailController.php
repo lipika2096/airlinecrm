@@ -13,7 +13,7 @@ class AirlineDetailController extends Controller
     public function index()
     {
         // Fetch airline details along with related airline information
-        $airlineDetails = AirlineDetail::where('deleted_at',NULL)->with('airline')->get();
+        $airlineDetails = AirlineDetail::where('deleted_at',NULL)->where('created_by', auth('admin')->user()->id)->with('airline')->get();
         $airlines = Airline::all();
         return view('admin.airline-details', compact('airlineDetails', 'airlines'));
     }
