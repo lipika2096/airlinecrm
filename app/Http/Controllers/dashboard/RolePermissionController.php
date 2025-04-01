@@ -5,13 +5,17 @@ namespace App\Http\Controllers\dashboard;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use App\Models\Admin;
+use App\MOdels\AdminDetail;
 use Spatie\Permission\Models\Permission;
 
 class RolePermissionController extends Controller {
     public function index() {
         $roles = Role::with('permissions')->where('name', '!=', 'SuperAdmin')->get();
+        $customers = Admin::with('adminDetail')->whereDoesntHave('roles', function ($query) {
+            $query->where('name', 'superAdmin');})->latest()->get();
         $permissions = Permission::all();
-        return view( 'admin.roles-permissions', compact( 'roles', 'permissions' ) );
+        return view( 'admin.roles-permissions', compact( 'roles', 'permissions', 'customers' ) );
     }
     public function store(Request $request)
     {

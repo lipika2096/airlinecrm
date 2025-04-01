@@ -73,6 +73,7 @@ Route::name('admin.')->middleware(['admin'])->group(function () {
     Route::get('admin-view/kyc/document', [AdminController::class, 'kycDocumentIndex'])->name('kyc.documents');
     Route::patch('admin-view/kyc/document/{id}', [AdminController::class, 'kycDocument'])->name('kyc.document.store');
     Route::get('customer/view/{id}', [CustomerController::class, 'customerProfile'])->name('customer.view');
+    Route::post('/update-customer-role', [CustomerController::class, 'updateRole'])->name('update.customer.role');
 
 });
 

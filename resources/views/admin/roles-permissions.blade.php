@@ -31,8 +31,8 @@
                             <thead>
                                 <tr>
                                     <th>Role</th>
-                                    @foreach ($permissions as $permission)
-                                        <th class="text-center">{{ $permission->name }}</th>
+                                    @foreach ($customers as $customer)
+                                        <th class="text-center">{{ $customer->name }}</th>
                                     @endforeach
                                 </tr>
                             </thead>
@@ -40,11 +40,10 @@
                                 @foreach ($roles as $role)
                                     <tr>
                                         <td>{{ $role->name }}</td>
-                                        @foreach ($permissions as $permission)
+                                        @foreach ($customers as $customer)
                                             <td class="text-center">
-                                                <input type="checkbox" name="permissions[{{ $role->id }}][]"
-                                                    value="{{ $permission->id }}"
-                                                    {{ $role->permissions->contains($permission->id) ? 'checked' : '' }}>
+                                                <input type="checkbox" class="role-checkbox" data-customer-id="{{ $customer->id }}" data-role-id="{{ $role->id }}"
+                                                    {{ $customer->roles->contains($role->id) ? 'checked' : '' }}>
                                             </td>
                                         @endforeach
                                     </tr>
@@ -54,11 +53,12 @@
                     </div>
                 </div>
 
+
+
             </div>
         </div>
         <!-- /Page Content -->
 
-        <!-- Add Role Modal -->
         <!-- Add Role Modal -->
         <div id="add_role" class="modal custom-modal fade" role="dialog">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -96,8 +96,6 @@
                 </div>
             </div>
         </div>
-        <!-- /Add Role Modal -->
-
         <!-- /Add Role Modal -->
 
         <!-- Edit Role Modal -->
@@ -180,6 +178,48 @@
             </div>
         </div>
         <!-- /Delete Role Modal -->
+
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- Add this inside the <head> tag -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+        <!-- Add this before closing </body> -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+        <script>
+            $(document).ready(function() {
+                $('.role-checkbox').on('change', function() {
+                    var customerId = $(this).data('customer-id');
+                    var roleId = $(this).data('role-id');
+                    var isChecked = $(this).is(':checked');
+
+                    if (isChecked) {
+                        // Uncheck all checkboxes in the same column except the current one
+                        $('.role-checkbox[data-customer-id="' + customerId + '"]').not(this).prop('checked', false);
+                    }
+
+                    // Send AJAX request
+                    $.ajax({
+                        url: '{{ route("admin.update.customer.role") }}',
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            customer_id: customerId,
+                            role_id: roleId,
+                            assign: isChecked
+                        },
+                        success: function(response) {
+                            toastr.success(response.message);
+                        },
+                        error: function(xhr) {
+                            toastr.error('Something went wrong!');
+                        }
+                    });
+                });
+            });
+        </script>
+
 
     </div>
     <!-- /Page Wrapper -->
