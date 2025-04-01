@@ -20,23 +20,27 @@ use Spatie\Permission\Models\Role;
 
 class CustomerController extends Controller
 {
-    public function updateRole(Request $request){
-        \Log::info('Request Data:', $request->all()); // Debugging
+    public function updateRole(Request $request)
+{
+    \Log::info('Request Data:', $request->all()); // Debugging
 
-        $customer = Admin::findOrFail($request->customer_id);
-        $role = Role::findOrFail($request->role_id);
+    $customer = Admin::findOrFail($request->customer_id);
+    $role = Role::findOrFail($request->role_id);
 
-        \Log::info('Customer:', [$customer->id]);
-        \Log::info('Role:', [$role->name]);
+    \Log::info('Customer:', [$customer->id]);
+    \Log::info('Role:', [$role->name]);
 
-        if ($request->assign) {
-            $customer->assignRole($role->name);
-            return response()->json(['message' => 'Role assigned successfully.']);
-        } else {
-            $customer->removeRole($role->name);
-            return response()->json(['message' => 'Role removed successfully.']);
-        }
+    if ($request->assign) {
+        // Remove all previous roles and assign only the new one
+        $customer->syncRoles([$role->name]);
+        return response()->json(['message' => 'Role updated successfully.']);
+    } else {
+        // If unchecking, remove all roles
+        $customer->syncRoles([]);
+        return response()->json(['message' => 'Role removed successfully.']);
     }
+}
+
 
     public function customerProfile(Request $request, $id)
     {
