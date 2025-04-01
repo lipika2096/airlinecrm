@@ -16,6 +16,7 @@ class AppController extends Controller
     public function calendar()
     {
         $username = auth('admin')->user()->id;
+
         $events = Calender::where('created_by',$username)->get(); // Assuming Event is the correct model name
         $eventStatus = EventStatus::orderBy('status_type')->get();
         $salesLead = SalesLead::leftJoin('assign_lead_staffs', function ($join) {
@@ -28,7 +29,7 @@ class AppController extends Controller
             DB::raw('GROUP_CONCAT(CONCAT(users.first_name, " ", users.last_name) SEPARATOR ", ") as staff_names')
         )
         ->groupBy('sales_leads.id')->havingRaw('staff_names IS NOT NULL AND staff_names != ""')
-        ->orderBy('sales_leads.created_at', 'desc')
+        ->orderBy('sales_leads.created_at', 'desc')->where('sales_leads.created_by', auth('admin')->user()->name)
         ->get();
         $combinedData = collect($events)->merge($salesLead);
         return view('admin.events', compact('combinedData', 'eventStatus')); // Ensure the view path is correct

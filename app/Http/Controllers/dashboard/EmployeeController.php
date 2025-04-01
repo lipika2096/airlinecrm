@@ -256,12 +256,12 @@ class EmployeeController extends Controller
     public function viewUserRights()
     {
         $department_rights = DepartmentRight::where('status', 1)->where('created_by', auth('admin')->user()->id)->get();
-        $department = Department::latest()->get();
-        $duties = Duty::latest()->get();
+        $department = Department::latest()->where('created_by', auth('admin')->user()->id)->get();
+        $duties = Duty::latest()->where('created_by', auth('admin')->user()->id)->get();
 
         $specialFare = SpecialFare::where('agent_id', 4)->get();
 
-        $fareType = FareType::get();
+        $fareType = FareType::where('created_by', auth('admin')->user()->id)->get();
 
 
         return view('admin.view-rights', compact('department_rights', 'department', 'duties'));
