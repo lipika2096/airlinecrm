@@ -30,17 +30,17 @@
                         <table class="table table-striped custom-table datatable">
                             <thead>
                                 <tr>
-                                    <th>Role</th>
-                                    @foreach ($customers as $customer)
-                                        <th class="text-center">{{ $customer->name }}</th>
+                                    <th>Customer</th>
+                                    @foreach ($roles as $role)
+                                        <th class="text-center">{{ $role->name }}</th>
                                     @endforeach
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($roles as $role)
+                                @foreach ($customers as $customer)
                                     <tr>
-                                        <td>{{ $role->name }}</td>
-                                        @foreach ($customers as $customer)
+                                        <td>{{ $customer->name }}</td>
+                                        @foreach ($roles as $role)
                                             <td class="text-center">
                                                 <input type="checkbox" class="role-checkbox" data-customer-id="{{ $customer->id }}" data-role-id="{{ $role->id }}"
                                                     {{ $customer->roles->contains($role->id) ? 'checked' : '' }}>
@@ -52,6 +52,7 @@
                         </table>
                     </div>
                 </div>
+
 
 
 
