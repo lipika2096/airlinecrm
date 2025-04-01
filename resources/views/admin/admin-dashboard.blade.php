@@ -159,24 +159,21 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-md-4" style="font-weight: bold;
-    border-right: 1px solid;">
+                                            <div class="col-md-4" style="font-weight: bold;  border-right: 1px solid;">
 
                                                 <div class="dash-stats-list">
                                                     <h4>{{ $total_todo }}</h4>
                                                     <p>Total Subscriptions</p>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4" style="font-weight: bold;
-    border-right: 1px solid;">
+                                            <div class="col-md-4" style="font-weight: bold; border-right: 1px solid;">
 
                                                 <div class="dash-stats-list">
                                                     <h4>{{ $pending_todo }}</h4>
                                                     <p>New Subscriptions</p>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4" style="font-weight: bold;
-    border-right: 1px solid;">
+                                            <div class="col-md-4" style="font-weight: bold;  border-right: 1px solid;">
 
                                                 <div class="dash-stats-list">
                                                     <h4>{{ $pending_todo }}</h4>

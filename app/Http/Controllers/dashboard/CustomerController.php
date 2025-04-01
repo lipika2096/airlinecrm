@@ -16,6 +16,7 @@ use App\Models\Designation;
 use App\Models\CustomerConversation;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
 
 class CustomerController extends Controller
 {
@@ -32,8 +33,9 @@ class CustomerController extends Controller
 
         $caseData = CustomerCaseHistory::where('customer_id', $id)->get();
         $designation = Designation::all();
+        $roles = Role::with('permissions')->where('name', '!=', 'superAdmin')->get();
 
-        return view('admin.customer-profile', compact('customerConversation','customer', 'customerAccounts', 'customerAddress', 'customerContact', 'caseData', 'customerAccountBal'));
+        return view('admin.customer-profile', compact('customerConversation','customer', 'customerAccounts', 'customerAddress', 'customerContact', 'caseData', 'customerAccountBal', 'roles'));
     }
     public function caseHistorySearch(Request $request)
     {

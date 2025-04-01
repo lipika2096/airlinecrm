@@ -37,7 +37,8 @@
                             <li class="breadcrumb-item active">Profile</li>
                         </ul>
                         <p class="d-inline text-dark font-weight-bolder"> <b
-                                class="d-inline text-capitalize">{{ $customer->adminDetail->company_name ?? '-' }}</b> profile
+                                class="d-inline text-capitalize">{{ $customer->adminDetail->company_name ?? '-' }}</b>
+                            profile
                         </p>
                     </div>
                 </div>
@@ -56,10 +57,10 @@
                                     Details</a></li>
 
                             <li class="nav-item"><a href="#case_history" data-bs-toggle="tab" class="nav-link">Case History
-                            </a></li>
+                                </a></li>
 
                             <li class="nav-item"><a href="#conversation" data-bs-toggle="tab" class="nav-link">Conversations
-                            </a></li>
+                                </a></li>
                         </ul>
 
                     </div>
@@ -80,7 +81,8 @@
 
                                                 <tr class="alignedText">
                                                     <th>Company name</th>
-                                                    <td colspan="5">{{ $customer->adminDetail->company_name ?? '-' }}</td>
+                                                    <td colspan="5">{{ $customer->adminDetail->company_name ?? '-' }}
+                                                    </td>
                                                 </tr>
                                                 <tr class="alignedText">
                                                     <th>Brand name</th>
@@ -308,7 +310,7 @@
                                                         <lable class="form-lable">Focused Destinations</lable>
                                                         @if (!empty($customer->adminDetail?->business_focus))
                                                             @foreach (json_decode($customer->adminDetail->business_focus, true) ?? [] as $destination)
-                                                                <div class="col-sm-4  focus-destination-item">
+                                                                <div class="col-sm-6  focus-destination-item">
                                                                     <input type="text" class="form-control"
                                                                         name="focus_destinations[]"
                                                                         value="{{ $destination }}">
@@ -323,6 +325,16 @@
                                                         </div>
                                                     </div>
                                                     <div class="row form-group">
+
+                                                        <div class="col-sm-4">
+                                                            <label>Select Role</label>
+                                                            <select class="form-control" name="role" required>
+                                                                <option>Select Role</option>
+                                                                @foreach ($roles as $role)
+                                                                    <option value="{{ $role->name }}"  {{ isset($customer) && $customer->roles->contains('id', $role->id) ? 'selected' : '' }}>{{ $role->name }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
                                                         <div class="col-sm-4">
                                                             <lable class="form-lable">Key People</lable>
                                                             <input type="text" class="form-control" name="key_people"
@@ -378,7 +390,7 @@
                                 style="background: none; border: none !important; box-shadow: none;">
                                 <div class="card-header">
                                     <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_address"
-                                            class="fa fa-plus"></i> Add Address</a>
+                                        class="fa fa-plus"></i> Add Address</a>
                                 </div>
 
                                 <div class="table-responsive">
@@ -516,7 +528,7 @@
                                 style="    background: none; border: none !important; box-shadow: none;">
                                 <div class="card-header">
                                     <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_contact"
-                                            class="fa fa-plus"></i> Add Contacts</a>
+                                        class="fa fa-plus"></i> Add Contacts</a>
                                 </div>
                                 <div class="table-responsive">
                                     <table class="table table-striped datatable">
@@ -680,7 +692,7 @@
                             <div class="card profile-box flex-fill">
                                 <div class="col-auto float-end ms-auto mt-2 mx-2">
                                     <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_comments"
-                                            class="fa fa-plus"></i> Add Comments</a>
+                                        class="fa fa-plus"></i> Add Comments</a>
                                 </div>
                                 <div class="card-body">
                                     @foreach ($customerConversation as $conversation)
@@ -708,7 +720,8 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                <form action="{{ route('admin.customer.conversation.store') }}#conversation"
+                                                <form
+                                                    action="{{ route('admin.customer.conversation.store') }}#conversation"
                                                     method="POST" enctype="multipart/form-data">
                                                     @csrf
 
@@ -760,7 +773,7 @@
 
                                 <div class="col-auto float-end ms-auto mt-2 mx-2">
                                     <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_case"
-                                            class="fa fa-plus"></i> Add Case History
+                                        class="fa fa-plus"></i> Add Case History
                                         Data</a>
                                 </div>
 
@@ -1004,8 +1017,9 @@
                                                                 <div class="form-group">
                                                                     <label class="col-form-label">Case Opening Date <span
                                                                             class="text-danger">*</span></label>
-                                                                            <input class="form-control" type="hidden"
-                                                                            name="customer_id" value="{{$customer->adminDetail->admin_id}}">
+                                                                    <input class="form-control" type="hidden"
+                                                                        name="customer_id"
+                                                                        value="{{ $customer->adminDetail->admin_id }}">
                                                                     <input class="form-control" type="date"
                                                                         name="case_opening_date" required>
                                                                 </div>
@@ -1150,8 +1164,8 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="{{ route('admin.customer.contact.store') }}#contact_details" method="post"
-                                    enctype="multipart/form-data">
+                                <form action="{{ route('admin.customer.contact.store') }}#contact_details"
+                                    method="post" enctype="multipart/form-data">
                                     @csrf
                                     <div class="row">
                                         <div class="form-group">
@@ -1334,26 +1348,26 @@
             </style>
             <!-- Include jQuery & DataTables -->
 
-<!-- Include jQuery & DataTables -->
-<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+            <!-- Include jQuery & DataTables -->
+            <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
 
-<script>
-    $(document).ready(function () {
-        let table = $('#accountDataTable').DataTable({
-            "responsive": true,
-            "autoWidth": false,
-            "searching" : false
-        });
+            <script>
+                $(document).ready(function() {
+                    let table = $('#accountDataTable').DataTable({
+                        "responsive": true,
+                        "autoWidth": false,
+                        "searching": false
+                    });
 
-        // Ensure DataTable is reloaded when there are data changes
-        if (!$.fn.DataTable.isDataTable("#accountDataTable")) {
-            table.destroy();
-            $('#accountDataTable').DataTable({
-                "responsive": true,
-                "autoWidth": false,
-                "searching" : false
-            });
-        }
-    });
-</script>
+                    // Ensure DataTable is reloaded when there are data changes
+                    if (!$.fn.DataTable.isDataTable("#accountDataTable")) {
+                        table.destroy();
+                        $('#accountDataTable').DataTable({
+                            "responsive": true,
+                            "autoWidth": false,
+                            "searching": false
+                        });
+                    }
+                });
+            </script>
         @endsection
