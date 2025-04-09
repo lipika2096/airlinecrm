@@ -384,7 +384,7 @@
                     </ul>
                 </li>
 
-                @if(auth('admin')->user()->can('hr'))
+                @if(auth('admin')->user()?->getDirectPermissions()->contains('name', 'hr'))
                     <li class="menu-title">
                         <span>HR</span>
                     </li>
@@ -436,7 +436,7 @@
                         </ul>
                     </li>
                 @endif
-                @if(auth('admin')->user()->can('admin-view'))
+                @if(auth('admin')->user()?->getDirectPermissions()->contains('name', 'admin-view'))
                     <li class="menu-title">
                         <span>Customer View</span>
                     </li>
@@ -464,9 +464,7 @@
                         </ul>
                     </li>
                 @endif
-
-
-                @if(auth('admin')->user()->can('admin-menu'))
+                @if(auth('admin')->user()?->getDirectPermissions()->contains('name', 'admin-menu'))
                     <li class="menu-title">
                         <span>Admin</span>
                     </li>
@@ -505,7 +503,7 @@
                         </ul>
                     </li>
                 @endif
-                @if(auth('admin')->user()->can('travel-agent'))
+                @if(auth('admin')->user()?->getDirectPermissions()->contains('name', 'travel-agent'))
                     <li class="menu-title">
                         <span>Travel Agent</span>
                     </li>
@@ -523,7 +521,7 @@
                         </ul>
                     </li>
                 @endif
-                @if(auth('admin')->user()->can('airline'))
+                @if(auth('admin')->user()?->getDirectPermissions()->contains('name', 'airline'))
                     <li class="menu-title">
                         <span>Airline</span>
                     </li>
@@ -539,7 +537,7 @@
                         </ul>
                     </li>
                 @endif
-                @if(auth('admin')->user()->can('sales-marketing'))
+                @if(auth('admin')->user()?->getDirectPermissions()->contains('name', 'sales-marketing'))
                     <li class="menu-title">
                         <span>Sales & Marketing</span>
                     </li>
@@ -553,7 +551,7 @@
                     </li>
 
                 @endif
-                @if(auth('admin')->user()->can('reservations'))
+                @if(auth('admin')->user()?->getDirectPermissions()->contains('name', 'reservations'))
                     <li class="menu-title">
                         <span>Reservations</span>
                     </li>
@@ -570,7 +568,7 @@
                     </li>
 
                 @endif
-                @if(auth('admin')->user()->can('accounts') && (auth('admin')->user()->name != 'Super Admin'))
+                @if(auth('admin')->user()?->getDirectPermissions()->contains('name', 'accounts') && (auth('admin')->user()->name != 'Super Admin'))
                     <li class="menu-title">
                         <span>Accounts</span>
                     </li>

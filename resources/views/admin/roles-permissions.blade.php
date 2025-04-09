@@ -1,5 +1,6 @@
 @extends('admin/layouts/head-main')
 @section('content')
+
     <!-- Page Wrapper -->
     <div class="page-wrapper">
 
@@ -31,8 +32,8 @@
                             <thead>
                                 <tr>
                                     <th>Customer</th>
-                                    @foreach ($roles as $role)
-                                        <th class="text-center">{{ $role->name }}</th>
+                                    @foreach ($permissions as $permission)
+                                        <th class="text-center">{{ ucfirst(str_replace('access ', '', $permission->name)) }}</th>
                                     @endforeach
                                 </tr>
                             </thead>
@@ -40,16 +41,19 @@
                                 @foreach ($customers as $customer)
                                     <tr>
                                         <td>{{ $customer->name }}</td>
-                                        @foreach ($roles as $role)
+                                        @foreach ($permissions as $permission)
                                             <td class="text-center">
-                                                <input type="checkbox" class="role-checkbox" data-customer-id="{{ $customer->id }}" data-role-id="{{ $role->id }}"
-                                                    {{ $customer->roles->contains($role->id) ? 'checked' : '' }}>
+                                                <input type="checkbox" class="permission-checkbox"
+                                                    data-customer-id="{{ $customer->id }}"
+                                                    data-permission-id="{{ $permission->id }}"
+                                                    {{ $customer->permissions->contains($permission->id) ? 'checked' : '' }}>
                                             </td>
                                         @endforeach
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
+
                     </div>
                 </div>
 
@@ -189,81 +193,37 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
         <script>
-            $(document).ready(function() {
-                $('.role-checkbox').on('change', function() {
-                    var customerId = $(this).data('customer-id');
-                    var roleId = $(this).data('role-id');
-                    var isChecked = $(this).is(':checked');
+           $('.permission-checkbox').on('change', function () {
+    var customerId = $(this).data('customer-id');
+    var permissionId = $(this).data('permission-id');
+    var isChecked = $(this).is(':checked');
 
-                    if (isChecked) {
-                        // Uncheck all checkboxes in the same column except the current one
-                        $('.role-checkbox[data-customer-id="' + customerId + '"]').not(this).prop('checked', false);
-                    }
+    $.ajax({
+        url: '{{ route("admin.update.customer.permission") }}',
+        type: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}',
+            customer_id: customerId,
+            permission_id: permissionId,
+            assign: isChecked
+        },
+        success: function (response) {
+            toastr.success(response.message);
+        },
+        error: function (xhr) {
+            let msg = 'Something went wrong!';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                msg = xhr.responseJSON.message;
+            }
+            toastr.error(msg);
+        }
+    });
+});
 
-                    // Send AJAX request
-                    $.ajax({
-                        url: '{{ route("admin.update.customer.role") }}',
-                        type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}',
-                            customer_id: customerId,
-                            role_id: roleId,
-                            assign: isChecked
-                        },
-                        success: function(response) {
-                            toastr.success(response.message);
-                        },
-                        error: function(xhr) {
-                            toastr.error('Something went wrong!');
-                        }
-                    });
-                });
-            });
         </script>
 
 
     </div>
     <!-- /Page Wrapper -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
-    <script>
-        document.getElementById('roleSelect').addEventListener('change', function() {
-            const roleId = this.value;
-
-            if (roleId) {
-                // Make an AJAX request to get role permissions
-                fetch(`roles/${roleId}/permissions`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const permissionsTable = document.getElementById('permissionsTable');
-                        const editRoleForm = document.getElementById('editRoleForm');
-                        const roleIdInput = document.getElementById('role_id');
-
-                        // Clear existing table rows
-                        permissionsTable.innerHTML = '';
-
-                        // Update hidden input with role ID
-                        roleIdInput.value = roleId;
-
-                        // Populate permissions table
-                        data.permissions.forEach(permission => {
-                            const isChecked = data.role_permissions.includes(permission.id) ?
-                                'checked' : '';
-                            permissionsTable.innerHTML += `
-                        <tr>
-                            <td>${permission.name}</td>
-                            <td class="text-center">
-                                <input type="checkbox" name="permissions[]" value="${permission.id}" ${isChecked}>
-                            </td>
-                        </tr>
-                    `;
-                        });
-
-                        // Show the form
-                        editRoleForm.style.display = 'block';
-                    })
-                    .catch(error => console.error('Error fetching permissions:', error));
-            }
-        });
-    </script>
 @endsection

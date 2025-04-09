@@ -75,6 +75,9 @@ Route::name('admin.')->middleware(['admin'])->group(function () {
     Route::get('customer/view/{id}', [CustomerController::class, 'customerProfile'])->name('customer.view');
     Route::post('/update-customer-role', [CustomerController::class, 'updateRole'])->name('update.customer.role');
 
+    Route::post('admin/update-customer-permission', [CustomerController::class, 'updatePermission'])->name('update.customer.permission');
+
+
 });
 
 // Home route

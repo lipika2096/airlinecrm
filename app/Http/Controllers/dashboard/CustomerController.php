@@ -17,27 +17,39 @@ use App\Models\CustomerConversation;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\DB;
+
 
 class CustomerController extends Controller
 {
-    public function updateRole(Request $request)
+    public function updatePermission(Request $request)
 {
-    \Log::info('Request Data:', $request->all()); // Debugging
+    $request->validate([
+        'customer_id' => 'required|integer',
+        'permission_id' => 'required|integer',
+        'assign' => 'required',
+    ]);
 
-    $customer = Admin::findOrFail($request->customer_id);
-    $role = Role::findOrFail($request->role_id);
-
-    \Log::info('Customer:', [$customer->id]);
-    \Log::info('Role:', [$role->name]);
-
-    if ($request->assign) {
-        // Remove all previous roles and assign only the new one
-        $customer->syncRoles([$role->name]);
-        return response()->json(['message' => 'Role updated successfully.']);
+    $customer = Admin::find($request->customer_id);
+    $permission = Permission::find($request->permission_id);
+    $assign = filter_var($request->assign, FILTER_VALIDATE_BOOLEAN);
+    if (!$customer || !$permission) {
+        return response()->json(['message' => 'Invalid customer or permission.'], 400);
+    }
+    if ($assign) {
+        // Assign permission
+        $customer->givePermissionTo($permission);
+        return response()->json(['message' => 'Permission assigned successfully.']);
     } else {
-        // If unchecking, remove all roles
-        $customer->syncRoles([]);
-        return response()->json(['message' => 'Role removed successfully.']);
+        // Remove permission
+        DB::table('model_has_permissions')
+            ->where('model_id', $customer->id)
+            ->where('permission_id', $permission->id)
+            ->where('model_type', 'App\Models\Admin') // make sure this matches your Customer model
+            ->delete();
+
+        return response()->json(['message' => 'Permission removed successfully.']);
     }
 }
 
