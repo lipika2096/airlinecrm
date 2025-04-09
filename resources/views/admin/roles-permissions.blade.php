@@ -17,14 +17,14 @@
             </div>
             <!-- /Page Header -->
             <div class="row">
-                <div class="col-sm-4 col-md-4 col-lg-4 col-xl-3 ">
+                {{-- <div class="col-sm-4 col-md-4 col-lg-4 col-xl-3 ">
                     <a href="#" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#add_role"><i
                             class="fa fa-plus"></i> Add Roles</a>
                 </div>
                 <div class="col-sm-4 col-md-4 col-lg-4 col-xl-3">
                     <a href="#" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#edit_role"><i
                             class="fa fa-plus"></i> Edit Roles</a>
-                </div>
+                </div> --}}
 
                 <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                     <div class="table-responsive">
@@ -226,4 +226,44 @@
     </div>
     <!-- /Page Wrapper -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        document.getElementById('roleSelect').addEventListener('change', function() {
+            const roleId = this.value;
+
+            if (roleId) {
+                // Make an AJAX request to get role permissions
+                fetch(`roles/${roleId}/permissions`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const permissionsTable = document.getElementById('permissionsTable');
+                        const editRoleForm = document.getElementById('editRoleForm');
+                        const roleIdInput = document.getElementById('role_id');
+
+                        // Clear existing table rows
+                        permissionsTable.innerHTML = '';
+
+                        // Update hidden input with role ID
+                        roleIdInput.value = roleId;
+
+                        // Populate permissions table
+                        data.permissions.forEach(permission => {
+                            const isChecked = data.role_permissions.includes(permission.id) ?
+                                'checked' : '';
+                            permissionsTable.innerHTML += `
+                        <tr>
+                            <td>${permission.name}</td>
+                            <td class="text-center">
+                                <input type="checkbox" name="permissions[]" value="${permission.id}" ${isChecked}>
+                            </td>
+                        </tr>
+                    `;
+                        });
+
+                        // Show the form
+                        editRoleForm.style.display = 'block';
+                    })
+                    .catch(error => console.error('Error fetching permissions:', error));
+            }
+        });
+    </script>
 @endsection

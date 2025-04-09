@@ -326,7 +326,7 @@
                                                     </div>
                                                     <div class="row form-group">
 
-                                                        <div class="col-sm-4">
+                                                        {{-- <div class="col-sm-4">
                                                             <label>Select Role</label>
                                                             <select class="form-control" name="role" required>
                                                                 <option>Select Role</option>
@@ -334,7 +334,7 @@
                                                                     <option value="{{ $role->name }}"  {{ isset($customer) && $customer->roles->contains('id', $role->id) ? 'selected' : '' }}>{{ $role->name }}</option>
                                                                 @endforeach
                                                             </select>
-                                                        </div>
+                                                        </div> --}}
                                                         <div class="col-sm-4">
                                                             <lable class="form-lable">Key People</lable>
                                                             <input type="text" class="form-control" name="key_people"

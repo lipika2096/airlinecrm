@@ -189,7 +189,7 @@
                                 <label>Password</label>
                                 <input class="form-control" name="password" type="password" required placeholder="Enter Password">
                             </div>
-                            <div class="form-group col-sm-4">
+                            {{-- <div class="form-group col-sm-4">
                                 <label>Select Role</label>
                                 <select class="form-control" name="role" required>
                                     <option>Select Role</option>
@@ -197,7 +197,7 @@
                                         <option value="{{$role->id}}">{{$role->name}}</option>
                                     @endforeach
                                 </select>
-                            </div>
+                            </div> --}}
                             <div class="col-sm-8">
                                 <label class="col-form-label">Websites</label>
                                 <div id="website-address-container">

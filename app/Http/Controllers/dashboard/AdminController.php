@@ -56,9 +56,11 @@ class AdminController extends Controller
             'no_employees' => $request->input('no_employees'),
             'websites' => json_encode($request->websites),
         ]);
+        if($request->input('role') != null){
 
         $role = Role::findById($request->input('role'),'web');
         $admin->assignRole($role);
+        }
 
         return redirect()->back()->with('success', 'New Admin created successfully');
     }
