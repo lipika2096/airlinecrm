@@ -71,7 +71,7 @@
                             </ul>
                         </li>
                     @endif
-                    @if(auth('admin')->user()->can('admin-view'))
+                    @if(auth('admin')->user()->can('customer-view'))
                         <li class="menu-title">
                             <span>Customer View</span>
                         </li>
@@ -436,7 +436,7 @@
                         </ul>
                     </li>
                 @endif
-                @if(auth('admin')->user()?->getDirectPermissions()->contains('name', 'admin-view'))
+                @if(auth('admin')->user()?->getDirectPermissions()->contains('name', 'customer-view'))
                     <li class="menu-title">
                         <span>Customer View</span>
                     </li>

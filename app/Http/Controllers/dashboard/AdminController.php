@@ -170,7 +170,6 @@ class AdminController extends Controller
             $admin = Auth::guard('admin')->user();
             $request->session()->put('admin_name', $admin->name);
             $request->session()->put('email', $admin->email);
-            $request->session()->put('role', 'Superadmin');
 
             return redirect()->route('admin.dashboard');
           }

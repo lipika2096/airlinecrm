@@ -12,15 +12,15 @@
             <div class="page-header">
                 <div class="row align-items-center">
                     <div class="col">
-                        <h3 class="page-title">Admin List</h3>
+                        <h3 class="page-title">Customer List</h3>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{route('admin.dashboard')}}">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Admin List</li>
+                            <li class="breadcrumb-item active">Customer List</li>
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
                         <a href="#" class="btn btn-primary text-white" data-bs-toggle="modal"
-                            data-bs-target="#add_admin"><i class="fa fa-plus"></i> Add Admin</a>
+                            data-bs-target="#add_admin"><i class="fa fa-plus"></i> Add Customer</a>
 
                     </div>
                 </div>
@@ -83,7 +83,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add Admin</h5>
+                    <h5 class="modal-title">Add Customer</h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
