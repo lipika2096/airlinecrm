@@ -170,15 +170,30 @@ class EmployeeController extends Controller
     public function viewUserProfile()
     {
         $employees = User::where('role_id', 2)->where('users.created_by', auth('admin')->user()->id)->get();
-        $department = Department::latest()->get();
-        $designation = Designation::latest()->get();
+
+        // Scope departments and designations based on user role
+        if (auth('admin')->user()->role_id == 2) {
+            $department = Department::where('staff_id', auth('admin')->user()->id)->latest()->get();
+            $designation = Designation::where('staff_id', auth('admin')->user()->id)->latest()->get();
+        } else {
+            // Super admin sees all departments and designations
+            $department = Department::latest()->get();
+            $designation = Designation::latest()->get();
+        }
 
         return view('admin.view-employee', compact('employees', 'department', 'designation'));
     }
 
     public function storeUserProfile(Request $request)
     {
+    // Auto-generate unique password based on user details
+        $symbols = ['@', '#', '$', '%', '&', '*', '!', '?'];
+        $randomSymbol = $symbols[array_rand($symbols)];
 
+        $defaultPassword = strtoupper(substr($request->input('first_name'), 0, 3)) . 
+                           $randomSymbol . 
+                           substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 3) . 
+                           rand(100, 999);
         // Create a new client record
         $client = new Client();
         $client->client_creatorid = 0;
@@ -193,13 +208,13 @@ class EmployeeController extends Controller
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
         $user->email = $request->email;
-        $user->password = bcrypt($request->password);
+        $user->password = bcrypt($defaultPassword);
         $user->unique_id = $request->employee_id;
         $user->phone = $request->phone;
         $user->joining_date = $request->joining_date;
         $user->leave_count = $request->leave_count;
-        $user->department = $request->department;
-        $user->position = $request->designation;
+        $user->department = $request->department ?? null;
+        $user->position = $request->designation ?? null;
         $user->account_owner = 'yes';
         $user->primary_admin = 'no';
         $user->type = 'client';
@@ -212,6 +227,17 @@ class EmployeeController extends Controller
         $user->company_mobile = $request->company_mobile;
         $user->created_by = auth('admin')->user()->id;
         $user->save();
+        // Send password to user email with reset link
+        try {
+            $resetLink = url('/forgot-password');
+            \Mail::raw("Hello {$request->input('first_name')} {$request->input('last_name')},\n\nYour staff account has been created successfully.\n\nYour login credentials:\nEmail: {$request->input('email')}\nTemporary Password: {$defaultPassword}\n\nFor security, we recommend changing your password after first login.\n\nIf you need to reset your password, visit: {$resetLink}\n\nThank you.", function($message) use ($request) {
+                $message->to($request->input('email'))
+                        ->subject('Your Staff Account Credentials');
+            });
+        } catch (\Exception $e) {
+            // Log error but don't prevent user creation
+            \Log::error('Failed to send email: ' . $e->getMessage());
+        }
 
         return redirect()->back()->with('success', 'Employee added successfully');
     }
@@ -354,8 +380,16 @@ class EmployeeController extends Controller
         $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
             ->where('users.role_id', 2)->where('users.created_by', auth('admin')->user()->id)
             ->get(['clients.*', 'users.*']);
-        $department = Department::latest()->get();
-        $designation = Designation::latest()->get();
+
+        // Scope departments and designations based on user role
+        if (auth('admin')->user()->role_id == 2) {
+            $department = Department::where('staff_id', auth('admin')->user()->id)->latest()->get();
+            $designation = Designation::where('staff_id', auth('admin')->user()->id)->latest()->get();
+        } else {
+            // Super admin sees all departments and designations
+            $department = Department::latest()->get();
+            $designation = Designation::latest()->get();
+        }
 
         $departmentEmployees = User::where('role_id', 2)->where('users.created_by', auth('admin')->user()->id)
             ->get()
@@ -363,6 +397,16 @@ class EmployeeController extends Controller
 
         return view('admin.employees', compact('employees', 'department', 'designation', 'departmentEmployees'));
     }
+
+    public function addStaff()
+    {
+        // Don't load any departments/designations for new staff creation
+        // Staff will create their own departments and designations
+        $department = Department::all();
+        $designation = Designation::all();
+        return view('admin.add-staff', compact('department', 'designation'));
+    }
+
 
     // Display the employee's details and leave information
     public function approvedStaffRightsStore(Request $request)
@@ -651,6 +695,15 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
+        // Auto-generate unique password based on user details
+        $symbols = ['@', '#', '$', '%', '&', '*', '!', '?'];
+        $randomSymbol = $symbols[array_rand($symbols)];
+        
+        $defaultPassword = strtoupper(substr($request->input('first_name'), 0, 3)) . 
+                           $randomSymbol . 
+                           substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 3) . 
+                           rand(100, 999);
+
         // Create a new client record
         $client = new Client();
         $client->client_creatorid = 0;
@@ -664,14 +717,16 @@ class EmployeeController extends Controller
         $user->clientid = $client->client_id;
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
+        $user->name = $request->first_name . ' ' . $request->last_name;
         $user->email = $request->email;
-        $user->password = bcrypt($request->password);
+        $user->password = Hash::make($defaultPassword);
+        $user->plain_password = $defaultPassword;
         $user->unique_id = $request->employee_id;
         $user->phone = $request->phone;
         $user->joining_date = $request->joining_date;
         $user->leave_count = $request->leave_count;
-        $user->department = $request->department;
-        $user->position = $request->designation;
+        $user->department = $request->department ?? null;
+        $user->position = $request->designation ?? null;
         $user->account_owner = 'yes';
         $user->primary_admin = 'no';
         $user->type = 'client';
@@ -684,10 +739,24 @@ class EmployeeController extends Controller
         $user->company_mobile = $request->company_mobile;
         $user->date_of_resignation = $request->date_of_resignation;
         $user->created_by = auth('admin')->user()->id;
+        $user->is_active = true;
 
         $user->save();
 
-        return redirect()->route('admin.employees')->with('success', 'Employee added successfully');
+        // Send password to user email with reset link
+        try {
+            $resetLink = url('/forgot-password');
+            $fullName = $request->first_name . ' ' . $request->last_name;
+            \Mail::raw("Hello {$fullName},\n\nYour employee account has been created successfully.\n\nYour login credentials:\nEmail: {$request->input('email')}\nTemporary Password: {$defaultPassword}\n\nFor security, we recommend changing your password after first login.\n\nIf you need to reset your password, visit: {$resetLink}\n\nThank you.", function($message) use ($request) {
+                $message->to($request->input('email'))
+                        ->subject('Your Employee Account Credentials');
+            });
+        } catch (\Exception $e) {
+            // Log error but don't prevent user creation
+            \Log::error('Failed to send email: ' . $e->getMessage());
+        }
+
+        return redirect()->route('admin.employees')->with('success', 'Employee added successfully. Password sent to email.');
     }
     public function edit(Request $request, $id)
     {
@@ -1235,67 +1304,138 @@ class EmployeeController extends Controller
             'department_name' => 'required|string|max:255',
             // Add validation for permissions if needed
         ]);
-        // Create a new employee
+        // Create a new department
         $department = new Department();
         $department->department_name = $request->department_name;
         $department->created_by = auth('admin')->user()->id;
 
+        // Set staff_id based on user role and form input
+        if (auth('admin')->user()->role_id == 2) {
+            // Staff can only create departments for themselves
+            $department->staff_id = auth('admin')->user()->id;
+        } else {
+            // Super admin can assign to specific staff or leave null for system departments
+            $department->staff_id = $request->staff_id ?? null;
+        }
+
         $department->save();
 
-        return redirect()->route('admin.departments')->with('success', 'Employee added successfully');
+        return redirect()->route('admin.departments')->with('success', 'Department added successfully');
     }
     public function editDepartment(Request $request, $id)
     {
-        // Create a new employee
-        $department =  Department::find($id);
-        $department->update([
+        // Find the department
+        $department = Department::find($id);
+
+        // Check if the user has permission to edit this department
+        if (auth('admin')->user()->role_id == 2) {
+            // Staff can only edit their own departments
+            if ($department->staff_id != auth('admin')->user()->id) {
+                return redirect()->route('admin.departments')->with('error', 'You do not have permission to edit this department');
+            }
+        }
+        // Super admin can edit all departments (system + staff-specific)
+
+        $updateData = [
             'department_name' => $request->input('department_name'),
             'updated_by' => auth('admin')->user()->id
-        ]);
-        return redirect()->route('admin.departments')->with('success', 'Department added successfully');
+        ];
+
+        // Allow super admin to change staff assignment
+        if (auth('admin')->user()->role_id != 2) {
+            $updateData['staff_id'] = $request->staff_id ?? null;
+        }
+
+        $department->update($updateData);
+        return redirect()->route('admin.departments')->with('success', 'Department updated successfully');
     }
     public function departments()
     {
         // Add your logic for departments view
-        $department = Department::where('created_by', auth('admin')->user()->id)->latest()->get();
-        return view('admin.departments', compact('department')); // Example view path, adjust as per your structure
+        // If user is staff (role_id = 2), show only their departments
+        // If user is super admin, show all departments (system + staff-specific)
+        if (auth('admin')->user()->role_id == 2) {
+            $department = Department::where('staff_id', auth('admin')->user()->id)->latest()->get();
+            $staffList = collect();
+        } else {
+            $department = Department::latest()->get();
+            // Get list of staff members for dropdown
+            $staffList = User::where('role_id', 2)->get();
+        }
+        return view('admin.departments', compact('department', 'staffList')); // Example view path, adjust as per your structure
     }
     public function storeDesignation(Request $request)
     {
         // Validate the request
         $request->validate([
             'designation' => 'required|string|max:255',
+            'department' => 'required',
             // Add validation for permissions if needed
         ]);
-        // Create a new employee
-        $department = new Designation();
-        $department->department_id = $request->department;
-        $department->designation = $request->designation;
-        $department->created_by = auth('admin')->user()->id;
+        // Create a new designation
+        $designation = new Designation();
+        $designation->department_id = $request->department;
+        $designation->designation = $request->designation;
+        $designation->created_by = auth('admin')->user()->id;
 
-        $department->save();
+        // Set staff_id based on user role and form input
+        if (auth('admin')->user()->role_id == 2) {
+            // Staff can only create designations for themselves
+            $designation->staff_id = auth('admin')->user()->id;
+        } else {
+            // Super admin can assign to specific staff or leave null for system designations
+            $designation->staff_id = $request->staff_id ?? null;
+        }
 
-        return redirect()->route('admin.designations')->with('success', 'Employee added successfully');
+        $designation->save();
+
+        return redirect()->route('admin.designations')->with('success', 'Designation added successfully');
     }
     public function editDesignation(Request $request, $id)
     {
-        // Create a new employee
-        $designation =  Designation::find($id);
+        // Find the designation
+        $designation = Designation::find($id);
 
-        $designation->update([
+        // Check if the user has permission to edit this designation
+        if (auth('admin')->user()->role_id == 2) {
+            // Staff can only edit their own designations
+            if ($designation->staff_id != auth('admin')->user()->id) {
+                return redirect()->route('admin.designations')->with('error', 'You do not have permission to edit this designation');
+            }
+        }
+        // Super admin can edit all designations (system + staff-specific)
+
+        $updateData = [
             'department_id' => $request->input('department'),
             'designation' => $request->input('designation'),
             'updated_by' => auth('admin')->user()->id
-        ]);
-        return redirect()->route('admin.designations')->with('success', 'Department added successfully');
+        ];
+
+        // Allow super admin to change staff assignment
+        if (auth('admin')->user()->role_id != 2) {
+            $updateData['staff_id'] = $request->staff_id ?? null;
+        }
+
+        $designation->update($updateData);
+        return redirect()->route('admin.designations')->with('success', 'Designation updated successfully');
     }
 
     public function designations()
     {
-        $department = Department::where('created_by', auth('admin')->user()->id)->latest()->get();
-        $designation = Designation::where('created_by', auth('admin')->user()->id)->latest()->get();
+        // If user is staff (role_id = 2), show only their departments and designations
+        // If user is super admin, show all departments and designations (system + staff-specific)
+        if (auth('admin')->user()->role_id == 2) {
+            $department = Department::where('staff_id', auth('admin')->user()->id)->latest()->get();
+            $designation = Designation::where('staff_id', auth('admin')->user()->id)->latest()->get();
+            $staffList = collect();
+        } else {
+            $department = Department::latest()->get();
+            $designation = Designation::latest()->get();
+            // Get list of staff members for dropdown
+            $staffList = User::where('role_id', 2)->get();
+        }
         // Add your logic for designations view
-        return view('admin.designations', compact('designation', 'department')); // Example view path, adjust as per your structure
+        return view('admin.designations', compact('designation', 'department', 'staffList')); // Example view path, adjust as per your structure
     }
 
     public function timesheet()

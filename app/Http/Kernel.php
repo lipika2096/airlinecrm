@@ -50,6 +50,12 @@ class Kernel extends HttpKernel
         'employee' => [
             \App\Http\Middleware\EmployeeAuthMiddleware::class
         ],
+        'customer' => [
+            \App\Http\Middleware\CustomerAuthMiddleware::class
+        ],
+        'staff' => [
+            \App\Http\Middleware\StaffAuthMiddleware::class
+        ],
     ];
 
     /**

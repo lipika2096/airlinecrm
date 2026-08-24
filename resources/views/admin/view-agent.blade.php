@@ -1696,7 +1696,7 @@
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Transaction Date<span
                                                                     class="text-danger">*</span></label>
-                                                                <input class="form-control" type="date"
+                                                                <input class="form-control" type="datetime-local"
                                                                     name="tr_date" required>
                                                             </div>
                                                         </div>

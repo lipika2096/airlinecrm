@@ -1,11 +1,11 @@
-@extends('admin/layouts/head-main')
+@extends('admin/layouts/authentication-main')
+
 @section('content')
 
     <meta charset="utf-8" />
     <title>Recover Password | HRMS admin template</title>
 
 
-    <?php include 'layouts/body.php'; ?>
       <!-- Main Wrapper -->
         <div class="main-wrapper">
 
@@ -23,11 +23,24 @@
                             <h3 class="account-title">Forgot Password?</h3>
                             <p class="account-subtitle">Enter your email to get a password reset link</p>
 
+                            @if (session('success'))
+                                <div class="alert alert-success">
+                                    {{ session('success') }}
+                                </div>
+                            @endif
+
+                            @if (session('error'))
+                                <div class="alert alert-danger">
+                                    {{ session('error') }}
+                                </div>
+                            @endif
+
                             <!-- Account Form -->
-                            <form class="needs-validation custom-form mt-4 pt-2" novalidate>
+                            <form class="needs-validation custom-form mt-4 pt-2" method="POST" action="{{ url('/forgot-password') }}" novalidate>
+                                @csrf
                                 <div class="form-group">
                                     <label for="useremail" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="useremail" placeholder="Enter email" required>
+                                    <input type="email" class="form-control" id="useremail" name="email" placeholder="Enter email" required>
                                     <div class="invalid-feedback">
                                         Please Enter Email
                                     </div>
@@ -41,6 +54,23 @@
                             </form>
                             <!-- /Account Form -->
 
+                            <script>
+                                // Form validation
+                                (function() {
+                                    'use strict';
+                                    window.addEventListener('load', function() {
+                                        var form = document.querySelector('.needs-validation');
+                                        form.addEventListener('submit', function(event) {
+                                            if (form.checkValidity() === false) {
+                                                event.preventDefault();
+                                                event.stopPropagation();
+                                            }
+                                            form.classList.add('was-validated');
+                                        }, false);
+                                    });
+                                })();
+                            </script>
+
                         </div>
                     </div>
                 </div>
@@ -50,7 +80,7 @@
 
 
         <!-- JAVASCRIPT -->
-        <?php include 'layouts/vendor-scripts.php'; ?>
+            
 
     </body>
 

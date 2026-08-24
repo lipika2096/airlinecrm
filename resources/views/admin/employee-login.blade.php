@@ -32,7 +32,7 @@
                                             <label>Password</label>
                                         </div>
                                         {{-- <div class="col-auto">
-                                            <a class="text-muted" href="forgot-password.php">
+                                            <a class="text-muted" href="{{ url('/forgot-password') }}">
                                                 Forgot password?
                                             </a>
                                         </div> --}}

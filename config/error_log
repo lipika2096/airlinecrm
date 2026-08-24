@@ -1,0 +1,20 @@
+[11-Jun-2026 17:04:50 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/deftdriv/public_html/airline.deftdrivingschool.com.au/config/mail.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/deftdriv/public_html/airline.deftdrivingschool.com.au/config/mail.php on line 16
+[11-Jun-2026 17:04:50 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/deftdriv/public_html/airline.deftdrivingschool.com.au/config/database.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/deftdriv/public_html/airline.deftdrivingschool.com.au/config/database.php on line 18
+[11-Jun-2026 17:04:50 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/deftdriv/public_html/airline.deftdrivingschool.com.au/config/cache.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/deftdriv/public_html/airline.deftdrivingschool.com.au/config/cache.php on line 18
+[11-Jun-2026 17:04:50 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/deftdriv/public_html/airline.deftdrivingschool.com.au/config/app.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/deftdriv/public_html/airline.deftdrivingschool.com.au/config/app.php on line 18
+[11-Jun-2026 17:04:51 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/deftdriv/public_html/airline.deftdrivingschool.com.au/config/services.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/deftdriv/public_html/airline.deftdrivingschool.com.au/config/services.php on line 18

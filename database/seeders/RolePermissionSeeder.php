@@ -16,14 +16,17 @@ class RolePermissionSeeder extends Seeder
         // Define Modules and Permissions
         $modules = [
             'hr',
-            'admin-menu',
+            //'admin-menu',
             'travel-agent',
             'airline',
             'sales-marketing',
             'reservations',
             'accounts',
-            'admin-view',
-            'roles-permissions'
+            //'admin-view',
+            'roles-permissions',
+            'sales-packages',
+            'bank-accounts',
+            'support-tickets'
         ];
 
         // Create Permissions
@@ -43,15 +46,22 @@ class RolePermissionSeeder extends Seeder
 
             // Assign Permissions to Roles
             if ($roleName === 'Admin') {
-                $role->syncPermissions(Permission::where('guard_name', $guard)->get());
+                // Admin gets all permissions except admin-view and admin-menu (SuperAdmin only)
+                $adminPermissions = Permission::where('guard_name', $guard)
+                    ->whereNotIn('name', ['admin-view', 'admin-menu'])
+                    ->get();
+                $role->syncPermissions($adminPermissions);
             } elseif ($roleName === 'SuperAdmin') {
                 // Define specific permissions for SuperAdmin
                 $superAdminPermissions = [
-                    'admin-view',
+                    //'admin-view',
                     'roles-permissions',
                     'hr',
                     'accounts',
-                    'admin-menu',
+                    //'admin-menu',
+                    'sales-packages',
+                    'bank-accounts',
+                    'support-tickets'
                 ];
 
                 $permissions = Permission::whereIn('name', $superAdminPermissions)
@@ -63,3 +73,4 @@ class RolePermissionSeeder extends Seeder
         }
     }
 }
+

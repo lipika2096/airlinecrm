@@ -1,4 +1,4 @@
-<?php
+    <?php
 
 namespace App\Http\Middleware;
 
@@ -23,10 +23,18 @@ class AdminAuthMiddleware
         // Attempt to authenticate the admin user
         if (Auth::guard('admin')->attempt($request->only('email', 'password'))) {
           // If authentication successful, redirect to intended URL
-          $admin = Auth::guard('admin')->admin();
-          $request->session()->put('admin_name', $admin->username);
-          $request->session()->put('role', 'Superadmin');
-          return redirect()->intended('/admin/dashboard');
+          $admin = Auth::guard('admin')->user();
+          $request->session()->put('admin_name', $admin->name);
+          
+          // Check if user has SuperAdmin role
+          if ($admin->hasRole('SuperAdmin')) {
+            $request->session()->put('role', 'Superadmin');
+            return redirect()->intended('superadmin/dashboard');
+          } else {
+            // If not SuperAdmin, treat as customer
+            $request->session()->put('role', 'Customer');
+            return redirect()->intended('customer/dashboard');
+          }
         } else {
           // If authentication failed, return the login form with errors
           return redirect()
@@ -41,7 +49,14 @@ class AdminAuthMiddleware
       }
     }
 
-    // If already authenticated as admin, proceed with the request
+    // If already authenticated as admin, check role and redirect if needed
+    $admin = Auth::guard('admin')->user();
+    if (!$admin->hasRole('SuperAdmin')) {
+      // Customer should not access superadmin routes
+      return redirect()->to('customer/dashboard');
+    }
+
+    // If already authenticated as SuperAdmin, proceed with the request
     return $next($request);
   }
 }

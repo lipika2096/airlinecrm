@@ -31,7 +31,7 @@
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
-                        <a href="#" class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_employee"><i
+                        <a href="{{ route('admin.add-staff') }}" class="btn add-btn"><i
                                 class="fa fa-plus"></i> Add Employee</a>
                         {{-- <div class="view-icons">
                                     <a href="employees.php" class="grid-view btn btn-link active"><i class="fa fa-th"></i></a>

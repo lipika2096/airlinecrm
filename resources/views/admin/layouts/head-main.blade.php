@@ -11,7 +11,7 @@
 
 </head>
 
-@include('admin/layouts/body')
+<body class="account-page">
 
 <div class="main-wrapper">
     @include('admin/layouts/menu')
@@ -85,6 +85,8 @@
 
     @include('admin/layouts/vendor-scripts')
 
-    </body>
+</div>
+
+</body>
 
 </html>

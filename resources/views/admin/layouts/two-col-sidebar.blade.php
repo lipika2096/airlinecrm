@@ -415,7 +415,7 @@
                     <ul>
                         <li><a href="{{url('/')}}"> Login </a></li>
                         <li><a href="register.php"> Register </a></li>
-                        <li><a href="forgot-password.php"> Forgot Password </a></li>
+                        <li><a href="{{ url('/forgot-password') }}"> Forgot Password </a></li>
                         <li><a href="otp.php"> OTP </a></li>
                         <li><a href="lock-screen.php"> Lock Screen </a></li>
                     </ul>

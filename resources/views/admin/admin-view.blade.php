@@ -19,8 +19,7 @@
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
-                        <a href="#" class="btn btn-primary text-white" data-bs-toggle="modal"
-                            data-bs-target="#add_admin"><i class="fa fa-plus"></i> Add Customer</a>
+                        <a href="{{ route('admin.admin.add-customer') }}" class="btn btn-primary text-white" ><i class="fa fa-plus"></i> Add Customer</a>
 
                     </div>
                 </div>
@@ -34,7 +33,7 @@
                                 <table class="table table-striped custom-table mb-0 datatable">
                                     <thead>
                                         <tr>
-                                            <th>Role</th>
+                                            <!-- <th>Role</th> -->
                                             <th>Full Name</th>
                                             <th>Email</th>
                                             <th>Company Name</th>
@@ -42,26 +41,47 @@
                                             <th>State</th>
                                             <th>Country</th>
                                             <th>Address</th>
-                                            <th>Password</th>
+                                            <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($admin as $data)
                                             <tr>
-                                                <td>{{ $data->getRoleNames()->implode(', ') }}</td>
+                                                <!-- <td>{{ $data->getRoleNames()->implode(', ') }}</td> -->
                                                 <td>{{ $data->name }}</td>
                                                 <td>{{ $data->email }}</td>
                                                 <td>{{ $data->adminDetail->company_name ??'-' }}</td>
                                                 <td>{{ $data->adminDetail->city ??'-'}}</td>
                                                 <td>{{ $data->adminDetail->state??'-' }}</td>
                                                 <td>{{ $data->adminDetail->country ??'-'}}</td>
-                                                <td>{{ $data->adminDetail->address??'-' }}</td>
-                                                <td>{{ $data->plain_password }}</td>
+                                                <td style="word-wrap: break-word; max-width: 200px;">{{ $data->adminDetail->address??'-' }}</td>
+                                                <td>
+                                                    @if($data->is_active)
+                                                        <span class="badge bg-success">Active</span>
+                                                    @else
+                                                        <span class="badge bg-danger">Inactive</span>
+                                                    @endif
                                                 </td>
-                                                <td class="text-end">
-                                                    <a class="btn btn-primary" href="{{route('admin.customer.view', ['id'=> $data->id])}}" title="view customer profile"><i
-                                                            class="fa fa-eye"></i></a>
+                                                <td class="text-center">
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-default" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fa fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end">
+                                                            <li>
+                                                                <a class="dropdown-item" href="{{route('admin.customer.view', ['id'=> $data->id])}}">
+                                                                    <i class="fa fa-eye me-2"></i> View Profile
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="dropdown-item" href="{{route('admin.toggle.status', ['id'=> $data->id])}}">
+                                                                    <i class="fa {{ $data->is_active ? 'fa-ban' : 'fa-check' }} me-2"></i>
+                                                                    {{ $data->is_active ? 'Deactivate' : 'Activate' }}
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -77,148 +97,6 @@
 
     </div>
     <!-- /Page Content -->
-
-    <!-- Add Airline Modal -->
-    <div id="add_admin" class="modal custom-modal fade " role="dialog">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add Customer</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body model-md">
-                    <form action="{{ route('admin.admin.store') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="row">
-                            <div class="form-group col-sm-4">
-                                <label>Brand Name</label>
-                                <input class="form-control" name="full_name" type="text" required placeholder="Enter Brand Name">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>Email</label>
-                                <input class="form-control" name="email" type="email" required placeholder="Enter Email">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>Company Name</label>
-                                <input class="form-control" name="company_name" type="text" required placeholder="Enter Company Name">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>Group</label>
-                                <input class="form-control" name="group" type="text" required placeholder="Enter Group">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>Street</label>
-                                <input class="form-control" name="address" type="address" required placeholder="Enter Street">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>City</label>
-                                <input class="form-control" name="city" type="city" required placeholder="Enter City">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>State</label>
-                                <input class="form-control" name="state" type="state" required placeholder="Enter State">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>Pincode</label>
-                                <input class="form-control" name="pincode" type="text" required placeholder="Enter Pincode">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>Country</label>
-                                <input class="form-control" name="country" type="text" required placeholder="Enter Country">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>Company Registration No</label>
-                                <input class="form-control" name="company_registration_no" type="text" required placeholder="Enter Company Registration No">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>No. of Modules</label>
-                                <input class="form-control" name="no_modules" type="text" required placeholder="Enter No.of Modules">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>Subscription Type</label>
-                                <input class="form-control" name="subscription_type" type="text" required placeholder="Enter Subscription Type">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>Subscription Charges</label>
-                                <input class="form-control" name="subscription_charge" type="text" required placeholder="Enter Subscription Charges">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>Subscription Expiring</label>
-                                <input class="form-control" name="subscription_expiring" type="text" required placeholder="Enter Subscription Expiring">
-                            </div>
-                            <div class="col-sm-4">
-                                <!-- <div class="form-group"> -->
-                                <label class="col-form-label">Business Focus</label>
-                                <div id="focus-destinations-container">
-                                    <div class="input-group mb-2">
-                                        <input type="text" class="form-control" name="focus_destinations[]"
-                                            placeholder="Enter Business Focus">
-                                        <button class="btn btn-danger remove-destination" type="button">Remove</button>
-                                    </div>
-                                </div>
-                                <button class="btn btn-primary" type="button" id="add-destination">Add More</button>
-                            </div>
-
-                            <div class="form-group col-sm-4">
-                                <label>Remarks</label>
-                                <input class="form-control" name="remarks" type="text" required placeholder="Enter Remarks">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>Business Mode</label>
-                                <input class="form-control" name="business_mode" type="text" required placeholder="Enter Business Mode">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>Key People</label>
-                                <input class="form-control" name="key_people" type="text" required placeholder="Enter Key People">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>Parent Company</label>
-                                <input class="form-control" name="parent_company" type="text" required placeholder="Enter Parent Company">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>Headquarters</label>
-                                <input class="form-control" name="headquarters" type="text" required placeholder="Enter Headquarter Name">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>No. of Employees</label>
-                                <input class="form-control" name="no_employees" type="number" required placeholder="Enter No. of employees">
-                            </div>
-                            <div class="form-group col-sm-4">
-                                <label>Password</label>
-                                <input class="form-control" name="password" type="password" required placeholder="Enter Password">
-                            </div>
-                            {{-- <div class="form-group col-sm-4">
-                                <label>Select Role</label>
-                                <select class="form-control" name="role" required>
-                                    <option>Select Role</option>
-                                    @foreach ($roles as $role)
-                                        <option value="{{$role->id}}">{{$role->name}}</option>
-                                    @endforeach
-                                </select>
-                            </div> --}}
-                            <div class="col-sm-8">
-                                <label class="col-form-label">Websites</label>
-                                <div id="website-address-container">
-                                    <div class="input-group mb-2">
-                                        <input type="text" class="form-control" name="websites[]"
-                                            placeholder="Enter website address">
-                                        <button class="btn btn-danger remove-website-address"
-                                            type="button">Remove</button>
-                                    </div>
-                                </div>
-                                <button class="btn btn-primary" type="button" id="add-website-address">Add More</button>
-                            </div>
-                            <div class="submit-section">
-                                <button class="btn btn-primary" type="submit">Submit</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
     </div>
     <script>
         document.getElementById('add-destination').addEventListener('click', function() {
@@ -251,5 +129,30 @@
                     container.removeChild(newInputGroup);
                 });
             });
+
+        // Auto-fill modules when sales package is selected
+        document.getElementById('sales_package_select').addEventListener('change', function() {
+            const packageId = this.value;
+            const modulesSelect = document.getElementById('modules_select');
+            
+            if (packageId) {
+                // Fetch package data via AJAX
+                fetch(`./superadmin/sales-packages/${packageId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        
+                        console.log(data);
+                        document.getElementById('modules_input').value = data.modules_list;
+                        document.getElementById('modules_ids').value = JSON.stringify(data.modules);
+                        document.getElementById('subscription_charge').value = data.rate;
+                    })
+                    .catch(error => console.error('Error fetching package:', error));
+            } else {
+                // Clear all selections if no package selected
+                Array.from(modulesSelect.options).forEach(option => {
+                    option.selected = false;
+                });
+            }
+        });
     </script>
 @endsection

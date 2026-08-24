@@ -61,6 +61,10 @@
 
                             <li class="nav-item"><a href="#conversation" data-bs-toggle="tab" class="nav-link">Conversations
                                 </a></li>
+                            <li class="nav-item"><a href="#packages" data-bs-toggle="tab" class="nav-link">Packages </a>
+                            </li>
+                            <li class="nav-item"><a href="#accounts" data-bs-toggle="tab" class="nav-link">Accounts </a>
+                            </li>
                         </ul>
 
                     </div>
@@ -536,7 +540,8 @@
                                             <tr>
                                                 <th>S.No.</th>
                                                 <th>Title</th>
-                                                <th>Name</th>
+                                                <th>First Name</th>
+                                                <th>Last Name</th>
                                                 <th>Position</th>
                                                 <th>Email Address</th>
                                                 <th>Phone Number</th>
@@ -553,7 +558,8 @@
                                                 <tr>
                                                     <td>{{ $index + 1 }}</td>
                                                     <td>{{ $contact->title }}</td>
-                                                    <td>{{ $contact->first_name }} {{ $contact->last_name }}</td>
+                                                    <td>{{ $contact->first_name }}</td>
+                                                    <td>{{ $contact->last_name }}</td>
                                                     <td>{{ $contact->position }}</td>
                                                     <td>{{ $contact->email_address }}</td>
                                                     <td>{{ $contact->phone_number }}</td>
@@ -563,15 +569,25 @@
                                                     </td>
 
                                                     <td>{{ $contact->created_at }}</td>
-                                                    <td>{{ $contact->createdBy->first_name ?? '-' }}
+                                                    <td>{{ $contact->createdBy->first_name ?? $contact->createdBy->name ?? '-' }}
                                                         {{ $contact->createdBy->last_name ?? '' }}</td>
                                                     <td>{{ $contact->updated_at }}</td>
-                                                    <td>{{ $contact->updatedBy->first_name ?? '-' }}
+                                                    <td>{{ $contact->updatedBy->first_name ?? $contact->updatedBy->name ?? '-' }}
                                                         {{ $contact->updatedBy->last_name ?? '' }}</td><!-- Edit Icon -->
                                                     <td>
                                                         <a data-bs-toggle="modal"
                                                             data-bs-target="#edit_contact{{ $contact->id }}"><i
                                                                 class="fas fa-edit"></i></a>
+                                                        <form action="{{ route('admin.customer.contact.delete', ['id' => $contact->id]) }}#contact_details" 
+                                                              method="POST" 
+                                                              style="display: inline-block;"
+                                                              onsubmit="return confirm('Are you sure you want to delete this contact?');">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" style="border: none; background: none; cursor: pointer; margin-left: 10px;">
+                                                                <i class="fas fa-trash text-danger"></i>
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>
                                                 <div id="edit_contact{{ $contact->id }}" class="modal custom-modal fade"
@@ -1230,6 +1246,239 @@
                     </div>
                 </div>
 
+                <div id="accounts" class="pro-overview tab-pane fade show">
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <div class="card profile-box flex-fill">
+                                <div class="col-auto float-end ms-auto mt-2 mx-2">
+                                    <a href="#" class="btn add-btn" data-bs-toggle="modal"
+                                        data-bs-target="#add_agent"><i class="fa fa-plus"></i> Add transaction</a>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table datatable" id="accountDataTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>S.No.</th>
+                                                    <th>Invoice No.</th>
+                                                    <th>Date</th>
+                                                    <th>Remarks</th>
+                                                    <th>Credit</th>
+                                                    <th>Debit</th>
+                                                    <th>Balance</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @php
+                                                    $balance = $customerAccountBal->balance ?? 0;
+                                                @endphp
+                                                @foreach ($customerAccounts as $index => $account)
+                                                    @php
+                                                        $balance += $account->credit - $account->debit;
+                                                    @endphp
+                                                    <tr>
+                                                        <td>{{$index +1}}</td>
+                                                        <td>{{ $account->invoice_no ?? '-' }}</td>
+                                                        <td>{{ $account->tr_date ? $account->tr_date->format('d M Y H:i') : 'N/A' }}</td>
+                                                        <td>{{ $account->tr_type }}</td>
+                                                        <td>{{ $account->credit ?? 0 }}</td>
+                                                        <td>{{ $account->debit ?? 0 }}</td>
+                                                        <td>{{ $account->balance }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+                                <div id="add_agent" class="modal custom-modal fade" role="dialog">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header " style="margin-bottom: -25px;">
+                                                <h5 class="modal-title">Add Transactions</h5>
+                                                <button type="button" class="close" data-bs-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{ route('admin.customer.transaction.store') }}#accounts"
+                                                    method="POST" enctype="multipart/form-data">
+                                                    @csrf
+                                                    <div class="row">
+                                                        <div class="form-group">
+                                                            <input class="form-control" type="hidden" name="customer_id"
+                                                                value="{{ $customer->id }}">
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Debit Amount <span
+                                                                        class="text-danger">*</span></label>
+                                                                <input class="form-control" type="text" required
+                                                                    name="debit" id="debit">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Credit Amount</label>
+                                                                <input class="form-control" type="text" required
+                                                                    name="credit" id="credit">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Transaction Date<span
+                                                                    class="text-danger">*</span></label>
+                                                                <input class="form-control" type="datetime-local"
+                                                                    name="tr_date" required>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label">Description<span
+                                                                    class="text-danger">*</span></label>
+                                                                <textarea class="form-control" type="text" name="tr_type" required></textarea>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="submit-section">
+                                                        <button class="btn btn-primary" type="submit">Submit</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Packages Tab -->
+                <div id="packages" class="pro-overview tab-pane fade show">
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <div class="card profile-box flex-fill">
+                                <div class="card-body">
+                                    <h4 class="card-title">Subscription Package</h4>
+                                    
+                                    <!-- Current Package Info (Always Visible) -->
+                                    <div id="current-package-info">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label class="col-form-label">Current Package</label>
+                                                    <input class="form-control" type="text" 
+                                                        value="{{ $customer->adminDetail->salesPackage->package_name ?? 'No package assigned' }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label class="col-form-label">Current Subscription Charge</label>
+                                                    <input class="form-control" type="text" 
+                                                        value="{{ $customer->adminDetail->subscription_charge ? '$' . number_format($customer->adminDetail->subscription_charge, 2) : '-' }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label class="col-form-label">Payment Type</label>
+                                                    <input class="form-control" type="text" 
+                                                        value="{{ ucfirst($customer->adminDetail->payment_type ?? 'base') }} Rate" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label class="col-form-label">Package Activation Date</label>
+                                                    <input class="form-control" type="text" 
+                                                        value="{{ $customer->adminDetail->package_activation_date_formatted }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <div class="form-group">
+                                                    <label class="col-form-label">Current Package Modules</label>
+                                                    <input class="form-control" type="text" 
+                                                        value="{{ $customer->adminDetail->salesPackage->modules_list ?? '-' }}" readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="submit-section">
+                                            <button type="button" class="btn btn-primary" id="edit-plan-btn">
+                                                <i class="fa fa-edit"></i> Change Plan
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Edit Package Form (Hidden by Default) -->
+                                    <div id="edit-package-form" style="display: none;">
+                                        <hr>
+                                        <h5 class="card-title">Change Subscription Package</h5>
+                                        <p class="text-muted">Note: Package changes can only be processed on the 1st day of the month. The package activation date will be automatically set to the current date.</p>
+                                        
+                                        <form action="{{ route('admin.customer.update-package', ['id' => $customer->id]) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label>New Subscription Type</label>
+                                                        <select class="form-control" name="sales_package" id="sales_package_select" required>
+                                                            <option value="">Select Package</option>
+                                                            @foreach ($salesPackages as $package)
+                                                                <option value="{{ $package->id }}" 
+                                                                        data-monthly-rate="{{ $package->monthly_rate }}"
+                                                                        data-annual-rate="{{ $package->annual_rate }}"
+                                                                        data-base-rate="{{ $package->rate }}"
+                                                                        {{ $customer->adminDetail->subscription_type == $package->id ? 'selected' : '' }}>
+                                                                    {{ $package->package_name }} - ${{ number_format($package->rate, 2) }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label>Payment Type</label>
+                                                        <select class="form-control" name="payment_type" id="payment_type_select" required>
+                                                            <option value="base" {{ $customer->adminDetail->payment_type == 'base' ? 'selected' : '' }}>Base Rate</option>
+                                                            <option value="monthly" {{ $customer->adminDetail->payment_type == 'monthly' ? 'selected' : '' }}>Monthly</option>
+                                                            <option value="annual" {{ $customer->adminDetail->payment_type == 'annual' ? 'selected' : '' }}>Annual</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label>New Subscription Charges</label>
+                                                        <input class="form-control" name="subscription_charge" id="subscription_charge" type="text" placeholder="Enter Subscription Charges" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label>New Package Activation Date</label>
+                                                        <input class="form-control" name="package_activation_date" id="package_activation_date" type="date" placeholder="Enter Package Activation Date" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="form-group">
+                                                        <label>New Package Modules</label>                                
+                                                        <input class="form-control" name="modules[]" id="modules_ids" type="hidden" placeholder="Enter Modules">
+                                                        <input class="form-control" id="modules_input" type="text" placeholder="Enter Modules" readonly>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="submit-section">
+                                                <button type="submit" class="btn btn-success">Update Package</button>
+                                                <button type="button" class="btn btn-secondary" id="cancel-edit-btn">Cancel</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <style>
@@ -1352,6 +1601,29 @@
             <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
 
             <script>
+                // Toggle edit plan form
+                document.getElementById('edit-plan-btn').addEventListener('click', function() {
+                    document.getElementById('current-package-info').style.display = 'none';
+                    document.getElementById('edit-package-form').style.display = 'block';
+                    
+                    // Initialize current values
+                    const currentSubscriptionCharge = '{{ $customer->adminDetail->subscription_charge ?? '' }}';
+                    const currentPackageActivationDate = '{{ $customer->adminDetail->package_activation_date ?? '' }}';
+                    //alert(currentPackageActivationDate);
+
+                    if (currentSubscriptionCharge) {
+                        document.getElementById('subscription_charge').value = currentSubscriptionCharge;
+                    }
+                    if (currentPackageActivationDate) {
+                        document.getElementById('package_activation_date').value =     currentPackageActivationDate.split(' ')[0];;
+                    }
+                });
+
+                document.getElementById('cancel-edit-btn').addEventListener('click', function() {
+                    document.getElementById('edit-package-form').style.display = 'none';
+                    document.getElementById('current-package-info').style.display = 'block';
+                });
+
                 $(document).ready(function() {
                     let table = $('#accountDataTable').DataTable({
                         "responsive": true,
@@ -1368,6 +1640,66 @@
                             "searching": false
                         });
                     }
+
                 });
+                // Auto-fill modules when sales package is selected
+        document.getElementById('sales_package_select').addEventListener('change', function() {
+            const packageId = this.value;
+            const modulesSelect = document.getElementById('modules_select');
+            
+            if (packageId) {
+                // Fetch package data via AJAX
+                fetch(`../../superadmin/sales-packages/${packageId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        
+                        console.log(data);
+                        document.getElementById('modules_input').value = data.modules_list;
+                        document.getElementById('modules_ids').value = JSON.stringify(data.modules);
+                        
+                        // Update subscription charge based on payment type
+                        updateSubscriptionCharge();
+                    })
+                    .catch(error => console.error('Error fetching package:', error));
+            } else {
+                // Clear all selections if no package selected
+                Array.from(modulesSelect.options).forEach(option => {
+                    option.selected = false;
+                });
+                document.getElementById('subscription_charge').value = '';
+            }
+        });
+
+        // Update subscription charge when payment type changes
+        document.getElementById('payment_type_select').addEventListener('change', function() {
+            updateSubscriptionCharge();
+        });
+
+        function updateSubscriptionCharge() {
+            const packageSelect = document.getElementById('sales_package_select');
+            const paymentTypeSelect = document.getElementById('payment_type_select');
+            const subscriptionChargeInput = document.getElementById('subscription_charge');
+            
+            if (packageSelect.value) {
+                const selectedOption = packageSelect.options[packageSelect.selectedIndex];
+                const baseRate = parseFloat(selectedOption.getAttribute('data-base-rate')) || 0;
+                const monthlyRate = parseFloat(selectedOption.getAttribute('data-monthly-rate')) || 0;
+                const annualRate = parseFloat(selectedOption.getAttribute('data-annual-rate')) || 0;
+                
+                let rate = 0;
+                switch(paymentTypeSelect.value) {
+                    case 'monthly':
+                        rate = monthlyRate || baseRate;
+                        break;
+                    case 'annual':
+                        rate = annualRate || baseRate;
+                        break;
+                    default:
+                        rate = baseRate;
+                }
+                
+                subscriptionChargeInput.value = rate > 0 ? rate.toFixed(2) : '';
+            }
+        }
             </script>
         @endsection

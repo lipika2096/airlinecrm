@@ -228,7 +228,7 @@
                         <ul style="display: none;">
                             <li><a href=""> Login </a></li>
                             <li><a href=""> Register </a></li>
-                            <li><a href=""> Forgot Password </a></li>
+                            <li><a href="{{ url('/forgot-password') }}"> Forgot Password </a></li>
                             <li><a href=""> OTP </a></li>
                             <li><a href=""> Lock Screen </a></li>
                         </ul>
@@ -265,7 +265,7 @@
                         @endif
                     </ul>
                 </li>
-                @if (auth('admin')->user()->hasRole('admin'))
+                @if (auth('admin')->user()->hasRole('superAdmin'))
                 <li class="submenu">
                     <a href="#"><i class="la la-cube"></i> <span> Todo(s)</span> <span
                             class="menu-arrow"></span></a>
@@ -985,7 +985,7 @@
                     <ul>
                         <li><a href="index"> Login </a></li>
                         <li><a href="register"> Register </a></li>
-                        <li><a href="forgot-password"> Forgot Password </a></li>
+                        <li><a href="{{ url('/forgot-password') }}"> Forgot Password </a></li>
                         <li><a href="otp"> OTP </a></li>
                         <li><a href="lock-screen"> Lock Screen </a></li>
                     </ul>

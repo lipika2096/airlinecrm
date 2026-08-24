@@ -34,6 +34,9 @@
                             <thead>
                                 <tr>
                                     <th>Department Name</th>
+                                    @if(auth('admin')->user()->role_id != 2)
+                                    <th>Assigned Staff</th>
+                                    @endif
                                     <th class="text-end">Action</th>
                                 </tr>
                             </thead>
@@ -41,6 +44,19 @@
                                 @foreach ($department as $data)
                                     <tr>
                                         <td>{{ $data->department_name }}</td>
+                                        @if(auth('admin')->user()->role_id != 2)
+                                        <td>
+                                            @if($data->staff_id)
+                                                @if($data->staff)
+                                                    {{ $data->staff->first_name }} {{ $data->staff->last_name }}
+                                                @else
+                                                    <span class="text-muted">Unknown Staff</span>
+                                                @endif
+                                            @else
+                                                <span class="badge bg-info">System Department</span>
+                                            @endif
+                                        </td>
+                                        @endif
                                         <td class="text-end">
                                             <div class="dropdown-action">
                                                 <a href="#" data-bs-toggle="modal"
@@ -74,6 +90,20 @@
                                                             <input class="form-control" name="department_name"
                                                                 value="{{ $data->department_name }}" type="text">
                                                         </div>
+                                                        @if(auth('admin')->user()->role_id != 2)
+                                                        <div class="form-group">
+                                                            <label>Assign to Staff (Optional)</label>
+                                                            <select class="select form-control" name="staff_id">
+                                                                <option value="">System Department (No Staff)</option>
+                                                                @foreach ($staffList as $staff)
+                                                                    <option value="{{ $staff->id }}" {{ $data->staff_id == $staff->id ? 'selected' : '' }}>
+                                                                        {{ $staff->first_name }} {{ $staff->last_name }} ({{ $staff->email }})
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                            <small class="text-muted">Leave empty for system-wide departments</small>
+                                                        </div>
+                                                        @endif
                                                         <div class="submit-section">
                                                             <button class="btn btn-primary" type="submit">Update</button>
                                                         </div>
@@ -109,6 +139,18 @@
                                 <label>Department Name <span class="text-danger">*</span></label>
                                 <input class="form-control" type="text" name="department_name">
                             </div>
+                            @if(auth('admin')->user()->role_id != 2)
+                            <div class="form-group">
+                                <label>Assign to Staff (Optional)</label>
+                                <select class="select form-control" name="staff_id">
+                                    <option value="">System Department (No Staff)</option>
+                                    @foreach ($staffList as $staff)
+                                        <option value="{{ $staff->id }}">{{ $staff->first_name }} {{ $staff->last_name }} ({{ $staff->email }})</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted">Leave empty for system-wide departments</small>
+                            </div>
+                            @endif
                             <div class="submit-section">
                                 <button class="btn btn-primary" type="submit">Submit</button>
                             </div>

@@ -54,9 +54,9 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://hrcrm.testpentas.in/'),
+    'url' => env('APP_URL', 'http://localhost/airlinecrm'),
 
-    'asset_url' => env('ASSET_URL', 'https://hrcrm.testpentas.in/'),
+    'asset_url' => env('ASSET_URL', 'http://localhost/airlinecrm'),
 
     /*
     |--------------------------------------------------------------------------
@@ -69,7 +69,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Kolkata',
 
     /*
     |--------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 @extends('admin/layouts/head-main')
 @section('content')
-    <title>Designations</title>
+    <title>Airlines</title>
 
     <!-- Page Wrapper -->
     <div class="page-wrapper">

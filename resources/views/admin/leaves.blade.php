@@ -103,7 +103,7 @@
                                                 <td>{{ $data->leave_type }}</td>
                                                 <td>{{ $data->from }}</td>
                                                 <td>{{ $data->to }}</td>
-                                                <td>{{ $data->no_of_days }} days</td>
+                                                <td>{{ \Carbon\Carbon::parse($data->from)->diffInDays(\Carbon\Carbon::parse($data->to)) + 1 }} days</td>
 
                                                 {{-- @php
                                                     $annualLeave = $data->user->leave_count?? 0;
@@ -295,7 +295,7 @@
                                                 <td>{{ $data->leave_type }}</td>
                                                 <td>{{ $data->from }}</td>
                                      git commit -m           <td>{{ $data->to }}</td>
-                                                <td>{{ $data->no_of_days }} days</td>
+                                                <td>{{ \Carbon\Carbon::parse($data->from)->diffInDays(\Carbon\Carbon::parse($data->to)) + 1 }} days</td>
 
                                                 {{-- @php
                                                     $annualLeave = $data->user->leave_count;
@@ -488,7 +488,7 @@
                                                 <td>{{ $data->leave_type }}</td>
                                                 <td>{{ $data->from }}</td>
                                                 <td>{{ $data->to }}</td>
-                                                <td>{{ $data->no_of_days }} days</td>
+                                                <td>{{ \Carbon\Carbon::parse($data->from)->diffInDays(\Carbon\Carbon::parse($data->to)) + 1 }} days</td>
                                                 @php
                                                     $annualLeave = $data->user->leave_count ?? 0; // Total annual leaves allotted
                                                     $currentYear = now()->year;
@@ -640,7 +640,7 @@
                                                 <td>{{ $data->leave_type }}</td>
                                                 <td>{{ $data->from }}</td>
                                                 <td>{{ $data->to }}</td>
-                                                <td>{{ $data->no_of_days }} days</td>
+                                                <td>{{ \Carbon\Carbon::parse($data->from)->diffInDays(\Carbon\Carbon::parse($data->to)) + 1 }} days</td>
 
                                                 {{-- @php
                                                     $annualLeave = $data->user->leave_count??0;
@@ -907,29 +907,20 @@
             const noOfDaysInput = document.querySelector('input[name="no_of_days"]');
 
             if (fromDate && toDate) {
-
                 var startDate = new Date(fromDate);
                 var endDate = new Date(toDate);
 
-                const baseUrl = "{{ url('/admin') }}";
-                fetch(baseUrl + '/get-holidays')
-                    .then(response => response.json())
+                // Calculate the difference in time (milliseconds)
+                var diffTime = endDate - startDate;
+                // Convert to days (divide by milliseconds per day) and add 1 to include both start and end dates
+                var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
-                    .then(holidays => {
+                // Ensure minimum of 1 day
+                if (diffDays < 1) {
+                    diffDays = 1;
+                }
 
-                        var holidayDates = holidays.map(holiday => new Date(holiday.holiday_date).toDateString());
-                        var diffDays = 0;
-                        for (var date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
-
-                            if (date.getDay() !== 0 && date.getDay() !== 6 && !holidayDates.includes(date
-                                    .toDateString())) {
-                                diffDays++;
-                            }
-                        }
-
-                        noOfDaysInput.value = diffDays;
-                    })
-                    .catch(error => console.error('Error fetching holidays:', error));
+                noOfDaysInput.value = diffDays;
             }
         }
 

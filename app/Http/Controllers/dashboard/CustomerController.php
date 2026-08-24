@@ -14,6 +14,7 @@ use App\Models\CustomerAddress;
 use App\Models\CustomerHeadOfficeContactDetail;
 use App\Models\Designation;
 use App\Models\CustomerConversation;
+use App\Models\SalesPackage;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
@@ -67,9 +68,142 @@ class CustomerController extends Controller
         $caseData = CustomerCaseHistory::where('customer_id', $id)->get();
         $designation = Designation::all();
         $roles = Role::with('permissions')->where('name', '!=', 'superAdmin')->get();
+        $salesPackages = SalesPackage::where('is_active', true)->get();
 
-        return view('admin.customer-profile', compact('customerConversation','customer', 'customerAccounts', 'customerAddress', 'customerContact', 'caseData', 'customerAccountBal', 'roles'));
+        return view('admin.customer-profile', compact('customerConversation','customer', 'customerAccounts', 'customerAddress', 'customerContact', 'caseData', 'customerAccountBal', 'roles', 'salesPackages'));
     }
+
+    public function updatePackage(Request $request, $id)
+    {
+        $request->validate([
+            'sales_package' => 'required|integer|exists:sales_packages,id',
+            'payment_type' => 'required|in:base,monthly,annual',
+            'subscription_charge' => 'required|numeric|min:0',
+        ]);
+
+        $customer = Admin::find($id);
+        if (!$customer) {
+            return redirect()->back()->with('error', 'Customer not found.');
+        }
+
+        $package = SalesPackage::find($request->sales_package);
+        if (!$package) {
+            return redirect()->back()->with('error', 'Package not found.');
+        }
+
+        // Check if customer is changing to a different package
+        $currentPackageId = $customer->adminDetail->subscription_type ?? null;
+        $isPackageChange = $currentPackageId != $package->id;
+
+        // If changing package, validate it's the 1st of current month
+        if ($isPackageChange) {
+            $currentDate = Carbon::now();
+            if ($currentDate->day !== 1) {
+                return redirect()->back()->with('error', 'Package changes can only be processed on the 1st day of the month. Please try again on the 1st.');
+            }
+        }
+        if($currentPackageId == $package->id && $request->package_activation_date){
+            $currentDate = Carbon::now();
+            if ($currentDate->day !== 1) {
+                return redirect()->back()->with('error', 'Package changes can only be processed on the 1st day of the month. Please try again on the 1st.');
+            }
+        }
+        // Auto-set activation date to current date
+        $activationDate = $request->package_activation_date;
+
+        // Calculate subscription expiry date based on payment type
+        $expiryDate = null;
+        if ($request->payment_type === 'monthly') {
+            $expiryDate = Carbon::now()->addMonth()->format('Y-m-d');
+        } elseif ($request->payment_type === 'annual') {
+            $expiryDate = Carbon::now()->addYear()->format('Y-m-d');
+        }
+        // For base rate, no expiry date
+
+        // Remove all existing permissions from the customer
+        DB::table('model_has_permissions')
+            ->where('model_id', $customer->id)
+            ->where('model_type', 'App\Models\Admin')
+            ->delete();
+
+        // Update customer's subscription type, charge, payment type, and auto-set activation date
+        if ($customer->adminDetail) {
+            $customer->adminDetail->update([
+                'subscription_type' => $package->id,
+                'subscription_charge' => $request->subscription_charge,
+                'payment_type' => $request->payment_type,
+                'package_activation_date' => $activationDate,
+                'subscription_expiring' => $expiryDate,
+            ]);
+        } else {
+            // Create admin detail if it doesn't exist
+            $customer->adminDetail()->create([
+                'subscription_type' => $package->id,
+                'subscription_charge' => $request->subscription_charge,
+                'payment_type' => $request->payment_type,
+                'package_activation_date' => $activationDate,
+                'subscription_expiring' => $expiryDate,
+            ]);
+        }
+
+        // Assign new permissions based on the package's modules
+        if (!empty($package->modules) && is_array($package->modules)) {
+            foreach ($package->modules as $permissionId) {
+                $permission = Permission::find($permissionId);
+                if ($permission) {
+                    $customer->givePermissionTo($permission);
+                }
+            }
+        }
+
+        // Calculate prorated amount based on payment type and add as debit
+        $currentDate = Carbon::now();
+        $subscriptionCharge = $request->subscription_charge;
+        $paymentType = $request->payment_type;
+        
+        if ($paymentType === 'monthly') {
+            // Monthly: Prorated for remaining days in current month
+            $daysInMonth = $currentDate->daysInMonth;
+            $currentDay = $currentDate->day;
+            $remainingDays = $daysInMonth - $currentDay + 1; // +1 to include current day
+            
+            $dailyRate = $subscriptionCharge / $daysInMonth;
+            $proratedAmount = round($dailyRate * $remainingDays, 2);
+            
+            $description = 'Package Activation - ' . $package->package_name . ' (Monthly - Prorated for ' . $remainingDays . ' days)';
+        } elseif ($paymentType === 'annual') {
+            // Annual: Prorated for remaining days in current year
+            $daysInYear = $currentDate->isLeapYear() ? 366 : 365;
+            $currentDayOfYear = $currentDate->dayOfYear;
+            $remainingDays = $daysInYear - $currentDayOfYear + 1;
+            
+            $dailyRate = $subscriptionCharge / $daysInYear;
+            $proratedAmount = round($dailyRate * $remainingDays, 2);
+            
+            $description = 'Package Activation - ' . $package->package_name . ' (Annual - Prorated for ' . $remainingDays . ' days)';
+        } else {
+            // Base: Full amount charged immediately
+            $proratedAmount = $subscriptionCharge;
+            $description = 'Package Activation - ' . $package->package_name . ' (Base Rate)';
+        }
+
+        // Get the last balance for the customer
+        $lastAccount = CustomerAccount::where('customer_id', $customer->id)->orderBy('id', 'desc')->first();
+        $lastBalance = $lastAccount ? $lastAccount->balance : 0;
+
+        // Create automatic debit entry for package activation
+        CustomerAccount::create([
+            'customer_id' => $customer->id,
+            'debit' => $proratedAmount,
+            'credit' => 0,
+            'tr_date' => $activationDate,
+            'tr_type' => $description,
+            'balance' => $lastBalance - $proratedAmount
+        ]);
+
+        return redirect()->back()->with('success', 'Package updated successfully. Permissions and subscription charges have been updated. A debit entry of $' . number_format($proratedAmount, 2) . ' has been added to the customer account.');
+    }
+
     public function caseHistorySearch(Request $request)
     {
         $customers = Admin::whereDoesntHave('roles', function ($query) {
@@ -263,6 +397,16 @@ class CustomerController extends Controller
         ]);
         return redirect()->back()->with('success', 'Contact details updated successfully.');
     }
+
+    public function contactDelete($id)
+    {
+        $contact = CustomerHeadOfficeContactDetail::find($id);
+        if (!$contact) {
+            return redirect()->back()->with('error', 'Contact not found.');
+        }
+        $contact->delete();
+        return redirect()->back()->with('success', 'Contact deleted successfully.');
+    }
     public function ContactStore(Request $request)
     {
         CustomerHeadOfficeContactDetail::create([
@@ -288,6 +432,28 @@ class CustomerController extends Controller
             'c_date' => now(),
             'customer_id' => $request->input('customer_id'),
             'date_of_contact' => $request->input('date_of_contact')
+        ]);
+        return redirect()->back();
+    }
+
+    public function transactionStore(Request $request)
+    {
+
+        // Get the last balance for the agent
+        $lastAccount = CustomerAccount::where('customer_id', $request->customer_id)->orderBy('id', 'desc')->first();
+        $lastBalance = $lastAccount ? $lastAccount->balance : 0;
+
+        // Calculate new balance based on credit and debit
+        $credit = $request->credit ? floatval($request->credit) : 0;
+        $debit = $request->debit ? floatval($request->debit) : 0;
+        $newBalance = $lastBalance + $credit - $debit;
+        CustomerAccount::create([
+            'customer_id' => $request->input('customer_id'),
+            'debit' => $request->input('debit'),
+            'credit' => $request->input('credit'),
+            'tr_date' => $request->input('tr_date'),
+            'tr_type' => $request->input('tr_type'),
+            'balance' => $newBalance
         ]);
         return redirect()->back();
     }

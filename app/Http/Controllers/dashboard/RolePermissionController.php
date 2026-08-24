@@ -14,8 +14,9 @@ class RolePermissionController extends Controller {
         $roles = Role::with('permissions')->where('name', '!=', 'SuperAdmin')->get();
         $customers = Admin::with('adminDetail')->whereDoesntHave('roles', function ($query) {
             $query->where('name', 'superAdmin');})->latest()->get();
-        $permissions = Permission::all();
-        return view( 'admin.roles-permissions', compact( 'roles', 'permissions', 'customers' ) );
+        $publishedPermissions = Permission::where('status', 'published')->get();
+        $unpublishedPermissions = Permission::where('status', 'unpublished')->get();
+        return view( 'admin.roles-permissions', compact( 'roles', 'publishedPermissions', 'unpublishedPermissions', 'customers' ) );
     }
     public function store(Request $request)
     {
@@ -68,6 +69,19 @@ class RolePermissionController extends Controller {
         }
 
         return redirect()->back()->with( 'success', 'Role updated successfully!' );
+    }
+
+    public function updatePermissionStatus( Request $request ) {
+        $request->validate( [
+            'permission_id' => 'required|exists:permissions,id',
+            'status' => 'required|in:published,unpublished',
+        ] );
+
+        $permission = Permission::findOrFail( $request->permission_id );
+        $permission->status = $request->status;
+        $permission->save();
+
+        return response()->json( [ 'message' => 'Permission status updated successfully!' ] );
     }
 
 }

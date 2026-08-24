@@ -655,7 +655,7 @@
                                                         <div class="col-sm-6">
                                                             <div class="form-group">
                                                                 <label class="col-form-label">Transaction Date</label>
-                                                                <input class="form-control" type="date" name="tr_date">
+                                                                <input class="form-control" type="datetime-local" name="tr_date">
                                                             </div>
                                                         </div>
                                                     </div>

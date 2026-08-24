@@ -36,5 +36,8 @@ class AppServiceProvider extends ServiceProvider
                     'last_leave_update_year' => $currentYear,
                 ]);
             });
+
+        // Share RouteHelper with all views
+        view()->share('routeHelper', new \App\Helpers\RouteHelper());
     }
 }

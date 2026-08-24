@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Employee;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 
 class ProfileController extends Controller
@@ -22,7 +23,8 @@ class ProfileController extends Controller
     public function clientProfile()
     {
         // Add your logic for client profile view
-        return view('admin.client-profile'); // Example view path, adjust as per your structure
+        $profile = Admin::with(['adminDetail'])->find(auth('admin')->user()->id);
+        return view('admin.client-profile', compact('profile')); // Example view path, adjust as per your structure
     }
 
     public function adminProfile()
@@ -31,6 +33,31 @@ class ProfileController extends Controller
 
         $customer = Admin::with(['adminDetail', 'kycDocuments'])->find(auth('admin')->user()->id);
         return view('admin.profile', compact('customer')); // Example view path, adjust as per your structure
+    }
+
+    /**
+     * Update user password
+     */
+    public function updatePassword(Request $request)
+    {
+        $user = auth()->guard('admin')->check() ? auth()->guard('admin')->user() : auth()->guard('employee')->user();
+        
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+
+        // Check if current password matches
+        if (!Hash::check($request->current_password, $user->password)) {
+            return redirect()->back()->with('password_error', 'Current password is incorrect!');
+        }
+
+        // Update password
+        $user->password = Hash::make($request->new_password);
+        $user->plain_password = $request->new_password; // If you store plain password
+        $user->save();
+
+        return redirect()->back()->with('password_success', 'Password updated successfully!');
     }
 
 

@@ -6,3 +6,4 @@
 <meta name="robots" content="noindex, nofollow">
 <!-- App favicon -->
 <link rel="shortcut icon" href="{{asset('public/assets/img/favicon.png')}}">
+<title>CRM SAAS</title>

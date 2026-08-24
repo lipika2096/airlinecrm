@@ -38,20 +38,16 @@
                                     <div class="row">
                                         <div class="col-md-5">
                                             <div class="profile-info-left">
-                                                <h3 class="user-name m-t-0">{{$profile->first_name}} {{$profile->last_name}}</h3>
-                                                <small class="text-muted">{{$profile->designation->designation}}</small>
-                                                <div class="staff-id">Employee ID : {{$profile->employee_id}}</div>
+                                                <h3 class="user-name m-t-0">{{$profile->name}}</h3>
+                                                <small class="text-muted">{{$profile->adminDetail->company_name ?? 'Customer'}}</small>
+                                                <div class="staff-id">Customer ID : {{$profile->id}}</div>
                                             </div>
                                         </div>
                                         <div class="col-md-7">
                                             <ul class="personal-info">
                                                 <li>
-                                                    <span class="title">Phone:</span>
-                                                    <span class="text"><a href="">{{$profile->phone}}</a></span>
-                                                </li>
-                                                <li>
                                                     <span class="title">Email:</span>
-                                                    <span class="text"><a href="">{{$profile->email}}</a></span>
+                                                    <span class="text"><a href="mailto:{{$profile->email}}">{{$profile->email}}</a></span>
                                                 </li>
                                                 {{-- <li>
                                                     <span class="title">Address:</span>

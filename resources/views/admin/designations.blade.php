@@ -35,14 +35,30 @@
                                 <tr>
                                     <th>Designation </th>
                                     <th>Department </th>
+                                    @if(auth('admin')->user()->role_id != 2)
+                                    <th>Assigned Staff</th>
+                                    @endif
                                     <th class="text-end">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($designation as $data)
                                     <tr>
-                                        <td>{{ $data->department->department_name }}</td>
                                         <td>{{ $data->designation }}</td>
+                                        <td>{{ $data->department ? $data->department->department_name : 'N/A' }}</td>
+                                        @if(auth('admin')->user()->role_id != 2)
+                                        <td>
+                                            @if($data->staff_id)
+                                                @if($data->staff)
+                                                    {{ $data->staff->first_name }} {{ $data->staff->last_name }}
+                                                @else
+                                                    <span class="text-muted">Unknown Staff</span>
+                                                @endif
+                                            @else
+                                                <span class="badge bg-info">System Designation</span>
+                                            @endif
+                                        </td>
+                                        @endif
                                         <td class="text-end">
                                             <div class="dropdown-action"> <a href="#" data-bs-toggle="modal"
                                                     data-bs-target="#edit_designation{{ $data->id }}"><i
@@ -85,6 +101,20 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
+                                                        @if(auth('admin')->user()->role_id != 2)
+                                                        <div class="form-group">
+                                                            <label>Assign to Staff (Optional)</label>
+                                                            <select class="select form-control" name="staff_id">
+                                                                <option value="">System Designation (No Staff)</option>
+                                                                @foreach ($staffList as $staff)
+                                                                    <option value="{{ $staff->id }}" {{ $data->staff_id == $staff->id ? 'selected' : '' }}>
+                                                                        {{ $staff->first_name }} {{ $staff->last_name }} ({{ $staff->email }})
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                            <small class="text-muted">Leave empty for system-wide designations</small>
+                                                        </div>
+                                                        @endif
                                                         <div class="submit-section">
                                                             <button class="btn btn-primary" type="submit">Update</button>
                                                         </div>
@@ -129,6 +159,18 @@
                                     @endforeach
                                 </select>
                             </div>
+                            @if(auth('admin')->user()->role_id != 2)
+                            <div class="form-group">
+                                <label>Assign to Staff (Optional)</label>
+                                <select class="select form-control" name="staff_id">
+                                    <option value="">System Designation (No Staff)</option>
+                                    @foreach ($staffList as $staff)
+                                        <option value="{{ $staff->id }}">{{ $staff->first_name }} {{ $staff->last_name }} ({{ $staff->email }})</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted">Leave empty for system-wide designations</small>
+                            </div>
+                            @endif
                             <div class="submit-section">
                                 <button class="btn btn-primary" type="submit">Submit</button>
                             </div>

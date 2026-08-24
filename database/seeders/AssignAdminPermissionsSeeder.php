@@ -14,7 +14,7 @@ class AssignAdminPermissionsSeeder extends Seeder
         $guard = 'web'; // change if using 'admin' or another guard
 
         // Create permissions if they don’t exist
-        $permissions = ['hr', 'admin-view', 'admin-menu'];
+        $permissions = ['hr', 'admin', 'system-admin'];
 
         foreach ($permissions as $perm) {
             Permission::firstOrCreate(

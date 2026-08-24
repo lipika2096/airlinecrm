@@ -11,178 +11,120 @@
             <div class="page-header">
                 <div class="row">
                     <div class="col-sm-12">
-                        <h3 class="page-title">Roles & Permissions</h3>
+                        <h3 class="page-title">Customer Permitted Modules</h3>
                     </div>
                 </div>
             </div>
             <!-- /Page Header -->
             <div class="row">
-                {{-- <div class="col-sm-4 col-md-4 col-lg-4 col-xl-3 ">
-                    <a href="#" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#add_role"><i
-                            class="fa fa-plus"></i> Add Roles</a>
-                </div>
-                <div class="col-sm-4 col-md-4 col-lg-4 col-xl-3">
-                    <a href="#" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#edit_role"><i
-                            class="fa fa-plus"></i> Edit Roles</a>
-                </div> --}}
+                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 d-flex">
+                    <div class="card profile-box flex-fill">
+                        <div class="card-body">
+                            <!-- Tabs -->
+                            <ul class="nav nav-tabs" id="permissionTabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="published-tab" data-bs-toggle="tab" href="#published" role="tab">Published</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="unpublished-tab" data-bs-toggle="tab" href="#unpublished" role="tab">Unpublished</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="customer-permitted-tab" data-bs-toggle="tab" href="#customer-permitted" role="tab">Customer Permitted</a>
+                                </li>
+                            </ul>
 
-                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                    <div class="table-responsive">
-                        <table class="table table-striped custom-table datatable">
-                            <thead>
-                                <tr>
-                                    <th>Customer</th>
-                                    @foreach ($permissions as $permission)
-                                        <th class="text-center">{{ ucfirst(str_replace('access ', '', $permission->name)) }}</th>
-                                    @endforeach
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($customers as $customer)
-                                    <tr>
-                                        <td>{{ $customer->name }}</td>
-                                        @foreach ($permissions as $permission)
-                                            <td class="text-center">
-                                                <input type="checkbox" class="permission-checkbox"
-                                                    data-customer-id="{{ $customer->id }}"
-                                                    data-permission-id="{{ $permission->id }}"
-                                                    {{ $customer->permissions->contains($permission->id) ? 'checked' : '' }}>
-                                            </td>
-                                        @endforeach
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                            <!-- Tab Content -->
+                            <div class="tab-content mt-3">
+                                <!-- Published Tab -->
+                                <div class="tab-pane fade show active" id="published" role="tabpanel">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped custom-table datatable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Permission Name</th>
+                                                    <th>Status</th>
+                                                    <th class="text-center">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($publishedPermissions as $permission)
+                                                    <tr>
+                                                        <td>{{ ucfirst(str_replace('access ', '', $permission->name)) }}</td>
+                                                        <td><span class="badge bg-success">{{ $permission->status }}</span></td>
+                                                        <td class="text-center">
+                                                            <button class="btn btn-sm btn-warning change-status" data-id="{{ $permission->id }}" data-status="unpublished">Unpublish</button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
 
+                                <!-- Unpublished Tab -->
+                                <div class="tab-pane fade" id="unpublished" role="tabpanel">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped custom-table datatable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Permission Name</th>
+                                                    <th>Status</th>
+                                                    <th class="text-center">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($unpublishedPermissions as $permission)
+                                                    <tr>
+                                                        <td>{{ ucfirst(str_replace('access ', '', $permission->name)) }}</td>
+                                                        <td><span class="badge bg-secondary">{{ $permission->status }}</span></td>
+                                                        <td class="text-center">
+                                                            <button class="btn btn-sm btn-success change-status" data-id="{{ $permission->id }}" data-status="published">Publish</button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Customer Permitted Tab -->
+                                <div class="tab-pane fade" id="customer-permitted" role="tabpanel">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped custom-table datatable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Customer</th>
+                                                    @foreach ($publishedPermissions as $permission)
+                                                        <th class="text-center">{{ ucfirst(str_replace('access ', '', $permission->name)) }}</th>
+                                                    @endforeach
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($customers as $customer)
+                                                    <tr>
+                                                        <td>{{ $customer->name }}</td>
+                                                        @foreach ($publishedPermissions as $permission)
+                                                            <td class="text-center">
+                                                                <input type="checkbox" class="permission-checkbox"
+                                                                    data-customer-id="{{ $customer->id }}"
+                                                                    data-permission-id="{{ $permission->id }}"
+                                                                    {{ $customer->permissions->contains($permission->id) ? 'checked' : '' }}>
+                                                            </td>
+                                                        @endforeach
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-
-
-
             </div>
         </div>
         <!-- /Page Content -->
 
-        <!-- Add Role Modal -->
-        <div id="add_role" class="modal custom-modal fade" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Role</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="{{ route('admin.roles.store') }}" method="POST">
-                            @csrf
-                            <div class="form-group">
-                                <label>Role Name <span class="text-danger">*</span></label>
-                                <input class="form-control" type="text" name="name" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Permissions</label>
-                                <div>
-                                    @foreach ($permissions as $permission)
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="permissions[]"
-                                                value="{{ $permission->id }}">
-                                            <label class="form-check-label">{{ $permission->name }}</label>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                            <div class="submit-section">
-                                <button type="submit" class="btn btn-primary submit-btn">Submit</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- /Add Role Modal -->
-
-        <!-- Edit Role Modal -->
-        <div id="edit_role" class="modal custom-modal fade" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content modal-md">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Role</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <!-- Role Selection -->
-                        <div class="form-group">
-                            <label for="roleSelect">Select Role</label>
-                            <select id="roleSelect" class="form-control">
-                                <option value="" disabled selected>Select a Role</option>
-                                @foreach ($roles as $role)
-                                    <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Permissions Form -->
-                        <form id="editRoleForm" action="{{ route('admin.roles.update') }}" method="POST"
-                            style="display: none;">
-                            @csrf
-                            @method('PUT')
-
-                            <input type="hidden" name="role_id" id="role_id" value="">
-
-                            <div class="">
-                                <table class="table table-striped custom-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Permission</th>
-                                            <th class="text-center">Assign</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="permissionsTable">
-                                        <!-- Permissions checkboxes will be dynamically loaded here -->
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div class="submit-section mt-3">
-                                <button type="submit" class="btn btn-primary submit-btn">Update</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- /Edit Role Modal -->
-
-        <!-- Delete Role Modal -->
-        <div class="modal custom-modal fade" id="delete_role" role="dialog">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <div class="form-header">
-                            <h3>Delete Role</h3>
-                            <p>Are you sure want to delete?</p>
-                        </div>
-                        <div class="modal-btn delete-action">
-                            <div class="row">
-                                <div class="col-6">
-                                    <a href="javascript:void(0);" class="btn btn-primary continue-btn">Delete</a>
-                                </div>
-                                <div class="col-6">
-                                    <a href="javascript:void(0);" data-bs-dismiss="modal"
-                                        class="btn btn-primary cancel-btn">Cancel</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- /Delete Role Modal -->
 
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -193,32 +135,60 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
         <script>
-           $('.permission-checkbox').on('change', function () {
-    var customerId = $(this).data('customer-id');
-    var permissionId = $(this).data('permission-id');
-    var isChecked = $(this).is(':checked');
+            $('.permission-checkbox').on('change', function () {
+                var customerId = $(this).data('customer-id');
+                var permissionId = $(this).data('permission-id');
+                var isChecked = $(this).is(':checked');
 
-    $.ajax({
-        url: '{{ route("admin.update.customer.permission") }}',
-        type: 'POST',
-        data: {
-            _token: '{{ csrf_token() }}',
-            customer_id: customerId,
-            permission_id: permissionId,
-            assign: isChecked
-        },
-        success: function (response) {
-            toastr.success(response.message);
-        },
-        error: function (xhr) {
-            let msg = 'Something went wrong!';
-            if (xhr.responseJSON && xhr.responseJSON.message) {
-                msg = xhr.responseJSON.message;
-            }
-            toastr.error(msg);
-        }
-    });
-});
+                $.ajax({
+                    url: '{{ route("admin.update.customer.permission") }}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        customer_id: customerId,
+                        permission_id: permissionId,
+                        assign: isChecked
+                    },
+                    success: function (response) {
+                        toastr.success(response.message);
+                    },
+                    error: function (xhr) {
+                        let msg = 'Something went wrong!';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        toastr.error(msg);
+                    }
+                });
+            });
+
+            // Change permission status
+            $('.change-status').on('click', function () {
+                var permissionId = $(this).data('id');
+                var newStatus = $(this).data('status');
+                var button = $(this);
+
+                $.ajax({
+                    url: '{{ route("admin.update.permission.status") }}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        permission_id: permissionId,
+                        status: newStatus
+                    },
+                    success: function (response) {
+                        toastr.success(response.message);
+                        location.reload();
+                    },
+                    error: function (xhr) {
+                        let msg = 'Something went wrong!';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        toastr.error(msg);
+                    }
+                });
+            });
 
         </script>
 

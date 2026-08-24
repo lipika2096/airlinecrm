@@ -23,7 +23,8 @@ class Admin extends Authenticatable
         'name',
         'email',
         'password',
-        'plain_password'
+        'plain_password',
+        'is_active'
     ];
 
     /**
@@ -48,10 +49,30 @@ class Admin extends Authenticatable
     {
         return $this->hasOne(AdminDetail::class, 'admin_id', 'id');
     }
+    
+    public function getCompanyNameAttribute()
+    {
+        return $this->adminDetail ? $this->adminDetail->company_name : null;
+    }
 
     public function kycDocuments()
     {
         return $this->hasMany(AdminKycDocument::class, 'admin_id', 'id');
+    }
+
+    public function createdSupportTickets()
+    {
+        return $this->hasMany(SupportTicket::class, 'created_by');
+    }
+
+    public function assignedSupportTickets()
+    {
+        return $this->hasMany(SupportTicket::class, 'assigned_to');
+    }
+
+    public function supportTicketComments()
+    {
+        return $this->hasMany(SupportTicketComment::class, 'user_id');
     }
 
 }

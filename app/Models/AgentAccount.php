@@ -11,6 +11,10 @@ class AgentAccount extends Model
     'id'
   ];
 
+  protected $casts = [
+    'tr_date' => 'datetime',
+  ];
+
   public function agent()
   {
     return $this->belongsTo(Agent::class, 'agent_id', 'id');
