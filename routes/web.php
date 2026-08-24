@@ -88,6 +88,17 @@ Route::get('/run-seeder', function () {
 
 });
 
+Route::get('/publish-pagination', function () {
+
+    Artisan::call('vendor:publish', [
+        // '--tag' => 'laravel-pagination'
+        '--force' => true
+    ]);
+
+    return nl2br(Artisan::output());
+
+});
+
 Route::name('admin.')->middleware(['admin'])->group(function () {
     Route::get('roles-permissions', [RolePermissionController::class, 'index'])->name('roles-permissions.index');
     Route::get('/roles/{role}/permissions', [RolePermissionController::class, 'getRolePermissions'])->name('roles.getPermissions');

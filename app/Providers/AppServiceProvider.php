@@ -39,5 +39,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Share RouteHelper with all views
         view()->share('routeHelper', new \App\Helpers\RouteHelper());
+
+        // Set default pagination view to Bootstrap 4
+        \Illuminate\Pagination\Paginator::defaultView('vendor.pagination.bootstrap-4');
+        \Illuminate\Pagination\Paginator::defaultSimpleView('vendor.pagination.simple-bootstrap-4');
     }
 }
