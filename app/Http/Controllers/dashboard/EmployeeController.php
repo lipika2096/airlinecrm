@@ -760,8 +760,27 @@ class EmployeeController extends Controller
     }
     public function edit(Request $request, $id)
     {
-        // Create a new employee
-        $employee =  User::find($id);
+        // Validate the request
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'email' => 'required|email|max:255',
+            //'employee_id' => 'required|string|max:255',
+            'departments' => 'required|array|min:1',
+            'departments.*' => 'required|string',
+        ]);
+
+        // Find the employee
+        $employee = User::find($id);
+        
+        if (!$employee) {
+            return redirect()->route('admin.employees')->with('error', 'Employee not found');
+        }
+
+        // Get primary department (first selected department)
+        $departments = $request->input('departments');
+        $primaryDepartment = is_array($departments) && !empty($departments) ? $departments[0] : null;
+        //dd($primaryDepartment);
         $employee->update([
             'first_name' => $request->input('first_name'),
             'last_name' => $request->input('last_name'),
@@ -769,7 +788,7 @@ class EmployeeController extends Controller
             'unique_id' => $request->input('employee_id'),
             'joining_date' => $request->input('joining_date'),
             'phone' => $request->input('phone'),
-            'department' => $request->input('department'),
+            'department' => $primaryDepartment, // Set primary department
             'position' => $request->input('designation'),
             'min_hrs' => $request->input('min_hrs'),
             'max_hrs' => $request->input('max_hrs'),
@@ -781,6 +800,12 @@ class EmployeeController extends Controller
             'date_of_resignation' => $request->input('date_of_resignation'),
             'updated_by' => auth('admin')->user()->id
         ]);
+
+        // Handle multiple departments
+        if (is_array($departments)) {
+            $employee->syncDepartments($departments);
+        }
+
         return redirect()->route('admin.employees')->with('success', 'Employee updated successfully');
     }
 

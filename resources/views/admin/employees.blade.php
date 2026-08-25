@@ -12,6 +12,9 @@
             /* background-color: #e7f1ff; */
             /* box-shadow: none; border:none; */
         }
+        .select2-container--default .select2-search--inline .select2-search__field{
+            display:none;
+        }
     </style>
     <title>Employees</title>
 
@@ -41,40 +44,6 @@
                 </div>
             </div>
             <!-- /Page Header -->
-
-            <!-- Search Filter -->
-            {{-- <div class="row filter-row">
-                        <div class="col-sm-6 col-md-3">
-                            <div class="form-group form-focus">
-                                <input type="text" class="form-control floating">
-                                <label class="focus-label">Employee ID</label>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                            <div class="form-group form-focus">
-                                <input type="text" class="form-control floating">
-                                <label class="focus-label">Employee Name</label>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                            <div class="form-group form-focus select-focus">
-                                <select class="select floating">
-                                    <option>Select Designation</option>
-                                    <option>Web Developer</option>
-                                    <option>Web Designer</option>
-                                    <option>Android Developer</option>
-                                    <option>Ios Developer</option>
-                                </select>
-                                <label class="focus-label">Designation</label>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-                            <div class="d-grid">
-                                <a href="#" class="btn btn-success w-100"> Search </a>
-                            </div>
-                        </div>
-                    </div> --}}
-            <!-- Search Filter -->
 
             <style>
                 .profile-widget .user-name {
@@ -140,7 +109,13 @@
                                                         Null
                                                     @endif
                                                 </td>
-                                                <td>{{ $data->department }}</td>
+                                                <td>
+                                                    @if(!empty($data->department_names))
+                                                        {{ implode(', ', $data->department_names) }}
+                                                    @else
+                                                        {{ $data->department ?? '-' }}
+                                                    @endif
+                                                </td>
                                                 <td>{{ $data->position }}</td>
                                                 <td>{{ $data->unique_id }}</td>
                                                 <td>{{ $data->joining_date }}</td>
@@ -323,19 +298,20 @@
                                                                     </div>
                                                                     <div class="col-md-4">
                                                                         <!-- <div class="form-group"> -->
-                                                                        <label>Department <span
+                                                                        <label>Departments <span
                                                                                 class="text-danger">*</span></label>
                                                                         <select class="select form-control"
-                                                                            name="department">
-                                                                            <option>Select Department</option>
+                                                                            name="departments[]" multiple>
+                                                                            <option value="">Select Departments</option>
                                                                             @foreach ($department as $department_data)
                                                                                 <option
                                                                                     value="{{ $department_data->department_name }}"
-                                                                                    @if ($data->department == $department_data->department_name) selected @endif>
+                                                                                    @if (in_array($department_data->department_name, $data->department_names ?? [])) selected @endif>
                                                                                     {{ $department_data->department_name }}
                                                                                 </option>
                                                                             @endforeach
                                                                         </select>
+                                                                        <!-- <small class="text-muted">Hold Ctrl/Cmd to select multiple departments</small> -->
                                                                     </div>
                                                                     <!-- </div> -->
                                                                     <div class="col-md-4">
@@ -642,20 +618,21 @@
                                                                                     <!-- </div> -->
                                                                                     <div class="col-md-4">
                                                                                         <!-- <div class="form-group"> -->
-                                                                                        <label>Department <span
+                                                                                        <label>Departments <span
                                                                                                 class="text-danger">*</span></label>
                                                                                         <select class="select"
-                                                                                            name="department">
-                                                                                            <option>Select Department
+                                                                                            name="departments[]" multiple>
+                                                                                            <option value="">Select Departments
                                                                                             </option>
                                                                                             @foreach ($department as $department_data)
                                                                                                 <option
                                                                                                     value="{{ $department_data->department_name }}"
-                                                                                                    @if ($employee->department == $department_data->department_name) selected @endif>
+                                                                                                    @if (in_array($department_data->department_name, $employee->department_names ?? [])) selected @endif>
                                                                                                     {{ $department_data->department_name }}
                                                                                                 </option>
                                                                                             @endforeach
                                                                                         </select>
+                                                                                        <small class="text-muted">Hold Ctrl/Cmd to select multiple departments</small>
                                                                                     </div>
                                                                                     <!-- </div> -->
                                                                                     <div class="col-md-4">

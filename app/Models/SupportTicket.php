@@ -27,6 +27,7 @@ class SupportTicket extends Model
         'rating_comment',
         'resolved_at',
         'closed_at',
+        'company_name',
     ];
 
     protected $casts = [

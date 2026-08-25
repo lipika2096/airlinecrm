@@ -94,6 +94,12 @@
                                 
                                 @if($isSuperAdmin)
                                 <div class="form-group">
+                                    <label>Company Name <span class="text-danger">*</span></label>
+                                    <input class="form-control" type="text" name="company_name" required>
+                                    <small class="text-muted">Enter the company name for whom this ticket is being created</small>
+                                </div>
+                                
+                                <div class="form-group">
                                     <label>Assign To Staff (Optional)</label>
                                     <select class="select form-control" name="assigned_to">
                                         <option value="">Select a staff member to assign</option>

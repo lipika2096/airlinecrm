@@ -13,7 +13,7 @@
                     </li>
                     <li><a class="{{ request()->routeIs('admin.support-tickets.dashboard') ? 'active' : '' }}" href="{{ route('admin.support-tickets.dashboard') }}"><i class="la la-life-ring"></i> <span> Support Tickets</span></a>
                     </li>
-                @elseif(\App\Helpers\RouteHelper::isCustomer())
+                @elseif(\App\Helpers\RouteHelper::isCustomer() && auth('admin')->check() && auth('admin')->user()?->getDirectPermissions()->contains('name', 'support-tickets'))
                     <li><a class="{{ request()->routeIs('customer.support-tickets.dashboard') ? 'active' : '' }}" href="{{ route('customer.support-tickets.dashboard') }}"><i class="la la-life-ring"></i> <span> Support Tickets</span></a>
                     </li>
                 @elseif(\App\Helpers\RouteHelper::isStaff())
@@ -21,6 +21,7 @@
                     </li>
                 @endif
                 @if(auth('admin')->check() && auth('admin')->user()?->getDirectPermissions()->contains('name', 'hr'))
+                @if(\App\Helpers\RouteHelper::isSuperAdmin())
                     <li class="submenu">
                         <a href="#" class=""><i class="la la-user"></i> <span> HR</span> <span class="menu-arrow"></span></a>
                         <ul style="display: none;">
@@ -75,6 +76,117 @@
                             </li>
                         </ul>
                     </li>
+                @elseif(\App\Helpers\RouteHelper::isCustomer())
+                <li class="submenu">
+                        <a href="#" class=""><i class="la la-user"></i> <span> HR</span> <span class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            
+                                <li>
+                                    <a class="{{ request()->routeIs('customer.add-staff') ? 'active' : '' }}"
+                                    href="{{ route('customer.add-staff') }}">
+                                    Add Staff
+                                    </a>
+                                </li>
+                            <li>
+                                <a class="{{ request()->routeIs('customer.employees') ? 'active' : '' }}"
+                                href="{{ route('customer.employees') }}">
+                                Staff List
+                                </a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('customer.manage-staff') ? 'active' : '' }}"
+                                href="{{ route('customer.manage-staff') }}">
+                                Manage Staff
+                                </a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('customer.holidays') ? 'active' : '' }}"
+                                href="{{ route('customer.holidays') }}">
+                                Holidays & Leaves
+                                </a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('customer.leaves') ? 'active' : '' }}"
+                                href="{{ route('customer.leaves') }}">
+                                Pending Approvals
+                                </a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('customer.employee.view-profile') ? 'active' : '' }}"
+                                href="{{ route('customer.employee.view-profile') }}">
+                                User Profiles
+                                </a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('customer.employee.rights') ? 'active' : '' }}"
+                                href="{{ route('customer.employee.rights') }}">
+                                User Rights
+                                </a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('customer.staff-reports') ? 'active' : '' }}"
+                                href="{{ route('customer.staff-reports') }}">
+                                Reports
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    @else
+                    <li class="submenu">
+                        <a href="#" class=""><i class="la la-user"></i> <span> HR</span> <span class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            
+                                <li>
+                                    <a class="{{ request()->routeIs('staff.add-staff') ? 'active' : '' }}"
+                                    href="{{ route('staff.add-staff') }}">
+                                    Add Staff
+                                    </a>
+                                </li>
+                            <li>
+                                <a class="{{ request()->routeIs('staff.employees') ? 'active' : '' }}"
+                                href="{{ route('staff.employees') }}">
+                                Staff List
+                                </a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('staff.manage-staff') ? 'active' : '' }}"
+                                href="{{ route('staff.manage-staff') }}">
+                                Manage Staff
+                                </a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('staff.holidays') ? 'active' : '' }}"
+                                href="{{ route('staff.holidays') }}">
+                                Holidays & Leaves
+                                </a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('staff.leaves') ? 'active' : '' }}"
+                                href="{{ route('staff.leaves') }}">
+                                Pending Approvals
+                                </a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('staff.employee.view-profile') ? 'active' : '' }}"
+                                href="{{ route('staff.employee.view-profile') }}">
+                                User Profiles
+                                </a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('staff.employee.rights') ? 'active' : '' }}"
+                                href="{{ route('staff.employee.rights') }}">
+                                User Rights
+                                </a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('staff.staff-reports') ? 'active' : '' }}"
+                                href="{{ route('staff.staff-reports') }}">
+                                Reports
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
                 @endif
                 @if(auth('admin')->check() && auth('admin')->user()->hasRole('SuperAdmin'))
                     <li class="submenu">
@@ -104,7 +216,7 @@
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
                             <li>
-                                <a class="{{ request()->routeIs('customer.case-history') ? 'active' : '' }}" href="{{ route('customer.case-history') }}">Case History</a>
+                                <a class="{{ request()->routeIs('customer.view.case-history') ? 'active' : '' }}" href="{{ route('customer.view.case-history') }}">Case History</a>
                             </li>
                         </ul>
                     </li>
@@ -160,10 +272,10 @@
                         <ul style="display: none;">
                             @if (auth('admin')->check())
 
-                                 <li><a class="{{ request()->routeIs('admin.agents') ? 'active' : '' }}" href="{{ route('admin.agents') }}">Travel Partners List</a></li>
-                                <li><a class="{{ request()->routeIs('admin.agent-library') ? 'active' : '' }}" href="{{ route('admin.agent-library') }}">Library</a></li>
-                                <li><a class="{{ request()->routeIs('admin.agent-reports') ? 'active' : '' }}" href="{{ route('admin.agent-reports') }}">Reports</a></li>
-                                 <li><a class="{{ request()->routeIs('admin.view.case-history') ? 'active' : '' }}" href="{{ route('admin.view.case-history') }}">Case History</a></li>
+                                 <li><a class="{{ request()->routeIs('customer.agents') ? 'active' : '' }}" href="{{ route('customer.agents') }}">Travel Partners List</a></li>
+                                <li><a class="{{ request()->routeIs('customer.agent-library') ? 'active' : '' }}" href="{{ route('customer.agent-library') }}">Library</a></li>
+                                <li><a class="{{ request()->routeIs('customer.agent-reports') ? 'active' : '' }}" href="{{ route('customer.agent-reports') }}">Reports</a></li>
+                                 <li><a class="{{ request()->routeIs('customer.view.case-history') ? 'active' : '' }}" href="{{ route('customer.view.case-history') }}">Case History</a></li>
                             @endif
                         </ul>
                     </li>
@@ -175,9 +287,9 @@
                             <span class="menu-arrow"></span></a>
                         <ul style="display: none;">
                             @if (auth('admin')->check())
-                                <li><a class="{{ request()->routeIs('admin.airlines-details') ? 'active' : '' }}" href="{{ route('admin.airlines-details') }}">Airlines List</a></li>
-                                <li><a class="{{ request()->routeIs('admin.airline-library') ? 'active' : '' }}" href="{{ route('admin.airline-library') }}">Library</a></li>
-                                <li><a class="{{ request()->routeIs('admin.airline-reports') ? 'active' : '' }}" href="{{ route('admin.airline-reports') }}">Reports</a></li>
+                                <li><a class="{{ request()->routeIs('customer.airlines-details') ? 'active' : '' }}" href="{{ route('customer.airlines-details') }}">Airlines List</a></li>
+                                <li><a class="{{ request()->routeIs('customer.airline-library') ? 'active' : '' }}" href="{{ route('customer.airline-library') }}">Library</a></li>
+                                <li><a class="{{ request()->routeIs('customer.airline-reports') ? 'active' : '' }}" href="{{ route('customer.airline-reports') }}">Reports</a></li>
                             @endif
                         </ul>
                     </li>
@@ -187,8 +299,8 @@
                         <a href="#"><i class="la la-files-o"></i> <span>Sales & Marketing</span> <span
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
-                            <li><a class="{{ request()->routeIs('admin.saleslead') ? 'active' : '' }}" href="{{ route('admin.saleslead') }}">Add Sales Lead</a></li>
-                            <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{url('/admin/coming-soon')}}">Record Sales call/Visit</a></li>
+                            <li><a class="{{ request()->routeIs('customer.saleslead') ? 'active' : '' }}" href="{{ route('customer.saleslead') }}">Add Sales Lead</a></li>
+                            <li><a class="{{ request()->routeIs('customer.comingSoon') ? 'active' : '' }}" href="{{url('/customer/coming-soon')}}">Record Sales call/Visit</a></li>
                             
                         </ul>
                     </li>

@@ -167,7 +167,7 @@
                                                     </a>
                                                 </td>
                                                 <td style="padding: 12px; vertical-align: middle;">
-                                                    {{ $ticket->creator && $ticket->creator->adminDetail ? $ticket->creator->adminDetail->company_name : ($ticket->creator ? $ticket->creator->name : 'Unknown') }}
+                                                    {{ $ticket->company_name ?? ($ticket->creator && $ticket->creator->adminDetail ? $ticket->creator->adminDetail->company_name : ($ticket->creator ? $ticket->creator->name : 'Unknown')) }}
                                                 </td>
                                                 <td style="padding: 12px; vertical-align: middle;">
                                                     {{ Str::limit($ticket->subject, 50) }}

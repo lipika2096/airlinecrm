@@ -481,24 +481,6 @@ class SupportTicketController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'department' => 'required|string|in:technical_support,billing,booking,account,other',
-            'subject' => 'required|string|max:255',
-            'description' => 'required|string',
-            'priority' => 'nullable|string|max:255',
-            'attachments' => 'nullable|array',
-            'attachments.*' => 'nullable|file|max:5120|mimes:jpg,jpeg,png,gif,pdf,doc,docx,txt,zip', // Max 5MB per file
-            'attachment_names' => 'nullable|array',
-            'booking_reference' => 'nullable|string|max:255',
-            'assigned_to' => 'nullable|integer',
-            'related_user_id' => 'nullable|integer',
-        ]);
-        
-        // Convert empty string to null for assigned_to
-        if ($request->assigned_to === '' || $request->assigned_to === null) {
-            $request->merge(['assigned_to' => null]);
-        }
-        
         // Check if user is staff (users table) or admin (admins table)
         if (auth()->check()) {
             // Staff user from users table
@@ -513,7 +495,33 @@ class SupportTicketController extends Controller
         } else {
             return redirect()->route('admin.login');
         }
-        
+
+        // Build validation rules dynamically based on user type
+        $validationRules = [
+            'department' => 'required|string|in:technical_support,billing,booking,account,other',
+            'subject' => 'required|string|max:255',
+            'description' => 'required|string',
+            'priority' => 'nullable|string|max:255',
+            'attachments' => 'nullable|array',
+            'attachments.*' => 'nullable|file|max:5120|mimes:jpg,jpeg,png,gif,pdf,doc,docx,txt,zip', // Max 5MB per file
+            'attachment_names' => 'nullable|array',
+            'booking_reference' => 'nullable|string|max:255',
+            'assigned_to' => 'nullable|integer',
+            'related_user_id' => 'nullable|integer',
+        ];
+
+        // Add company name validation for super admin
+        if ($isSuperAdmin) {
+            $validationRules['company_name'] = 'required|string|max:255';
+        }
+
+        $request->validate($validationRules);
+
+        // Convert empty string to null for assigned_to
+        if ($request->assigned_to === '' || $request->assigned_to === null) {
+            $request->merge(['assigned_to' => null]);
+        }
+
         $ticketNumber = 'TKT-' . strtoupper(Str::random(8));
 
         // Assign the ticket to the specified user or default to SuperAdmin for staff
@@ -557,6 +565,16 @@ class SupportTicketController extends Controller
             }
         }
 
+        // Get company name based on user type
+        $companyName = null;
+        if ($isSuperAdmin) {
+            // For super admin, use the provided company name from the form
+            $companyName = $request->company_name;
+        } elseif (!$isStaff && $currentUser instanceof \App\Models\Admin && $currentUser->adminDetail) {
+            // For non-super admin users, use their admin detail company name
+            $companyName = $currentUser->adminDetail->company_name;
+        }
+
         SupportTicket::create([
             'ticket_number' => $ticketNumber,
             'department' => $request->department,
@@ -569,7 +587,9 @@ class SupportTicketController extends Controller
             'related_user_id' => $request->related_user_id,
             'booking_reference' => $request->booking_reference,
             'attachments' => json_encode($attachmentPaths),
+            'company_name' => $companyName,
         ]);
+
         if($isSuperAdmin) {
             return redirect()->route('admin.support-tickets.index')
                 ->with('success', 'Support ticket created successfully.');
@@ -1065,5 +1085,25 @@ class SupportTicketController extends Controller
             'labels' => $labels,
             'data' => $counts
         ];
+    }
+
+    public function updateCompanyName(Request $request, $id)
+    {
+        // Check if user is SuperAdmin
+        if (!auth('admin')->check() || !Auth::guard('admin')->user()->hasRole('SuperAdmin')) {
+            return redirect()->back()->with('error', 'You are not authorized to update company name.');
+        }
+
+        $request->validate([
+            'company_name' => 'required|string|max:255',
+        ]);
+
+        $ticket = SupportTicket::findOrFail($id);
+        $ticket->company_name = $request->company_name;
+        $ticket->save();
+
+        return redirect()->back()
+            ->with('success', 'Company name updated successfully.')
+            ->with('active_tab', $request->get('active_tab', 'details'));
     }
 }

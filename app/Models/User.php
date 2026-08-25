@@ -12,13 +12,13 @@ class User extends Authenticatable
     
     protected $guarded = ['id'];
 
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'plain_password',
-        'is_active'
-    ];
+    // protected $fillable = [
+    //     'name',
+    //     'email',
+    //     'password',
+    //     'plain_password',
+    //     'is_active'
+    // ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -71,5 +71,27 @@ class User extends Authenticatable
     public function designations()
     {
         return $this->hasMany(Designation::class, 'staff_id');
+    }
+
+    public function userDepartments()
+    {
+        return $this->hasMany(UserDepartment::class, 'user_id');
+    }
+
+    public function getDepartmentNamesAttribute()
+    {
+        return $this->userDepartments->pluck('department_name')->toArray();
+    }
+
+    public function syncDepartments(array $departmentNames)
+    {
+        $this->userDepartments()->delete();
+        foreach ($departmentNames as $departmentName) {
+            if (!empty($departmentName)) {
+                $this->userDepartments()->create([
+                    'department_name' => $departmentName
+                ]);
+            }
+        }
     }
 }

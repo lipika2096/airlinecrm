@@ -59,15 +59,24 @@
                                                         $companyName = $ticket->creator->adminDetail->company_name;
                                                     }
                                                 @endphp
-                                                <p><strong>Company:</strong> @if(\App\Models\Admin::where('id', $ticket->created_by)->exists())
-                                                @php
-                                                    $admin = \App\Models\Admin::where('id', $ticket->created_by)->first();
-                                                    $companyName = $admin && $admin->adminDetail ? $admin->adminDetail->company_name : '-';
-                                                @endphp
-                                                {{ $companyName }}
+                                                <p><strong>Company:</strong> 
+                                                                                @if($ticket->company_name)
+                                                    {{ $ticket->company_name }}
+                                                @elseif(\App\Models\Admin::where('id', $ticket->created_by)->exists())
+                                                    @php
+                                                        $admin = \App\Models\Admin::where('id', $ticket->created_by)->first();
+                                                        $companyName = $admin && $admin->adminDetail ? $admin->adminDetail->company_name : '-';
+                                                    @endphp
+                                                    {{ $companyName }}
                                                 @else
-                                                -
-                                                @endif</p>
+                                                    -
+                                                @endif
+                                                @if($isSuperAdmin)
+                                                    <button type="button" class="btn btn-sm btn-link p-0 ms-2" data-bs-toggle="modal" data-bs-target="#editCompanyNameModal">
+                                                        <i class="fa fa-edit" style="color:#fff;"></i>
+                                                    </button>
+                                                @endif
+                                                </p>
                                                 <p><strong>Created By:</strong> @if(\App\Models\Admin::where('id', $ticket->created_by)->exists())
                                                 {{
                                                     \App\Models\Admin::where('id', $ticket->created_by)->first()->name
@@ -146,7 +155,7 @@
                     <div class="card mt-3">
                         <div class="card-body">
                             @if($ticket->status !== 'closed')
-                            <form method="post" action="{{ $isSuperAdmin ? route('admin.support-tickets.update-status', $ticket->id) : ($isStaff ? route('staff.support-tickets.update-status', $ticket->id) : route('customer.support-tickets.update-status', $ticket->id)) }}">
+                            <form method="post" action="{{ $isSuperAdmin ? route('admin.support-tickets.update-status', $ticket->id) : ($isStaff ? route('admin.support-tickets.update-status', $ticket->id) : route('admin.support-tickets.update-status', $ticket->id)) }}">
                                 @csrf
                                 @method('patch')
                                 <div class="row align-items-end">
@@ -211,7 +220,7 @@
                             <!-- Closed Ticket Actions -->
                             <div class="row align-items-center">
                                     <div class="col-md-6 text-center">
-                                        <form method="post" action="{{ $isSuperAdmin ? route('admin.support-tickets.update-status', $ticket->id) : ($isStaff ? route('staff.support-tickets.update-status', $ticket->id) : route('customer.support-tickets.update-status', $ticket->id)) }}">
+                                        <form method="post" action="{{ $isSuperAdmin ? route('admin.support-tickets.update-status', $ticket->id) : ($isStaff ? route('admin.support-tickets.update-status', $ticket->id) : route('admin.support-tickets.update-status', $ticket->id)) }}">
                                             @csrf
                                             @method('patch')
                                             <input type="hidden" name="status" value="open">
@@ -271,7 +280,7 @@
                                             <div class="message-header d-flex justify-content-between align-items-start">
                                                 <div>
                                                     <strong>{{ $ticket->creator ? $ticket->creator->name : 'Unknown' }}</strong>
-                                                    <small class="text-white" style="margin-left: 1rem;">{{ $ticket->created_at->format('M d, Y h:i A') }}</small>
+                                                    <small class="message-time" style="margin-left: 1rem;">{{ $ticket->created_at->format('M d, Y h:i A') }}</small>
                                                 </div>
                                             </div>
                                             <div class="message-body">
@@ -306,7 +315,7 @@
                                                     <div class="message-header d-flex justify-content-between align-items-start">
                                                         <div>
                                                             <strong>{{ $comment->user ? $comment->user->name : 'Unknown' }}</strong>
-                                                            <small style="color:unset;font-size: smaller;" style="margin-left: 1rem;">{{ $comment->created_at->format('M d, Y h:i A') }}</small>
+                                                            <small class="message-time" style="margin-left: 1rem;">{{ $comment->created_at->format('M d, Y h:i A') }}</small>
                                                         </div>
                                                     </div>
                                                     <div class="message-body">
@@ -487,7 +496,7 @@
                                                     <div class="note-header d-flex justify-content-between align-items-start">
                                                         <div>
                                                             <strong>{{ $note->user ? $note->user->name : 'Unknown' }}</strong>
-                                                            <small style="color:unset;font-size: smaller;" style="margin-left: 1rem;">{{ $note->created_at->format('M d, Y h:i A') }}</small>
+                                                            <small class="message-time" style="margin-left: 1rem;">{{ $note->created_at->format('M d, Y h:i A') }}</small>
                                                         </div>
                                                         @if($note->user_id == $currentUserId)
                                                             <button type="button" class="btn btn-sm btn-outline-primary edit-note-btn" data-note-id="{{ $note->id }}" data-note-content="{{ $note->note }}">
@@ -919,7 +928,7 @@
                                             <div class="message-header d-flex justify-content-between align-items-start">
                                                 <div>
                                                     <strong>{{ $ticket->creator ? $ticket->creator->name : 'Unknown' }}</strong>
-                                                    <small class="text-white" style="margin-left: 1rem;">{{ $ticket->created_at->format('M d, Y h:i A') }}</small>
+                                                    <small class="message-time" style="margin-left: 1rem;">{{ $ticket->created_at->format('M d, Y h:i A') }}</small>
                                                 </div>
                                             </div>
                                             <div class="message-body">
@@ -954,7 +963,7 @@
                                                     <div class="message-header d-flex justify-content-between align-items-start">
                                                         <div>
                                                             <strong>{{ $comment->user ? $comment->user->name : 'Unknown' }}</strong>
-                                                            <small style="color:unset;font-size: smaller;" style="margin-left: 1rem;">{{ $comment->created_at->format('M d, Y h:i A') }}</small>
+                                                            <small class="message-time" style="margin-left: 1rem;">{{ $comment->created_at->format('M d, Y h:i A') }}</small>
                                                         </div>
                                                     </div>
                                                     <div class="message-body">
@@ -1075,6 +1084,34 @@
         </div>
         <!-- /Page Content -->
     </div>
+
+    <!-- Edit Company Name Modal -->
+    @if($isSuperAdmin)
+    <div class="modal fade" id="editCompanyNameModal" tabindex="-1" role="dialog" aria-labelledby="editCompanyNameModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCompanyNameModalLabel">Edit Company Name</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{{ route('admin.support-tickets.update-company-name', $ticket->id) }}">
+                        @csrf
+                        @method('patch')
+                        <div class="form-group">
+                            <label for="company_name">Company Name</label>
+                            <input type="text" class="form-control" id="company_name" name="company_name" value="{{ $ticket->company_name ?? '' }}" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
     
     <style>
         .ticket-header-card {
@@ -1161,6 +1198,15 @@
 
         .message-header {
             margin-bottom: 10px;
+        }
+
+        .message-time {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .note-dark .message-time {
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .message-body {
@@ -1517,6 +1563,10 @@
             color: white !important;
         }
 
+        .note-dark .message-time {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
         @if($isSuperAdmin)
         #departmentSelect {
             cursor: pointer;
@@ -1530,7 +1580,16 @@
         .note-header {
             margin-bottom: 10px;
         }
-        
+
+        .note-header .message-time {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .note-dark .note-header .message-time {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
         .note-body {
             color: #495057;
         }
@@ -1911,7 +1970,7 @@
             // Change priority function
             window.changePriority = function(priority) {
                 var ticketId = {{ $ticket->id }};
-                var route = "{{ $isSuperAdmin ? route('admin.support-tickets.update-status', $ticket->id) : ($isStaff ? route('staff.support-tickets.update-status', $ticket->id) : route('customer.support-tickets.update-status', $ticket->id)) }}";
+                var route = "{{ $isSuperAdmin ? route('admin.support-tickets.update-status', $ticket->id) : ($isStaff ? route('admin.support-tickets.update-status', $ticket->id) : route('admin.support-tickets.update-status', $ticket->id)) }}";
                 
                 $.ajax({
                     url: route,

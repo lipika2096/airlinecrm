@@ -107,7 +107,13 @@
                                                         @else
                                                             Null
                                                         @endif</td>
-                                                    <td>{{ $data->department }}</td>
+                                                    <td>
+                                                        @if(!empty($data->department_names))
+                                                            {{ implode(', ', $data->department_names) }}
+                                                        @else
+                                                            {{ $data->department ?? '-' }}
+                                                        @endif
+                                                    </td>
                                                     <td>{{ $data->position }}</td>
                                                     <td>{{ $data->unique_id }}</td>
                                                     <td>{{ $data->joining_date }}</td>
