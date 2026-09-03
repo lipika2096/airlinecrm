@@ -177,7 +177,7 @@
                                     @foreach ($tickets as $ticket)
                                         <tr>
                                             <td><span class="ticket-id-badge">#{{ $ticket->id }}</span></td>
-                                            <td>{{ $ticket->company_name ?? ($ticket->creator && $ticket->creator->adminDetail ? $ticket->creator->adminDetail->company_name : ($ticket->creator ? $ticket->creator->name : 'Unknown')) }}</td>
+                                            <td>{{ $ticket->company_name ?? ($ticket->creator && $ticket->creator->adminDetail ? $ticket->creator->adminDetail->company_name : $ticket->creator_name) }}</td>
                                             <td><a href="{{ route('admin.support-tickets.show', $ticket->id) }}" class="ticket-subject-link">{{ Str::limit($ticket->subject, 50) }}</a></td>
                                             <td>
                                                 @if($ticket->department)

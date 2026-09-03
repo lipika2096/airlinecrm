@@ -55,6 +55,38 @@ class SupportTicket extends Model
         }
     }
 
+    public function getCreatorNameAttribute()
+    {
+        // Determine if the created_by belongs to Admin or User table
+        $admin = Admin::find($this->created_by);
+        if ($admin) {
+            return $admin->hasRole('SuperAdmin') ? 'Super Admin' : $admin->name;
+        }
+        
+        $user = User::find($this->created_by);
+        if ($user) {
+            return $user->first_name . ' ' . $user->last_name;
+        }
+        
+        return 'Unknown';
+    }
+
+    public function getCreatorTypeAttribute()
+    {
+        // Determine the creator type
+        $admin = Admin::find($this->created_by);
+        if ($admin) {
+            return $admin->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        }
+        
+        $user = User::find($this->created_by);
+        if ($user) {
+            return 'staff';
+        }
+        
+        return 'unknown';
+    }
+
     public function assignedTo()
     {
         // Handle both Admin and User assignments
