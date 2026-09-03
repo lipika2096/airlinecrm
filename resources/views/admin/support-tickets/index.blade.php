@@ -21,7 +21,7 @@
                     <div class="col">
                         <h3 class="page-title">{{ $isSuperAdmin ? 'All Tickets (Admin View)' : 'My Tickets' }}</h3>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Dashboard</a></li>
                             <li class="breadcrumb-item"><a href="{{ $dashboardRoute }}">Support Ticket Dashboard</a></li>
                             <li class="breadcrumb-item active">{{ $isSuperAdmin ? 'All Tickets' : 'My Tickets' }}</li>
                         </ul>
@@ -34,6 +34,7 @@
             <!-- /Page Header -->
 
             @if($isSuperAdmin)
+            
             <!-- SuperAdmin Advanced Filters -->
             <div class="row filter-row mb-3">
                 <div class="col-md-12">
@@ -253,7 +254,7 @@
                                             <th>Subject</th>
                                             <th>Category</th>
                                             <!-- <th>Priority</th> -->
-                                            <th>Status</th>
+                                            @if($isStaff)<th>Status</th>@endif
                                             <th>Last Updated</th>
                                             <th class="text-end">Action</th>
                                         </tr>
@@ -280,26 +281,22 @@
                                                     {{ ucfirst($ticket->priority) }}
                                                 </span>
                                             </td> -->
+                                            @if($isStaff)
                                             <td>
                                                 @php
-                                                    // For non-superadmin users, map resolved status to in_progress
-                                                    $displayStatus = $ticket->status;
-                                                    if (!$isSuperAdmin && $ticket->status == 'resolved') {
-                                                        $displayStatus = 'in_progress';
-                                                    }
-                                                    
-                                                    $indexTicketStatus = $ticketStatuses->where('slug', $displayStatus)->first();
+                                                    $indexTicketStatus = $ticketStatuses->where('slug', $ticket->status)->first();
                                                 @endphp
                                                 @if($indexTicketStatus)
                                                     <span class="status-badge" style="background-color: {{ $indexTicketStatus->color }}; color: white;">
                                                         {{ $indexTicketStatus->name }}
                                                     </span>
                                                 @else
-                                                    <span class="status-badge status-{{ $displayStatus }}">
-                                                        {{ ucfirst(str_replace('_', ' ', $displayStatus)) }}
+                                                    <span class="status-badge status-{{ $ticket->status }}">
+                                                        {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
                                                     </span>
                                                 @endif
                                             </td>
+                                            @endif
                                             <td>
                                                 <span class="time-ago">
                                                     <i class="fa fa-clock"></i>
@@ -336,6 +333,15 @@
                     @endif
                 </div>
             </div>
+            
+            @if(!$isSuperAdmin)
+            <!-- Pagination for Non-SuperAdmin -->
+            <div class="row">
+                <div class="col-md-12">
+                    {{ $tickets->appends(request()->except('page'))->links() }}
+                </div>
+            </div>
+            @endif
             
             @if($isSuperAdmin)
             <!-- Pagination for SuperAdmin -->

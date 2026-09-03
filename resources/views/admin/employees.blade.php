@@ -34,7 +34,7 @@
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
-                        <a href="{{ route('admin.add-staff') }}" class="btn add-btn"><i
+                        <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.add-staff') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.add-staff') : route('admin.add-staff')) }}" class="btn add-btn"><i
                                 class="fa fa-plus"></i> Add Employee</a>
                         {{-- <div class="view-icons">
                                     <a href="employees.php" class="grid-view btn btn-link active"><i class="fa fa-th"></i></a>
@@ -110,10 +110,12 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    @if(!empty($data->department_names))
+                                                    @if(!empty($data->department_names) && is_array($data->department_names))
                                                         {{ implode(', ', $data->department_names) }}
+                                                    @elseif(!empty($data->department))
+                                                        {{ $data->department }}
                                                     @else
-                                                        {{ $data->department ?? '-' }}
+                                                        '-'
                                                     @endif
                                                 </td>
                                                 <td>{{ $data->position }}</td>
@@ -124,7 +126,7 @@
                                                 <td>
                                                     <div class="action-icons" style="display: flex; flex-direction: row;">
                                                         <a class="action-icon"
-                                                            href="{{ route('admin.view-staff', ['id' => $data->id]) }}">
+                                                            href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.view-staff', ['id' => $data->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.view-staff', ['id' => $data->id]) : route('admin.view-staff', ['id' => $data->id])) }}">
                                                             <i class="fa fa-eye m-r-5"></i>
                                                         </a>
                                                         <a class="action-icon" href="#" data-bs-toggle="modal"
@@ -152,7 +154,7 @@
                                                         </div>
                                                         <div class="modal-body">
                                                             <form
-                                                                action="{{ route('admin.employees.edit', ['id' => $data->id]) }}"
+                                                                action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.employees.edit', ['id' => $data->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.employees.edit', ['id' => $data->id]) : route('admin.employees.edit', ['id' => $data->id])) }}"
                                                                 method="POST" enctype="multipart/form-data">
 
                                                                 @method('patch')
@@ -296,36 +298,38 @@
                                                                                 value="{{ $data->date_of_resignation }}">
                                                                         </div>
                                                                     </div>
-                                                                    <div class="col-md-4">
-                                                                        <!-- <div class="form-group"> -->
+                                                                    <div class="col-md-12">
+                                                                        <div class="form-group">
                                                                         <label>Departments <span
                                                                                 class="text-danger">*</span></label>
-                                                                        <select class="select form-control"
-                                                                            name="departments[]" multiple>
-                                                                            <option value="">Select Departments</option>
+                                                                                
+                                                                        <small class="text-muted">Current departments: {{ is_array($data->department_names ?? []) ? implode(', ', $data->department_names ?? []) : ($data->department ?? 'None') }}</small>
+                                                                        <div class="" style="max-height: 150px; overflow-y: auto; border: 1px solid #dcdcdc; padding: 10px; border-radius: 4px;">
                                                                             @foreach ($department as $department_data)
-                                                                                <option
-                                                                                    value="{{ $department_data->department_name }}"
-                                                                                    @if (in_array($department_data->department_name, $data->department_names ?? [])) selected @endif>
-                                                                                    {{ $department_data->department_name }}
-                                                                                </option>
+                                                                                <div class="checkbox" style="margin-bottom: 5px;">
+                                                                                    <label style="font-weight: normal;">
+                                                                                        <input type="checkbox" 
+                                                                                               name="departments[]" 
+                                                                                               value="{{ $department_data->department_name }}"
+                                                                                               @if (is_array($data->department_names ?? []) && in_array($department_data->department_name, $data->department_names ?? [])) checked @endif>
+                                                                                        {{ $department_data->department_name }}
+                                                                                    </label>
+                                                                                </div>
                                                                             @endforeach
-                                                                        </select>
-                                                                        <!-- <small class="text-muted">Hold Ctrl/Cmd to select multiple departments</small> -->
+                                                                        </div>
                                                                     </div>
-                                                                    <!-- </div> -->
+                                                                    </div>
                                                                     <div class="col-md-4">
                                                                         <!-- <div class="form-group"> -->
                                                                         <label>Designation <span
                                                                                 class="text-danger">*</span></label>
                                                                         <select class="select form-control"
-                                                                            name="designation"
-                                                                            value="{{ $data->designation }}">
-                                                                            <option>Select Designation</option>
-                                                                            @foreach ($designation as $data)
-                                                                                <option value="{{ $data->designation }}"
-                                                                                    @if ($data->designation == $data->designation) selected @endif>
-                                                                                    {{ $data->designation }}</option>
+                                                                            name="designation">
+                                                                            <option value="">Select Designation</option>
+                                                                            @foreach ($designation as $designation_data)
+                                                                                <option value="{{ $designation_data->designation }}"
+                                                                                    @if ($designation_data->designation == $data->position) selected @endif>
+                                                                                    {{ $designation_data->designation }}</option>
                                                                             @endforeach
                                                                         </select>
                                                                     </div>
@@ -472,7 +476,7 @@
                                                                         </div>
                                                                         <div class="modal-body">
                                                                             <form
-                                                                                action="{{ route('admin.employees.edit', ['id' => $employee->id]) }}"
+                                                                                action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.employees.edit', ['id' => $employee->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.employees.edit', ['id' => $employee->id]) : route('admin.employees.edit', ['id' => $employee->id])) }}"
                                                                                 method="POST"
                                                                                 enctype="multipart/form-data">
 
@@ -616,23 +620,24 @@
                                                                                         </div>
                                                                                     </div>
                                                                                     <!-- </div> -->
-                                                                                    <div class="col-md-4">
+                                                                                    <div class="col-md-8">
                                                                                         <!-- <div class="form-group"> -->
                                                                                         <label>Departments <span
                                                                                                 class="text-danger">*</span></label>
-                                                                                        <select class="select"
-                                                                                            name="departments[]" multiple>
-                                                                                            <option value="">Select Departments
-                                                                                            </option>
+                                                                                        <div class="form-group" style="max-height: 150px; overflow-y: auto; border: 1px solid #dcdcdc; padding: 10px; border-radius: 4px;">
                                                                                             @foreach ($department as $department_data)
-                                                                                                <option
-                                                                                                    value="{{ $department_data->department_name }}"
-                                                                                                    @if (in_array($department_data->department_name, $employee->department_names ?? [])) selected @endif>
-                                                                                                    {{ $department_data->department_name }}
-                                                                                                </option>
+                                                                                                <div class="checkbox" style="margin-bottom: 5px;">
+                                                                                                    <label style="font-weight: normal;">
+                                                                                                        <input type="checkbox" 
+                                                                                                               name="departments[]" 
+                                                                                                               value="{{ $department_data->department_name }}"
+                                                                                                               @if (is_array($employee->department_names ?? []) && in_array($department_data->department_name, $employee->department_names ?? [])) checked @endif>
+                                                                                                        {{ $department_data->department_name }}
+                                                                                                    </label>
+                                                                                                </div>
                                                                                             @endforeach
-                                                                                        </select>
-                                                                                        <small class="text-muted">Hold Ctrl/Cmd to select multiple departments</small>
+                                                                                        </div>
+                                                                                        <small class="text-muted">Current departments: {{ is_array($employee->department_names ?? []) ? implode(', ', $employee->department_names ?? []) : ($employee->department ?? 'None') }}</small>
                                                                                     </div>
                                                                                     <!-- </div> -->
                                                                                     <div class="col-md-4">
@@ -640,15 +645,14 @@
                                                                                         <label>Designation <span
                                                                                                 class="text-danger">*</span></label>
                                                                                         <select class="select form-control"
-                                                                                            name="designation"
-                                                                                            value="{{ $employee->designation }}">
-                                                                                            <option>Select Designation
+                                                                                            name="designation">
+                                                                                            <option value="">Select Designation
                                                                                             </option>
-                                                                                            @foreach ($designation as $data)
+                                                                                            @foreach ($designation as $designation_data)
                                                                                                 <option
-                                                                                                    value="{{ $data->designation }}"
-                                                                                                    @if ($data->designation == $data->designation) selected @endif>
-                                                                                                    {{ $data->designation }}
+                                                                                                    value="{{ $designation_data->designation }}"
+                                                                                                    @if ($designation_data->designation == $employee->position) selected @endif>
+                                                                                                    {{ $designation_data->designation }}
                                                                                                 </option>
                                                                                             @endforeach
                                                                                         </select>

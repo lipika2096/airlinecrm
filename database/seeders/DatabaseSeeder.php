@@ -12,7 +12,8 @@ class DatabaseSeeder extends Seeder
             //AdminSeeder::class,
             //UpdateCreatedBySeeder::class,
             //RolePermissionSeeder::class,
-            RemoveAdminViewMenuFromAdminRole::class
+            TicketStatusSeeder::class,
+            //StaffRoleSeeder::class
         ]);
 
     }

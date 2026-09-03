@@ -325,6 +325,9 @@
                         <a href="#"><i class="la la-money"></i> <span>Accounts</span> <span
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
+                            <li><a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.accounts.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.accounts.index') : route('admin.accounts.index')) }}">Account</a></li>
+                            <li><a class="{{ request()->routeIs('admin.booking.index', 'customer.booking.index', 'staff.booking.index') ? 'active' : '' }}" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.index') : route('admin.booking.index')) }}">Bookings</a></li>
+                            <li><a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.create') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.create') : route('admin.booking.create')) }}">New Booking</a></li>
                             <li><a class="{{ request()->routeIs('admin.accounts.view') ? 'active' : '' }}" href="{{route('admin.accounts.view')}}">Add account</a></li>
                             <li><a class="{{ request()->routeIs('admin.accounts.all') ? 'active' : '' }}" href="{{route('admin.accounts.all')}}">View accounts </a></li>
                             <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{url('/admin/coming-soon')}}">Add Payment to Pool </a></li>
@@ -337,6 +340,9 @@
                         <a href="#"><i class="la la-money"></i> <span>Accounts</span> <span
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
+                            <li><a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.accounts.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.accounts.index') : route('admin.accounts.index')) }}">Account</a></li>
+                            <li><a class="{{ request()->routeIs('admin.booking.index', 'customer.booking.index', 'staff.booking.index') ? 'active' : '' }}" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.index') : route('admin.booking.index')) }}">Bookings</a></li>
+                            <li><a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.create') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.create') : route('admin.booking.create')) }}">New Booking</a></li>
                             <li><a class="{{ request()->routeIs('customer.accounts.view') ? 'active' : '' }}" href="{{route('customer.accounts.view')}}">Add account</a></li>
                             <li><a class="{{ request()->routeIs('customer.accounts.all') ? 'active' : '' }}" href="{{route('customer.accounts.all')}}">View accounts </a></li>
                             <li><a class="{{ request()->routeIs('customer.ledger') ? 'active' : '' }}" href="{{route('customer.ledger')}}">Customer Ledger</a></li>
@@ -347,12 +353,18 @@
                         <a href="#"><i class="la la-money"></i> <span>Accounts</span> <span
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
+                            <li><a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.accounts.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.accounts.index') : route('admin.accounts.index')) }}">Account</a></li>
+                            <li><a class="{{ request()->routeIs('admin.booking.index', 'customer.booking.index', 'staff.booking.index') ? 'active' : '' }}" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.index') : route('admin.booking.index')) }}">Bookings</a></li>
+                            <li><a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.create') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.create') : route('admin.booking.create')) }}">New Booking</a></li>
                             <li><a class="{{ request()->routeIs('admin.bank-accounts.index') ? 'active' : '' }}" href="{{ route('admin.bank-accounts.index') }}">My Bank Accounts</a>
                             </li>
                             <li><a class="{{ request()->routeIs('admin.customer.accounts.view') ? 'active' : '' }}" href="{{route('admin.customer.accounts.view')}}">Add account</a></li>
                             <li><a class="{{ request()->routeIs('admin.customer.accounts.all') ? 'active' : '' }}" href="{{route('admin.customer.accounts.all')}}">View accounts </a></li>
                             <li><a class="{{ request()->routeIs('admin.payment-pool') ? 'active' : '' }}" href="{{route('admin.payment-pool')}}">Add Payment to Pool </a></li>
                             <li><a class="{{ request()->routeIs('admin.customer.ledger') ? 'active' : '' }}" href="{{route('admin.customer.ledger')}}">Customer Ledger</a></li>
+                            <li><a class="{{ request()->routeIs('admin.general-ledger') ? 'active' : '' }}" href="{{route('admin.general-ledger')}}">General Ledger</a></li>
+                            <li><a class="{{ request()->routeIs('admin.supplier-ledger') ? 'active' : '' }}" href="{{route('admin.supplier-ledger')}}">Supplier Ledger</a></li>
+                            <li><a class="{{ request()->routeIs('admin.expense-entry') ? 'active' : '' }}" href="{{route('admin.expense-entry')}}">Expense Entry</a></li>
                         </ul>
                     </li>
                 @endif

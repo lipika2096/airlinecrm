@@ -105,7 +105,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="{{ route('admin.employee.update-profile', ['id' => $data->id]) }}" method="POST" enctype="multipart/form-data">
+                                <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.employee.update-profile', ['id' => $data->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.employee.update-profile', ['id' => $data->id]) : route('admin.employee.update-profile', ['id' => $data->id])) }}" method="POST" enctype="multipart/form-data">
 
                                 @method('patch')
                                 @csrf
@@ -249,7 +249,7 @@
                                 </button>
                             </div>
  +                           <div class="modal-body">
-                                <form method="post" action ="{{route('admin.employee.store-profile')}}"  >
+                                <form method="post" action ="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.employee.store-profile') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.employee.store-profile') : route('admin.employee.store-profile')) }}"  >
                                     @csrf
                                     <div class="row">
                                         <div class="col-sm-4">

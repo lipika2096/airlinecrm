@@ -14,7 +14,7 @@
                         <div class="col">
                             <h3 class="page-title">Customer Confirm Request</h3>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                                <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Dashboard</a></li>
                                 <li class="breadcrumb-item active">Confirm Request</li>
                             </ul>
                         </div>

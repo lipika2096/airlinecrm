@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use App\Models\Admin;
 use App\MOdels\AdminDetail;
+use App\Models\User;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\DB;
 
 class RolePermissionController extends Controller {
     public function index() {
@@ -16,7 +18,8 @@ class RolePermissionController extends Controller {
             $query->where('name', 'superAdmin');})->latest()->get();
         $publishedPermissions = Permission::where('status', 'published')->get();
         $unpublishedPermissions = Permission::where('status', 'unpublished')->get();
-        return view( 'admin.roles-permissions', compact( 'roles', 'publishedPermissions', 'unpublishedPermissions', 'customers' ) );
+        $staff = User::with('permissions')->where('role_id', 2)->where('created_by', auth('admin')->user()->id)->latest()->get();
+        return view( 'admin.roles-permissions', compact( 'roles', 'publishedPermissions', 'unpublishedPermissions', 'customers', 'staff' ) );
     }
     public function store(Request $request)
     {
@@ -82,6 +85,37 @@ class RolePermissionController extends Controller {
         $permission->save();
 
         return response()->json( [ 'message' => 'Permission status updated successfully!' ] );
+    }
+
+    public function updateStaffPermission( Request $request ) {
+        $request->validate( [
+            'staff_id' => 'required|integer',
+            'permission_id' => 'required|integer',
+            'assign' => 'required',
+        ] );
+
+        $staff = User::find($request->staff_id);
+        $permission = Permission::find($request->permission_id);
+        $assign = filter_var($request->assign, FILTER_VALIDATE_BOOLEAN);
+        
+        if (!$staff || !$permission) {
+            return response()->json(['message' => 'Invalid staff or permission.'], 400);
+        }
+        
+        if ($assign) {
+            // Assign permission
+            $staff->givePermissionTo($permission);
+            return response()->json(['message' => 'Permission assigned successfully.']);
+        } else {
+            // Remove permission
+            DB::table('model_has_permissions')
+                ->where('model_id', $staff->id)
+                ->where('permission_id', $permission->id)
+                ->where('model_type', 'App\Models\User')
+                ->delete();
+
+            return response()->json(['message' => 'Permission removed successfully.']);
+        }
     }
 
 }

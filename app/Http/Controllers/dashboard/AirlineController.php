@@ -30,16 +30,57 @@ class AirlineController extends Controller
 {
     public function index()
     {
-
-        $airlineDetails = AirlineDetail::where('deleted_at', NULL)->where('created_by', auth('admin')->user()->id)->with('airline')->get();
-        $airlines = Airline::where('created_by', auth('admin')->user()->id)->get();
+        // Determine the current user type and ID for data scoping
+        $currentUserId = null;
+        $userType = 'superadmin'; // default
+        
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+        
+        // Build query based on user type
+        $airlineDetailsQuery = AirlineDetail::where('deleted_at', NULL);
+        $airlinesQuery = Airline::query();
+        
+        // For non-superadmin users, only show airlines they created
+        if ($userType !== 'superadmin') {
+            $airlineDetailsQuery->where('created_by', $currentUserId);
+            $airlinesQuery->where('created_by', $currentUserId);
+        }
+        
+        $airlineDetails = $airlineDetailsQuery->with('airline')->get();
+        $airlines = $airlinesQuery->get();
 
         return view('admin.airlines', compact('airlines', 'airlineDetails'));
     }
 
     public function report(Request $request)
     {
-        $airlines = Airline::where('created_by', auth('admin')->user()->id)->get();
+        // Determine the current user type and ID for data scoping
+        $currentUserId = null;
+        $userType = 'superadmin'; // default
+        
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+        
+        // Build query based on user type
+        $airlinesQuery = Airline::query();
+        
+        // For non-superadmin users, only show airlines they created
+        if ($userType !== 'superadmin') {
+            $airlinesQuery->where('created_by', $currentUserId);
+        }
+        
+        $airlines = $airlinesQuery->get();
         $airline_id = $request->airline_id;
         // dd($airline_id);
         $specialFares = SpecialFare::where('airline_id', $request->airline_id)
@@ -52,8 +93,27 @@ class AirlineController extends Controller
 
     public function view($id)
     {
+        // Determine the current user type and ID for data scoping
+        $currentUserId = null;
+        $userType = 'superadmin'; // default
+        
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+        
         $rules = Rule::where('airline_id', $id)->get();
-        $agents = Agent::where('created_by', auth('admin')->user()->id)->where('deleted_at', null)->orWhere('deleted_at', 'null')->with('specialFare')->get();
+        
+        // Build agents query based on user type
+        $agentsQuery = Agent::where('deleted_at', null)->orWhere('deleted_at', 'null');
+        if ($userType !== 'superadmin') {
+            $agentsQuery->where('created_by', $currentUserId);
+        }
+        $agents = $agentsQuery->with('specialFare')->get();
+        
         $airlineDetails = AirlineDetail::where('airline_id', $id)->where('deleted_at', null)->orWhere('deleted_at', 'null')->first();
         $airlines = Airline::all();
         $aircrafts = Aircraft::where('deleted_at', null)->orWhere('deleted_at', 'null')->where('airline_id', $id)->get();
@@ -142,6 +202,18 @@ class AirlineController extends Controller
 
     public function store(Request $request)
     {
+        // Determine the current user type and ID for data scoping
+        $currentUserId = null;
+        $userType = 'superadmin'; // default
+        
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+        
         // Validate the incoming request data
         $validatedData = $request->all();
 
@@ -170,7 +242,7 @@ class AirlineController extends Controller
         }
 
         // Add the created_by field
-        $validatedData['created_by'] = auth('admin')->user()->id;
+        $validatedData['created_by'] = $currentUserId;
 
         // Create a new airline record
         $airline = Airline::create($validatedData);
@@ -198,23 +270,48 @@ class AirlineController extends Controller
             'ICAO' => $request->input('ICAO'),
             'callsign' => $request->input('callsign'),
             'numeric_code' => $request->input('numeric_code'),
-            'created_by' => auth('admin')->user()->id,
+            'created_by' => $currentUserId,
         ];
 
         // Create a new airlineDetails record
         AirlineDetail::create($airlineDetailsData);
 
+        // Determine appropriate redirect route based on user type
+        $redirectRoute = 'admin.airlines-details';
+        if ($userType === 'customer') {
+            $redirectRoute = 'customer.airlines-details';
+        } elseif ($userType === 'staff') {
+            $redirectRoute = 'staff.airlines-details';
+        }
+        
         // Return a response
-        return redirect()->route('admin.airlines-details')->with('success', 'Airline added successfully');
+        return redirect()->route($redirectRoute)->with('success', 'Airline added successfully');
     }
 
     public function update(Request $request, $id)
     {
+        // Determine the current user type and ID for data scoping
+        $currentUserId = null;
+        $userType = 'superadmin'; // default
+        
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+        
         // Validate the incoming request data
         $validatedData = $request->all();
 
         // Find the existing airline record
         $airline = Airline::findOrFail($id);
+        
+        // Check if user has permission to update this airline
+        if ($userType !== 'superadmin' && $airline->created_by != $currentUserId) {
+            return redirect()->back()->with('error', 'You do not have permission to update this airline');
+        }
 
         // Handle file upload
         if ($request->hasFile('logo')) {
@@ -244,6 +341,9 @@ class AirlineController extends Controller
             $validatedData['logo_name'] = $file->getClientOriginalName(); // This is the original name
             $validatedData['logo_path'] = 'public/assets/img/airlines/' . $fileName; // This is the unique path
         }
+        
+        // Add updated_by field
+        $validatedData['updated_by'] = $currentUserId;
 
         // Update the airline record
         $airline->update($validatedData);
@@ -279,18 +379,44 @@ class AirlineController extends Controller
 
         $airlineDetail->update($airlineDetailsData);
 
+        // Determine appropriate redirect route based on user type
+        $redirectRoute = 'admin.airlines-details';
+        if ($userType === 'customer') {
+            $redirectRoute = 'customer.airlines-details';
+        } elseif ($userType === 'staff') {
+            $redirectRoute = 'staff.airlines-details';
+        }
+
         // Return a response
-        return redirect()->route('admin.airlines-details')->with('success', 'Airline updated successfully');
+        return redirect()->route($redirectRoute)->with('success', 'Airline updated successfully');
     }
 
     public function delete($id)
     {
+        // Determine the current user type and ID for data scoping
+        $currentUserId = null;
+        $userType = 'superadmin'; // default
+        
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+        
         $airlines = AirlineDetail::find($id);
+        
+        // Check if user has permission to delete this airline
+        if ($userType !== 'superadmin' && $airlines->created_by != $currentUserId) {
+            return redirect()->back()->with('error', 'You do not have permission to delete this airline');
+        }
+        
         $airlines->update([
             'deleted_at' => now()
         ]);
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Airline deleted successfully');
     }
 
 
@@ -626,6 +752,18 @@ class AirlineController extends Controller
 
     public function libraryupdate(Request $request, $id)
     {
+        // Determine the current user type and ID for data scoping
+        $currentUserId = null;
+        $userType = 'superadmin'; // default
+        
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+        
         // Find the document by its ID
         $document = AirlineLibrary::findOrFail($id);
 
@@ -680,7 +818,7 @@ class AirlineController extends Controller
         $document->edition_no = $request->input('edition_no');
 
 
-        $document->updated_by = auth('admin')->user()->id; // Assuming you want to store the user ID
+        $document->updated_by = $currentUserId; // Assuming you want to store the user ID
         $document->updated_at = now();
 
 

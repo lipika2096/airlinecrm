@@ -11,6 +11,7 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\DB;
 use App\Models\Admin;
 use Carbon\Carbon;
+use App\Models\User;
 
 class PasswordResetController extends Controller
 {
@@ -32,7 +33,11 @@ class PasswordResetController extends Controller
         $admin = Admin::where('email', $request->email)->first();
 
         if (!$admin) {
-            return back()->with('error', 'We cannot find a user with that email address.');
+            $user = User::where('email', $request->email)->first();
+            if(!$user){
+                return back()->with('error', 'We cannot find a user with that email address.');
+
+            }
         }
 
         // Generate a password reset token
@@ -51,10 +56,18 @@ class PasswordResetController extends Controller
         $resetLink = url('/reset-password/' . $token . '?email=' . urlencode($request->email));
 
         try {
-            \Mail::raw("Hello {$admin->name},\n\nYou requested a password reset for your account.\n\nClick the link below to reset your password:\n{$resetLink}\n\nThis link will expire in 60 minutes.\n\nIf you did not request this, please ignore this email.\n\nThank you.", function($message) use ($request) {
-                $message->to($request->email)
-                        ->subject('Password Reset Request');
-            });
+            if($admin){
+                \Mail::raw("Hello {$admin->name },\n\nYou requested a password reset for your account.\n\nClick the link below to reset your password:\n{$resetLink}\n\nThis link will expire in 60 minutes.\n\nIf you did not request this, please ignore this email.\n\nThank you.", function($message) use ($request) {
+                    $message->to($request->email)
+                            ->subject('Password Reset Request');
+                });
+            }
+            else{
+                    \Mail::raw("Hello {$user->first_name },\n\nYou requested a password reset for your account.\n\nClick the link below to reset your password:\n{$resetLink}\n\nThis link will expire in 60 minutes.\n\nIf you did not request this, please ignore this email.\n\nThank you.", function($message) use ($request) {
+                    $message->to($request->email)
+                            ->subject('Password Reset Request');
+                });
+            }
 
             return back()->with('success', 'We have emailed your password reset link!');
         } catch (\Exception $e) {
@@ -105,12 +118,21 @@ class PasswordResetController extends Controller
         $admin = Admin::where('email', $request->email)->first();
 
         if (!$admin) {
-            return back()->with('error', 'We cannot find a user with that email address.');
+            $user = User::where('email', $request->email)->first();
+            if(!$user){
+                return back()->with('error', 'We cannot find a user with that email address.');
+            }
         }
-
-        $admin->password = Hash::make($request->password);
-        $admin->plain_password = $request->password; // Update plain password as well
-        $admin->save();
+        if($admin){
+            $admin->password = Hash::make($request->password);
+            $admin->plain_password = $request->password; // Update plain password as well
+            $admin->save();
+        }   
+        else{            
+            $user->password = Hash::make($request->password);
+            $user->plain_password = $request->password; // Update plain password as well
+            $user->save();
+        }
 
         // Delete the used token
         DB::table('password_reset_tokens')
@@ -119,10 +141,18 @@ class PasswordResetController extends Controller
 
         // Send password reset confirmation email
         try {
-            \Mail::raw("Hello {$admin->name},\n\nYour password has been successfully reset.\n\nIf you did not make this change, please contact support immediately.\n\nThank you.", function($message) use ($request) {
-                $message->to($request->email)
-                        ->subject('Password Reset Confirmation');
-            });
+            if($admin){
+                \Mail::raw("Hello {$admin->name},\n\nYour password has been successfully reset.\n\nIf you did not make this change, please contact support immediately.\n\nThank you.", function($message) use ($request) {
+                    $message->to($request->email)
+                            ->subject('Password Reset Confirmation');
+                });
+            }
+            else{
+                \Mail::raw("Hello {$user->first_name },\n\nYou requested a password reset for your account.\n\nClick the link below to reset your password:\n{$resetLink}\n\nThis link will expire in 60 minutes.\n\nIf you did not request this, please ignore this email.\n\nThank you.", function($message) use ($request) {
+                    $message->to($request->email)
+                            ->subject('Password Reset Request');
+                });
+            }
         } catch (\Exception $e) {
             \Log::error('Failed to send password reset confirmation email: ' . $e->getMessage());
         }

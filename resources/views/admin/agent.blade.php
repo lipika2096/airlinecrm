@@ -73,7 +73,7 @@
                 <div class="col-md-12">
                     <div class="row" style="margin-left: 36%;margin-top: -2%;width: 100%;position: absolute;">
                         <div class="col-md-12">
-                            <form action="{{ route('admin.agents') }}" method="get">
+                            <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agents') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agents') : route('admin.agents')) }}" method="get">
                                 <div class="row">
                                     <div class="col-md-3">
                                         <input type="text" name="search" class="form-control" placeholder="Search"
@@ -140,7 +140,7 @@
                                         {{-- <td>Taj Travels</td> --}}
                                         <td>
                                             <div class="action-icons">
-                                                <a href="{{ route('admin.agent.view', ['id' => $agent->id]) }}"
+                                                <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.view', ['id' => $agent->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agent.view', ['id' => $agent->id]) : route('admin.agent.view', ['id' => $agent->id])) }}"
                                                     class="action-icon" style="margin-right: 10px;">
                                                     <i class="fa fa-eye"></i>
                                                 </a>
@@ -181,7 +181,7 @@
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="{{ route('admin.agent.delete', $agent->id) }}"
+                                                    <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.delete', $agent->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agent.delete', $agent->id) : route('admin.agent.delete', $agent->id)) }}"
                                                         method="POST">
                                                         @csrf
                                                         @method('DELETE')
@@ -224,7 +224,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('admin.agent.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agent.store') : route('admin.agent.store')) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="row form-group">
                             <div class="col-sm-4">
@@ -399,9 +399,9 @@
                             <div class="submit-section">
                                 <button class="btn btn-primary" type="submit">Submit</button>
                             </div>
-                        </div>
+                        </div>                    
+                    </form>
                 </div>
-                </form>
             </div>
         </div>
     </div>

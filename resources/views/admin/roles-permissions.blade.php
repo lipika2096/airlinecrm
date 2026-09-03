@@ -31,6 +31,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link" id="customer-permitted-tab" data-bs-toggle="tab" href="#customer-permitted" role="tab">Customer Permitted</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="staff-permitted-tab" data-bs-toggle="tab" href="#staff-permitted" role="tab">Staff Permitted</a>
+                                </li>
                             </ul>
 
                             <!-- Tab Content -->
@@ -117,6 +120,37 @@
                                         </table>
                                     </div>
                                 </div>
+
+                                <!-- Staff Permitted Tab -->
+                                <div class="tab-pane fade" id="staff-permitted" role="tabpanel">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped custom-table datatable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Staff Member</th>
+                                                    @foreach ($publishedPermissions as $permission)
+                                                        <th class="text-center">{{ ucfirst(str_replace('access ', '', $permission->name)) }}</th>
+                                                    @endforeach
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($staff as $staffMember)
+                                                    <tr>
+                                                        <td>{{ $staffMember->name }}</td>
+                                                        @foreach ($publishedPermissions as $permission)
+                                                            <td class="text-center">
+                                                                <input type="checkbox" class="staff-permission-checkbox"
+                                                                    data-staff-id="{{ $staffMember->id }}"
+                                                                    data-permission-id="{{ $permission->id }}"
+                                                                    {{ $staffMember->permissions->contains($permission->id) ? 'checked' : '' }}>
+                                                            </td>
+                                                        @endforeach
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -146,6 +180,33 @@
                     data: {
                         _token: '{{ csrf_token() }}',
                         customer_id: customerId,
+                        permission_id: permissionId,
+                        assign: isChecked
+                    },
+                    success: function (response) {
+                        toastr.success(response.message);
+                    },
+                    error: function (xhr) {
+                        let msg = 'Something went wrong!';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        toastr.error(msg);
+                    }
+                });
+            });
+
+            $('.staff-permission-checkbox').on('change', function () {
+                var staffId = $(this).data('staff-id');
+                var permissionId = $(this).data('permission-id');
+                var isChecked = $(this).is(':checked');
+
+                $.ajax({
+                    url: '{{ route("admin.update.staff.permission") }}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        staff_id: staffId,
                         permission_id: permissionId,
                         assign: isChecked
                     },

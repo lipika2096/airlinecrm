@@ -14,7 +14,7 @@
                     <div class="col">
                         <h3 class="page-title">{{ $isSuperAdmin ? 'Ticket Details' : 'Support Ticket Details' }}</h3>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Dashboard</a></li>
                             <li class="breadcrumb-item"><a href="{{ $isSuperAdmin ? route('admin.support-tickets.dashboard') : ($isStaff ? route('staff.support-tickets.dashboard') : route('customer.support-tickets.dashboard')) }}">Support Ticket Dashboard</a></li>
                             <li class="breadcrumb-item"><a href="{{ $isSuperAdmin ? route('admin.support-tickets.index') : ($isStaff ? route('staff.support-tickets.dashboard') : route('customer.support-tickets.dashboard')) }}">{{ $isSuperAdmin ? 'All Tickets' : 'Support Tickets' }}</a></li>
                             <li class="breadcrumb-item active">{{ $ticket->ticket_number }}</li>
@@ -29,7 +29,7 @@
             </div>
             <!-- /Page Header -->
 
-            @if($isSuperAdmin)
+            @if($isSuperAdmin || $isStaff)
             <!-- SuperAdmin View -->
             <div class="row">
                 <div class="col-md-12">
@@ -53,7 +53,25 @@
                                         <div class="row">
                                             <div class="col-md-4">
                                                 @php
-                                                    $creatorName = $ticket->creator ? $ticket->creator->name : 'Unknown';
+                                                    // Determine if ticket creator is staff (users table) or admin (admins table)
+                                                    $creatorIsStaff = \App\Models\User::find($ticket->created_by) !== null;
+                                                    $creatorIsAdmin = \App\Models\Admin::find($ticket->created_by) !== null;
+                                                    
+                                                    // Get ticket creator name based on their actual type
+                                                    if ($creatorIsStaff) {
+                                                        $creator = \App\Models\User::find($ticket->created_by);
+                                                        $creatorName = $creator ? ($creator->first_name . ' ' . $creator->last_name) : 'Unknown Staff';
+                                                    } elseif ($creatorIsAdmin) {
+                                                        $creator = \App\Models\Admin::find($ticket->created_by);
+                                                        if ($creator && $creator->hasRole('SuperAdmin')) {
+                                                            $creatorName = 'Super Admin';
+                                                        } else {
+                                                            $creatorName = $creator ? $creator->name : 'Unknown Customer';
+                                                        }
+                                                    } else {
+                                                        $creatorName = $ticket->creator ? $ticket->creator->name : 'Unknown';
+                                                    }
+                                                    
                                                     $companyName = 'N/A';
                                                     if ($ticket->creator && $ticket->creator instanceof \App\Models\Admin && $ticket->creator->adminDetail) {
                                                         $companyName = $ticket->creator->adminDetail->company_name;
@@ -155,10 +173,11 @@
                     <div class="card mt-3">
                         <div class="card-body">
                             @if($ticket->status !== 'closed')
-                            <form method="post" action="{{ $isSuperAdmin ? route('admin.support-tickets.update-status', $ticket->id) : ($isStaff ? route('admin.support-tickets.update-status', $ticket->id) : route('admin.support-tickets.update-status', $ticket->id)) }}">
+                            <form method="post" action="{{ $isSuperAdmin ? route('admin.support-tickets.update-status', $ticket->id) : ($isStaff ? route('staff.support-tickets.update-status', $ticket->id) : route('customer.support-tickets.update-status', $ticket->id)) }}">
                                 @csrf
                                 @method('patch')
                                 <div class="row align-items-end">
+                                    @if($isSuperAdmin)
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label>Department</label>
@@ -183,6 +202,7 @@
                                             </select>
                                         </div>
                                     </div>
+                                    @endif
                                     <!-- <div class="col-md-2">
                                         <div class="form-group">
                                             <label>Priority</label>
@@ -275,11 +295,30 @@
                                         @php
                                             $currentUserId = $isStaff ? auth()->user()->id : auth('admin')->user()->id;
                                             $isTicketCreatorCurrentUser = $ticket->creator && $ticket->creator->id == $currentUserId;
+                                            
+                                            // Determine if ticket creator is staff (users table) or admin (admins table)
+                                            $creatorIsStaff = \App\Models\User::find($ticket->created_by) !== null;
+                                            $creatorIsAdmin = \App\Models\Admin::find($ticket->created_by) !== null;
+                                            
+                                            // Get ticket creator name based on their actual type
+                                            if ($creatorIsStaff) {
+                                                $creator = \App\Models\User::find($ticket->created_by);
+                                                $creatorName = $creator ? ($creator->first_name . ' ' . $creator->last_name) : 'Unknown Staff';
+                                            } elseif ($creatorIsAdmin) {
+                                                $creator = \App\Models\Admin::find($ticket->created_by);
+                                                if ($creator && $creator->hasRole('SuperAdmin')) {
+                                                    $creatorName = 'Super Admin';
+                                                } else {
+                                                    $creatorName = $creator ? $creator->name : 'Unknown Customer';
+                                                }
+                                            } else {
+                                                $creatorName = $ticket->creator ? $ticket->creator->name : 'Unknown';
+                                            }
                                         @endphp
                                         <div class="message-item {{ $isTicketCreatorCurrentUser ? 'note-dark mb-3' : 'note-light mb-3' }}">
                                             <div class="message-header d-flex justify-content-between align-items-start">
                                                 <div>
-                                                    <strong>{{ $ticket->creator ? $ticket->creator->name : 'Unknown' }}</strong>
+                                                    <strong>{{ $creatorName }}</strong>
                                                     <small class="message-time" style="margin-left: 1rem;">{{ $ticket->created_at->format('M d, Y h:i A') }}</small>
                                                 </div>
                                             </div>
@@ -310,11 +349,29 @@
                                             @foreach ($comments as $comment)
                                                 @php
                                                     $isCommentAuthorCurrentUser = $comment->user_id == $currentUserId;
+                                                    // Determine if comment was made by staff (users table) or admin (admins table)
+                                                    $commentAuthorIsStaff = \App\Models\User::find($comment->user_id) !== null;
+                                                    $commentAuthorIsAdmin = \App\Models\Admin::find($comment->user_id) !== null;
+                                                    
+                                                    // Get comment author name based on their actual type
+                                                    if ($commentAuthorIsStaff) {
+                                                        $commentAuthor = \App\Models\User::find($comment->user_id);
+                                                        $commentAuthorName = $commentAuthor ? ($commentAuthor->first_name . ' ' . $commentAuthor->last_name) : 'Unknown Staff';
+                                                    } elseif ($commentAuthorIsAdmin) {
+                                                        $commentAuthor = \App\Models\Admin::find($comment->user_id);
+                                                        if ($commentAuthor && $commentAuthor->hasRole('SuperAdmin')) {
+                                                            $commentAuthorName = 'Super Admin';
+                                                        } else {
+                                                            $commentAuthorName = $commentAuthor ? $commentAuthor->name : 'Unknown Customer';
+                                                        }
+                                                    } else {
+                                                        $commentAuthorName = $comment->user ? $comment->user->name : 'Unknown';
+                                                    }
                                                 @endphp
                                                 <div class="message-item {{ $isCommentAuthorCurrentUser ? 'note-dark mb-3' : 'note-light mb-3' }}">
                                                     <div class="message-header d-flex justify-content-between align-items-start">
                                                         <div>
-                                                            <strong>{{ $comment->user ? $comment->user->name : 'Unknown' }}</strong>
+                                                            <strong>{{ $commentAuthorName }}</strong>
                                                             <small class="message-time" style="margin-left: 1rem;">{{ $comment->created_at->format('M d, Y h:i A') }}</small>
                                                         </div>
                                                     </div>
@@ -452,6 +509,7 @@
                                                             <span class="badge" style="background-color: {{ $priorityColor }}; color: white;">{{ ucfirst($ticket->priority ?? 'Not set') }}</span>
                                                         </td>
                                                     </tr>
+                                                    @if($isSuperAdmin || $isStaff)
                                                     <tr>
                                                         <th>Status</th>
                                                         <td>
@@ -465,6 +523,7 @@
                                                             @endif
                                                         </td>
                                                     </tr>
+                                                    @endif
                                                     <tr>
                                                         <th>Booking Reference</th>
                                                         <td>{{ $ticket->booking_reference ?? '-' }}</td>
@@ -765,6 +824,7 @@
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-center mb-2">
                                         <h4 class="mb-0" style="margin-right: 1rem;">Ticket #{{ $ticket->id }}</h4>
+                                        @if($isSuperAdmin || $isStaff)
                                         @php
                                             $headerStatus = $ticketStatuses->where('slug', $ticket->status)->first();
                                         @endphp
@@ -772,6 +832,7 @@
                                             <span class="badge" style="background-color: {{ $headerStatus->color }}; color: white;">{{ $headerStatus->name }}</span>
                                         @else
                                             <span class="badge bg-secondary">{{ ucfirst($ticket->status) }}</span>
+                                        @endif
                                         @endif
                                     </div>
                                     <div class="ticket-meta-info">
@@ -923,11 +984,30 @@
                                         @php
                                             $currentUserId = $isStaff ? auth()->user()->id : auth('admin')->user()->id;
                                             $isTicketCreatorCurrentUser = $ticket->creator && $ticket->creator->id == $currentUserId;
+                                            
+                                            // Determine if ticket creator is staff (users table) or admin (admins table)
+                                            $creatorIsStaff = \App\Models\User::find($ticket->created_by) !== null;
+                                            $creatorIsAdmin = \App\Models\Admin::find($ticket->created_by) !== null;
+                                            
+                                            // Get ticket creator name based on their actual type
+                                            if ($creatorIsStaff) {
+                                                $creator = \App\Models\User::find($ticket->created_by);
+                                                $creatorName = $creator ? ($creator->first_name . ' ' . $creator->last_name) : 'Unknown Staff';
+                                            } elseif ($creatorIsAdmin) {
+                                                $creator = \App\Models\Admin::find($ticket->created_by);
+                                                if ($creator && $creator->hasRole('SuperAdmin')) {
+                                                    $creatorName = 'Super Admin';
+                                                } else {
+                                                    $creatorName = $creator ? $creator->name : 'Unknown Customer';
+                                                }
+                                            } else {
+                                                $creatorName = $ticket->creator ? $ticket->creator->name : 'Unknown';
+                                            }
                                         @endphp
                                         <div class="message-item {{ $isTicketCreatorCurrentUser ? 'note-dark  mb-3' : 'note-light mb-3' }}">
                                             <div class="message-header d-flex justify-content-between align-items-start">
                                                 <div>
-                                                    <strong>{{ $ticket->creator ? $ticket->creator->name : 'Unknown' }}</strong>
+                                                    <strong>{{ $creatorName }}</strong>
                                                     <small class="message-time" style="margin-left: 1rem;">{{ $ticket->created_at->format('M d, Y h:i A') }}</small>
                                                 </div>
                                             </div>
@@ -958,11 +1038,29 @@
                                             @foreach ($comments as $comment)
                                                 @php
                                                     $isCommentAuthorCurrentUser = $comment->user_id == $currentUserId;
+                                                    // Determine if comment was made by staff (users table) or admin (admins table)
+                                                    $commentAuthorIsStaff = \App\Models\User::find($comment->user_id) !== null;
+                                                    $commentAuthorIsAdmin = \App\Models\Admin::find($comment->user_id) !== null;
+                                                    
+                                                    // Get comment author name based on their actual type
+                                                    if ($commentAuthorIsStaff) {
+                                                        $commentAuthor = \App\Models\User::find($comment->user_id);
+                                                        $commentAuthorName = $commentAuthor ? ($commentAuthor->first_name . ' ' . $commentAuthor->last_name) : 'Unknown Staff';
+                                                    } elseif ($commentAuthorIsAdmin) {
+                                                        $commentAuthor = \App\Models\Admin::find($comment->user_id);
+                                                        if ($commentAuthor && $commentAuthor->hasRole('SuperAdmin')) {
+                                                            $commentAuthorName = 'Super Admin';
+                                                        } else {
+                                                            $commentAuthorName = $commentAuthor ? $commentAuthor->name : 'Unknown Customer';
+                                                        }
+                                                    } else {
+                                                        $commentAuthorName = $comment->user ? $comment->user->name : 'Unknown';
+                                                    }
                                                 @endphp
                                                 <div class="message-item {{ $isCommentAuthorCurrentUser ? 'note-dark mb-3' : 'note-light mb-3' }}">
                                                     <div class="message-header d-flex justify-content-between align-items-start">
                                                         <div>
-                                                            <strong>{{ $comment->user ? $comment->user->name : 'Unknown' }}</strong>
+                                                            <strong>{{ $commentAuthorName }}</strong>
                                                             <small class="message-time" style="margin-left: 1rem;">{{ $comment->created_at->format('M d, Y h:i A') }}</small>
                                                         </div>
                                                     </div>

@@ -11,7 +11,7 @@
                     <div class="col">
                         <h3 class="page-title">Add Staff</h3>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Dashboard</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('admin.employees') }}">Staff List</a></li>
                             <li class="breadcrumb-item active">Add Staff</li>
                         </ul>
@@ -27,7 +27,7 @@
                             <h5 class="card-title">Add New Staff</h5>
                         </div>
                         <div class="card-body">
-                            <form method="post" action ="{{ route('admin.employees.store') }}">
+                            <form method="post" action ="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.employees.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.employees.store') : route('admin.employees.store')) }}">
                                 @csrf
                                 <div class="row form-group">
                                     <div class="col-sm-4">
@@ -45,7 +45,7 @@
                                     <div class="col-sm-4">
                                         <!-- <div class="form-group"> -->
                                         <label class="form-label">Employee ID <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" name="employee_id ">
+                                        <input type="text" class="form-control" name="employee_id" readonly value="{{ $nextEmployeeId ?? 'Auto-generated' }}">
                                     </div>
 
                                     <div class="col-sm-8">

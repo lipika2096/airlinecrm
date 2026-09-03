@@ -8,7 +8,7 @@
                     <div class="col">
                         <h3 class="page-title">Sales Packages</h3>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Dashboard</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('admin.sales-packages.index') }}">Sales Packages</a></li>
                             <li class="breadcrumb-item active">Edit Package</li>
                         </ul>

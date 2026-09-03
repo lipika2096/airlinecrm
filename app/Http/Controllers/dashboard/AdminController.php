@@ -16,147 +16,154 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\SalesPackage;
 use Carbon\Carbon;
+use App\Rules\UniqueEmailAcrossTables;
+use App\Rules\UniqueEmailAcrossTablesExcept;
 
 class AdminController extends Controller
 {
     public function registerAdmin(Request $request){
-        $request->validate([
-            'email' => 'required|email',
-            'full_name' => 'required',
-            'company_name' => 'required',
-            'city' => 'required',
-            'state' => 'required',
-            'country' => 'required',
-            'address' => 'required',
-            'modules' => 'required',
-        ]);
-
-        // Auto-generate unique password based on user details
-        $symbols = ['@', '#', '$', '%', '&', '*', '!', '?'];
-        $randomSymbol = $symbols[array_rand($symbols)];
-        
-        $defaultPassword = strtoupper(substr($request->input('full_name'), 0, 3)) . 
-                           $randomSymbol . 
-                           substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 3) . 
-                           rand(100, 999);
-
-        $admin = Admin::create([
-            'email' =>  $request->input('email'),
-            'password' =>  Hash::make($defaultPassword),
-            'name' =>  $request->input('full_name'),
-            'plain_password' => $defaultPassword,
-            'is_active' => true
-        ]);
-
-        // Send password to user email with reset link
-        try {
-            $resetLink = url('/forgot-password');
-            \Mail::raw("Hello {$request->input('full_name')},\n\nYour account has been created successfully.\n\nYour login credentials:\nEmail: {$request->input('email')}\nTemporary Password: {$defaultPassword}\n\nFor security, we recommend changing your password after first login.\n\nIf you need to reset your password, visit: {$resetLink}\n\nThank you.", function($message) use ($request) {
-                $message->to($request->input('email'))
-                        ->subject('Your Account Credentials');
-            });
-        } catch (\Exception $e) {
-            // Log error but don't prevent user creation
-            \Log::error('Failed to send email: ' . $e->getMessage());
-        }
-        $subscriptionCharge = $request->input('subscription_charge');
-        $paymentType = $request->input('payment_type', 'base');
-        $salesPackageId = $request->input('sales_package');
-        $activationDate = $request->input('package_activation_date');
-
-        // Calculate subscription expiry date based on payment type
-        $expiryDate = null;
-        if ($paymentType === 'monthly') {
-            $expiryDate = Carbon::now()->addMonth()->format('Y-m-d');
-        } elseif ($paymentType === 'annual') {
-            $expiryDate = Carbon::now()->addYear()->format('Y-m-d');
-        }
-        // For base rate, no expiry date
-
-        AdminDetail::create([
-            'company_name' =>  $request->input('company_name'),
-            'city' =>  $request->input('city'),
-            'state' =>  $request->input('state'),
-            'country' => $request->input('country'),
-            'address' => $request->input('address'),
-            'admin_id' => $admin->id,
-            'group' => $request->input('group'),
-            'pincode' => $request->input('pincode'),
-            'company_registration_no' => $request->input('company_registration_no'),
-            'no_modules' => $request->input('no_modules'),
-            'subscription_type' => $salesPackageId,
-            'subscription_charge' => $subscriptionCharge,
-            'payment_type' => $paymentType,
-            'package_activation_date' => $activationDate,
-            'subscription_expiring' => $expiryDate,
-            'business_focus' =>json_encode($request->focus_destinations),
-            'remarks' => $request->input('remarks'),
-            'business_mode' => $request->input('business_mode'),
-            'key_people' => $request->input('key_people'),
-            'parent_company' => $request->input('parent_company'),
-            'headquarters' => $request->input('headquarters'),
-            'no_employees' => $request->input('no_employees'),
-            'websites' => json_encode($request->websites),
-        ]);
-
-        // Calculate and create automatic debit entry for package activation
-        if ($salesPackageId && $subscriptionCharge) {
-            $package = SalesPackage::find($salesPackageId);
-            $currentDate = Carbon::now();
-            
-            if ($paymentType === 'monthly') {
-                // Monthly: Prorated for remaining days in current month
-                $daysInMonth = $currentDate->daysInMonth;
-                $currentDay = $currentDate->day;
-                $remainingDays = $daysInMonth - $currentDay + 1;
-                
-                $dailyRate = $subscriptionCharge / $daysInMonth;
-                $proratedAmount = round($dailyRate * $remainingDays, 2);
-                
-                $description = 'Package Activation - ' . ($package ? $package->package_name : 'Unknown') . ' (Monthly - Prorated for ' . $remainingDays . ' days)';
-            } elseif ($paymentType === 'annual') {
-                // Annual: Prorated for remaining days in current year
-                $daysInYear = $currentDate->isLeapYear() ? 366 : 365;
-                $currentDayOfYear = $currentDate->dayOfYear;
-                $remainingDays = $daysInYear - $currentDayOfYear + 1;
-                
-                $dailyRate = $subscriptionCharge / $daysInYear;
-                $proratedAmount = round($dailyRate * $remainingDays, 2);
-                
-                $description = 'Package Activation - ' . ($package ? $package->package_name : 'Unknown') . ' (Annual - Prorated for ' . $remainingDays . ' days)';
-            } else {
-                // Base: Full amount charged immediately
-                $proratedAmount = $subscriptionCharge;
-                $description = 'Package Activation - ' . ($package ? $package->package_name : 'Unknown') . ' (Base Rate)';
-            }
-
-            // Create automatic debit entry
-            CustomerAccount::create([
-                'customer_id' => $admin->id,
-                'debit' => $proratedAmount,
-                'credit' => 0,
-                'tr_date' => $activationDate,
-                'tr_type' => $description,
-                'balance' => -$proratedAmount
+        try{
+            $request->validate([
+                'email' => ['required', 'email', new UniqueEmailAcrossTables],
+                'full_name' => 'required',
+                'company_name' => 'required',
+                'city' => 'required',
+                'state' => 'required',
+                'country' => 'required',
+                'address' => 'required',
+                'modules' => 'required',
             ]);
-        }
 
-        // $role = Role::findById($request->input('role'),'web');
-        // $admin->assignRole($role);
-        
-        // Handle multiple modules selection
-        if ($request->has('modules')) {
-            $modules = $request->input('modules');
-            if (count($modules) === 1 && is_string($modules[0])) {
-        $modules = json_decode($modules[0], true);
-    }
+            // Auto-generate unique password based on user details
+            $symbols = ['@', '#', '$', '%', '&', '*', '!', '?'];
+            $randomSymbol = $symbols[array_rand($symbols)];
+            
+            $defaultPassword = strtoupper(substr($request->input('full_name'), 0, 3)) . 
+                            $randomSymbol . 
+                            substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 3) . 
+                            rand(100, 999);
 
-            foreach ($modules as $moduleId) {
-                $module = Permission::findById($moduleId, 'web');
-                $admin->givePermissionTo($module);
+            $admin = Admin::create([
+                'email' =>  $request->input('email'),
+                'password' =>  Hash::make($defaultPassword),
+                'name' =>  $request->input('full_name'),
+                'plain_password' => $defaultPassword,
+                'is_active' => true
+            ]);
+
+            // Send password to user email with reset link
+            try {
+                $resetLink = url('/forgot-password');
+                \Mail::raw("Hello {$request->input('full_name')},\n\nYour account has been created successfully.\n\nYour login credentials:\nEmail: {$request->input('email')}\nTemporary Password: {$defaultPassword}\n\nFor security, we recommend changing your password after first login.\n\nIf you need to reset your password, visit: {$resetLink}\n\nThank you.", function($message) use ($request) {
+                    $message->to($request->input('email'))
+                            ->subject('Your Account Credentials');
+                });
+            } catch (\Exception $e) {
+                // Log error but don't prevent user creation
+                \Log::error('Failed to send email: ' . $e->getMessage());
             }
+            $subscriptionCharge = $request->input('subscription_charge');
+            $paymentType = $request->input('payment_type', 'base');
+            $salesPackageId = $request->input('sales_package');
+            $activationDate = $request->input('package_activation_date');
+
+            // Calculate subscription expiry date based on payment type
+            $expiryDate = null;
+            if ($paymentType === 'monthly') {
+                $expiryDate = Carbon::now()->addMonth()->format('Y-m-d');
+            } elseif ($paymentType === 'annual') {
+                $expiryDate = Carbon::now()->addYear()->format('Y-m-d');
+            }
+            // For base rate, no expiry date
+
+            AdminDetail::create([
+                'company_name' =>  $request->input('company_name'),
+                'city' =>  $request->input('city'),
+                'state' =>  $request->input('state'),
+                'country' => $request->input('country'),
+                'address' => $request->input('address'),
+                'admin_id' => $admin->id,
+                'group' => $request->input('group'),
+                'pincode' => $request->input('pincode'),
+                'company_registration_no' => $request->input('company_registration_no'),
+                'no_modules' => $request->input('no_modules'),
+                'subscription_type' => $salesPackageId,
+                'subscription_charge' => $subscriptionCharge,
+                'payment_type' => $paymentType,
+                'package_activation_date' => $activationDate,
+                'subscription_expiring' => $expiryDate,
+                'business_focus' =>json_encode($request->focus_destinations),
+                'remarks' => $request->input('remarks'),
+                'business_mode' => $request->input('business_mode'),
+                'key_people' => $request->input('key_people'),
+                'parent_company' => $request->input('parent_company'),
+                'headquarters' => $request->input('headquarters'),
+                'no_employees' => $request->input('no_employees'),
+                'websites' => json_encode($request->websites),
+            ]);
+
+            // Calculate and create automatic debit entry for package activation
+            if ($salesPackageId && $subscriptionCharge) {
+                $package = SalesPackage::find($salesPackageId);
+                $currentDate = Carbon::now();
+                
+                if ($paymentType === 'monthly') {
+                    // Monthly: Prorated for remaining days in current month
+                    $daysInMonth = $currentDate->daysInMonth;
+                    $currentDay = $currentDate->day;
+                    $remainingDays = $daysInMonth - $currentDay + 1;
+                    
+                    $dailyRate = $subscriptionCharge / $daysInMonth;
+                    $proratedAmount = round($dailyRate * $remainingDays, 2);
+                    
+                    $description = 'Package Activation - ' . ($package ? $package->package_name : 'Unknown') . ' (Monthly - Prorated for ' . $remainingDays . ' days)';
+                } elseif ($paymentType === 'annual') {
+                    // Annual: Prorated for remaining days in current year
+                    $daysInYear = $currentDate->isLeapYear() ? 366 : 365;
+                    $currentDayOfYear = $currentDate->dayOfYear;
+                    $remainingDays = $daysInYear - $currentDayOfYear + 1;
+                    
+                    $dailyRate = $subscriptionCharge / $daysInYear;
+                    $proratedAmount = round($dailyRate * $remainingDays, 2);
+                    
+                    $description = 'Package Activation - ' . ($package ? $package->package_name : 'Unknown') . ' (Annual - Prorated for ' . $remainingDays . ' days)';
+                } else {
+                    // Base: Full amount charged immediately
+                    $proratedAmount = $subscriptionCharge;
+                    $description = 'Package Activation - ' . ($package ? $package->package_name : 'Unknown') . ' (Base Rate)';
+                }
+
+                // Create automatic debit entry
+                CustomerAccount::create([
+                    'customer_id' => $admin->id,
+                    'debit' => $proratedAmount,
+                    'credit' => 0,
+                    'tr_date' => $activationDate,
+                    'tr_type' => $description,
+                    'balance' => -$proratedAmount
+                ]);
+            }
+
+            // $role = Role::findById($request->input('role'),'web');
+            // $admin->assignRole($role);
+            
+            // Handle multiple modules selection
+            if ($request->has('modules')) {
+                $modules = $request->input('modules');
+                if (count($modules) === 1 && is_string($modules[0])) {
+            $modules = json_decode($modules[0], true);
         }
-        return redirect()->route('admin.admin.view')->with('success', 'New Admin created successfully');
+
+                foreach ($modules as $moduleId) {
+                    $module = Permission::findById($moduleId, 'web');
+                    $admin->givePermissionTo($module);
+                }
+            }
+            return redirect()->route('admin.admin.view')->with('success', 'New Admin created successfully');
+        }
+        catch(\Exception $e){
+            return redirect()->route('admin.admin.view')->with('error', 'Failed to create admin: ' . $e->getMessage());
+        }
     }
 
     public function showAllAdmin(Request $request){
@@ -178,58 +185,77 @@ class AdminController extends Controller
     }
 
     public function editAdmin(Request $request, $id){
-        $admin = Admin::find($id);
-        $admin->update([
-            'name' => $request->full_name
-        ]);
-        if ($request->has('role')) {
-            $admin->syncRoles($request->role);
-        }
-        
-        // Handle multiple modules selection in edit
-        if ($request->has('modules')) {
-            $modules = $request->input('modules');
-            $admin->syncPermissions($modules);
-        }
+        try{
+            $request->validate([
+                'email' => ['nullable', 'email', new UniqueEmailAcrossTablesExcept($id, 'admins')],
+                'full_name' => 'required',
+            ]);
 
-        $admin_detail = AdminDetail::where('admin_id', $id)->first();
-        if($admin_detail == null){
-            AdminDetail::create([
-                'company_name' =>  $request->input('company_name'),
-                'city' =>  $request->input('city'),
-                'state' =>  $request->input('state'),
-                'country' => $request->input('country'),
-                'address' => $request->input('address'),
-                'admin_id' => $id,
-            ]);
+            $admin = Admin::find($id);
+            
+            // Check if email is being changed
+            if ($request->has('email') && $request->email != $admin->email) {
+                $admin->update([
+                    'name' => $request->full_name,
+                    'email' => $request->email
+                ]);
+            } else {
+                $admin->update([
+                    'name' => $request->full_name
+                ]);
+            }
+            if ($request->has('role')) {
+                $admin->syncRoles($request->role);
+            }
+            
+            // Handle multiple modules selection in edit
+            if ($request->has('modules')) {
+                $modules = $request->input('modules');
+                $admin->syncPermissions($modules);
+            }
+
+            $admin_detail = AdminDetail::where('admin_id', $id)->first();
+            if($admin_detail == null){
+                AdminDetail::create([
+                    'company_name' =>  $request->input('company_name'),
+                    'city' =>  $request->input('city'),
+                    'state' =>  $request->input('state'),
+                    'country' => $request->input('country'),
+                    'address' => $request->input('address'),
+                    'admin_id' => $id,
+                ]);
+            }
+            else{
+                $admin_detail->update([
+                    'company_name' =>  $request->input('company_name'),
+                    'city' =>  $request->input('city'),
+                    'state' =>  $request->input('state'),
+                    'country' => $request->input('country'),
+                    'address' => $request->input('address'),
+                    'group' => $request->input('group'),
+                    'pincode' => $request->input('pincode'),
+                    'company_registration_no' => $request->input('company_registration_no'),
+                    'no_modules' => $request->input('no_modules'),
+                    'subscription_type' => $request->input('subscription_type'),
+                    'subscription_charge' => $request->input('subscription_charge'),
+                    'payment_type' => $request->input('payment_type', 'base'),
+                    'package_activation_date' => $request->input('package_activation_date') ?? $admin_detail->package_activation_date,
+                    'subscription_expiring' => $request->input('subscription_expiring'),
+                    'business_focus' =>json_encode($request->focus_destinations)??json_encode(['-']),
+                    'remarks' => $request->input('remarks'),
+                    'business_mode' => $request->input('business_mode'),
+                    'key_people' => $request->input('key_people'),
+                    'parent_company' => $request->input('parent_company'),
+                    'headquarters' => $request->input('headquarters'),
+                    'no_employees' => $request->input('no_employees'),
+                    'websites' => json_encode($request->websites)??json_encode(['-']),
+                ]);
+            }
+            return redirect()->back()->with('success', 'Admin updated successfully');
+            }
+        catch(\Exception $e){
+            return redirect()->route('admin.admin.view')->with('error', 'Failed to create admin: ' . $e->getMessage());
         }
-        else{
-            $admin_detail->update([
-                'company_name' =>  $request->input('company_name'),
-                'city' =>  $request->input('city'),
-                'state' =>  $request->input('state'),
-                'country' => $request->input('country'),
-                'address' => $request->input('address'),
-                'group' => $request->input('group'),
-                'pincode' => $request->input('pincode'),
-                'company_registration_no' => $request->input('company_registration_no'),
-                'no_modules' => $request->input('no_modules'),
-                'subscription_type' => $request->input('subscription_type'),
-                'subscription_charge' => $request->input('subscription_charge'),
-                'payment_type' => $request->input('payment_type', 'base'),
-                'package_activation_date' => $request->input('package_activation_date') ?? $admin_detail->package_activation_date,
-                'subscription_expiring' => $request->input('subscription_expiring'),
-                'business_focus' =>json_encode($request->focus_destinations)??json_encode(['-']),
-                'remarks' => $request->input('remarks'),
-                'business_mode' => $request->input('business_mode'),
-                'key_people' => $request->input('key_people'),
-                'parent_company' => $request->input('parent_company'),
-                'headquarters' => $request->input('headquarters'),
-                'no_employees' => $request->input('no_employees'),
-                'websites' => json_encode($request->websites)??json_encode(['-']),
-            ]);
-        }
-        return redirect()->back()->with('success', 'Admin updated successfully');
     }
 
     public function kycDocumentIndex(Request $request){

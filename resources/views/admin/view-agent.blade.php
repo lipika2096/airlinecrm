@@ -212,7 +212,7 @@
                                             <div class="modal-body">
 
                                                 <form
-                                                    action="{{ route('admin.agent.edit', ['id' => $agent->id]) }}#general"
+                                                    action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.edit', ['id' => $agent->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agent.edit', ['id' => $agent->id]) : route('admin.agent.edit', ['id' => $agent->id])) }}#general"
                                                     method="POST" enctype="multipart/form-data">@csrf
                                                     <!-- <ul class="personal-info">
                                                             <li> -->
@@ -503,7 +503,7 @@
                                                                     </div>
                                                                     <div class="modal-body">
                                                                         <form
-                                                                            action="{{ route('admin.agent.address.update', ['id' => $address->id]) }}#address"
+                                                                            action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.address.update', ['id' => $address->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agent.address.update', ['id' => $address->id]) : route('admin.agent.address.update', ['id' => $address->id])) }}#address"
                                                                             method="POST" enctype="multipart/form-data">
                                                                             @csrf
                                                                             <div class="row">
@@ -648,7 +648,7 @@
                                                             </div>
                                                             <div class="modal-body">
                                                                 <form
-                                                                    action="{{ route('admin.agent.contact.update', ['id' => $contact->id]) }}#contact_details"
+                                                                    action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.contact.update', ['id' => $contact->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agent.contact.update', ['id' => $contact->id]) : route('admin.agent.contact.update', ['id' => $contact->id])) }}#contact_details"
                                                                     method="POST" enctype="multipart/form-data">
                                                                     @csrf
                                                                     <div class="row">
@@ -819,7 +819,7 @@
                                                             </div>
                                                             <div class="modal-body">
                                                                 <form
-                                                                    action="{{ route('admin.agent.target.store') }}#special_fares"
+                                                                    action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.target.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agent.target.store') : route('admin.agent.target.store')) }}#special_fares"
                                                                     method="POST" enctype="multipart/form-data">
                                                                     @csrf
                                                                     <div class="table-responsive text-nowrap"
@@ -1031,7 +1031,7 @@
                                                                                 </div>
                                                                                 <div class="modal-body">
                                                                                     <form
-                                                                                        action="{{ route('admin.agent.product.update', ['id' => $prod->id]) }}#products_type"
+                                                                                        action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.product.update', ['id' => $prod->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agent.product.update', ['id' => $prod->id]) : route('admin.agent.product.update', ['id' => $prod->id])) }}#products_type"
                                                                                         method="POST"
                                                                                         enctype="multipart/form-data">
                                                                                         @csrf
@@ -1089,7 +1089,7 @@
                                                                                 </div>
                                                                                 <div class="modal-footer">
                                                                                     <form
-                                                                                        action="{{ route('admin.agent.product.delete', ['id' => $prod->id]) }}#products_type"
+                                                                                        action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.product.delete', ['id' => $prod->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agent.product.delete', ['id' => $prod->id]) : route('admin.agent.product.delete', ['id' => $prod->id])) }}#products_type"
                                                                                         method="POST">
                                                                                         @csrf
                                                                                         @method('DELETE')
@@ -1122,7 +1122,7 @@
                                                             </div>
                                                             <div class="modal-body">
                                                                 <form
-                                                                    action="{{ route('admin.agent.product.store') }}#products_type"
+                                                                    action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.product.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agent.product.store') : route('admin.agent.product.store')) }}#products_type"
                                                                     method="POST" enctype="multipart/form-data">
                                                                     @csrf
                                                                     <div class="row">
@@ -1190,7 +1190,7 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                <form action="{{ route('admin.agent.conversation.store') }}#conversation"
+                                                <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.conversation.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agent.conversation.store') : route('admin.agent.conversation.store')) }}#conversation"
                                                     method="POST" enctype="multipart/form-data">
                                                     @csrf
                                                     <input class="form-control" type="hidden" name="from"
@@ -1402,7 +1402,7 @@
                                                                 </div>
                                                                 <div class="modal-body">
                                                                     <form
-                                                                        action="{{ route('admin.agent.cases.update', ['id' => $data->id]) }}#case_history"
+                                                                        action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.cases.update', ['id' => $data->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agent.cases.update', ['id' => $data->id]) : route('admin.agent.cases.update', ['id' => $data->id])) }}#case_history"
                                                                         method="POST">
                                                                         @csrf
                                                                         @method('PATCH')
@@ -1453,7 +1453,7 @@
                                                                 </div>
                                                                 <div class="modal-body">
                                                                     <form
-                                                                        action="{{ route('admin.agent.cases.close', ['id' => $data->id]) }}#case_history"
+                                                                        action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.cases.close', ['id' => $data->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agent.cases.close', ['id' => $data->id]) : route('admin.agent.cases.close', ['id' => $data->id])) }}#case_history"
                                                                         method="POST">
                                                                         @csrf
                                                                         <div class="mb-3">
@@ -1500,7 +1500,7 @@
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="{{ route('admin.agent.case.store') }}#case_history"
+                                                    <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.case.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agent.case.store') : route('admin.agent.case.store')) }}#case_history"
                                                         method="POST" enctype="multipart/form-data">
                                                         @csrf
 
@@ -1669,7 +1669,7 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                <form action="{{ route('admin.transaction.store') }}#accounts"
+                                                <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.transaction.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.transaction.store') : route('admin.transaction.store')) }}#accounts"
                                                     method="POST" enctype="multipart/form-data">
                                                     @csrf
                                                     <div class="row">
@@ -1815,7 +1815,7 @@
                                                                 </button>
                                                             </div>
                                                             <div class="modal-body">
-                                                                <form action="{{ route('admin.prov.store') }}#provision"
+                                                                <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.prov.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.prov.store') : route('admin.prov.store')) }}#provision"
                                                                     method="POST" enctype="multipart/form-data">
                                                                     @csrf
                                                                     <div class="row">
@@ -2187,7 +2187,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="{{ route('admin.agent.target.store') }}#airline_activation"
+                                <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.target.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agent.target.store') : route('admin.agent.target.store')) }}#airline_activation"
                                     method="POST" enctype="multipart/form-data">
                                     @csrf
                                     <div class="table-responsive text-nowrap" style="margin-top:-53px;">
@@ -2249,7 +2249,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="{{ route('admin.pli.store') }}#provision" method="POST"
+                                <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.pli.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.pli.store') : route('admin.pli.store')) }}#provision" method="POST"
                                     enctype="multipart/form-data">
                                     @csrf
                                     <div class="row">
@@ -2374,7 +2374,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="{{ route('admin.agent.address.store') }}#address" method="POST"
+                                <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.address.store') : (\App\Helpers\RouteHelper::isStaff() ? route('admin.staff.agent.address.store') : route('admin.agent.address.store')) }}#address" method="POST"
                                     enctype="multipart/form-data">
                                     @csrf
                                     <div class="row">
@@ -2434,7 +2434,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="{{ route('admin.agent.contact.store') }}#contact_details" method="POST"
+                                <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.agent.contact.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.agent.contact.store') : route('admin.agent.contact.store')) }}#contact_details" method="POST"
                                     enctype="multipart/form-data">
                                     @csrf
                                     <div class="row">

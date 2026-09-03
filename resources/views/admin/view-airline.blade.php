@@ -344,7 +344,7 @@ use Carbon\Carbon;
                                                 </div>
                                                 <div class="modal-body">
                                                     <form
-                                                        action="{{ route('admin.airlines-details.update', ['airlineDetail' => $airlineDetails->id]) }}"
+                                                        action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airlines-details.update', ['airlineDetail' => $airlineDetails->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airlines-details.update', ['airlineDetail' => $airlineDetails->id]) : route('admin.airlines-details.update', ['airlineDetail' => $airlineDetails->id])) }}"
                                                         method="POST" enctype="multipart/form-data">
                                                         @csrf
                                                         @method('PATCH')
@@ -662,7 +662,7 @@ use Carbon\Carbon;
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="{{route('admin.airline.sla.destroy',$sla->id)}}#sla"
+                                                    <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.sla.destroy',$sla->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.sla.destroy',$sla->id) : route('admin.airline.sla.destroy',$sla->id)) }}#sla"
                                                         method="POST">
                                                         @csrf
                                                         @method('DELETE')
@@ -702,7 +702,7 @@ use Carbon\Carbon;
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form action="{{ route('admin.airline.sla.update', $sla->id) }}#sla"
+                                                    <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.sla.update', $sla->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.sla.update', $sla->id) : route('admin.airline.sla.update', $sla->id)) }}#sla"
                                                         method="POST" enctype="multipart/form-data">
                                                         @csrf
                                                         @method('PATCH')
@@ -785,7 +785,7 @@ use Carbon\Carbon;
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="{{ route('admin.airline.sla.store') }}#sla" method="POST"
+                                    <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.sla.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.sla.store') : route('admin.airline.sla.store')) }}#sla" method="POST"
                                         enctype="multipart/form-data">
                                         @csrf
                                         <div class="form-group">
@@ -920,7 +920,7 @@ use Carbon\Carbon;
                                                     </div>
                                                     <div class="modal-body">
                                                         <form
-                                                            action="{{route('admin.airline.head_office.destroy',$headOffice->id)}}#aircraft"
+                                                            action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.head_office.destroy',$headOffice->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.head_office.destroy',$headOffice->id) : route('admin.airline.head_office.destroy',$headOffice->id)) }}#aircraft"
                                                             method="POST">
                                                             @csrf
                                                             @method('DELETE')
@@ -962,7 +962,7 @@ use Carbon\Carbon;
                                                     </div>
                                                     <div class="modal-body">
                                                         <form
-                                                            action="{{ route('admin.airline.head_office.update', ['id' => $headOffice->id]) }}#aircraft"
+                                                            action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.head_office.update', ['id' => $headOffice->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.head_office.update', ['id' => $headOffice->id]) : route('admin.airline.head_office.update', ['id' => $headOffice->id])) }}#aircraft"
                                                             method="POST" enctype="multipart/form-data">
                                                             @csrf
                                                             @method('PATCH')
@@ -1071,7 +1071,7 @@ use Carbon\Carbon;
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="{{ route('admin.airline.head_office.store') }}#aircraft" method="POST"
+                                    <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.head_office.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.head_office.store') : route('admin.airline.head_office.store')) }}#aircraft" method="POST"
                                         enctype="multipart/form-data">
                                         @csrf
                                         <div class="row">
@@ -1228,7 +1228,7 @@ use Carbon\Carbon;
                                                 </div>
                                                 <div class="modal-body">
                                                     <form
-                                                        action="{{route('admin.airline.fleet.destroy',$fleet->id)}}#fleet"
+                                                        action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.fleet.destroy',$fleet->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.fleet.destroy',$fleet->id) : route('admin.airline.fleet.destroy',$fleet->id)) }}#fleet"
                                                         method="POST">
                                                         @csrf
                                                         @method('DELETE')
@@ -1266,7 +1266,7 @@ use Carbon\Carbon;
                                                 </div>
                                                 <div class="modal-body">
                                                     <form
-                                                        action="{{ route('admin.airline.fleet.update', ['id' => $fleet->id]) }}#fleet"
+                                                        action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.fleet.update', ['id' => $fleet->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.fleet.update', ['id' => $fleet->id]) : route('admin.airline.fleet.update', ['id' => $fleet->id])) }}#fleet"
                                                         method="POST" enctype="multipart/form-data">
                                                         @csrf
                                                         <div class="row">
@@ -1364,7 +1364,7 @@ use Carbon\Carbon;
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="{{ route('admin.airline.fleet.store') }}#fleet" method="POST"
+                                    <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.fleet.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.fleet.store') : route('admin.airline.fleet.store')) }}#fleet" method="POST"
                                         enctype="multipart/form-data">
                                         @csrf
                                         <div class="row">
@@ -1471,7 +1471,7 @@ use Carbon\Carbon;
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form action="{{ route('admin.airline.approved-staff-rights.store') }}#approved_staffs"
+                            <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.approved-staff-rights.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.approved-staff-rights.store') : route('admin.airline.approved-staff-rights.store')) }}#approved_staffs"
                                 method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="table-responsive text-nowrap">
@@ -1680,7 +1680,7 @@ use Carbon\Carbon;
                                                     </div>
                                                     <div class="modal-body">
                                                         <form
-                                                            action="{{route('admin.airline.aircraft.destroy',$data->id)}}#schedule"
+                                                            action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.aircraft.destroy',$data->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.aircraft.destroy',$data->id) : route('admin.airline.aircraft.destroy',$data->id)) }}#schedule"
                                                             method="POST">
                                                             @csrf
                                                             @method('DELETE')
@@ -1719,7 +1719,7 @@ use Carbon\Carbon;
                                                     </div>
                                                     <div class="modal-body">
                                                         <form
-                                                            action="{{ route('admin.airline.aircraft.update', ['id' => $data->id]) }}#schedule"
+                                                            action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.aircraft.update', ['id' => $data->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.aircraft.update', ['id' => $data->id]) : route('admin.airline.aircraft.update', ['id' => $data->id])) }}#schedule"
                                                             method="POST" enctype="multipart/form-data">
                                                             @csrf
                                                             @method('PATCH')
@@ -1828,7 +1828,7 @@ use Carbon\Carbon;
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="{{ route('admin.airline.aircraft.store') }}#schedule" method="POST"
+                                    <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.aircraft.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.aircraft.store') : route('admin.airline.aircraft.store')) }}#schedule" method="POST"
                                         enctype="multipart/form-data">
                                         @csrf
                                         <div class="row form-group">
@@ -2004,7 +2004,7 @@ use Carbon\Carbon;
                                                 </div>
                                                 <div class="modal-body">
                                                     <form
-                                                        action="{{route('admin.airline.library.destroy',$data->id)}}#library"
+                                                        action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.library.destroy',$data->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.library.destroy',$data->id) : route('admin.airline.library.destroy',$data->id)) }}#library"
                                                         method="POST">
                                                         @csrf
                                                         @method('DELETE')
@@ -2041,7 +2041,7 @@ use Carbon\Carbon;
                                                 </div>
                                                 <div class="modal-body">
                                                     <form
-                                                        action="{{ route('admin.airline.library.update', $data->id) }}#library"
+                                                        action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.library.update', $data->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.library.update', $data->id) : route('admin.airline.library.update', $data->id)) }}#library"
                                                         method="POST" enctype="multipart/form-data">
                                                         @csrf
                                                         @method('PATCH')
@@ -2109,7 +2109,7 @@ use Carbon\Carbon;
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="{{ route('admin.library.viewstore') }}#library" method="POST"
+                                    <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.library.viewstore') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.library.viewstore') : route('admin.library.viewstore')) }}#library" method="POST"
                                         enctype="multipart/form-data">
                                         @csrf
                                         <div class="form-group">
@@ -2171,7 +2171,7 @@ use Carbon\Carbon;
                                                 <i class="fa fa-edit"></i></a>
 
                                             <form id="toggle-status-form5-{{ $rule->id }}"
-                                                action="{{ route('admin.airline.rules.statusupdate', $rule->id) }}#rules"
+                                                action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.rules.statusupdate', $rule->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.rules.statusupdate', $rule->id) : route('admin.airline.rules.statusupdate', $rule->id)) }}#rules"
                                                 method="POST">
                                                 @csrf
                                                 @method('PATCH')
@@ -2196,7 +2196,7 @@ use Carbon\Carbon;
                                                 </div>
                                                 <div class="modal-body">
                                                     <form
-                                                        action="{{ route('admin.airline.rules.update', $rule->id) }}#rules"
+                                                        action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.rules.update', $rule->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.rules.update', $rule->id) : route('admin.airline.rules.update', $rule->id)) }}#rules"
                                                         method="POST">
                                                         @csrf
                                                         @method('PATCH')
@@ -2245,7 +2245,7 @@ use Carbon\Carbon;
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="{{ route('admin.airline.rules.store') }}#rules" method="POST">
+                                    <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.rules.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.rules.store') : route('admin.airline.rules.store')) }}#rules" method="POST">
                                         @csrf
 
                                         <input type="hidden" class="form-control" name="airline_id" id="airline"
@@ -2357,7 +2357,7 @@ use Carbon\Carbon;
                                                 </div>
                                                 <div class="modal-body">
                                                     <form
-                                                        action="{{route('admin.airline.agreements.destroy',$agreement->id)}}#agreement"
+                                                        action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.agreements.destroy',$agreement->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.agreements.destroy',$agreement->id) : route('admin.airline.agreements.destroy',$agreement->id)) }}#agreement"
                                                         method="POST">
                                                         @csrf
                                                         @method('DELETE')
@@ -2395,7 +2395,7 @@ use Carbon\Carbon;
                                                 </div>
                                                 <div class="modal-body">
                                                     <form
-                                                        action="{{ route('admin.airline.agreements.update', $agreement->id) }}#provision"
+                                                        action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.agreements.update', $agreement->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.agreements.update', $agreement->id) : route('admin.airline.agreements.update', $agreement->id)) }}#provision"
                                                         method="POST" enctype="multipart/form-data">
                                                         @csrf
                                                         @method('PATCH')
@@ -2538,7 +2538,7 @@ use Carbon\Carbon;
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="{{ route('admin.airline.pli.store') }}#provision" method="POST"
+                                    <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.pli.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.pli.store') : route('admin.airline.pli.store')) }}#provision" method="POST"
                                         enctype="multipart/form-data">
                                         @csrf
                                         <input type="hidden" class="form-control" name="airline_id" id="airline"
@@ -2674,7 +2674,7 @@ use Carbon\Carbon;
                                 </div>
                                 <div class="modal-body">
 
-                                    <form action="{{ route('admin.airline.agreements.store') }}#provision"
+                                    <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.agreements.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.agreements.store') : route('admin.airline.agreements.store')) }}#provision"
                                         method="POST">
                                         @csrf
                                         <input type="hidden" class="form-control" name="airline_id" id="airline"
@@ -2932,7 +2932,7 @@ use Carbon\Carbon;
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="{{ route('admin.airline.target.store') }}#special_fares" method="POST"
+                                <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airline.target.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airline.target.store') : route('admin.airline.target.store')) }}#special_fares" method="POST"
                                     enctype="multipart/form-data">
                                     @csrf
                                     <div class="table-responsive text-nowrap">

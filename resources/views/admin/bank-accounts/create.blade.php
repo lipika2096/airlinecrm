@@ -8,7 +8,7 @@
                     <div class="col">
                         <h3 class="page-title">My Bank Accounts</h3>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Dashboard</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('admin.bank-accounts.index') }}">My Bank Accounts</a></li>
                             <li class="breadcrumb-item active">Add Bank Account</li>
                         </ul>

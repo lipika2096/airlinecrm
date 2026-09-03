@@ -169,12 +169,46 @@ class EmployeeController extends Controller
 
     public function viewUserProfile()
     {
-        $employees = User::where('role_id', 2)->where('users.created_by', auth('admin')->user()->id)->get();
+        // Determine the current user type and ID for data scoping
+        $currentUserId = null;
+        $userType = 'superadmin'; // default
+        
+        if (auth('admin')->check() && auth('admin')->user()->hasRole('SuperAdmin') ) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = 'superadmin';
+        } elseif (auth()->check()) {    
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+        elseif(auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')){
+            $currentUserId = auth('admin')->user()->id;
+            $userType = 'customer';
+        }
+        
+        // Build query based on user type
+        $query = User::with('userDepartments')->where('role_id', 2);
+        
+        // For non-superadmin users, only show employees they created
+        if ($userType !== 'superadmin') {
+            $query->where('created_by', $currentUserId);
+        }
+        
+        $employees = $query->get();
+        
+        // Load department names for each employee from both sources
+        foreach ($employees as $employee) {
+            $deptNames = $employee->department_names;
+            // Ensure it's always an array
+            if (!is_array($deptNames)) {
+                $deptNames = !empty($deptNames) ? [$deptNames] : [];
+            }
+            $employee->department_names = $deptNames;
+        }
 
         // Scope departments and designations based on user role
-        if (auth('admin')->user()->role_id == 2) {
-            $department = Department::where('staff_id', auth('admin')->user()->id)->latest()->get();
-            $designation = Designation::where('staff_id', auth('admin')->user()->id)->latest()->get();
+        if ($userType === 'customer' || $userType === 'staff') {
+            $department = Department::latest()->get();
+            $designation = Designation::latest()->get();
         } else {
             // Super admin sees all departments and designations
             $department = Department::latest()->get();
@@ -194,6 +228,23 @@ class EmployeeController extends Controller
                            $randomSymbol . 
                            substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 3) . 
                            rand(100, 999);
+
+        // Auto-generate unique employee ID
+        $year = date('Y');
+        $lastEmployee = User::where('unique_id', 'like', 'EMP-' . $year . '%')
+                           ->orderBy('id', 'desc')
+                           ->first();
+        
+        if ($lastEmployee) {
+            // Extract the last number and increment
+            $lastNumber = (int) substr($lastEmployee->unique_id, -4);
+            $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        } else {
+            $newNumber = '0001';
+        }
+        
+        $employeeId = 'EMP-' . $year . '-' . $newNumber;
+
         // Create a new client record
         $client = new Client();
         $client->client_creatorid = 0;
@@ -209,7 +260,7 @@ class EmployeeController extends Controller
         $user->last_name = $request->last_name;
         $user->email = $request->email;
         $user->password = bcrypt($defaultPassword);
-        $user->unique_id = $request->employee_id;
+        $user->unique_id = $employeeId;
         $user->phone = $request->phone;
         $user->joining_date = $request->joining_date;
         $user->leave_count = $request->leave_count;
@@ -377,34 +428,110 @@ class EmployeeController extends Controller
 
     public function allEmployees(Request $request)
     {
-        $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-            ->where('users.role_id', 2)->where('users.created_by', auth('admin')->user()->id)
-            ->get(['clients.*', 'users.*']);
+        // Determine the current user type and ID for data scoping
+        $currentUserId = null;
+        $userType = 'superadmin'; // default
+        
+        if (auth('admin')->check() ) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+        
+        // Build query based on user type
+        $query = User::with(['client', 'userDepartments'])->where('role_id', 2);
+        
+        // For non-superadmin users, only show employees they created
+        if ($userType !== 'superadmin') {
+            $query->where('created_by', $currentUserId);
+        }
+        
+        $employees = $query->get();
+
+        // Load department names for each employee from both sources
+        foreach ($employees as $employee) {
+            $deptNames = $employee->department_names;
+            // Ensure it's always an array
+            if (!is_array($deptNames)) {
+                $deptNames = !empty($deptNames) ? [$deptNames] : [];
+            }
+            $employee->department_names = $deptNames;
+        }
 
         // Scope departments and designations based on user role
-        if (auth('admin')->user()->role_id == 2) {
-            $department = Department::where('staff_id', auth('admin')->user()->id)->latest()->get();
-            $designation = Designation::where('staff_id', auth('admin')->user()->id)->latest()->get();
+        if ($userType === 'customer' || $userType === 'staff') {
+            $department = Department::latest()->get();
+            $designation = Designation::latest()->get();
         } else {
             // Super admin sees all departments and designations
             $department = Department::latest()->get();
             $designation = Designation::latest()->get();
         }
 
-        $departmentEmployees = User::where('role_id', 2)->where('users.created_by', auth('admin')->user()->id)
-            ->get()
-            ->groupBy('department');
+        // Build department employees query with same scoping
+        $deptQuery = User::with('userDepartments')->where('role_id', 2);
+        if ($userType !== 'superadmin') {
+            $deptQuery->where('created_by', $currentUserId);
+        }
+        
+        $departmentEmployees = $deptQuery->get()
+            ->map(function($employee) {
+                $deptNames = $employee->department_names;
+                // Ensure it's always an array
+                if (!is_array($deptNames)) {
+                    $deptNames = !empty($deptNames) ? [$deptNames] : [];
+                }
+                $employee->department_names = $deptNames;
+                return $employee;
+            })
+            ->groupBy(function($item) {
+                // Group by primary department (first department if multiple)
+                return $item->department ?? 'No Department';
+            });
 
         return view('admin.employees', compact('employees', 'department', 'designation', 'departmentEmployees'));
     }
 
     public function addStaff()
     {
-        // Don't load any departments/designations for new staff creation
-        // Staff will create their own departments and designations
-        $department = Department::all();
-        $designation = Designation::all();
-        return view('admin.add-staff', compact('department', 'designation'));
+        // Determine the current user type and ID for data scoping
+        $currentUserId = null;
+        $userType = 'superadmin'; // default
+        
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+        
+        // Generate next employee ID for preview
+        $year = date('Y');
+        $lastEmployee = User::where('unique_id', 'like', 'EMP-' . $year . '%')
+                           ->orderBy('id', 'desc')
+                           ->first();
+        
+        if ($lastEmployee) {
+            // Extract the last number and increment
+            $lastNumber = (int) substr($lastEmployee->unique_id, -4);
+            $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        } else {
+            $newNumber = '0001';
+        }
+        
+        $nextEmployeeId = 'EMP-' . $year . '-' . $newNumber;
+        
+        // Scope departments and designations based on user role
+        
+            // Super admin sees all departments and designations
+            $department = Department::latest()->get();
+            $designation = Designation::latest()->get();
+        
+        
+        return view('admin.add-staff', compact('department', 'designation', 'nextEmployeeId'));
     }
 
 
@@ -704,6 +831,22 @@ class EmployeeController extends Controller
                            substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 3) . 
                            rand(100, 999);
 
+        // Auto-generate unique employee ID
+        $year = date('Y');
+        $lastEmployee = User::where('unique_id', 'like', 'EMP-' . $year . '%')
+                           ->orderBy('id', 'desc')
+                           ->first();
+        
+        if ($lastEmployee) {
+            // Extract the last number and increment
+            $lastNumber = (int) substr($lastEmployee->unique_id, -4);
+            $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        } else {
+            $newNumber = '0001';
+        }
+        
+        $employeeId = 'EMP-' . $year . '-' . $newNumber;
+
         // Create a new client record
         $client = new Client();
         $client->client_creatorid = 0;
@@ -721,11 +864,19 @@ class EmployeeController extends Controller
         $user->email = $request->email;
         $user->password = Hash::make($defaultPassword);
         $user->plain_password = $defaultPassword;
-        $user->unique_id = $request->employee_id;
+        $user->unique_id = $employeeId;
         $user->phone = $request->phone;
         $user->joining_date = $request->joining_date;
         $user->leave_count = $request->leave_count;
-        $user->department = $request->department ?? null;
+        
+        // Handle departments - if array, use first as primary, otherwise use single value
+        $departments = $request->departments ?? $request->department;
+        if (is_array($departments) && !empty($departments)) {
+            $user->department = $departments[0]; // Set first department as primary
+        } else {
+            $user->department = $departments ?? null;
+        }
+        
         $user->position = $request->designation ?? null;
         $user->account_owner = 'yes';
         $user->primary_admin = 'no';
@@ -743,6 +894,11 @@ class EmployeeController extends Controller
 
         $user->save();
 
+        // Handle multiple departments if provided
+        if (is_array($departments) && !empty($departments)) {
+            $user->syncDepartments($departments);
+        }
+
         // Send password to user email with reset link
         try {
             $resetLink = url('/forgot-password');
@@ -756,7 +912,15 @@ class EmployeeController extends Controller
             \Log::error('Failed to send email: ' . $e->getMessage());
         }
 
-        return redirect()->route('admin.employees')->with('success', 'Employee added successfully. Password sent to email.');
+        // Determine appropriate redirect route based on user type
+        $redirectRoute = 'admin.employees';
+        if (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+            $redirectRoute = 'customer.employees';
+        } elseif (auth()->check()) {
+            $redirectRoute = 'staff.employees';
+        }
+        
+        return redirect()->route($redirectRoute)->with('success', 'Employee added successfully. Password sent to email.');
     }
     public function edit(Request $request, $id)
     {
@@ -766,21 +930,59 @@ class EmployeeController extends Controller
             'last_name' => 'nullable|string|max:255',
             'email' => 'required|email|max:255',
             //'employee_id' => 'required|string|max:255',
-            'departments' => 'required|array|min:1',
-            'departments.*' => 'required|string',
+            'departments' => 'nullable|array',
+            'departments.*' => 'nullable|string',
         ]);
 
         // Find the employee
         $employee = User::find($id);
         
         if (!$employee) {
-            return redirect()->route('admin.employees')->with('error', 'Employee not found');
+            // Determine appropriate redirect route based on user type
+            $redirectRoute = 'admin.employees';
+            if (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+                $redirectRoute = 'customer.employees';
+            } elseif (auth()->check()) {
+                $redirectRoute = 'staff.employees';
+            }
+            return redirect()->route($redirectRoute)->with('error', 'Employee not found');
+        }
+
+        // Check if user has permission to edit this employee
+        $currentUserId = null;
+        $userType = 'superadmin';
+        
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+        
+        // Non-superadmin users can only edit employees they created
+        if ($userType !== 'superadmin' && $employee->created_by != $currentUserId) {
+            return redirect()->back()->with('error', 'You do not have permission to edit this employee');
         }
 
         // Get primary department (first selected department)
         $departments = $request->input('departments');
+        
+        // Handle backwards compatibility: if no departments array provided, try single department field
+        if (empty($departments) || !is_array($departments)) {
+            $departments = $request->input('department') ? [$request->input('department')] : [];
+        }
+        
         $primaryDepartment = is_array($departments) && !empty($departments) ? $departments[0] : null;
-        //dd($primaryDepartment);
+        
+        // Determine appropriate auth guard for updated_by field
+        $updatedBy = null;
+        if (auth('admin')->check()) {
+            $updatedBy = auth('admin')->user()->id;
+        } elseif (auth()->check()) {
+            $updatedBy = auth()->user()->id;
+        }
+        
         $employee->update([
             'first_name' => $request->input('first_name'),
             'last_name' => $request->input('last_name'),
@@ -798,15 +1000,23 @@ class EmployeeController extends Controller
             'work_type' => $request->input('work_type'),
             'dob' => $request->input('dob'),
             'date_of_resignation' => $request->input('date_of_resignation'),
-            'updated_by' => auth('admin')->user()->id
+            'updated_by' => $updatedBy
         ]);
 
         // Handle multiple departments
-        if (is_array($departments)) {
+        if (is_array($departments) && !empty($departments)) {
             $employee->syncDepartments($departments);
         }
 
-        return redirect()->route('admin.employees')->with('success', 'Employee updated successfully');
+        // Determine appropriate redirect route based on user type
+        $redirectRoute = 'admin.employees';
+        if (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+            $redirectRoute = 'customer.employees';
+        } elseif (auth()->check()) {
+            $redirectRoute = 'staff.employees';
+        }
+        
+        return redirect()->route($redirectRoute)->with('success', 'Employee updated successfully');
     }
 
     public function destroy($id)
@@ -814,6 +1024,23 @@ class EmployeeController extends Controller
         try {
             // Find the user based on the provided ID
             $user = User::findOrFail($id);
+            
+            // Check if user has permission to delete this employee
+            $currentUserId = null;
+            $userType = 'superadmin';
+            
+            if (auth('admin')->check()) {
+                $currentUserId = auth('admin')->user()->id;
+                $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+            } elseif (auth()->check()) {
+                $currentUserId = auth()->user()->id;
+                $userType = 'staff';
+            }
+            
+            // Non-superadmin users can only delete employees they created
+            if ($userType !== 'superadmin' && $user->created_by != $currentUserId) {
+                return redirect()->back()->with('error', 'You do not have permission to delete this employee');
+            }
 
             // Find the client associated with this user
             $client = Client::where('client_id', $user->clientid)->first();
@@ -827,10 +1054,26 @@ class EmployeeController extends Controller
                 $client->delete();
             }
 
-            return redirect()->route('admin.employees')
+            // Determine appropriate redirect route based on user type
+            $redirectRoute = 'admin.employees';
+            if (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+                $redirectRoute = 'customer.employees';
+            } elseif (auth()->check()) {
+                $redirectRoute = 'staff.employees';
+            }
+            
+            return redirect()->route($redirectRoute)
                 ->with('success', 'Employee and associated client deleted successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('admin.employees')
+            // Determine appropriate redirect route based on user type
+            $redirectRoute = 'admin.employees';
+            if (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+                $redirectRoute = 'customer.employees';
+            } elseif (auth()->check()) {
+                $redirectRoute = 'staff.employees';
+            }
+            
+            return redirect()->route($redirectRoute)
                 ->with('error', 'Deletion failed: ' . $e->getMessage());
         }
     }

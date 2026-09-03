@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Employee;
 use App\Models\Admin;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,9 +15,10 @@ class ProfileController extends Controller
     public function employeeProfile()
     {
         // Add your logic for employee profile view
-        $email = session('email');
-        $employee = Employee::where('email', $email)->first();
-        $profile = Employee::where('id', $employee->id)->first();
+        $user = User::find(auth()->user()->id);
+        
+        $employee = User::where('email', $user->email)->first();
+        $profile = User::where('id', $user->id)->first();
         return view('admin.client-profile', compact('profile')); // Example view path, adjust as per your structure
     }
 

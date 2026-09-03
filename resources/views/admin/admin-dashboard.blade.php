@@ -19,7 +19,7 @@
                     <p style="margin: 5px 0 0 0; color: #666;">{{ $user->company_name ?? 'CRM SAAS' }}</p>
                 </div>
                 <div class="d-flex align-items-center gap-3">
-                    <a href="{{ route('customer.support-tickets.create') }}" class="btn btn-primary" style="background-color: #0066cc; border-color: #0066cc;">
+                    <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.create'): route('staff.support-tickets.create') }}" class="btn btn-primary" style="background-color: #0066cc; border-color: #0066cc;">
                         <i class="fa fa-plus me-2"></i> New Ticket
                     </a>
                     <div class="user-avatar">

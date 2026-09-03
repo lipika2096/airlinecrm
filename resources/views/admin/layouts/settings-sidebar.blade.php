@@ -46,6 +46,9 @@
                         <a href="leave-type"><i class="la la-cogs"></i> <span>Leave Type</span></a>
                     </li>
                     <li class=""> 
+                        <a href="support-ticket-settings"><i class="la la-life-ring"></i> <span>Support Ticket Settings</span></a>
+                    </li>
+                    <li class=""> 
                         <a href="toxbox-setting"><i class="la la-comment"></i> <span>ToxBox Settings</span></a>
                     </li>
                     <li> 

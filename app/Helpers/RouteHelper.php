@@ -114,7 +114,7 @@ class RouteHelper
         } elseif (self::isCustomer()) {
             return route('customer.profile');
         } elseif (self::isStaff()) {
-            return route('staff.dashboard');
+            return route('staff.profile');
         }
         
         return route('admin.login');

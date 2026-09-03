@@ -19,7 +19,7 @@
                     <div class="col">
                         <h3 class="page-title">Airline Details</h3>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Dashboard</a></li>
                             <li class="breadcrumb-item active">Airline Details</li>
                         </ul>
                     </div>
@@ -101,7 +101,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('admin.airlines-details.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airlines-details.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airlines-details.store') : route('admin.airlines-details.store')) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="row">
                             <div class="col-md-6">
@@ -359,7 +359,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form action="{{ route('admin.airlines-details.destroy', $detail->id) }}" method="POST"
+                        <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.airlines-details.destroy', $detail->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.airlines-details.destroy', $detail->id) : route('admin.airlines-details.destroy', $detail->id)) }}" method="POST"
                             onsubmit="return confirm('Are you sure you want to delete this?');">
                             @csrf
                             @method('DELETE')

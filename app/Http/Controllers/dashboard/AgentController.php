@@ -40,8 +40,32 @@ class AgentController extends Controller
 {
     public function index(Request $request)
     {
-        $designation = Designation::where('created_by', auth('admin')->user()->id)->latest()->get();
-        $query = Agent::with('agent_addresses', 'head_office')->whereNull('deleted_at')->orWhere('deleted_at', 'null')->where('created_by', auth('admin')->user()->id);
+        // Determine the current user type and ID for data scoping
+        $currentUserId = null;
+        $userType = 'superadmin'; // default
+        
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+        
+        // Scope designations based on user type
+        if ($userType === 'customer' || $userType === 'staff') {
+            $designation = Designation::latest()->get();
+        } else {
+            $designation = Designation::latest()->get();
+        }
+        
+        // Build query based on user type
+        $query = Agent::with('agent_addresses', 'head_office')->whereNull('deleted_at')->orWhere('deleted_at', 'null');
+        
+        // For non-superadmin users, only show agents they created
+        if ($userType !== 'superadmin') {
+            $query->where('created_by', $currentUserId);
+        }
 
 
         if ($request->has('search') && !empty($request->input('search'))) {
@@ -91,40 +115,118 @@ class AgentController extends Controller
 
     public function deletedAgent()
     {
-        $designation = Designation::where('created_by', auth('admin')->user()->id)->latest()->get();
-        $agents = Agent::where('created_by', auth('admin')->user()->id)->where('deleted_at', '!=', 'null')->orWhere('deleted_at', '!=', null)->get();
+        // Determine the current user type and ID for data scoping
+        $currentUserId = null;
+        $userType = 'superadmin'; // default
+        
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('Superadmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+        
+        // Scope designations based on user type
+        if ($userType === 'customer' || $userType === 'staff') {
+            $designation = Designation::latest()->get();
+        } else {
+            $designation = Designation::latest()->get();
+        }
+        
+        // Build query based on user type
+        $query = Agent::where('deleted_at', '!=', 'null')->orWhere('deleted_at', '!=', null);
+        
+        // For non-superadmin users, only show agents they created
+        if ($userType !== 'superadmin') {
+            $query->where('created_by', $currentUserId);
+        }
+        
+        $agents = $query->get();
         return view('admin.agent', compact('agents', 'designation'));
     }
 
 
     public function update($id)
     {
-        $designation = Designation::where('created_by', auth('admin')->user()->id)->latest()->get();
+        // Determine the current user type and ID for data scoping
+        $currentUserId = null;
+        $userType = 'superadmin'; // default
+        
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin')? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+        
+        // Scope designations based on user type
+        if ($userType === 'customer' || $userType === 'staff') {
+            $designation = Designation::latest()->get();
+        } else {
+            $designation = Designation::latest()->get();
+        }
+        
         $agent = Agent::find($id);
-        $agentAccounts = AgentAccount::where('created_by', auth('admin')->user()->id)->where('agent_id', $id)->get();
-        $agentPli = AgentProvisionsPli::where('created_by', auth('admin')->user()->id)->latest()->whereNotNull('pli')->where('agent_id', $id)->get();
-        $agentProv = AgentProvisionsPli::where('created_by', auth('admin')->user()->id)->latest()->whereNotNull('prov')->where('agent_id', $id)->get();
-        $agentTarget = AgentProvisionsPli::where('created_by', auth('admin')->user()->id)->latest()->whereNotNull('target')->where('agent_id', $id)->get();
-        $agentProduct = AgentProductsType::where('created_by', auth('admin')->user()->id)->latest()->where('agent_id', $id)->get();
-        $agentConversation = AgentConversation::where('created_by', auth('admin')->user()->id)->latest()->get();
+        
+        // Check if user has permission to view this agent
+        if ($userType !== 'superadmin' && $agent->created_by != $currentUserId) {
+            return redirect()->back()->with('error', 'You do not have permission to edit this agent');
+        }
+        
+        $agentAccounts = AgentAccount::where('created_by', $currentUserId)->where('agent_id', $id)->get();
+        $agentPli = AgentProvisionsPli::where('created_by', $currentUserId)->latest()->whereNotNull('pli')->where('agent_id', $id)->get();
+        $agentProv = AgentProvisionsPli::where('created_by', $currentUserId)->latest()->whereNotNull('prov')->where('agent_id', $id)->get();
+        $agentTarget = AgentProvisionsPli::where('created_by', $currentUserId)->latest()->whereNotNull('target')->where('agent_id', $id)->get();
+        $agentProduct = AgentProductsType::where('created_by', $currentUserId)->latest()->where('agent_id', $id)->get();
+        $agentConversation = AgentConversation::where('created_by', $currentUserId)->latest()->get();
         return view('admin.edit-agent', compact('agent', 'designation', 'agentAccounts', 'agentPli', 'agentProv', 'agentTarget', 'agentProduct', 'agentConversation'));
     }
 
 
     public function delete($id)
     {
-        $designation = Designation::where('created_by', auth('admin')->user()->id)->latest()->get();
+        // Determine the current user type and ID for data scoping
+        $currentUserId = null;
+        $userType = 'superadmin'; // default
+        
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+        
         $agents = Agent::find($id);
+        
+        // Check if user has permission to delete this agent
+        if ($userType !== 'superadmin' && $agents->created_by != $currentUserId) {
+            return redirect()->back()->with('error', 'You do not have permission to delete this agent');
+        }
+        
         $agents->update([
             'deleted_at' => now()
         ]);
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Agent deleted successfully');
     }
 
     public function store(Request $request)
     {
         try {
+            // Determine the current user type and ID for data scoping
+            $currentUserId = null;
+            $userType = 'superadmin'; // default
+            
+            if (auth('admin')->check()) {
+                $currentUserId = auth('admin')->user()->id;
+                $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+            } elseif (auth()->check()) {
+                $currentUserId = auth()->user()->id;
+                $userType = 'staff';
+            }
 
             $agent = new Agent();
             $agent->company_name = $request->company_name;
@@ -153,10 +255,19 @@ class AgentController extends Controller
             $agent->remarks = $request->remarks;
             $agent->account_code = $request->account_code;
             $agent->company_registration_no = $request->company_registration_number;
-            $agent->created_by = auth('admin')->user()->id;
+            $agent->created_by = $currentUserId;
             $agent->save();
+            
+            // Determine appropriate redirect route based on user type
+            $redirectRoute = 'admin.agents';
+            if ($userType === 'customer') {
+                $redirectRoute = 'customer.agents';
+            } elseif ($userType === 'staff') {
+                $redirectRoute = 'staff.agents';
+            }
+            
             toastr()->success('Agent added successfully');
-            return redirect()->route('admin.agents');
+            return redirect()->route($redirectRoute);
         } catch (\Exception $e) {
             // Log the error message
             Log::error('Error adding agent: ' . $e->getMessage());
@@ -643,9 +754,25 @@ class AgentController extends Controller
     public function edit(Request $request, $id)
     {
         try {
+            // Determine the current user type and ID for data scoping
+            $currentUserId = null;
+            $userType = 'superadmin'; // default
+            
+            if (auth('admin')->check()) {
+                $currentUserId = auth('admin')->user()->id;
+                $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+            } elseif (auth()->check()) {
+                $currentUserId = auth()->user()->id;
+                $userType = 'staff';
+            }
+            
             // Find the client and user records to update
             $agent = Agent::find($id);
-
+            
+            // Check if user has permission to edit this agent
+            if ($userType !== 'superadmin' && $agent->created_by != $currentUserId) {
+                return redirect()->back()->with('error', 'You do not have permission to edit this agent');
+            }
 
             $agent->company_name = $request->company_name;
             $agent->email = $request->email;
@@ -673,7 +800,7 @@ class AgentController extends Controller
             $agent->remarks = $request->remarks;
             $agent->account_code = $request->account_code;
             $agent->company_registration_no = $request->company_registration_number;
-            $agent->updated_by = auth('admin')->user()->id;
+            $agent->updated_by = $currentUserId;
             $agent->save();
 
             return redirect()->back()->with('success', 'Agent updated successfully');
@@ -686,15 +813,32 @@ class AgentController extends Controller
 
     public function view(Request $request, $id)
     {
+        // Determine the current user type and ID for data scoping
+        $currentUserId = null;
+        $userType = 'superadmin'; // default
+        
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
 
         $agent = Agent::find($id);
+        
+        // Check if user has permission to view this agent
+        if ($userType !== 'superadmin' && $agent->created_by != $currentUserId) {
+            return redirect()->back()->with('error', 'You do not have permission to view this agent');
+        }
+        
         $agentAccounts = AgentAccount::where('agent_id', $id)->where('acc_no', Null)->get();
         $agentAccountBal = AgentAccount::where('agent_id', $id)->where('acc_no', '!=', Null)->first();
         $agentPli = Agreement::latest()->where('type', 'PLI')->where('agent_id', $id)->get()->groupBy('term');
         $agentProv = Agreement::latest()->where('type', 'Prov')->where('agent_id', $id)->get();
         $agentTarget = AgentProvisionsPli::latest()->whereNotNull('target')->where('agent_id', $id)->get();
         $agentProduct = AgentProductsType::latest()->where('agent_id', $id)->get();
-        $agentConversation = AgentConversation::where('created_by', auth('admin')->user()->id)->latest()->get();
+        $agentConversation = AgentConversation::where('created_by', $currentUserId)->latest()->get();
         $agentAddress = AgentAddress::where('agent_id', $id)->get();
         $agentContact = HeadOfficeContactDetail::where('agent_id', $id)->get();
         $specialFare = SpecialFare::where('agent_id', $id)->where('status', 1)->get();
@@ -702,21 +846,43 @@ class AgentController extends Controller
 
         $fareType = FareType::get();
         if (!$agent) {
-            return redirect()->route('admin.agents')->with('error', 'Agent not found.');
+            // Determine appropriate redirect route based on user type
+            $redirectRoute = 'admin.agents';
+            if ($userType === 'customer') {
+                $redirectRoute = 'customer.agents';
+            } elseif ($userType === 'staff') {
+                $redirectRoute = 'staff.agents';
+            }
+            return redirect()->route($redirectRoute)->with('error', 'Agent not found.');
         }
 
         $client = Agent::find($id);
 
         if (!$client) {
-            return redirect()->route('admin.agents')->with('error', 'Client not found.');
+            // Determine appropriate redirect route based on user type
+            $redirectRoute = 'admin.agents';
+            if ($userType === 'customer') {
+                $redirectRoute = 'customer.agents';
+            } elseif ($userType === 'staff') {
+                $redirectRoute = 'staff.agents';
+            }
+            return redirect()->route($redirectRoute)->with('error', 'Client not found.');
         }
 
 
         $airline = Airline::get();
-        $designation = Designation::where('created_by', auth('admin')->user()->id)->get();
+        
+        // Scope designations based on user type
+        if ($userType === 'customer' || $userType === 'staff') {
+            $designation = Designation::get();
+            $commissions = Commission::get();
+        } else {
+            $designation = Designation::get();
+            $commissions = Commission::get();
+        }
+        
         $fareConditions = FareCondition::where('agent_id', $id)->get();
         $group = Group::where('agent_id', $id)->get();
-        $commissions = Commission::where('created_by', auth('admin')->user()->id)->get();
         $agents = Agent::where('deleted_at', 'null')->get();
         $airlines = Airline::all();
         $airlineDetailData = AirlineDetail::where('deleted_at', NULL)->orWhere('deleted_at', 'null')->with('airline')->get();

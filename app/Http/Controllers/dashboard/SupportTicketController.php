@@ -102,12 +102,9 @@ class SupportTicketController extends Controller
                     
                     if ($request->status == 'closed') {
                         // For closed filter, include both closed and resolved statuses
-                        $query->whereIn('status', ['closed', $resolvedStatusSlug]);
-                    } elseif ($request->status == 'in_progress') {
-                        // For in_progress filter, include both in_progress and resolved statuses
-                        $query->whereIn('status', ['in_progress', $resolvedStatusSlug]);
+                        $query->whereIn('status', ['closed']);
                     } else {
-                        // For other statuses (like open), filter normally
+                        // For other statuses (like open, in_progress), filter normally
                         $query->where('status', $request->status);
                     }
                 }
@@ -123,11 +120,11 @@ class SupportTicketController extends Controller
                 }
 
                 // Staff users get pagination, customers get all
-                if ($isStaff) {
+                // if ($isStaff) {
                     $tickets = $query->latest()->paginate(10);
-                } else {
-                    $tickets = $query->latest()->get();
-                }
+                // } else {
+                //     $tickets = $query->latest()->get();
+                // }
             }
 
             // Get filter options for superadmin
@@ -138,10 +135,10 @@ class SupportTicketController extends Controller
             // Get all ticket statuses for display (needed for both SuperAdmin and non-SuperAdmin)
             $allTicketStatuses = TicketStatus::where('is_active', true)->orderBy('sort_order')->get();
 
-            // For non-superadmin users, filter to show only open, in_progress, and closed statuses
+            // For non-superadmin users, filter to show relevant statuses
             if (!$isSuperAdmin) {
                 $ticketStatuses = $allTicketStatuses->filter(function($status) {
-                    return in_array($status->slug, ['open', 'in_progress', 'closed']);
+                    return in_array($status->slug, ['open', 'in_progress', 'resolved', 'reopened', 'waiting_feedback', 'closed']);
                 });
             } else {
                 $ticketStatuses = $allTicketStatuses;
@@ -165,25 +162,21 @@ class SupportTicketController extends Controller
                     'all' => $userTickets->count(),
                 ];
                 
-                // Get the resolved status slug
-                $resolvedStatusSlug = TicketStatus::where('name', 'Resolved')->first()?->slug ?? 'resolved';
+                // Add counts for each status from database
+                foreach($ticketStatuses as $status) {
+                    // Count tickets by exact status
+                    $counts[$status->slug] = (clone $userTickets)->where('status', $status->slug)->count();
+                }
+            } else {
+                // For superadmin, count all tickets
+                $allTickets = SupportTicket::query();
+                $counts = [
+                    'all' => $allTickets->count(),
+                ];
                 
                 // Add counts for each status from database
                 foreach($ticketStatuses as $status) {
-                    if ($status->slug == 'in_progress') {
-                        // For in_progress, include both in_progress and resolved statuses
-                        $counts[$status->slug] = (clone $userTickets)
-                            ->whereIn('status', ['in_progress', $resolvedStatusSlug])
-                            ->count();
-                    } elseif ($status->slug == 'closed') {
-                        // For closed, include both closed and resolved statuses
-                        $counts[$status->slug] = (clone $userTickets)
-                            ->whereIn('status', ['closed', $resolvedStatusSlug])
-                            ->count();
-                    } else {
-                        // For other statuses (like open), count normally
-                        $counts[$status->slug] = (clone $userTickets)->where('status', $status->slug)->count();
-                    }
+                    $counts[$status->slug] = (clone $allTickets)->where('status', $status->slug)->count();
                 }
             }
             
@@ -361,7 +354,7 @@ class SupportTicketController extends Controller
                 });
             }
 
-            $tickets = $query->latest()->get();
+            $tickets = $query->latest()->paginate(10);
         }
 
         // Get counts for non-superadmin users
@@ -598,7 +591,7 @@ class SupportTicketController extends Controller
                 ->with('success', 'Support ticket created successfully.');
         }
         else {
-            return redirect()->route('customer.support-tickets.index')
+            return redirect()->route('customer.support-tickets.dashboard')
                 ->with('success', 'Support ticket created successfully.');
         }
     }
@@ -683,17 +676,40 @@ class SupportTicketController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
+        // Determine user type and permissions
+        $isStaff = auth()->check();
+        $isSuperAdmin = auth('admin')->check() && auth('admin')->user()->hasRole('SuperAdmin');
+        $isCustomer = auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin');
+        
+        $userId = $isStaff ? auth()->user()->id : auth('admin')->user()->id;
+        
         // Get available statuses from database
         $availableStatuses = TicketStatus::where('is_active', true)->pluck('slug')->toArray();
         
         $request->validate([
-            //'status' => 'required|in:' . implode(',', $availableStatuses),
+            'status' => 'required|in:' . implode(',', $availableStatuses),
             'assigned_to' => 'nullable|exists:users,id',
             'priority' => 'nullable|string|max:255',
             'department' => 'nullable|string|in:technical_support,billing,booking,account,other',
         ]);
 
         $ticket = SupportTicket::findOrFail($id);
+        
+        // Check if staff user has permission to update this ticket
+        if ($isStaff) {
+            // Staff can only update tickets assigned to them or created by them
+            if ($ticket->assigned_to != $userId && $ticket->created_by != $userId) {
+                return redirect()->back()
+                    ->with('error', 'You do not have permission to update this ticket.');
+            }
+        }
+        
+        // Customers should not be able to update ticket status (only view)
+        if ($isCustomer) {
+            return redirect()->back()
+                ->with('error', 'You do not have permission to update ticket status.');
+        }
+        
         $oldStatus = $ticket->status;
         $ticket->status = $request->status;
 

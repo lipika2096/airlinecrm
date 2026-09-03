@@ -15,7 +15,7 @@
                     <div class="col">
                         <h3 class="page-title">Create Support Ticket</h3>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Dashboard</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('admin.support-tickets.index') }}">Support Tickets</a></li>
                             <li class="breadcrumb-item active">Create Ticket</li>
                         </ul>
@@ -122,7 +122,7 @@
                                 
                                 <div class="submit-section">
                                     <button class="btn btn-primary" type="submit">Submit Ticket</button>
-                                    <a href="{{ route('admin.support-tickets.index') }}" class="btn btn-secondary">Cancel</a>
+                                    <a href="{{url()->previous()}}" class="btn btn-secondary">Cancel</a>
                                 </div>
                             </form>
                         </div>

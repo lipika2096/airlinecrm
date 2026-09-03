@@ -38,12 +38,28 @@ class TicketStatusSeeder extends Seeder
                 'sort_order' => 3,
             ],
             [
+                'name' => 'Reopened',
+                'slug' => 'reopened',
+                'description' => 'Ticket has been reopened after being closed',
+                'color' => '#6610f2',
+                'is_active' => true,
+                'sort_order' => 4,
+            ],
+            [
+                'name' => 'Waiting Feedback',
+                'slug' => 'waiting_feedback',
+                'description' => 'Ticket is waiting for customer feedback',
+                'color' => '#e83e8c',
+                'is_active' => true,
+                'sort_order' => 5,
+            ],
+            [
                 'name' => 'Closed',
                 'slug' => 'closed',
                 'description' => 'Ticket has been closed',
                 'color' => '#dc3545',
                 'is_active' => true,
-                'sort_order' => 4,
+                'sort_order' => 6,
             ],
             [
                 'name' => 'On Hold',
@@ -51,7 +67,7 @@ class TicketStatusSeeder extends Seeder
                 'description' => 'Ticket is temporarily on hold',
                 'color' => '#17a2b8',
                 'is_active' => true,
-                'sort_order' => 5,
+                'sort_order' => 7,
             ],
             [
                 'name' => 'Escalated',
@@ -59,12 +75,15 @@ class TicketStatusSeeder extends Seeder
                 'description' => 'Ticket has been escalated to higher level support',
                 'color' => '#fd7e14',
                 'is_active' => true,
-                'sort_order' => 6,
+                'sort_order' => 8,
             ],
         ];
 
         foreach ($statuses as $status) {
-            TicketStatus::create($status);
+            TicketStatus::updateOrCreate(
+                ['slug' => $status['slug']],
+                $status
+            );
         }
     }
 }

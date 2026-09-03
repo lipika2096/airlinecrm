@@ -12,7 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Auto-close support tickets every hour
+        $schedule->command('support-tickets:auto-close')->hourly();
     }
 
     /**

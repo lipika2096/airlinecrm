@@ -11,7 +11,7 @@
                         <a href="#"><i class="la la-dashboard"></i> <span> Dashboard</span> <span
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
-                            <li><a class="" href="{{ route('admin.dashboard') }}">Admin Dashboard</a></li>
+                            <li><a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Admin Dashboard</a></li>
                             <li><a class="" href="{{ route('employee.dashboard') }}">Employee Dashboard</a>
                             </li>
                         </ul>
@@ -258,7 +258,7 @@
                             class="menu-arrow"></span></a>
                     <ul style="display: none;">
                         @if (auth('admin')->user()->hasRole('admin'))
-                            <li><a class="" href="{{ route('admin.dashboard') }}">Admin Dashboard</a></li>
+                            <li><a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Admin Dashboard</a></li>
                         @endif
                         @if (auth('admin')->user()->hasRole('employee'))
                             <li><a class="" href="{{ route('employee.dashboard') }}">Employee
