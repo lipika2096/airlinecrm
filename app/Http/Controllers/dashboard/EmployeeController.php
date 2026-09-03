@@ -31,6 +31,8 @@ use Illuminate\Support\Facades\Auth;
 
 
 use App\Models\FareType;
+use App\Rules\UniqueEmailAcrossTables;
+use App\Rules\UniqueEmailAcrossTablesExcept;
 
 class EmployeeController extends Controller
 {
@@ -220,6 +222,23 @@ class EmployeeController extends Controller
 
     public function storeUserProfile(Request $request)
     {
+        // Validate the request
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'email' => ['required', 'email', 'max:255', new UniqueEmailAcrossTables],
+            'phone' => 'nullable|string|max:20',
+            'joining_date' => 'nullable|date',
+            'leave_count' => 'nullable|integer',
+            'department' => 'nullable|string',
+            'designation' => 'nullable|string',
+            'min_hrs' => 'nullable|string',
+            'max_hrs' => 'nullable|string',
+            'work_type' => 'nullable|string',
+            'branch' => 'nullable|string',
+            'company_mobile' => 'nullable|string',
+        ]);
+
     // Auto-generate unique password based on user details
         $symbols = ['@', '#', '$', '%', '&', '*', '!', '?'];
         $randomSymbol = $symbols[array_rand($symbols)];
@@ -822,6 +841,26 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
+        // Validate the request
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'email' => ['required', 'email', 'max:255', new UniqueEmailAcrossTables],
+            'phone' => 'nullable|string|max:20',
+            'joining_date' => 'nullable|date',
+            'leave_count' => 'nullable|integer',
+            'department' => 'nullable|string',
+            'designation' => 'nullable|string',
+            'min_hrs' => 'nullable|string',
+            'max_hrs' => 'nullable|string',
+            'work_type' => 'nullable|string',
+            'branch' => 'nullable|string',
+            'company_mobile' => 'nullable|string',
+            'date_of_resignation' => 'nullable|string',
+            'departments' => 'nullable|array',
+            'departments.*' => 'nullable|string',
+        ]);
+
         // Auto-generate unique password based on user details
         $symbols = ['@', '#', '$', '%', '&', '*', '!', '?'];
         $randomSymbol = $symbols[array_rand($symbols)];
@@ -928,8 +967,7 @@ class EmployeeController extends Controller
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'nullable|string|max:255',
-            'email' => 'required|email|max:255',
-            //'employee_id' => 'required|string|max:255',
+            'email' => ['required', 'email', 'max:255', new UniqueEmailAcrossTablesExcept($id, 'users')],
             'departments' => 'nullable|array',
             'departments.*' => 'nullable|string',
         ]);
