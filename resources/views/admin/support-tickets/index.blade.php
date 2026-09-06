@@ -127,6 +127,54 @@
                     </div>
                 </div>
             </div>
+
+            <!-- SuperAdmin Tab View -->
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="superadmin-filter-tabs">
+                                <a href="{{ route('admin.support-tickets.index') }}?tab=all" 
+                                   class="superadmin-tab {{ request('tab', 'all') == 'all' ? 'active' : '' }}">
+                                    Total Tickets ({{ $counts['all'] ?? 0 }})
+                                </a>
+                                <a href="{{ route('admin.support-tickets.index') }}?tab=new" 
+                                   class="superadmin-tab {{ request('tab') == 'new' ? 'active' : '' }}">
+                                    New Tickets ({{ $counts['new'] ?? 0 }})
+                                </a>
+                                <a href="{{ route('admin.support-tickets.index') }}?tab=in_progress" 
+                                   class="superadmin-tab {{ request('tab') == 'in_progress' ? 'active' : '' }}">
+                                    In Progress ({{ $counts['in_progress'] ?? 0 }})
+                                </a>
+                                <a href="{{ route('admin.support-tickets.index') }}?tab=resolved" 
+                                   class="superadmin-tab {{ request('tab') == 'resolved' ? 'active' : '' }}">
+                                    Resolved ({{ $counts['resolved'] ?? 0 }})
+                                </a>
+                                <a href="{{ route('admin.support-tickets.index') }}?tab=reopened" 
+                                   class="superadmin-tab {{ request('tab') == 'reopened' ? 'active' : '' }}">
+                                    Reopened ({{ $counts['reopened'] ?? 0 }})
+                                </a>
+                                <a href="{{ route('admin.support-tickets.index') }}?tab=waiting_feedback" 
+                                   class="superadmin-tab {{ request('tab') == 'waiting_feedback' ? 'active' : '' }}">
+                                    Waiting (Feedback) ({{ $counts['waiting_feedback'] ?? 0 }})
+                                </a>
+                                <a href="{{ route('admin.support-tickets.index') }}?tab=critical" 
+                                   class="superadmin-tab {{ request('tab') == 'critical' ? 'active' : '' }}">
+                                    Critical ({{ $counts['critical'] ?? 0 }})
+                                </a>
+                                <a href="{{ route('admin.support-tickets.index') }}?tab=closed" 
+                                   class="superadmin-tab {{ request('tab') == 'closed' ? 'active' : '' }}">
+                                    Closed ({{ $counts['closed'] ?? 0 }})
+                                </a>
+                                <a href="{{ route('admin.support-tickets.index') }}?tab=unassigned" 
+                                   class="superadmin-tab {{ request('tab') == 'unassigned' ? 'active' : '' }}">
+                                    Unassigned ({{ $counts['unassigned'] ?? 0 }})
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             @else
             <!-- Non-SuperAdmin User-Friendly Layout -->
             @php
@@ -177,7 +225,7 @@
                                     @foreach ($tickets as $ticket)
                                         <tr>
                                             <td><span class="ticket-id-badge">#{{ $ticket->id }}</span></td>
-                                            <td>{{ $ticket->company_name ?? ($ticket->creator && $ticket->creator->adminDetail ? $ticket->creator->adminDetail->company_name : $ticket->creator_name) }}</td>
+                                            <td>{{ $ticket->company_name ?? 'Superadmin' }}</td>
                                             <td><a href="{{ route('admin.support-tickets.show', $ticket->id) }}" class="ticket-subject-link">{{ Str::limit($ticket->subject, 50) }}</a></td>
                                             <td>
                                                 @if($ticket->department)
@@ -220,10 +268,20 @@
                                                         <a href="{{ route('admin.support-tickets.show', $ticket->id) }}" class="btn btn-sm btn-view-ticket">
                                                             <i class="fa fa-eye"></i> View
                                                         </a>
+                                                        @if($ticket->status !== 'closed' && ( ($ticket->assigned_to === null || $ticket->assigned_to === auth('admin')->user()->id)))
+                                                        <button type="button" class="btn btn-sm btn-assign-ticket" data-bs-toggle="modal" data-bs-target="#assignTicketModal" data-ticket-id="{{ $ticket->id }}" data-current-assigned="{{ $ticket->assigned_to ?? '' }}">
+                                                            <i class="fa fa-user-plus"></i> Assign
+                                                        </button>
+                                                        @else
+                                                        <button type="button" class="btn btn-sm btn-assign-ticket" disabled>
+                                                            <i class="fa fa-user-plus"></i> Assign
+                                                        </button>
+                                                        @endif
                                                     @elseif($isStaff)
                                                         <a href="{{ route('staff.support-tickets.show', $ticket->id) }}" class="btn btn-sm btn-view-ticket">
                                                             <i class="fa fa-eye"></i> View
                                                         </a>
+                                                        
                                                     @else
                                                         <a href="{{ route('customer.support-tickets.show', $ticket->id) }}" class="btn btn-sm btn-view-ticket">
                                                             <i class="fa fa-eye"></i> View
@@ -240,6 +298,74 @@
                                 <p class="text-muted">No tickets found.</p>
                             </div>
                             @endif
+                        </div>
+                    </div>
+                    <div class="modal fade" id="assignTicketModal" tabindex="-1" role="dialog"aria-labelledby="assignTicketModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <form method="POST"  id="assignTicketForm" action="">
+                                    @csrf
+                                    @method('patch')
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="assignTicketModalLabel">
+                                            Update Ticket Assignment
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            {{-- Department --}}
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="departmentSelect">
+                                                        Department
+                                                    </label>
+                                                    <select class="form-control" name="department" id="departmentSelect">
+                                                        <option value="">
+                                                            Select Department
+                                                        </option>
+                                                        @foreach($staffdepartments as $department)
+                                                            <option value="{{ $department->department_name }}"
+                                                                {{ isset($ticket->department) && $ticket->department == $department->department_name ? 'selected' : '' }}>
+                                                                {{ $department->department_name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            {{-- Assign To --}}
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="staffSelect">
+                                                        Assign To
+                                                    </label>
+                                                    <select class="form-control" name="assigned_to" id="staffSelect">
+                                                        <option value="">
+                                                            Select Staff Member
+                                                        </option>
+                                                        @foreach($staffMembers as $staff)
+                                                            <option value="{{ $staff->id }}" {{ $ticket->assigned_to == $staff->id ? 'selected' : '' }}>
+                                                                {{ $staff->first_name }} {{ $staff->last_name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                            Cancel
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i>
+                                            Update Assignment
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                     @else
@@ -307,6 +433,11 @@
                                                 <a href="{{ route($showRouteBase, $ticket->id) }}" class="btn btn-sm btn-view-ticket">
                                                     <i class="fa fa-eye"></i> View
                                                 </a>
+                                                @if($isStaff)
+                                                    <button type="button" class="btn btn-sm btn-assign-ticket" data-bs-toggle="modal" data-bs-target="#transferTicketModal" data-ticket-id="{{ $ticket->id }}" data-current-assigned="{{ $ticket->assigned_to ?? '' }}">
+                                                        <i class="fa fa-user-plus"></i> Transfer
+                                                    </button>
+                                                @endif
                                             </td>
                                         </tr>
                                         @empty
@@ -333,6 +464,76 @@
                     @endif
                 </div>
             </div>
+
+            
+                    <div class="modal fade" id="transferTicketModal" tabindex="-1" role="dialog"aria-labelledby="transferTicketModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <form method="POST"  id="transferTicketForm" action="">
+                                    @csrf
+                                    @method('patch')
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="transferTicketModalLabel">
+                                            Transfer Ticket
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            {{-- Department --}}
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="departmentSelect">
+                                                        Department
+                                                    </label>
+                                                    <select class="form-control" name="department" id="departmentStaffSelect">
+                                                        <option value="">
+                                                            Select Department
+                                                        </option>
+                                                        @foreach($staffdepartments as $department)
+                                                            <option value="{{ $department->department_name }}"
+                                                                {{ isset($ticket->department) && $ticket->department == $department->department_name ? 'selected' : '' }}>
+                                                                {{ $department->department_name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            {{-- Assign To --}}
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="staffSelect">
+                                                        Transfer To
+                                                    </label>
+                                                    <select class="form-control" name="assigned_to" id="staffSelect2">
+                                                        <option value="">
+                                                            Select Staff Member
+                                                        </option>
+                                                        @foreach($staffMembers as $staff)
+                                                            <option value="{{ $staff->id }}" {{ $ticket->assigned_to == $staff->id ? 'selected' : '' }}>
+                                                                {{ $staff->first_name }} {{ $staff->last_name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                            Cancel
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i>
+                                            Transfer
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
             
             @if(!$isSuperAdmin)
             <!-- Pagination for Non-SuperAdmin -->
@@ -807,4 +1008,131 @@
             }
         }
     </style>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#departmentSelect').on('change', function() {
+                var departmentId = $(this).val();
+                var staffSelect = $('#staffSelect');
+                var currentAssignedTo = '{{ $ticket->assigned_to ?? '' }}';
+                // Show loading state
+                staffSelect.html('<option value="">Loading...</option>');
+                if (departmentId) {
+                // Fetch staff members by department via AJAX
+                    $.ajax({
+                        url: '{{ route('admin.get-staff-by-department') }}',
+                        type: 'GET',
+                        data: { department_id: departmentId },
+                        success: function(response) {
+                            staffSelect.empty();
+                            staffSelect.append('<option value="">Select Staff Member</option>');
+                            if (response.staff && response.staff.length > 0) {
+                                response.staff.forEach(function(staff) {
+                                    var selected = staff.id == currentAssignedTo ? 'selected' : '';
+                                    staffSelect.append('<option value="' + staff.id + '" ' + selected + '>' + staff.first_name + ' ' + staff.last_name + '</option>');
+                                });
+                            } else {
+                                staffSelect.append('<option value="">No staff members found</option>');
+                            }
+                        },
+                        error: function(xhr) {
+                            staffSelect.empty();
+                            staffSelect.append('<option value="">Error loading staff</option>');
+                        }
+                    });
+                } else {
+                    // Reset to all staff members
+                    staffSelect.empty();
+                    staffSelect.append('<option value="">Select Staff Member</option>');
+                    @foreach($staffMembers as $staff)
+                        staffSelect.append('<option value="{{ $staff->id }}" {{ $ticket->assigned_to == $staff->id ? 'selected' : '' }}>{{ $staff->first_name }} {{ $staff->last_name }}</option>');
+                    @endforeach
+                }
+            });
+
+            $('#departmentStaffSelect').on('change', function() {
+                var departmentId = $(this).val();
+                var staffSelect2 = $('#staffSelect2');
+                var currentAssignedTo = '{{ $ticket->assigned_to ?? '' }}';
+                // Show loading state
+                staffSelect2.html('<option value="">Loading...</option>');
+                if (departmentId) {
+                // Fetch staff members by department via AJAX
+                    $.ajax({
+                        url: '{{ route('admin.get-staff-by-department') }}',
+                        type: 'GET',
+                        data: { department_id: departmentId },
+                        success: function(response) {
+                            staffSelect2.empty();
+                            staffSelect2.append('<option value="">Select Staff Member</option>');
+                            if (response.staff && response.staff.length > 0) {
+                                response.staff.forEach(function(staff) {
+                                    var selected = staff.id == currentAssignedTo ? 'selected' : '';
+                                    staffSelect2.append('<option value="' + staff.id + '" ' + selected + '>' + staff.first_name + ' ' + staff.last_name + '</option>');
+                                });
+                            } else {
+                                staffSelect2.append('<option value="">No staff members found</option>');
+                            }
+                        },
+                        error: function(xhr) {
+                            staffSelect2.empty();
+                            staffSelect2.append('<option value="">Error loading staff</option>');
+                        }
+                    });
+                } else {
+                    // Reset to all staff members
+                    staffSelect2.empty();
+                    staffSelect2.append('<option value="">Select Staff Member</option>');
+                    @foreach($staffMembers as $staff)
+                        staffSelect2.append('<option value="{{ $staff->id }}" {{ $ticket->assigned_to == $staff->id ? 'selected' : '' }}>{{ $staff->first_name }} {{ $staff->last_name }}</option>');
+                    @endforeach
+                }
+            });
+        });
+        
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const assignTicketModal = document.getElementById('assignTicketModal');
+
+            assignTicketModal.addEventListener('show.bs.modal', function (event) {
+
+                const button = event.relatedTarget;
+
+                // Get clicked ticket ID
+                const ticketId = button.getAttribute('data-ticket-id');
+
+                // Laravel route with placeholder
+                let actionUrl = "{{ $isSuperAdmin? route('admin.support-tickets.update-status', ':ticketId'): ($isStaff ? route('staff.support-tickets.update-status', ':ticketId'): route('customer.support-tickets.update-status', ':ticketId')) }}";
+
+                // Replace placeholder with actual ticket ID
+                actionUrl = actionUrl.replace(':ticketId', ticketId);
+
+                // Set form action
+                document.getElementById('assignTicketForm').action = actionUrl;
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const transferTicketModal = document.getElementById('transferTicketModal');
+
+            transferTicketModal.addEventListener('show.bs.modal', function (event) {
+
+                const button = event.relatedTarget;
+
+                // Get clicked ticket ID
+                const ticketId = button.getAttribute('data-ticket-id');
+
+                // Laravel route with placeholder
+                let actionUrl = "{{ $isSuperAdmin? route('admin.support-tickets.update-status', ':ticketId'): ($isStaff ? route('staff.support-tickets.update-status', ':ticketId'): route('customer.support-tickets.update-status', ':ticketId')) }}";
+
+                // Replace placeholder with actual ticket ID
+                actionUrl = actionUrl.replace(':ticketId', ticketId);
+
+                // Set form action
+                document.getElementById('transferTicketForm').action = actionUrl;
+            });
+        });
+    </script>
 @endsection

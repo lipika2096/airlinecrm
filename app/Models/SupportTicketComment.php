@@ -42,15 +42,20 @@ class SupportTicketComment extends Model
     public function getAuthorNameAttribute()
     {
         // Determine if the user_id belongs to Admin or User table
+                if($this->commented_by != 'staff'){
+
         $admin = Admin::find($this->user_id);
         if ($admin) {
             return $admin->hasRole('SuperAdmin') ? 'Super Admin' : $admin->name;
         }
-        
+                }
+                        if($this->commented_by == 'staff'){
+
         $user = User::find($this->user_id);
         if ($user) {
             return $user->first_name . ' ' . $user->last_name;
         }
+                        }
         
         return 'Unknown';
     }
@@ -58,14 +63,17 @@ class SupportTicketComment extends Model
     public function getAuthorTypeAttribute()
     {
         // Determine the author type
-        $admin = Admin::find($this->user_id);
-        if ($admin) {
-            return $admin->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        if($this->commented_by != 'staff'){
+            $admin = Admin::find($this->user_id);
+            if ($admin) {
+                return $admin->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+            }
         }
-        
-        $user = User::find($this->user_id);
-        if ($user) {
-            return 'staff';
+        if($this->commented_by == 'staff'){
+            $user = User::find($this->user_id);
+            if ($user) {
+                return 'staff';
+            }
         }
         
         return 'unknown';

@@ -12,8 +12,10 @@ class DatabaseSeeder extends Seeder
             //AdminSeeder::class,
             //UpdateCreatedBySeeder::class,
             //RolePermissionSeeder::class,
-            TicketStatusSeeder::class,
+            //TicketStatusSeeder::class,
             //StaffRoleSeeder::class
+            SupportTicketCommentsSeeder::class
+
         ]);
 
     }

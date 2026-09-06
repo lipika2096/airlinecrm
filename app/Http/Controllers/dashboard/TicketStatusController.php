@@ -27,7 +27,7 @@ class TicketStatusController extends Controller
             'description' => 'nullable|string',
             'color' => 'required|string|max:7',
             'is_active' => 'boolean',
-            'sort_order' => 'integer|default:0',
+            'sort_order' => 'integer',
         ]);
 
         $slug = \Str::slug($request->name);
@@ -57,7 +57,7 @@ class TicketStatusController extends Controller
             'description' => 'nullable|string',
             'color' => 'required|string|max:7',
             'is_active' => 'boolean',
-            'sort_order' => 'integer|default:0',
+            'sort_order' => 'integer',
         ]);
 
         $slug = \Str::slug($request->name);

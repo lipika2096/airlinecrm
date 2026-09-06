@@ -71,6 +71,28 @@ class SupportTicket extends Model
         return 'Unknown';
     }
 
+    public function getCompanyNameAttribute()
+    {
+        
+
+        // If ticket was created by staff (User), check if staff was created by a customer (Admin)
+        $user = User::find($this->created_by);
+        if ($user && $user->created_by) {
+            $admin = Admin::find($user->created_by);
+            if ($admin && $admin->adminDetail) {
+                return $admin->adminDetail->company_name;
+            }
+        }
+
+        // If ticket was created by Admin directly, use their company name
+        $admin = Admin::find($this->created_by);
+        if ($admin && $admin->adminDetail) {
+            return $admin->adminDetail->company_name;
+        }
+
+        return null;
+    }
+
     public function getCreatorTypeAttribute()
     {
         // Determine the creator type

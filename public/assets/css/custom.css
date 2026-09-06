@@ -204,5 +204,42 @@ th {
     padding: 0rem 0 !important;
     font-size:12px !important;
 }
-    
+
+/* SuperAdmin Filter Tabs */
+.superadmin-filter-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 0;
 }
+
+.superadmin-tab {
+    padding: 8px 16px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    color: #495057;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.superadmin-tab:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+    color: #212529;
+}
+
+.superadmin-tab.active {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+    font-weight: 500;
+}
+
+.superadmin-tab.active:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+    
