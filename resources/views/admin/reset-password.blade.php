@@ -36,15 +36,21 @@
                                 
                                 <div class="form-group">
                                     <label for="password" class="form-label">New Password</label>
-                                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter new password" required minlength="8">
+                                    <div class="position-relative">
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter new password" required minlength="8">
+                                        <span class="fa fa-eye-slash" id="toggle-password" style="position: absolute; right: 15px; top: 12px; cursor: pointer;"></span>
+                                    </div>
                                     <div class="invalid-feedback">
                                         Please enter a password (minimum 8 characters)
                                     </div>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label for="password_confirmation" class="form-label">Confirm Password</label>
-                                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm new password" required>
+                                    <div class="position-relative">
+                                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm new password" required>
+                                        <span class="fa fa-eye-slash" id="toggle-password-confirmation" style="position: absolute; right: 15px; top: 12px; cursor: pointer;"></span>
+                                    </div>
                                     <div class="invalid-feedback">
                                         Please confirm your password
                                     </div>
@@ -74,6 +80,35 @@
                                         }, false);
                                     });
                                 })();
+
+                                // Toggle password visibility
+                                document.getElementById('toggle-password').addEventListener('click', function() {
+                                    var passwordInput = document.getElementById('password');
+                                    var icon = this;
+                                    if (passwordInput.type === 'password') {
+                                        passwordInput.type = 'text';
+                                        icon.classList.remove('fa-eye-slash');
+                                        icon.classList.add('fa-eye');
+                                    } else {
+                                        passwordInput.type = 'password';
+                                        icon.classList.remove('fa-eye');
+                                        icon.classList.add('fa-eye-slash');
+                                    }
+                                });
+
+                                document.getElementById('toggle-password-confirmation').addEventListener('click', function() {
+                                    var passwordInput = document.getElementById('password_confirmation');
+                                    var icon = this;
+                                    if (passwordInput.type === 'password') {
+                                        passwordInput.type = 'text';
+                                        icon.classList.remove('fa-eye-slash');
+                                        icon.classList.add('fa-eye');
+                                    } else {
+                                        passwordInput.type = 'password';
+                                        icon.classList.remove('fa-eye');
+                                        icon.classList.add('fa-eye-slash');
+                                    }
+                                });
                             </script>
 
                         </div>
