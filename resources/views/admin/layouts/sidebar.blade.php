@@ -326,9 +326,9 @@
                         <a href="javascript:void(0);"><i class="la la-cube"></i> <span>System Admin</span> <span
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
-                            <li><a class="{{ request()->routeIs('admin.departments') ? 'active' : '' }}" href="{{route('admin.departments')}}">Add Departments</a></li>
-                            <li><a class="{{ request()->routeIs('admin.designations') ? 'active' : '' }}" href="{{route('admin.designations')}}">Add Designations</a></li>
-                            <li><a class="{{ request()->routeIs('admin.categories.view') ? 'active' : '' }}" href="{{route('admin.categories.view')}}">Add Category</a></li>
+                            <li><a class="{{ request()->routeIs('staff.departments') ? 'active' : '' }}" href="{{route('staff.departments')}}">Add Departments</a></li>
+                            <li><a class="{{ request()->routeIs('staff.designations') ? 'active' : '' }}" href="{{route('staff.designations')}}">Add Designations</a></li>
+                            <li><a class="{{ request()->routeIs('staff.categories.view') ? 'active' : '' }}" href="{{route('staff.categories.view')}}">Add Category</a></li>
 
                             <li><a class="{{ request()->routeIs('staff.duties') ? 'active' : '' }}" href="{{route('staff.duties')}}">Add Duties</a></li>
                             <!-- <li><a class="" href="javascript:void(0);">Add Public Holidays</a></li> -->

@@ -52,27 +52,8 @@
                                     <div class="ticket-meta-info">
                                         <div class="row">
                                             <div class="col-md-4">
-                                                @php
-                                                    $creatorName = $ticket->creator_name;
-                                                    $creatorType = $ticket->creator_type;
-                                                    
-                                                    $companyName = 'N/A';
-                                                    if ($ticket->creator && $ticket->creator instanceof \App\Models\Admin && $ticket->creator->adminDetail) {
-                                                        $companyName = $ticket->creator->adminDetail->company_name;
-                                                    }
-                                                @endphp
                                                 <p><strong>Company:</strong> 
-                                                @if($ticket->company_name)
-                                                    {{ $ticket->company_name }}
-                                                @elseif(\App\Models\Admin::where('id', $ticket->created_by)->exists())
-                                                    @php
-                                                        $admin = \App\Models\Admin::where('id', $ticket->created_by)->first();
-                                                        $companyName = $admin && $admin->adminDetail ? $admin->adminDetail->company_name : '-';
-                                                    @endphp
-                                                    {{ $companyName }}
-                                                @else
-                                                    -
-                                                @endif
+                                                {{ $ticket->company_name ?? '-' }}
                                                 @if($isSuperAdmin)
                                                     <button type="button" class="btn btn-sm btn-link p-0 ms-2" data-bs-toggle="modal" data-bs-target="#editCompanyNameModal">
                                                         <i class="fa fa-edit" style="color:#fff;"></i>
@@ -349,6 +330,7 @@
                                                 <div class="form-group" style="width:92%;">
                                                     <textarea class="form-control" name="comment" rows="3" placeholder="Type your message here..." required style="border-radius: 20px;"></textarea>
                                                 </div>
+                                                <input class="form-control" name="commented_by" value="{{ $isSuperAdmin ? 'superadmin' : ($isStaff ? 'staff' : 'customer') }}" style="display:none;">
                                                 <div class="form-group" style="margin-top: 0px;">
                                                     <div style="margin-right: 16px;">
                                                         <label class="btn btn-link p-0 text-success">
@@ -888,6 +870,7 @@
                                                             <span >{{ ucfirst($ticket->priority ) }}</span>
                                                         </td>
                                                     </tr>
+                                                    @if($isSuperAdmin || $isStaff)
                                                     <tr>
                                                         <th>Status</th>
                                                         <td>
@@ -901,6 +884,7 @@
                                                             @endif
                                                         </td>
                                                     </tr>
+                                                    @endif
                                                     <tr>
                                                         <th>Booking Reference</th>
                                                         <td>{{ $ticket->booking_reference ?? '-' }}</td>
@@ -1107,7 +1091,14 @@
                         @method('patch')
                         <div class="form-group">
                             <label for="company_name">Company Name</label>
-                            <input type="text" class="form-control" id="company_name" name="company_name" value="{{ $ticket->company_name ?? '' }}" required>
+                            <select class="form-control select2" id="company_name" name="company_name" required>
+                                <option value="">Select Company</option>
+                                @foreach($companies as $company)
+                                    <option value="{{ $company->company_name }}" {{ $ticket->company_name == $company->company_name ? 'selected' : '' }}>
+                                        {{ $company->company_name }} ({{$company->admin->name}})
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -1700,13 +1691,21 @@
             $('form').on('submit', function() {
                 var activeTab = localStorage.getItem(storageKey) || 'details';
                 var action = $(this).attr('action');
-                
+
                 // Check if action already has query parameters
                 if (action.indexOf('?') !== -1) {
                     $(this).attr('action', action + '&active_tab=' + activeTab);
                 } else {
                     $(this).attr('action', action + '?active_tab=' + activeTab);
                 }
+            });
+
+            // Initialize Select2 for company name dropdown
+            $('#company_name').select2({
+                placeholder: 'Select Company',
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#editCompanyNameModal')
             });
             
             // File count display

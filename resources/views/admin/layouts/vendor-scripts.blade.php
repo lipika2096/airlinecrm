@@ -43,7 +43,7 @@ $routesWithSelect2 = [
     'admin.shortlist-candidates', 'admin.interview-questions', 'admin.offer-approvals',
     'admin.experience-level', 'admin.candidates', 'admin.schedule-timing', 'admin.aptitude-results',
     'admin.users', 'admin.settings', 'admin.profile', 'admin.subscribed-companies', 'admin.components',
-    'form-horizontal', 'form-vertical', 'admin.groups','admin.employee.view-profile','admin.view-staff','admin.agent.view','admin.airlines.view','admin.customer.case-history','admin.roles-permissions.index'
+    'form-horizontal', 'form-vertical', 'admin.groups','admin.employee.view-profile','admin.view-staff','admin.agent.view','admin.airlines.view','admin.customer.case-history','admin.roles-permissions.index','admin.support-tickets.show'
 ];
 @endphp
 @if (in_array($currentRoute, $routesWithSelect2))

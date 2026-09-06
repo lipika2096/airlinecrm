@@ -33,7 +33,10 @@ class SupportTicketController extends Controller
         } else {
             return redirect()->route('admin.login');
         }
-            
+            $staffdepartments = Department::latest()->get();
+            $staffMembers = User::where('role_id', 2)->where('status', 'active')->get();
+
+
             $query = SupportTicket::with(['creator', 'assignedTo', 'relatedUser'])
                 ->when($isStaff, function ($query) use ($user) {
                     // For staff users, show tickets assigned to them or created by them
@@ -49,6 +52,51 @@ class SupportTicketController extends Controller
 
             // SuperAdmin filters
             if ($isSuperAdmin) {
+                // Tab filter for superadmin
+                if ($request->has('tab') && !empty($request->tab)) {
+                    $tab = $request->tab;
+                    
+                    switch($tab) {
+                        case 'new':
+                            $openStatusSlug = TicketStatus::where('name', 'Open')->first()?->slug ?? 'open';
+                            $query->where('status', $openStatusSlug);
+                            break;
+                        case 'in_progress':
+                            $inProgressStatusSlug = TicketStatus::where('name', 'In Progress')->first()?->slug ?? 'in_progress';
+                            $query->where('status', $inProgressStatusSlug);
+                            break;
+                        case 'resolved':
+                            $resolvedStatusSlug = TicketStatus::where('name', 'Resolved')->first()?->slug ?? 'resolved';
+                            $query->where('status', $resolvedStatusSlug);
+                            break;
+                        case 'reopened':
+                            $reopenedStatusSlug = TicketStatus::where('name', 'Reopened')->first()?->slug ?? 'reopened';
+                            $query->where('status', $reopenedStatusSlug);
+                            break;
+                        case 'waiting_feedback':
+                            $waitingFeedbackStatusSlug = TicketStatus::where('name', 'Waiting Feedback')->first()?->slug ?? 'waiting_feedback';
+                            $query->where('status', $waitingFeedbackStatusSlug);
+                            break;
+                        case 'critical':
+                            $query->where('priority', 'critical');
+                            break;
+                        case 'closed':
+                            $closedStatusSlug = TicketStatus::where('name', 'Closed')->first()?->slug ?? 'closed';
+                            $query->where('status', $closedStatusSlug);
+                            break;
+                        case 'unassigned':
+                            $query->where(function($q) {
+                                $q->whereNull('assigned_to')
+                                  ->orWhere('assigned_to', 2);
+                            });
+                            break;
+                        case 'all':
+                        default:
+                            // Show all tickets
+                            break;
+                    }
+                }
+                
                 // Company filter - search by company_name in adminDetails
                 if ($request->has('company') && !empty($request->company)) {
                     $query->whereHas('creator', function ($q) use ($request) {
@@ -167,12 +215,33 @@ class SupportTicketController extends Controller
                     // Count tickets by exact status
                     $counts[$status->slug] = (clone $userTickets)->where('status', $status->slug)->count();
                 }
-            } else {
-                // For superadmin, count all tickets
-                $allTickets = SupportTicket::query();
+            } else {                            
+                // For superadmin, count all tickets - use the same base query structure
+                $allTickets = SupportTicket::with(['creator', 'assignedTo', 'relatedUser']);
                 $counts = [
                     'all' => $allTickets->count(),
                 ];
+                
+                // Get status slugs for counting
+                $openStatusSlug = TicketStatus::where('name', 'Open')->first()?->slug ?? 'open';
+                $inProgressStatusSlug = TicketStatus::where('name', 'In Progress')->first()?->slug ?? 'in_progress';
+                $resolvedStatusSlug = TicketStatus::where('name', 'Resolved')->first()?->slug ?? 'resolved';
+                $reopenedStatusSlug = TicketStatus::where('name', 'Reopened')->first()?->slug ?? 'reopened';
+                $waitingFeedbackStatusSlug = TicketStatus::where('name', 'Waiting Feedback')->first()?->slug ?? 'waiting_feedback';
+                $closedStatusSlug = TicketStatus::where('name', 'Closed')->first()?->slug ?? 'closed';
+                
+                // Add counts for each tab
+                $counts['new'] = (clone $allTickets)->where('status', $openStatusSlug)->count();
+                $counts['in_progress'] = (clone $allTickets)->where('status', $inProgressStatusSlug)->count();
+                $counts['resolved'] = (clone $allTickets)->where('status', $resolvedStatusSlug)->count();
+                $counts['reopened'] = (clone $allTickets)->where('status', $reopenedStatusSlug)->count();
+                $counts['waiting_feedback'] = (clone $allTickets)->where('status', $waitingFeedbackStatusSlug)->count();
+                $counts['critical'] = (clone $allTickets)->where('priority', 'critical')->count();
+                $counts['closed'] = (clone $allTickets)->where('status', $closedStatusSlug)->count();
+                $counts['unassigned'] = (clone $allTickets)->where(function($query) {
+                    $query->whereNull('assigned_to')
+                          ->orWhere('assigned_to', 2);
+                })->count();
                 
                 // Add counts for each status from database
                 foreach($ticketStatuses as $status) {
@@ -183,12 +252,8 @@ class SupportTicketController extends Controller
             // Get unique company names for filter dropdown
             $companies = AdminDetail::whereNotNull('company_name')
                 ->where('company_name', '!=', '')
-                ->pluck('company_name')
-                ->unique()
-                ->sort()
-                ->values();
-
-            return view('admin.support-tickets.index', compact('tickets', 'isSuperAdmin', 'counts', 'departments', 'priorities', 'statuses', 'companies', 'ticketStatuses', 'isStaff'));
+                ->get();
+            return view('admin.support-tickets.index', compact('staffdepartments','staffMembers','tickets', 'isSuperAdmin', 'counts', 'departments', 'priorities', 'statuses', 'companies', 'ticketStatuses', 'isStaff'));
     }
 
     public function dashboardStatistics()
@@ -281,6 +346,51 @@ class SupportTicketController extends Controller
 
         // SuperAdmin filters
         if ($isSuperAdmin) {
+            // Tab filter for superadmin
+            if ($request->has('tab') && !empty($request->tab)) {
+                $tab = $request->tab;
+                
+                switch($tab) {
+                    case 'new':
+                        $openStatusSlug = TicketStatus::where('name', 'Open')->first()?->slug ?? 'open';
+                        $query->where('status', $openStatusSlug);
+                        break;
+                    case 'in_progress':
+                        $inProgressStatusSlug = TicketStatus::where('name', 'In Progress')->first()?->slug ?? 'in_progress';
+                        $query->where('status', $inProgressStatusSlug);
+                        break;
+                    case 'resolved':
+                        $resolvedStatusSlug = TicketStatus::where('name', 'Resolved')->first()?->slug ?? 'resolved';
+                        $query->where('status', $resolvedStatusSlug);
+                        break;
+                    case 'reopened':
+                        $reopenedStatusSlug = TicketStatus::where('name', 'Reopened')->first()?->slug ?? 'reopened';
+                        $query->where('status', $reopenedStatusSlug);
+                        break;
+                    case 'waiting_feedback':
+                        $waitingFeedbackStatusSlug = TicketStatus::where('name', 'Waiting Feedback')->first()?->slug ?? 'waiting_feedback';
+                        $query->where('status', $waitingFeedbackStatusSlug);
+                        break;
+                    case 'critical':
+                        $query->where('priority', 'critical');
+                        break;
+                    case 'closed':
+                        $closedStatusSlug = TicketStatus::where('name', 'Closed')->first()?->slug ?? 'closed';
+                        $query->where('status', $closedStatusSlug);
+                        break;
+                    case 'unassigned':
+                        $query->where(function($q) {
+                            $q->whereNull('assigned_to')
+                              ->orWhere('assigned_to', 2);
+                        });
+                        break;
+                    case 'all':
+                    default:
+                        // Show all tickets
+                        break;
+                }
+            }
+            
             // Company filter - search by company_name in adminDetails
             if ($request->has('company') && !empty($request->company)) {
                 $query->whereHas('creator', function ($q) use ($request) {
@@ -377,10 +487,7 @@ class SupportTicketController extends Controller
         // Get unique company names for filter dropdown
         $companies = AdminDetail::whereNotNull('company_name')
             ->where('company_name', '!=', '')
-            ->pluck('company_name')
-            ->unique()
-            ->sort()
-            ->values();
+            ->get();
         
         // Get all ticket statuses for display (needed for both SuperAdmin and non-SuperAdmin)
         $allTicketStatuses = TicketStatus::where('is_active', true)->orderBy('sort_order')->get();
@@ -432,9 +539,44 @@ class SupportTicketController extends Controller
                     $counts[$status->slug] = (clone $userTickets)->where('status', $status->slug)->count();
                 }
             }
+        } else {
+            // For superadmin, count all tickets - use the same base query structure
+            $allTickets = SupportTicket::with(['creator', 'assignedTo', 'relatedUser']);
+            $counts = [
+                'all' => $allTickets->count(),
+            ];
+            
+            // Get status slugs for counting
+            $openStatusSlug = TicketStatus::where('name', 'Open')->first()?->slug ?? 'open';
+            $inProgressStatusSlug = TicketStatus::where('name', 'In Progress')->first()?->slug ?? 'in_progress';
+            $resolvedStatusSlug = TicketStatus::where('name', 'Resolved')->first()?->slug ?? 'resolved';
+            $reopenedStatusSlug = TicketStatus::where('name', 'Reopened')->first()?->slug ?? 'reopened';
+            $waitingFeedbackStatusSlug = TicketStatus::where('name', 'Waiting Feedback')->first()?->slug ?? 'waiting_feedback';
+            $closedStatusSlug = TicketStatus::where('name', 'Closed')->first()?->slug ?? 'closed';
+            
+            // Add counts for each tab
+            $counts['new'] = (clone $allTickets)->where('status', $openStatusSlug)->count();
+            $counts['in_progress'] = (clone $allTickets)->where('status', $inProgressStatusSlug)->count();
+            $counts['resolved'] = (clone $allTickets)->where('status', $resolvedStatusSlug)->count();
+            $counts['reopened'] = (clone $allTickets)->where('status', $reopenedStatusSlug)->count();
+            $counts['waiting_feedback'] = (clone $allTickets)->where('status', $waitingFeedbackStatusSlug)->count();
+            $counts['critical'] = (clone $allTickets)->where('priority', 'critical')->count();
+            $counts['closed'] = (clone $allTickets)->where('status', $closedStatusSlug)->count();
+            $counts['unassigned'] = (clone $allTickets)->where(function($query) {
+                $query->whereNull('assigned_to')
+                      ->orWhere('assigned_to', auth('admin')->user()->id);
+            })->count();
+            
+            // Add counts for each status from database
+            foreach($ticketStatuses as $status) {
+                $counts[$status->slug] = (clone $allTickets)->where('status', $status->slug)->count();
+            }
         }
+            $staffdepartments = Department::latest()->get();
+                        $staffMembers = User::where('role_id', 2)->where('status', 'active')->get();
 
-        return view('admin.support-tickets.index', compact('tickets', 'isSuperAdmin', 'isStaff', 'counts', 'departments', 'priorities', 'statuses', 'companies', 'ticketStatuses'));
+
+        return view('admin.support-tickets.index', compact('staffdepartments','staffMembers','tickets', 'isSuperAdmin', 'isStaff', 'counts', 'departments', 'priorities', 'statuses', 'companies', 'ticketStatuses'));
     }
 
     public function create()
@@ -656,7 +798,12 @@ class SupportTicketController extends Controller
         // Get available ticket statuses
         $ticketStatuses = TicketStatus::where('is_active', true)->orderBy('sort_order')->get();
 
-        return view('admin.support-tickets.show', compact('ticket', 'comments', 'internalNotes', 'isSuperAdmin', 'isStaff', 'staffMembers', 'slaDue', 'isOverdue', 'canRate', 'activeTab', 'ticketStatuses', 'departments'));
+        // Get unique company names for SuperAdmin dropdown
+        $companies = AdminDetail::whereNotNull('company_name')
+            ->where('company_name', '!=', '')
+            ->get();
+
+        return view('admin.support-tickets.show', compact('ticket', 'comments', 'internalNotes', 'isSuperAdmin', 'isStaff', 'staffMembers', 'slaDue', 'isOverdue', 'canRate', 'activeTab', 'ticketStatuses', 'departments', 'companies'));
     }
 
     public function getStaffByDepartment(Request $request)
@@ -687,7 +834,7 @@ class SupportTicketController extends Controller
         $availableStatuses = TicketStatus::where('is_active', true)->pluck('slug')->toArray();
         
         $request->validate([
-            'status' => 'required|in:' . implode(',', $availableStatuses),
+            'status' => 'nullable|in:' . implode(',', $availableStatuses),
             'assigned_to' => 'nullable|exists:users,id',
             'priority' => 'nullable|string|max:255',
             'department' => 'nullable|string|in:technical_support,billing,booking,account,other',
@@ -711,7 +858,7 @@ class SupportTicketController extends Controller
         }
         
         $oldStatus = $ticket->status;
-        $ticket->status = $request->status;
+        $ticket->status = $request->status ?? $ticket->status;
 
         if ($request->has('assigned_to')) {
             $ticket->assigned_to = $request->assigned_to;
@@ -806,7 +953,15 @@ class SupportTicketController extends Controller
             'user_id' => $userId,
             'comment' => $request->comment,
             'attachments' => json_encode($attachmentPaths),
+            'commented_by' => $request->commented_by
         ]);
+
+        // Automatically change status from on_hold to reopened when a comment is added
+        if ($ticket->status === 'on_hold') {
+            $reopenedStatusSlug = TicketStatus::where('name', 'Reopened')->first()?->slug ?? 'reopened';
+            $ticket->status = $reopenedStatusSlug;
+            $ticket->save();
+        }
 
         return redirect()->back()
             ->with('success', 'Comment added successfully.')

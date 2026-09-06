@@ -40,7 +40,7 @@ $currentRoute = Route::currentRouteName();
     'admin.offer-approvals', 'admin.experience-level', 'admin.candidates',
     'admin.schedule-timing', 'admin.aptitude-results', 'admin.users',
     'admin.settings', 'admin.profile', 'admin.subscribed-companies',
-    'admin.components', 'form-horizontal', 'form-vertical',  'admin.groups','admin.employee.view-profile','admin.view-staff','admin.agent.view','admin.airlines.view'
+    'admin.components', 'form-horizontal', 'form-vertical',  'admin.groups','admin.employee.view-profile','admin.view-staff','admin.agent.view','admin.airlines.view','admin.support-tickets.show'
 ]))
 <!-- Select2 CSS -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />

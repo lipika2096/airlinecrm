@@ -73,7 +73,10 @@ class SupportTicket extends Model
 
     public function getCompanyNameAttribute()
     {
-        
+        // If ticket has company_name set in database, use it
+        if (isset($this->attributes['company_name']) && !empty($this->attributes['company_name'])) {
+            return $this->attributes['company_name'];
+        }
 
         // If ticket was created by staff (User), check if staff was created by a customer (Admin)
         $user = User::find($this->created_by);
