@@ -23,7 +23,7 @@
                             <h5 class="card-title">Create Sales Package</h5>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('admin.sales-packages.store') }}" method="POST">
+                            <form action="{{ \App\Helpers\RouteHelper::isStaff() ? route('staff.toggle.status', ['id'=> $data->id]) : route('admin.sales-packages.store') }}" method="POST">
                                 @csrf
                                 <div class="row">
                                     <div class="form-group col-md-6">

@@ -4,9 +4,11 @@
 
     @php
         // Define routes for all user types
-        $dashboardRoute = $isSuperAdmin ? route('admin.support-tickets.index') : ($isStaff ? route('staff.support-tickets.dashboard') : route('customer.support-tickets.dashboard'));
+        $dashboardRoute = $isSuperAdmin ? route('admin.support-tickets.index') : ($isStaff ? route('staff.support-tickets.index') : route('customer.support-tickets.index'));
         $createRoute = $isSuperAdmin ? route('admin.support-tickets.create') : ($isStaff ? route('staff.support-tickets.create') : route('customer.support-tickets.create'));
         $showRouteBase = $isSuperAdmin ? 'admin.support-tickets.show' : ($isStaff ? 'staff.support-tickets.show' : 'customer.support-tickets.show');
+        $dashboardIndexRoute = $isSuperAdmin ? route('admin.support-tickets.index') : ($isStaff ? route('staff.support-tickets.dashboard') : route('customer.support-tickets.dashboard'));
+        $createRoute = $isSuperAdmin ? route('admin.support-tickets.create') : ($isStaff ? route('staff.support-tickets.create') : route('customer.support-tickets.create'));
     @endphp
 
     <!-- Page Wrapper -->
@@ -35,172 +37,290 @@
 
             @if($isSuperAdmin)
             
-            <!-- SuperAdmin Advanced Filters -->
-            <div class="row filter-row mb-3">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <form method="GET" action="{{ route('admin.support-tickets.index') }}">
-                                <div class="row align-items-end">
-                                    <!-- <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>Company</label>
-                                            <select class="form-control" name="company">
-                                                <option value="">All Companies</option>
-                                                @foreach($companies as $company)
-                                                    <option value="{{ $company }}" {{ request('company') == $company ? 'selected' : '' }}>
-                                                        {{ $company }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                <!-- SuperAdmin Advanced Filters -->
+                <div class="row filter-row mb-3">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form method="GET" action="{{ route('admin.support-tickets.index') }}">
+                                    <div class="row align-items-end">
+                                        <!-- <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Company</label>
+                                                <select class="form-control" name="company">
+                                                    <option value="">All Companies</option>
+                                                    @foreach($companies as $company)
+                                                        <option value="{{ $company }}" {{ request('company') == $company ? 'selected' : '' }}>
+                                                            {{ $company }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div> -->
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Category</label>
+                                                <select class="form-control" name="department">
+                                                    <option value="">All Categories</option>
+                                                    @foreach($departments as $department)
+                                                        <option value="{{ $department }}" {{ request('department') == $department ? 'selected' : '' }}>
+                                                            {{ ucfirst(str_replace('_', ' ', $department)) }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div> -->
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>Category</label>
-                                            <select class="form-control" name="department">
-                                                <option value="">All Categories</option>
-                                                @foreach($departments as $department)
-                                                    <option value="{{ $department }}" {{ request('department') == $department ? 'selected' : '' }}>
-                                                        {{ ucfirst(str_replace('_', ' ', $department)) }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Status</label>
+                                                <select class="form-control" name="status">
+                                                    <option value="">All Status</option>
+                                                    @foreach($ticketStatuses as $status)
+                                                        <option value="{{ $status->slug }}" {{ request('status') == $status->slug ? 'selected' : '' }}>
+                                                            {{ $status->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>Status</label>
-                                            <select class="form-control" name="status">
-                                                <option value="">All Status</option>
-                                                @foreach($ticketStatuses as $status)
-                                                    <option value="{{ $status->slug }}" {{ request('status') == $status->slug ? 'selected' : '' }}>
-                                                        {{ $status->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Priority</label>
+                                                <select class="form-control" name="priority">
+                                                    <option value="">All Priority</option>
+                                                    @foreach($priorities as $priority)
+                                                        <option value="{{ $priority }}" {{ request('priority') == $priority ? 'selected' : '' }}>
+                                                            {{ ucfirst($priority) }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>Priority</label>
-                                            <select class="form-control" name="priority">
-                                                <option value="">All Priority</option>
-                                                @foreach($priorities as $priority)
-                                                    <option value="{{ $priority }}" {{ request('priority') == $priority ? 'selected' : '' }}>
-                                                        {{ ucfirst($priority) }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Date Range</label>
+                                                <div class="input-group">
+                                                    <input type="date" name="date_from" class="form-control" placeholder="From" value="{{ request('date_from') }}">
+                                                    <input type="date" name="date_to" class="form-control" placeholder="To" value="{{ request('date_to') }}">
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label>Date Range</label>
-                                            <div class="input-group">
-                                                <input type="date" name="date_from" class="form-control" placeholder="From" value="{{ request('date_from') }}">
-                                                <input type="date" name="date_to" class="form-control" placeholder="To" value="{{ request('date_to') }}">
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Search</label>
+                                                <div class="input-group">
+                                                    <input type="text" name="search" class="form-control" placeholder="Search..." value="{{ request('search') }}">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>Search</label>
-                                            <div class="input-group">
-                                                <input type="text" name="search" class="form-control" placeholder="Search..." value="{{ request('search') }}">
-                                            </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-12">
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="fa fa-search"></i> Search Tickets
+                                            </button>
+                                            <a href="{{ route('admin.support-tickets.index') }}" class="btn btn-secondary btn-sm">
+                                                <i class="fa fa-refresh"></i> Reset Filters
+                                            </a>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row mt-2">
-                                    <div class="col-md-12">
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            <i class="fa fa-search"></i> Search Tickets
-                                        </button>
-                                        <a href="{{ route('admin.support-tickets.index') }}" class="btn btn-secondary btn-sm">
-                                            <i class="fa fa-refresh"></i> Reset Filters
-                                        </a>
-                                    </div>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- SuperAdmin Tab View -->
-            <div class="row mb-3">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="superadmin-filter-tabs">
-                                <a href="{{ route('admin.support-tickets.index') }}?tab=all" 
-                                   class="superadmin-tab {{ request('tab', 'all') == 'all' ? 'active' : '' }}">
-                                    Total Tickets ({{ $counts['all'] ?? 0 }})
-                                </a>
-                                <a href="{{ route('admin.support-tickets.index') }}?tab=new" 
-                                   class="superadmin-tab {{ request('tab') == 'new' ? 'active' : '' }}">
-                                    New Tickets ({{ $counts['new'] ?? 0 }})
-                                </a>
-                                <a href="{{ route('admin.support-tickets.index') }}?tab=in_progress" 
-                                   class="superadmin-tab {{ request('tab') == 'in_progress' ? 'active' : '' }}">
-                                    In Progress ({{ $counts['in_progress'] ?? 0 }})
-                                </a>
-                                <a href="{{ route('admin.support-tickets.index') }}?tab=resolved" 
-                                   class="superadmin-tab {{ request('tab') == 'resolved' ? 'active' : '' }}">
-                                    Resolved ({{ $counts['resolved'] ?? 0 }})
-                                </a>
-                                <a href="{{ route('admin.support-tickets.index') }}?tab=reopened" 
-                                   class="superadmin-tab {{ request('tab') == 'reopened' ? 'active' : '' }}">
-                                    Reopened ({{ $counts['reopened'] ?? 0 }})
-                                </a>
-                                <a href="{{ route('admin.support-tickets.index') }}?tab=waiting_feedback" 
-                                   class="superadmin-tab {{ request('tab') == 'waiting_feedback' ? 'active' : '' }}">
-                                    Waiting (Feedback) ({{ $counts['waiting_feedback'] ?? 0 }})
-                                </a>
-                                <a href="{{ route('admin.support-tickets.index') }}?tab=critical" 
-                                   class="superadmin-tab {{ request('tab') == 'critical' ? 'active' : '' }}">
-                                    Critical ({{ $counts['critical'] ?? 0 }})
-                                </a>
-                                <a href="{{ route('admin.support-tickets.index') }}?tab=closed" 
-                                   class="superadmin-tab {{ request('tab') == 'closed' ? 'active' : '' }}">
-                                    Closed ({{ $counts['closed'] ?? 0 }})
-                                </a>
-                                <a href="{{ route('admin.support-tickets.index') }}?tab=unassigned" 
-                                   class="superadmin-tab {{ request('tab') == 'unassigned' ? 'active' : '' }}">
-                                    Unassigned ({{ $counts['unassigned'] ?? 0 }})
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @else
-            <!-- Non-SuperAdmin User-Friendly Layout -->
-            @php
-                $baseRoute = $dashboardRoute;
-            @endphp
-            <div class="row filter-row mb-4">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-body"> 
-                            <!-- Filter Tabs -->
-                            <div class="filter-tabs-modern">
-                                <a href="{{ $baseRoute }}?status=all" 
-                                   class="filter-tab {{ request('status', 'all') == 'all' ? 'active' : '' }}">
-                                    <i class="fa fa-list"></i> All ({{ $counts['all'] ?? 0 }})
-                                </a>
-                                @foreach($ticketStatuses as $status)
-                                    <a href="{{ $baseRoute }}?status={{ $status->slug }}" 
-                                       class="filter-tab {{ request('status') == $status->slug ? 'active' : '' }}">
-                                        <i class="fa fa-circle" style="color: {{ $status->color }}; font-size: 8px;"></i> {{ $status->name }} ({{ $counts[$status->slug] ?? 0 }})
+                <!-- SuperAdmin Tab View -->
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="superadmin-filter-tabs">
+                                    <a href="{{ route('admin.support-tickets.index') }}?tab=all" 
+                                    class="superadmin-tab {{ request('tab', 'all') == 'all' ? 'active' : '' }}">
+                                        Total Tickets ({{ $counts['all'] ?? 0 }})
                                     </a>
-                                @endforeach
+                                    <a href="{{ route('admin.support-tickets.index') }}?tab=new" 
+                                    class="superadmin-tab {{ request('tab') == 'new' ? 'active' : '' }}">
+                                        New Tickets ({{ $counts['new'] ?? 0 }})
+                                    </a>
+                                    <a href="{{ route('admin.support-tickets.index') }}?tab=in_progress" 
+                                    class="superadmin-tab {{ request('tab') == 'in_progress' ? 'active' : '' }}">
+                                        In Progress ({{ $counts['in_progress'] ?? 0 }})
+                                    </a>
+                                    <a href="{{ route('admin.support-tickets.index') }}?tab=resolved" 
+                                    class="superadmin-tab {{ request('tab') == 'resolved' ? 'active' : '' }}">
+                                        Resolved ({{ $counts['resolved'] ?? 0 }})
+                                    </a>
+                                    <a href="{{ route('admin.support-tickets.index') }}?tab=reopened" 
+                                    class="superadmin-tab {{ request('tab') == 'reopened' ? 'active' : '' }}">
+                                        Reopened ({{ $counts['reopened'] ?? 0 }})
+                                    </a>
+                                    <a href="{{ route('admin.support-tickets.index') }}?tab=waiting_feedback" 
+                                    class="superadmin-tab {{ request('tab') == 'waiting_feedback' ? 'active' : '' }}">
+                                        Waiting (Feedback) ({{ $counts['waiting_feedback'] ?? 0 }})
+                                    </a>
+                                    <a href="{{ route('admin.support-tickets.index') }}?tab=critical" 
+                                    class="superadmin-tab {{ request('tab') == 'critical' ? 'active' : '' }}">
+                                        Critical ({{ $counts['critical'] ?? 0 }})
+                                    </a>
+                                    <a href="{{ route('admin.support-tickets.index') }}?tab=closed" 
+                                    class="superadmin-tab {{ request('tab') == 'closed' ? 'active' : '' }}">
+                                        Closed ({{ $counts['closed'] ?? 0 }})
+                                    </a>
+                                    <a href="{{ route('admin.support-tickets.index') }}?tab=unassigned" 
+                                    class="superadmin-tab {{ request('tab') == 'unassigned' ? 'active' : '' }}">
+                                        Unassigned ({{ $counts['unassigned'] ?? 0 }})
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            @elseif(\App\Helpers\RouteHelper::isStaff() && (auth()->user()->created_by == 2))
+            <!-- SuperAdmin Advanced Filters -->
+                <div class="row filter-row mb-3">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form method="GET" action="{{ \App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') :(\App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.dashboard') : route('admin.support-tickets.index')) }}">
+                                    <div class="row align-items-end">
+                                        <!-- <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Company</label>
+                                                <select class="form-control" name="company">
+                                                    <option value="">All Companies</option>
+                                                    @foreach($companies as $company)
+                                                        <option value="{{ $company }}" {{ request('company') == $company ? 'selected' : '' }}>
+                                                            {{ $company }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div> -->
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Category</label>
+                                                <select class="form-control" name="department">
+                                                    <option value="">All Categories</option>
+                                                    @foreach($departments as $department)
+                                                        <option value="{{ $department }}" {{ request('department') == $department ? 'selected' : '' }}>
+                                                            {{ ucfirst(str_replace('_', ' ', $department)) }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Status</label>
+                                                <select class="form-control" name="status">
+                                                    <option value="">All Status</option>
+                                                    @foreach($ticketStatuses as $status)
+                                                        <option value="{{ $status->slug }}" {{ request('status') == $status->slug ? 'selected' : '' }}>
+                                                            {{ $status->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Priority</label>
+                                                <select class="form-control" name="priority">
+                                                    <option value="">All Priority</option>
+                                                    @foreach($priorities as $priority)
+                                                        <option value="{{ $priority }}" {{ request('priority') == $priority ? 'selected' : '' }}>
+                                                            {{ ucfirst($priority) }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Date Range</label>
+                                                <div class="input-group">
+                                                    <input type="date" name="date_from" class="form-control" placeholder="From" value="{{ request('date_from') }}">
+                                                    <input type="date" name="date_to" class="form-control" placeholder="To" value="{{ request('date_to') }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Search</label>
+                                                <div class="input-group">
+                                                    <input type="text" name="search" class="form-control" placeholder="Search..." value="{{ request('search') }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-12">
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="fa fa-search"></i> Search Tickets
+                                            </button>
+                                            <a href="{{ route('admin.support-tickets.index') }}" class="btn btn-secondary btn-sm">
+                                                <i class="fa fa-refresh"></i> Reset Filters
+                                            </a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Non-SuperAdmin User-Friendly Layout -->
+                @php
+                    $baseRoute = $dashboardIndexRoute;
+                @endphp
+                <div class="row filter-row mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body"> 
+                                <!-- Filter Tabs -->
+                                <div class="filter-tabs-modern">
+                                    <a href="{{ $baseRoute }}?status=all" 
+                                    class="filter-tab {{ request('status', 'all') == 'all' ? 'active' : '' }}">
+                                        <i class="fa fa-list"></i> All ({{ $counts['all'] ?? 0 }})
+                                    </a>
+                                    @foreach($ticketStatuses as $status)
+                                        <a href="{{ $baseRoute }}?status={{ $status->slug }}" 
+                                        class="filter-tab {{ request('status') == $status->slug ? 'active' : '' }}">
+                                            <i class="fa fa-circle" style="color: {{ $status->color }}; font-size: 8px;"></i> {{ $status->name }} ({{ $counts[$status->slug] ?? 0 }})
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <!-- Non-SuperAdmin User-Friendly Layout -->
+                @php
+                    $baseRoute = $dashboardRoute;
+                @endphp
+                <div class="row filter-row mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body"> 
+                                <!-- Filter Tabs -->
+                                <div class="filter-tabs-modern">
+                                    <a href="{{ $baseRoute }}?status=all" 
+                                    class="filter-tab {{ request('status', 'all') == 'all' ? 'active' : '' }}">
+                                        <i class="fa fa-list"></i> All ({{ $counts['all'] ?? 0 }})
+                                    </a>
+                                    @foreach($ticketStatuses as $status)
+                                        <a href="{{ $baseRoute }}?status={{ $status->slug }}" 
+                                        class="filter-tab {{ request('status') == $status->slug ? 'active' : '' }}">
+                                            <i class="fa fa-circle" style="color: {{ $status->color }}; font-size: 8px;"></i> {{ $status->name }} ({{ $counts[$status->slug] ?? 0 }})
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             @endif
 
             <div class="row">
@@ -327,9 +447,9 @@
                                                             Select Department
                                                         </option>
                                                         @foreach($staffdepartments as $department)
-                                                            <option value="{{ $department->department_name }}"
-                                                                {{ isset($ticket->department) && $ticket->department == $department->department_name ? 'selected' : '' }}>
-                                                                {{ $department->department_name }}
+                                                            <option value="{{ $department }}"
+                                                                {{ isset($ticket->department) && $ticket->department == $department ? 'selected' : '' }}>
+                                                                {{ $department }}
                                                             </option>
                                                         @endforeach
                                                     </select>
@@ -346,7 +466,7 @@
                                                             Select Staff Member
                                                         </option>
                                                         @foreach($staffMembers as $staff)
-                                                            <option value="{{ $staff->id }}" {{ $ticket->assigned_to == $staff->id ? 'selected' : '' }}>
+                                                            <option value="{{ $staff->id }}" >
                                                                 {{ $staff->first_name }} {{ $staff->last_name }}
                                                             </option>
                                                         @endforeach
@@ -493,9 +613,9 @@
                                                             Select Department
                                                         </option>
                                                         @foreach($staffdepartments as $department)
-                                                            <option value="{{ $department->department_name }}"
-                                                                {{ isset($ticket->department) && $ticket->department == $department->department_name ? 'selected' : '' }}>
-                                                                {{ $department->department_name }}
+                                                            <option value="{{ $department }}"
+                                                                {{ isset($ticket->department) && $ticket->department == $department ? 'selected' : '' }}>
+                                                                {{ $department }}
                                                             </option>
                                                         @endforeach
                                                     </select>
@@ -512,7 +632,7 @@
                                                             Select Staff Member
                                                         </option>
                                                         @foreach($staffMembers as $staff)
-                                                            <option value="{{ $staff->id }}" {{ $ticket->assigned_to == $staff->id ? 'selected' : '' }}>
+                                                            <option value="{{ $staff->id }}">
                                                                 {{ $staff->first_name }} {{ $staff->last_name }}
                                                             </option>
                                                         @endforeach
@@ -1046,7 +1166,7 @@
                     staffSelect.empty();
                     staffSelect.append('<option value="">Select Staff Member</option>');
                     @foreach($staffMembers as $staff)
-                        staffSelect.append('<option value="{{ $staff->id }}" {{ $ticket->assigned_to == $staff->id ? 'selected' : '' }}>{{ $staff->first_name }} {{ $staff->last_name }}</option>');
+                        staffSelect.append('<option value="{{ $staff->id }}">{{ $staff->first_name }} {{ $staff->last_name }}</option>');
                     @endforeach
                 }
             });
@@ -1085,7 +1205,7 @@
                     staffSelect2.empty();
                     staffSelect2.append('<option value="">Select Staff Member</option>');
                     @foreach($staffMembers as $staff)
-                        staffSelect2.append('<option value="{{ $staff->id }}" {{ $ticket->assigned_to == $staff->id ? 'selected' : '' }}>{{ $staff->first_name }} {{ $staff->last_name }}</option>');
+                        staffSelect2.append('<option value="{{ $staff->id }}">{{ $staff->first_name }} {{ $staff->last_name }}</option>');
                     @endforeach
                 }
             });

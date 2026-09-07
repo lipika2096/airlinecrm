@@ -33,7 +33,11 @@ class SupportTicketController extends Controller
         } else {
             return redirect()->route('admin.login');
         }
-            $staffdepartments = Department::latest()->get();
+            $staffdepartments = \App\Models\UserDepartment::distinct()
+                ->pluck('department_name')
+                ->filter()
+                ->sort()
+                ->values();
             $staffMembers = User::where('role_id', 2)->where('status', 'active')->get();
 
 
@@ -176,7 +180,12 @@ class SupportTicketController extends Controller
             }
 
             // Get filter options for superadmin
-            $departments = ['technical_support', 'billing', 'booking', 'account', 'other'];
+            $departments = \App\Models\UserDepartment::distinct()
+                ->pluck('department_name')
+                ->filter()
+                ->sort()
+                ->values()
+                ->toArray();
             $priorities = ['low', 'medium', 'high', 'critical', 'urgent'];
             $statuses = TicketStatus::where('is_active', true)->orderBy('sort_order')->pluck('slug')->toArray();
             
@@ -258,8 +267,26 @@ class SupportTicketController extends Controller
 
     public function dashboardStatistics()
     {
-        // Get ticket statistics for SuperAdmin dashboard
-            $newTickets = SupportTicket::count();
+        if (auth()->check()) {
+            // Staff user from users table
+            $user = auth()->user();
+            $isSuperAdmin = false;
+            $isStaff = true;
+            $isCustomer = false;
+        } elseif (auth('admin')->check()) {
+            // Admin user from admins table
+            $user = Auth::guard('admin')->user();
+            $isSuperAdmin = $user->hasRole('SuperAdmin');
+            $isStaff = false;
+            $isCustomer = false;
+        } elseif(auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+            $user = Auth::guard('admin')->user();
+            $isSuperAdmin = false;
+            $isStaff = false;
+            $isCustomer = $user->hasRole('Admin');
+        }
+            // Get ticket statistics for SuperAdmin dashboard
+            $newTickets = SupportTicket::where('created_by',$user->id)->orWhere('assigned_to', $user->id)->count();
             
             // Get status slugs from database
             $openStatusSlug = TicketStatus::where('name', 'Open')->first()?->slug ?? 'open';
@@ -267,16 +294,16 @@ class SupportTicketController extends Controller
             $resolvedStatusSlug = TicketStatus::where('name', 'Resolved')->first()?->slug ?? 'resolved';
             $closedStatusSlug = TicketStatus::where('name', 'Closed')->first()?->slug ?? 'closed';
             
-            $openTickets = SupportTicket::where('status', $openStatusSlug)->count();
-            $pendingTickets = SupportTicket::where('status', $inProgressStatusSlug)->count();
+            $openTickets = SupportTicket::where('created_by',$user->id)->orWhere('assigned_to', $user->id)->where('status', $openStatusSlug)->count();
+            $pendingTickets = SupportTicket::where('created_by',$user->id)->orWhere('assigned_to', $user->id)->where('status', $inProgressStatusSlug)->count();
             
             // Calculate overdue tickets (tickets past SLA)
-            $overdueTickets = SupportTicket::whereNotIn('status', [$resolvedStatusSlug, $closedStatusSlug])
+            $overdueTickets = SupportTicket::where('created_by',$user->id)->orWhere('assigned_to', $user->id)->whereNotIn('status', [$resolvedStatusSlug, $closedStatusSlug])
                 ->where('created_at', '<', now()->subHours(24))
                 ->count();
             
-            $resolvedTickets = SupportTicket::where('status', $resolvedStatusSlug)->count();
-            $closedTickets = SupportTicket::where('status', $closedStatusSlug)->count();
+            $resolvedTickets = SupportTicket::where('created_by',$user->id)->orWhere('assigned_to', $user->id)->where('status', $resolvedStatusSlug)->count();
+            $closedTickets = SupportTicket::where('created_by',$user->id)->orWhere('assigned_to', $user->id)->where('status', $closedStatusSlug)->count();
             // Calculate average response time (in minutes)
             $avgFirstResponse = $this->calculateAverageFirstResponse();
             
@@ -290,7 +317,7 @@ class SupportTicketController extends Controller
             $topDepartmentsData = $this->getTopDepartmentsData();
 
             // Get recent tickets for table view (latest 5)
-            $recentTickets = SupportTicket::with(['creator', 'assignedTo'])
+            $recentTickets = SupportTicket::where('created_by',$user->id)->orWhere('assigned_to', $user->id)->with(['creator', 'assignedTo'])
                 ->latest()
                 ->limit(5)
                 ->get();
@@ -299,6 +326,9 @@ class SupportTicketController extends Controller
             $ticketStatuses = TicketStatus::where('is_active', true)->orderBy('sort_order')->get();
 
             return view('admin.support-tickets.dashboard', compact(
+                'isSuperAdmin',
+                'isStaff',
+                'isCustomer',
                 'newTickets',
                 'openTickets',
                 'pendingTickets',
@@ -480,7 +510,12 @@ class SupportTicketController extends Controller
         }
 
         // Get filter options for superadmin
-        $departments = ['technical_support', 'billing', 'booking', 'account', 'other'];
+        $departments = \App\Models\UserDepartment::distinct()
+            ->pluck('department_name')
+            ->filter()
+            ->sort()
+            ->values()
+            ->toArray();
         $priorities = ['low', 'medium', 'high', 'critical', 'urgent']; // Common priorities, but text field allows custom values
         $statuses = ['open', 'in_progress', 'resolved', 'closed'];
         
@@ -572,7 +607,11 @@ class SupportTicketController extends Controller
                 $counts[$status->slug] = (clone $allTickets)->where('status', $status->slug)->count();
             }
         }
-            $staffdepartments = Department::latest()->get();
+            $staffdepartments = \App\Models\UserDepartment::distinct()
+                ->pluck('department_name')
+                ->filter()
+                ->sort()
+                ->values();
                         $staffMembers = User::where('role_id', 2)->where('status', 'active')->get();
 
 
@@ -710,7 +749,7 @@ class SupportTicketController extends Controller
             $companyName = $currentUser->adminDetail->company_name;
         }
 
-        SupportTicket::create([
+        $ticket = SupportTicket::create([
             'ticket_number' => $ticketNumber,
             'department' => $request->department,
             'subject' => $request->subject,
@@ -724,6 +763,35 @@ class SupportTicketController extends Controller
             'attachments' => json_encode($attachmentPaths),
             'company_name' => $companyName,
         ]);
+
+        // Notify assigned staff if ticket is assigned
+        if ($assignedTo) {
+            $this->createNotification(
+                $assignedTo,
+                'staff',
+                'ticket_created',
+                'New Ticket Assigned',
+                "You have been assigned to new ticket #{$ticketNumber}",
+                $ticket->id,
+                ['subject' => $request->subject, 'priority' => $request->priority ?? 'medium']
+            );
+        }
+
+        // Notify SuperAdmin if ticket is created by staff or customer
+        if ($isStaff || (!$isSuperAdmin && !$isStaff)) {
+            $superAdmin = Admin::role('SuperAdmin')->first();
+            if ($superAdmin) {
+                $this->createNotification(
+                    $superAdmin->id,
+                    'admin',
+                    'ticket_created',
+                    'New Support Ticket Created',
+                    "New ticket #{$ticketNumber} has been created",
+                    $ticket->id,
+                    ['subject' => $request->subject, 'priority' => $request->priority ?? 'medium']
+                );
+            }
+        }
 
         if($isSuperAdmin) {
             return redirect()->route('admin.support-tickets.index')
@@ -787,7 +855,11 @@ class SupportTicketController extends Controller
         }
         $slaDue = $ticket->created_at->copy()->addHours($slaHours);
         $isOverdue = $slaDue->isPast() && !in_array($ticket->status, ['resolved', 'closed']);
-        $departments = Department::latest()->get();
+        $departments = \App\Models\UserDepartment::distinct()
+            ->pluck('department_name')
+            ->filter()
+            ->sort()
+            ->values();
 
         // Check if user can rate (ticket creator and ticket is closed)
         $canRate = !$isSuperAdmin && $ticket->status === 'closed' && $ticket->created_by === $user->id && !$ticket->rating;
@@ -808,13 +880,14 @@ class SupportTicketController extends Controller
 
     public function getStaffByDepartment(Request $request)
     {
-        $departmentId = $request->input('department_id');
+        $departmentName = $request->input('department_id');
 
-        // Get staff members (role_id=2) by department
+        // Get staff members (role_id=2) who have this department in their user_departments
         $staff = User::where('role_id', 2)
-            ->where('department', $departmentId)
+            ->whereHas('userDepartments', function($query) use ($departmentName) {
+                $query->where('department_name', $departmentName);
+            })
             ->get();
-            //dd($staff);
 
         return response()->json([
             'staff' => $staff
@@ -892,9 +965,50 @@ class SupportTicketController extends Controller
 
         $ticket->save();
 
+        // Notify ticket creator about status change
+        if ($oldStatus != $ticket->status && $ticket->created_by != $userId) {
+            $creatorType = \App\Models\Admin::find($ticket->created_by) ? 'admin' : 'staff';
+            $this->createNotification(
+                $ticket->created_by,
+                $creatorType,
+                'status_update',
+                'Ticket Status Updated',
+                "Ticket #{$ticket->ticket_number} status changed from {$oldStatus} to {$ticket->status}",
+                $ticket->id,
+                ['old_status' => $oldStatus, 'new_status' => $ticket->status]
+            );
+        }
+
+        // Notify assigned staff about status change
+        if ($oldStatus != $ticket->status && $ticket->assigned_to && $ticket->assigned_to != $userId) {
+            $this->createNotification(
+                $ticket->assigned_to,
+                'staff',
+                'status_update',
+                'Ticket Status Updated',
+                "Ticket #{$ticket->ticket_number} status changed from {$oldStatus} to {$ticket->status}",
+                $ticket->id,
+                ['old_status' => $oldStatus, 'new_status' => $ticket->status]
+            );
+        }
+
         return redirect()->back()
             ->with('success', 'Ticket updated successfully.')
             ->with('active_tab', $request->get('active_tab', 'details'));
+    }
+
+    private function createNotification($userId, $userType, $type, $title, $message, $supportTicketId, $data = null)
+    {
+        \App\Models\Notification::create([
+            'user_id' => $userId,
+            'user_type' => $userType,
+            'type' => $type,
+            'title' => $title,
+            'message' => $message,
+            'data' => $data,
+            'support_ticket_id' => $supportTicketId,
+            'is_read' => false,
+        ]);
     }
 
     public function addComment(Request $request, $id)
@@ -956,6 +1070,33 @@ class SupportTicketController extends Controller
             'commented_by' => $request->commented_by
         ]);
 
+        // Notify ticket creator if commenter is not the creator
+        if ($ticket->created_by != $userId) {
+            $creatorType = \App\Models\Admin::find($ticket->created_by) ? 'admin' : 'staff';
+            $this->createNotification(
+                $ticket->created_by,
+                $creatorType,
+                'comment',
+                'New Comment on Ticket',
+                "A new comment has been added to ticket #{$ticket->ticket_number}",
+                $ticket->id,
+                ['comment' => substr($request->comment, 0, 100)]
+            );
+        }
+
+        // Notify assigned staff if commenter is not the assigned staff
+        if ($ticket->assigned_to && $ticket->assigned_to != $userId) {
+            $this->createNotification(
+                $ticket->assigned_to,
+                'staff',
+                'comment',
+                'New Comment on Assigned Ticket',
+                "A new comment has been added to ticket #{$ticket->ticket_number}",
+                $ticket->id,
+                ['comment' => substr($request->comment, 0, 100)]
+            );
+        }
+
         // Automatically change status from on_hold to reopened when a comment is added
         if ($ticket->status === 'on_hold') {
             $reopenedStatusSlug = TicketStatus::where('name', 'Reopened')->first()?->slug ?? 'reopened';
@@ -975,8 +1116,33 @@ class SupportTicketController extends Controller
         ]);
 
         $ticket = SupportTicket::findOrFail($id);
+        $previousAssignedTo = $ticket->assigned_to;
         $ticket->assigned_to = $request->assigned_to;
         $ticket->save();
+
+        // Notify newly assigned staff
+        $this->createNotification(
+            $request->assigned_to,
+            'staff',
+            'assignment',
+            'New Ticket Assignment',
+            "You have been assigned to ticket #{$ticket->ticket_number}",
+            $ticket->id,
+            ['subject' => $ticket->subject]
+        );
+
+        // Notify previous assigned staff if reassignment
+        if ($previousAssignedTo && $previousAssignedTo != $request->assigned_to) {
+            $this->createNotification(
+                $previousAssignedTo,
+                'staff',
+                'assignment',
+                'Ticket Reassigned',
+                "Ticket #{$ticket->ticket_number} has been reassigned to another staff member",
+                $ticket->id,
+                ['subject' => $ticket->subject]
+            );
+        }
 
         return redirect()->back()
             ->with('success', 'Ticket assigned successfully.');
@@ -1182,36 +1348,62 @@ class SupportTicketController extends Controller
     
     private function calculateAverageFirstResponse()
     {
-        // Calculate average time to first response (in minutes)
-        // Get the first comment for each ticket and calculate response time
         $ticketsWithComments = SupportTicket::has('comments')->get();
-        
-        $responseTimes = $ticketsWithComments->map(function ($ticket) {
-            $firstComment = $ticket->comments()->orderBy('created_at')->first();
+
+        $responseTimesInSeconds = $ticketsWithComments->map(function ($ticket) {
+            $firstComment = $ticket->comments()
+                ->orderBy('created_at', 'asc')
+                ->first();
+
             if ($firstComment && $ticket->created_at) {
-                return $ticket->created_at->diffInMinutes($firstComment->created_at);
+                return $ticket->created_at->diffInSeconds($firstComment->created_at);
             }
+
             return null;
         })->filter();
-        
-        return $responseTimes->isEmpty() ? 0 : round($responseTimes->avg(), 2);
+
+        if ($responseTimesInSeconds->isEmpty()) {
+            return '00:00:00';
+        }
+
+        $averageSeconds = (int) round($responseTimesInSeconds->avg());
+
+        $hours = intdiv($averageSeconds, 3600);
+        $minutes = intdiv($averageSeconds % 3600, 60);
+        $seconds = $averageSeconds % 60;
+
+        return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+
     }
     
     private function calculateAverageResolutionTime()
     {
-        // Calculate average resolution time (in hours)
+        // Calculate average resolution time in hours, minutes and seconds
         $resolvedTickets = SupportTicket::whereIn('status', ['resolved', 'closed'])
             ->whereNotNull('resolved_at')
             ->get();
-            
-        $resolutionTimes = $resolvedTickets->map(function ($ticket) {
+
+        $resolutionTimesInSeconds = $resolvedTickets->map(function ($ticket) {
             if ($ticket->created_at && $ticket->resolved_at) {
-                return $ticket->created_at->diffInHours($ticket->resolved_at);
+                return $ticket->created_at->diffInSeconds($ticket->resolved_at);
             }
+
             return null;
         })->filter();
-        
-        return $resolutionTimes->isEmpty() ? 0 : round($resolutionTimes->avg(), 2);
+
+        if ($resolutionTimesInSeconds->isEmpty()) {
+            return '00:00:00';
+        }
+
+        // Average time in seconds
+        $averageSeconds = (int) round($resolutionTimesInSeconds->avg());
+
+        // Convert seconds to hours, minutes and seconds
+        $hours = intdiv($averageSeconds, 3600);
+        $minutes = intdiv($averageSeconds % 3600, 60);
+        $seconds = $averageSeconds % 60;
+
+        return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
     }
     
     private function getTicketsOverviewData()

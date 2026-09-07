@@ -19,7 +19,7 @@
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
-                        <a href="{{ route('admin.admin.add-customer') }}" class="btn btn-primary text-white" ><i class="fa fa-plus"></i> Add Customer</a>
+                        <a href="{{ \App\Helpers\RouteHelper::isStaff() ? route('staff.admin.add-customer') : route('admin.admin.add-customer') }}" class="btn btn-primary text-white" ><i class="fa fa-plus"></i> Add Customer</a>
 
                     </div>
                 </div>
@@ -70,12 +70,12 @@
                                                         </button>
                                                         <ul class="dropdown-menu dropdown-menu-end">
                                                             <li>
-                                                                <a class="dropdown-item" href="{{route('admin.customer.view', ['id'=> $data->id])}}">
+                                                                <a class="dropdown-item" href="{{\App\Helpers\RouteHelper::isStaff() ? route('staff.customer.view', ['id'=> $data->id]) :route('admin.customer.view', ['id'=> $data->id])}}">
                                                                     <i class="fa fa-eye me-2"></i> View Profile
                                                                 </a>
                                                             </li>
                                                             <li>
-                                                                <a class="dropdown-item" href="{{route('admin.toggle.status', ['id'=> $data->id])}}">
+                                                                <a class="dropdown-item" href="{{ \App\Helpers\RouteHelper::isStaff() ? route('staff.toggle.status', ['id'=> $data->id]) : route('admin.toggle.status', ['id'=> $data->id]) }}">
                                                                     <i class="fa {{ $data->is_active ? 'fa-ban' : 'fa-check' }} me-2"></i>
                                                                     {{ $data->is_active ? 'Deactivate' : 'Activate' }}
                                                                 </a>

@@ -14,10 +14,10 @@
                     <li><a class="{{ request()->routeIs('admin.support-tickets.dashboard') ? 'active' : '' }}" href="{{ route('admin.support-tickets.dashboard') }}"><i class="la la-life-ring"></i> <span> Support Tickets</span></a>
                     </li>
                 @elseif(\App\Helpers\RouteHelper::isCustomer() && auth('admin')->check() && auth('admin')->user()?->getDirectPermissions()->contains('name', 'support-tickets'))
-                    <li><a class="{{ request()->routeIs('customer.support-tickets.dashboard') ? 'active' : '' }}" href="{{ route('customer.support-tickets.dashboard') }}"><i class="la la-life-ring"></i> <span> Support Tickets</span></a>
+                    <li><a class="{{ request()->routeIs('customer.support-tickets.index') ? 'active' : '' }}" href="{{ route('customer.support-tickets.index') }}"><i class="la la-life-ring"></i> <span> Support Tickets</span></a>
                     </li>
                 @elseif(\App\Helpers\RouteHelper::isStaff())
-                    <li><a class="{{ request()->routeIs('staff.support-tickets.dashboard') ? 'active' : '' }}" href="{{ route('staff.support-tickets.dashboard') }}"><i class="la la-life-ring"></i> <span> Support Tickets</span></a>
+                    <li><a class="{{ request()->routeIs('staff.support-tickets.index') ? 'active' : '' }}" href="{{ route('staff.support-tickets.index') }}"><i class="la la-life-ring"></i> <span> Support Tickets</span></a>
                     </li>
                 @endif
                 @if(auth('admin')->check() && auth('admin')->user()?->getDirectPermissions()->contains('name', 'hr'))
@@ -244,7 +244,7 @@
                             </ul>
                         </li>
                 @endif
-                @if(auth('admin')->check() && auth('admin')->user()->hasRole('SuperAdmin'))
+                @if(auth('admin')->check() && auth('admin')->user()->hasRole('SuperAdmin') )
                     <li class="submenu">
                         <a href="javascript:void(0);"><i class="la la-users"></i> <span>Customer</span> <span
                                 class="menu-arrow"></span></a>
@@ -276,6 +276,28 @@
                             </li>
                         </ul>
                     </li>
+                @elseif(\App\Helpers\RouteHelper::isStaff() && (auth()->user()->created_by == 2))
+                    <li class="submenu">
+                        <a href="javascript:void(0);"><i class="la la-users"></i> <span>Customer</span> <span
+                                class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            <li>
+                                <a class="{{ request()->routeIs('staff.admin.add-customer') ? 'active' : '' }}" href="{{ route('staff.admin.add-customer') }}">Add Customer</a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('staff.admin.view') ? 'active' : '' }}" href="{{ route('staff.admin.view') }}">Manage Customer</a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('staff.kyc.documents') ? 'active' : '' }}" href="{{ route('staff.kyc.documents') }}">Library</a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('staff.customer-reports') ? 'active' : '' }}" href="{{ route('staff.customer-reports') }}">Reports</a>
+                            </li>
+                             <li>
+                                <a class="{{ request()->routeIs('staff.customer.case-history') ? 'active' : '' }}" href="{{ route('staff.customer.case-history') }}">Case History</a>
+                            </li>
+                        </ul>
+                    </li>
                 @endif
                 @if(auth('admin')->check() && auth('admin')->user()->hasRole('SuperAdmin'))
                     <li>
@@ -283,6 +305,9 @@
                     </li>
                     <li><a class="{{ request()->routeIs('admin.sales-packages.index') ? 'active' : '' }}" href="{{ route('admin.sales-packages.index') }}"><i class="la la-cog"></i> <span>Sales Packages</span></a></li>
                  @elseif(\App\Helpers\RouteHelper::isStaff() && (auth()->user()->created_by == 2))
+                 <li>
+                        <a class="{{ request()->routeIs('staff.roles-permissions.index') ? 'active' : '' }}" href="{{ route('staff.roles-permissions.index') }}"><i class="la la-cog"></i> <span>Manage Modules</span></a>
+                    </li>
                  <li><a class="{{ request()->routeIs('staff.sales-packages.index') ? 'active' : '' }}" href="{{ route('admin.sales-packages.index') }}"><i class="la la-cog"></i> <span>Sales Packages</span></a></li>
                 @endif
                 @if(auth('admin')->check() && auth('admin')->user()->hasRole('SuperAdmin'))

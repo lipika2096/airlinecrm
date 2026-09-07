@@ -76,7 +76,7 @@
                                             <th>No</th>
                                             <th>Picture</th>
                                             <th>Staff Name</th>
-                                            <th>Company Name</th>
+                                            <!-- <th>Company Name</th> -->
                                             <th>Department</th>
                                             <th>Position</th>
                                             <th>Staff No</th>
@@ -102,13 +102,13 @@
                                                 <td style="color:#ed5b24;"><a
                                                         href="{{ route('admin.view-staff', ['id' => $data->id]) }}">{{ $data->first_name }}
                                                         {{ $data->last_name }}</a></td>
-                                                <td>
+                                                <!-- <td>
                                                     @if ($data->client_company_name)
                                                         {{ $data->client_company_name }}
                                                     @else
                                                         Null
                                                     @endif
-                                                </td>
+                                                </td> -->
                                                 <td>
                                                     @if(!empty($data->department_names) && is_array($data->department_names))
                                                         {{ implode(', ', $data->department_names) }}
@@ -179,11 +179,11 @@
                                                                     <!-- </div> -->
                                                                     <div class="col-sm-4">
                                                                         <div class="form-group">
-                                                                            <label class="form-label">Employee ID <span
-                                                                                    class="text-danger">*</span></label>
+                                                                            <label class="form-label">Employee ID</label>
                                                                             <input type="text" class="form-control"
                                                                                 name="employee_id"
-                                                                                value="{{ $data->unique_id }}">
+                                                                                value="{{ $data->unique_id }}"
+                                                                                placeholder="Auto-generated if empty" readonly>
                                                                         </div>
                                                                     </div>
 
@@ -195,13 +195,12 @@
                                                                             name="email" value="{{ $data->email }}">
                                                                     </div>
                                                                     <!-- </div> -->
-                                                                    <div class="col-sm-4">
-                                                                        <!-- <div class="form-group"> -->
+                                                                    <!-- <div class="col-sm-4">
                                                                         <label class="form-label">Password</label>
                                                                         <input class="form-control" type="password"
                                                                             name="password"
                                                                             value="{{ $data->password }}">
-                                                                    </div>
+                                                                    </div> -->
                                                                     <!-- </div> -->
 
                                                                     <!-- </div> -->
@@ -407,7 +406,7 @@
                                                             <th>S.No</th>
                                                             <th>Picture</th>
                                                             <th>Staff Name</th>
-                                                            <th>Company Name</th>
+                                                            <!-- <th>Company Name</th> -->
                                                             <th>Position</th>
                                                             <th>Staff No</th>
                                                             <th>Actions</th>
@@ -429,13 +428,13 @@
                                                                 <td style="color:#ed5b24;"><a
                                                                         href="{{ route('admin.view-staff', ['id' => $employee->id]) }}">{{ $employee->first_name }}
                                                                         {{ $employee->last_name }}</a></td>
-                                                                <td>
+                                                                <!-- <td>
                                                                     @if (!empty($employee->client->client_company_name))
                                                                         {{ $employee->client->client_company_name }}
                                                                     @else
                                                                         Null
                                                                     @endif
-                                                                </td>
+                                                                </td> -->
                                                                 <td>{{ $employee->position }}</td>
                                                                 <td>{{ $employee->unique_id }}</td>
                                                                 {{-- <td>{{ $data->joining_date }}</td>

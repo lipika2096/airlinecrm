@@ -13,11 +13,11 @@ class Department extends Model
       return $this->belongsTo(User::class, 'staff_id');
   }
 
-  public function scopeForStaff($query, $staffId = null)
-  {
-      if ($staffId) {
-          return $query->where('staff_id', $staffId);
-      }
-      return $query->whereNull('staff_id');
-  }
+//   public function scopeForStaff($query, $staffId = null)
+//   {
+//       if ($staffId) {
+//           return $query->where('staff_id', $staffId);
+//       }
+//       return $query->whereNull('staff_id');
+//   }
 }

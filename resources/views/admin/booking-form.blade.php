@@ -127,9 +127,8 @@
                 <div class="col-md-3">
                     <label class="form-label">Customer Type</label>
                     <select class="form-control" name="customer_type">
-                        <option value="individual">Individual</option>
-                        <option value="corporate">Corporate</option>
-                        <option value="agent">Agent</option>
+                        <option value="b2b">B2B</option>
+                        <option value="b2c">B2C</option>
                     </select>
                 </div>
             </div>

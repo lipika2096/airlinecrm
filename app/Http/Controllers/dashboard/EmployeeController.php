@@ -467,7 +467,7 @@ class EmployeeController extends Controller
             $query->where('created_by', $currentUserId);
         }
         
-        $employees = $query->get();
+        $employees = $query->where('created_by', $currentUserId)->get();
 
         // Load department names for each employee from both sources
         foreach ($employees as $employee) {
@@ -841,6 +841,7 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
+        try{
         // Validate the request
         $request->validate([
             'first_name' => 'required|string|max:255',
@@ -928,7 +929,7 @@ class EmployeeController extends Controller
         $user->branch = $request->branch;
         $user->company_mobile = $request->company_mobile;
         $user->date_of_resignation = $request->date_of_resignation;
-        $user->created_by = auth('admin')->user()->id;
+        $user->created_by = auth('admin')->user()->id ?? auth()->user()->id;
         $user->is_active = true;
 
         $user->save();
@@ -951,15 +952,40 @@ class EmployeeController extends Controller
             \Log::error('Failed to send email: ' . $e->getMessage());
         }
 
-        // Determine appropriate redirect route based on user type
-        $redirectRoute = 'admin.employees';
         if (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+            // Determine appropriate redirect route based on user type
+            $redirectRoute = 'admin.employees';
+            return redirect()->route('admin.employees')->with('success', 'Employee added successfully. Password sent to email.');
+        }
+        elseif (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
             $redirectRoute = 'customer.employees';
+            return redirect()->route('customer.employees')->with('success', 'Employee added successfully. Password sent to email.');
+
         } elseif (auth()->check()) {
             $redirectRoute = 'staff.employees';
+            return redirect()->route('staff.employees')->with('success', 'Employee added successfully. Password sent to email.');
+
+        }
+        } catch (\Exception $e) {
+            // Log error but don't prevent user creation
+            \Log::error('Failed to create account: ' . $e->getMessage());
+            if (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+            // Determine appropriate redirect route based on user type
+            $redirectRoute = 'admin.employees';
+            return redirect()->route('admin.employees')->with('error', 'Failed to create account: ' . $e->getMessage());
+        }
+        elseif (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+            $redirectRoute = 'customer.employees';
+            return redirect()->route('customer.employees')->with('error', 'Failed to create account: ' . $e->getMessage());
+
+        } elseif (auth()->check()) {
+            $redirectRoute = 'staff.employees';
+            return redirect()->route('staff.employees')->with('error', 'Failed to create account: ' . $e->getMessage());
+
+        }
+
         }
         
-        return redirect()->route($redirectRoute)->with('success', 'Employee added successfully. Password sent to email.');
     }
     public function edit(Request $request, $id)
     {
@@ -1005,13 +1031,32 @@ class EmployeeController extends Controller
 
         // Get primary department (first selected department)
         $departments = $request->input('departments');
-        
+
         // Handle backwards compatibility: if no departments array provided, try single department field
         if (empty($departments) || !is_array($departments)) {
             $departments = $request->input('department') ? [$request->input('department')] : [];
         }
-        
+
         $primaryDepartment = is_array($departments) && !empty($departments) ? $departments[0] : null;
+
+        // Auto-generate employee ID if null or empty
+        $employeeId = $request->input('employee_id');
+        if (empty($employeeId)) {
+            $year = date('Y');
+            $lastEmployee = User::where('unique_id', 'like', 'EMP-' . $year . '%')
+                               ->orderBy('id', 'desc')
+                               ->first();
+
+            if ($lastEmployee) {
+                // Extract the last number and increment
+                $lastNumber = (int) substr($lastEmployee->unique_id, -4);
+                $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+            } else {
+                $newNumber = '0001';
+            }
+
+            $employeeId = 'EMP-' . $year . '-' . $newNumber;
+        }
         
         // Determine appropriate auth guard for updated_by field
         $updatedBy = null;
@@ -1025,7 +1070,7 @@ class EmployeeController extends Controller
             'first_name' => $request->input('first_name'),
             'last_name' => $request->input('last_name'),
             'email' => $request->input('email'),
-            'unique_id' => $request->input('employee_id'),
+            'unique_id' => $employeeId,
             'joining_date' => $request->input('joining_date'),
             'phone' => $request->input('phone'),
             'department' => $primaryDepartment, // Set primary department
@@ -1062,7 +1107,7 @@ class EmployeeController extends Controller
         try {
             // Find the user based on the provided ID
             $user = User::findOrFail($id);
-            
+
             // Check if user has permission to delete this employee
             $currentUserId = null;
             $userType = 'superadmin';

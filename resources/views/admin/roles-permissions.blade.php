@@ -230,7 +230,7 @@
                 var button = $(this);
 
                 $.ajax({
-                    url: '{{ route("admin.update.permission.status") }}',
+                    url: "{{ \App\Helpers\RouteHelper::isStaff() ? route(''admin.update.permission.status) :route("admin.update.permission.status") }}",
                     type: 'POST',
                     data: {
                         _token: '{{ csrf_token() }}',

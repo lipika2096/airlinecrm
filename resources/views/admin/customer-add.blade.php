@@ -25,7 +25,7 @@
                 <div class="col-md-12 d-flex">
                     <div class="card profile-box flex-fill">
                         <div class="card-body">
-                            <form action="{{ route('admin.admin.store') }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ (\App\Helpers\RouteHelper::isStaff() ? route('staff.admin.store') : route('admin.admin.store')) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="row">
                                     <div class="form-group col-sm-3">

@@ -145,6 +145,12 @@ Route::get('/admin/toggle-status/{id}', [AdminController::class, 'toggleStatus']
 Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
     Route::get('/logout', [AdminController::class, 'logout'])->name('logout');
+
+    // Notification routes
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+    Route::delete('notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
     
     // Include all other admin routes here
     Route::get('/get-departments', [EmployeeController::class, 'getDepartments']);
@@ -664,6 +670,7 @@ Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(functi
 Route::middleware(['auth'])->prefix('staff')->name('staff.')->group(function () {
     // Support Tickets routes for staff
     Route::get('support-tickets/dashboard', [SupportTicketController::class, 'ticketDashboard'])->name('support-tickets.dashboard');
+    Route::get('support-tickets/all', [SupportTicketController::class, 'dashboardStatistics'])->name('support-tickets.all');
     Route::get('support-tickets', [SupportTicketController::class, 'index'])->name('support-tickets.index');
     Route::get('support-tickets/create', [SupportTicketController::class, 'create'])->name('support-tickets.create');
     Route::post('support-tickets', [SupportTicketController::class, 'store'])->name('support-tickets.store');
@@ -715,6 +722,12 @@ Route::middleware(['auth'])->prefix('staff')->name('staff.')->group(function () 
 Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
     Route::get('/logout', [AdminController::class, 'staffLogout'])->name('logout');
+
+    // Notification routes
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+    Route::delete('notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
     
     // Include customer-accessible routes here
     Route::get('customer/case-history', [CustomerController::class, 'caseHistorySearch'])->name('case-history');
@@ -755,7 +768,7 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
     
     // Support Tickets routes for customers
     Route::get('support-tickets', [SupportTicketController::class, 'ticketDashboard'])->name('support-tickets.dashboard');
-    //Route::get('support-tickets/all', [SupportTicketController::class, 'index'])->name('support-tickets.index');
+    Route::get('support-tickets/all', [SupportTicketController::class, 'dashboardStatistics'])->name('support-tickets.index');
     Route::get('support-tickets/create', [SupportTicketController::class, 'create'])->name('support-tickets.create');
     Route::post('support-tickets', [SupportTicketController::class, 'store'])->name('support-tickets.store');
     Route::get('support-tickets/{id}', [SupportTicketController::class, 'show'])->name('support-tickets.show');
@@ -1256,14 +1269,20 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
 // Staff routes - accessible by users from users table
 Route::prefix('staff')->name('staff.')->middleware(['staff'])->group(function () {
     Route::get('/logout', [StaffController::class, 'logout'])->name('logout');
-    
+
+    // Notification routes
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+    Route::delete('notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
     // Staff dashboard and other routes can be added here
     Route::get('dashboard', [DashboardController::class, 'staffDashboard'])->name('dashboard');
     
     // Support Tickets routes for staff
     Route::get('support-tickets', [SupportTicketController::class, 'ticketDashboard'])->name('support-tickets.dashboard');
-    //Route::get('support-tickets/all', [SupportTicketController::class, 'index'])->name('support-tickets.index');
-    Route::get('support-tickets/create', [SupportTicketController::class, 'create'])->name('support-tickets.create');
+    Route::get('support-tickets/all', [SupportTicketController::class, 'dashboardStatistics'])->name('support-tickets.index');
+
     Route::post('support-tickets', [SupportTicketController::class, 'store'])->name('support-tickets.store');
     Route::get('support-tickets/{id}', [SupportTicketController::class, 'show'])->name('support-tickets.show');
     Route::post('support-tickets/{id}/comment', [SupportTicketController::class, 'addComment'])->name('support-tickets.add-comment');
@@ -1814,5 +1833,26 @@ Route::prefix('staff')->name('staff.')->middleware(['staff'])->group(function ()
     Route::get('commissions/{commission}/edit', [CommissionController::class, 'edit'])->name('commissions.edit');
     Route::put('commissions/{commission}', [CommissionController::class, 'update'])->name('commissions.update');
     Route::delete('commissions/{commission}', [CommissionController::class, 'destroy'])->name('commissions.destroy');
+
+    Route::get('roles-permissions', [RolePermissionController::class, 'index'])->name('roles-permissions.index');
+    Route::get('/roles/{role}/permissions', [RolePermissionController::class, 'getRolePermissions'])->name('roles.getPermissions');
+    Route::put('/roles/update', [RolePermissionController::class, 'update'])->name('roles.update');
+    Route::post('/roles', [RolePermissionController::class, 'store'])->name('roles.store');
+    Route::post('/update-permission-status', [RolePermissionController::class, 'updatePermissionStatus'])->name('update.permission.status');
+    Route::post('/update-staff-permission', [RolePermissionController::class, 'updateStaffPermission'])->name('update.staff.permission');
+
+    Route::get('admin-view', [AdminController::class, 'showAllAdmin'])->name('admin.view');
+    Route::get('admin-add-customer', [AdminController::class, 'addCustomer'])->name('admin.add-customer');
+    Route::post('admin-view/store', [AdminController::class, 'registerAdmin'])->name('admin.store');
+    Route::patch('admin-view/update/{id}', [AdminController::class, 'editAdmin'])->name('customer.update');
+
+    Route::get('admin-view/kyc/document', [AdminController::class, 'kycDocumentIndex'])->name('kyc.documents');
+    Route::patch('admin-view/kyc/document/{id}', [AdminController::class, 'kycDocument'])->name('kyc.document.store');
+    Route::get('customer/view/{id}', [CustomerController::class, 'customerProfile'])->name('customer.view');
+    Route::post('/update-customer-role', [CustomerController::class, 'updateRole'])->name('update.customer.role');
+    Route::patch('customer/update-package/{id}', [CustomerController::class, 'updatePackage'])->name('customer.update-package');
+
+    Route::post('admin/update-customer-permission', [CustomerController::class, 'updatePermission'])->name('update.customer.permission');
+
 });
 

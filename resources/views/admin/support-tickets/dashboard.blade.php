@@ -105,6 +105,7 @@
                         </div>
                     </div>
                 </div>
+                @if($isSuperAdmin)
                 <div class="col-lg-3 col-md-6 mb-3">
                     <div class="stat-card" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #00bcd4;">
                         <div class="d-flex justify-content-between align-items-center">
@@ -131,6 +132,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
             </div>
 
             <!-- Recent Tickets Table -->
@@ -139,7 +141,7 @@
                     <div class="table-card" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4 style="margin: 0; color: #333; font-weight: 600;">Latest 5 Tickets</h4>
-                            <a href="{{ route('admin.support-tickets.index') }}" class="btn btn-primary" style="background: #6a1b9a; border: none; border-radius: 6px; padding: 8px 16px;">
+                            <a href="{{ \App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') :(\App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.dashboard') : route('admin.support-tickets.index')) }}" class="btn btn-primary" style="background: #6a1b9a; border: none; border-radius: 6px; padding: 8px 16px;">
                                 <i class="fa fa-list"></i> View All Tickets
                             </a>
                         </div>
@@ -202,7 +204,7 @@
                                                     {{ $ticket->assignedTo ? $ticket->assignedTo->first_name . ' ' . $ticket->assignedTo->last_name : 'Unassigned' }}
                                                 </td>
                                                 <td style="padding: 12px; vertical-align: middle;">
-                                                    <a href="{{ route('admin.support-tickets.show', $ticket->id) }}" class="btn btn-sm btn-outline-primary" style="border-color: #6a1b9a; color: #6a1b9a; border-radius: 4px;">
+                                                    <a href="{{ \App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.show', $ticket->id) :(\App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.show', $ticket->id) : route('admin.support-tickets.show', $ticket->id)) }}" class="btn btn-sm btn-outline-primary" style="border-color: #6a1b9a; color: #6a1b9a; border-radius: 4px;">
                                                         <i class="fa fa-eye"></i> View
                                                     </a>
                                                 </td>

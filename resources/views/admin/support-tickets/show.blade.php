@@ -15,7 +15,7 @@
                         <h3 class="page-title">{{ $isSuperAdmin ? 'Ticket Details' : 'Support Ticket Details' }}</h3>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ $isSuperAdmin ? route('admin.support-tickets.dashboard') : ($isStaff ? route('staff.support-tickets.dashboard') : route('customer.support-tickets.dashboard')) }}">Support Ticket Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ $isSuperAdmin ? route('admin.support-tickets.dashboard') : ($isStaff ? route('staff.support-tickets.index') : route('customer.support-tickets.index')) }}">Support Ticket Dashboard</a></li>
                             <li class="breadcrumb-item"><a href="{{ $isSuperAdmin ? route('admin.support-tickets.index') : ($isStaff ? route('staff.support-tickets.dashboard') : route('customer.support-tickets.dashboard')) }}">{{ $isSuperAdmin ? 'All Tickets' : 'Support Tickets' }}</a></li>
                             <li class="breadcrumb-item active">{{ $ticket->ticket_number }}</li>
                         </ul>
@@ -140,7 +140,7 @@
                                             <select class="form-control"  id="departmentSelect">
                                                 <option value="">Select Department</option>
                                                 @foreach($departments as $department)
-                                                <option value="{{$department->department_name}}">{{$department->department_name}}</option>
+                                                <option value="{{$department}}">{{$department}}</option>
                                                 @endforeach
                                             </select>
                                         </div>
