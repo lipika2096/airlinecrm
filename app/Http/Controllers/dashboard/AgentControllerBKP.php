@@ -281,6 +281,7 @@ class AgentController extends Controller
 
         public function groupupdate(Request $request, $id)
         {
+            try{
             // Validate the incoming request data
             $validatedData = $request->validate([
                 'name' => 'sometimes|required|string|max:255',
@@ -298,6 +299,10 @@ class AgentController extends Controller
             // Return a response
             return redirect()->back()->with('success', 'Group updated successfully');
         }
+        catch(\Exception $e){
+            return redirect()->back()->with('error', 'Failed to update group: ' . $e->getMessage());
+        }
+    }
 
 }
 

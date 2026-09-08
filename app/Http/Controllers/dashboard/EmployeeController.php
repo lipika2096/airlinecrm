@@ -970,19 +970,19 @@ class EmployeeController extends Controller
             // Log error but don't prevent user creation
             \Log::error('Failed to create account: ' . $e->getMessage());
             if (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
-            // Determine appropriate redirect route based on user type
-            $redirectRoute = 'admin.employees';
-            return redirect()->route('admin.employees')->with('error', 'Failed to create account: ' . $e->getMessage());
-        }
-        elseif (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
-            $redirectRoute = 'customer.employees';
-            return redirect()->route('customer.employees')->with('error', 'Failed to create account: ' . $e->getMessage());
+                // Determine appropriate redirect route based on user type
+                $redirectRoute = 'admin.employees';
+                return redirect()->route('admin.employees')->with('error', 'Failed to create account: ' . $e->getMessage());
+            }
+            elseif (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+                $redirectRoute = 'customer.employees';
+                return redirect()->route('customer.employees')->with('error', 'Failed to create account: ' . $e->getMessage());
 
-        } elseif (auth()->check()) {
-            $redirectRoute = 'staff.employees';
-            return redirect()->route('staff.employees')->with('error', 'Failed to create account: ' . $e->getMessage());
+            } elseif (auth()->check()) {
+                $redirectRoute = 'staff.employees';
+                return redirect()->route('staff.employees')->with('error', 'Failed to create account: ' . $e->getMessage());
 
-        }
+            }
 
         }
         
@@ -1705,13 +1705,26 @@ class EmployeeController extends Controller
         // Add your logic for departments view
         // If user is staff (role_id = 2), show only their departments
         // If user is super admin, show all departments (system + staff-specific)
+        if (auth()->check()) {
+            // Staff user from users table
+            $user = auth()->user();
+            $isSuperAdmin = false;
+            $isStaff = true;
+        } elseif (auth('admin')->check()) {
+            // Admin user from admins table
+            $user = Auth::guard('admin')->user();
+            $isSuperAdmin = $user->hasRole('SuperAdmin');
+            $isStaff = false;
+        } else {
+            return redirect()->route('admin.login');
+        }
         if (auth('admin')->user()->role_id == 2) {
             $department = Department::where('staff_id', auth('admin')->user()->id)->latest()->get();
             $staffList = collect();
         } else {
             $department = Department::latest()->get();
             // Get list of staff members for dropdown
-            $staffList = User::where('role_id', 2)->get();
+            $staffList = User::where('role_id', 2)->where('created_by', $user->id)->get();
         }
         return view('admin.departments', compact('department', 'staffList')); // Example view path, adjust as per your structure
     }
@@ -1775,6 +1788,19 @@ class EmployeeController extends Controller
     {
         // If user is staff (role_id = 2), show only their departments and designations
         // If user is super admin, show all departments and designations (system + staff-specific)
+        if (auth()->check()) {
+            // Staff user from users table
+            $user = auth()->user();
+            $isSuperAdmin = false;
+            $isStaff = true;
+        } elseif (auth('admin')->check()) {
+            // Admin user from admins table
+            $user = Auth::guard('admin')->user();
+            $isSuperAdmin = $user->hasRole('SuperAdmin');
+            $isStaff = false;
+        } else {
+            return redirect()->route('admin.login');
+        }
         if (auth('admin')->user()->role_id == 2) {
             $department = Department::where('staff_id', auth('admin')->user()->id)->latest()->get();
             $designation = Designation::where('staff_id', auth('admin')->user()->id)->latest()->get();
@@ -1783,7 +1809,7 @@ class EmployeeController extends Controller
             $department = Department::latest()->get();
             $designation = Designation::latest()->get();
             // Get list of staff members for dropdown
-            $staffList = User::where('role_id', 2)->get();
+            $staffList = User::where('role_id', 2)->where('created_by', $user->id)->get();
         }
         // Add your logic for designations view
         return view('admin.designations', compact('designation', 'department', 'staffList')); // Example view path, adjust as per your structure

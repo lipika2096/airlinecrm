@@ -11,7 +11,20 @@ class LicenseApprovalController extends Controller
 {
     public function index()
     {
-        $staff = User::where('role_id', 2)->get();
+        if (auth()->check()) {
+            // Staff user from users table
+            $user = auth()->user();
+            $isSuperAdmin = false;
+            $isStaff = true;
+        } elseif (auth('admin')->check()) {
+            // Admin user from admins table
+            $user = Auth::guard('admin')->user();
+            $isSuperAdmin = $user->hasRole('SuperAdmin');
+            $isStaff = false;
+        } else {
+            return redirect()->route('admin.login');
+        }
+        $staff = User::where('role_id', 2)->where('created_by', $user->id)->get();
         $licenseApprovals = LicenseApproval::with('staff')->get();
         return view('admin.license-approval', compact('licenseApprovals', 'staff'));
     }
@@ -57,7 +70,20 @@ class LicenseApprovalController extends Controller
 
     public function edit(LicenseApproval $licenseApproval)
     {
-        $staff = User::where('role_id', 2)->get();
+        if (auth()->check()) {
+            // Staff user from users table
+            $user = auth()->user();
+            $isSuperAdmin = false;
+            $isStaff = true;
+        } elseif (auth('admin')->check()) {
+            // Admin user from admins table
+            $user = Auth::guard('admin')->user();
+            $isSuperAdmin = $user->hasRole('SuperAdmin');
+            $isStaff = false;
+        } else {
+            return redirect()->route('admin.login');
+        }
+        $staff = User::where('role_id', 2)->where('created_by', $user->id)->get();
         return view('admin.license-approval.edit', compact('licenseApproval', 'staff'));
     }
 

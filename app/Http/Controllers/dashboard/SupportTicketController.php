@@ -38,7 +38,7 @@ class SupportTicketController extends Controller
                 ->filter()
                 ->sort()
                 ->values();
-            $staffMembers = User::where('role_id', 2)->where('status', 'active')->get();
+            $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->get();
 
 
             $query = SupportTicket::with(['creator', 'assignedTo', 'relatedUser'])
@@ -612,7 +612,7 @@ class SupportTicketController extends Controller
                 ->filter()
                 ->sort()
                 ->values();
-                        $staffMembers = User::where('role_id', 2)->where('status', 'active')->get();
+            $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->get();
 
 
         return view('admin.support-tickets.index', compact('staffdepartments','staffMembers','tickets', 'isSuperAdmin', 'isStaff', 'counts', 'departments', 'priorities', 'statuses', 'companies', 'ticketStatuses'));
@@ -641,10 +641,10 @@ class SupportTicketController extends Controller
         
         // For SuperAdmin, get all staff users for assignment
         if ($isSuperAdmin) {
-            $staffMembers = User::where('role_id', 2)->where('status', 'active')->get();
+            $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->get();
         } elseif ($isStaff) {
             // For staff users, get all staff members for assignment
-            $staffMembers = User::where('role_id', 2)->where('status', 'active')->get();
+            $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->get();
         } else {
             // For non-SuperAdmin, get staff created by current user
             $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->get();
@@ -832,7 +832,7 @@ class SupportTicketController extends Controller
 
         // Get staff members for assignment dropdown
         if ($isSuperAdmin) {
-            $staffMembers = User::where('role_id', 2)->where('status', 'active')->get();
+            $staffMembers = User::where('role_id', 2)->where('created_by', $user->id)->where('status', 'active')->get();
         } else {
             $staffMembers = User::where('created_by', $user->id)->get();
         }

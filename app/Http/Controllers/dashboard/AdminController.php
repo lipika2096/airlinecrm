@@ -266,6 +266,7 @@ class AdminController extends Controller
     }
 
     public function kycDocument(Request $request, $id){
+        try{
         $fileNames = [];
 
         if ($request->hasFile('doc_file')) {
@@ -295,6 +296,10 @@ class AdminController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Documents uploaded successfully');
+        }
+        catch(\Exception $e){
+            return redirect()->back()->with('error', 'Failed to upload documents: ' . $e->getMessage());
+        }
     }
 
 

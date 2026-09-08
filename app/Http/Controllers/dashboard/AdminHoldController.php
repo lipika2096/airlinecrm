@@ -69,6 +69,7 @@ class AdminHoldController extends Controller
 
     public function update(Request $request, $id)
     {
+        try{
         $result = [];
         $hold = Book::where('id', $id)->first();
         if(!$hold){
@@ -109,12 +110,17 @@ class AdminHoldController extends Controller
         }
 
         return redirect()->back()->with('success', 'Hold Details Update Successfully');
+        }
+        catch(\Exception $e){
+            return redirect()->back()->with('error', 'Failed to update hold details: ' . $e->getMessage());
+        }
     }
 
 
 
     public function confirmUpdate(Request $request, $id)
     {
+        try{
         $result = [];
         $hold = Book::where('id', $id)->first();
         if(!$hold){
@@ -155,6 +161,10 @@ class AdminHoldController extends Controller
         }
 
         return redirect()->back()->with('success', 'Hold Details Update Successfully');
+        }
+        catch(\Exception $e){
+            return redirect()->back()->with('error', 'Failed to update hold details: ' . $e->getMessage());
+        }
     }
 
     public function confirmHold(Request $request){
@@ -166,6 +176,7 @@ class AdminHoldController extends Controller
 
     public function cancelHold(Request $request, $id){
 
+        try{
         $hold = Book::where('id',$id)->first();
 
 
@@ -178,6 +189,10 @@ class AdminHoldController extends Controller
         $child = Book::where('parent_id',$id)->delete();
 
         return redirect()->back()->with('success', 'Hold Cancel Successfully');
+        }
+        catch(\Exception $e){
+            return redirect()->back()->with('error', 'Failed to cancel hold: ' . $e->getMessage());
+        }
     }
 
     public function releaseIndex(Request $request){
@@ -220,6 +235,7 @@ class AdminHoldController extends Controller
 
 
     public function storeRelease(Request $request){
+        try{    
         $requestData = $request->all();
         $array = [];
         $query = Inventory::query();
@@ -296,6 +312,10 @@ class AdminHoldController extends Controller
         $holdUpdateFair->save();
 
         return redirect()->back()->with('success', 'Inventory Hold Successfully');
+        }
+        catch(\Exception $e){
+            return redirect()->back()->with('error', 'Failed to hold inventory: ' . $e->getMessage());
+        }
     }
 
 }

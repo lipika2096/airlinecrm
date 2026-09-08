@@ -118,7 +118,7 @@ class AirlineController extends Controller
         $airlines = Airline::all();
         $aircrafts = Aircraft::where('deleted_at', null)->orWhere('deleted_at', 'null')->where('airline_id', $id)->get();
         $fleets = Fleet::where('deleted_at', null)->orWhere('deleted_at', 'null')->where('airline_id', $id)->get();
-        $staff = User::where('role_id', 2)->get();
+        $staff = User::where('role_id', 2)->where('created_by', $currentUserId)->get();
         $library = AirlineLibrary::where('deleted_at', null)->orWhere('deleted_at', 'null')->where('airline_id', $id)->get();
         $approvedStaffs = ApprovedStaff::where('status', 1)->where('airline_id', $id)->get();
         $slas = SLA::where('deleted_at', null)->orWhere('deleted_at', 'null')->where('airline_id', $id)->get();

@@ -23,7 +23,7 @@ class WalletController extends Controller
                 return $agent;
             });
 
-        $eligibleAgents = User::where('role_id', 2)->get();
+        $eligibleAgents = User::where('role_id', 2)->where('created_by', $user->id)->get();
 
         return view('admin.wallet', compact('agents', 'eligibleAgents'));
     }

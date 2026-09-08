@@ -19,8 +19,21 @@ class FareConditionController extends Controller
 
     public function create()
     {
+        if (auth()->check()) {
+            // Staff user from users table
+            $user = auth()->user();
+            $isSuperAdmin = false;
+            $isStaff = true;
+        } elseif (auth('admin')->check()) {
+            // Admin user from admins table
+            $user = Auth::guard('admin')->user();
+            $isSuperAdmin = $user->hasRole('SuperAdmin');
+            $isStaff = false;
+        } else {
+            return redirect()->route('admin.login');
+        }
         // Fetch agents where role is 2
-        $agents = User::where('role_id', 2)->get();
+        $agents = User::where('role_id', 2)->where('created_by', $user->id)->get();
         return view('admin.fare_conditions.create', compact('agents'));
     }
 
@@ -55,10 +68,22 @@ class FareConditionController extends Controller
 
     public function edit(FareCondition $fareCondition)
 {
-
+if (auth()->check()) {
+            // Staff user from users table
+            $user = auth()->user();
+            $isSuperAdmin = false;
+            $isStaff = true;
+        } elseif (auth('admin')->check()) {
+            // Admin user from admins table
+            $user = Auth::guard('admin')->user();
+            $isSuperAdmin = $user->hasRole('SuperAdmin');
+            $isStaff = false;
+        } else {
+            return redirect()->route('admin.login');
+        }
 
     // Fetch agents where role is 2
-    $agents = User::where('role_id', 2)->get();
+    $agents = User::where('role_id', 2)->where('created_by', $user->id)->get();
     return view('admin.fare_conditions.edit', compact('fareCondition', 'agents'));
 }
 

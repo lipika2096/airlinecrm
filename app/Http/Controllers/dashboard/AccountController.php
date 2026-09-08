@@ -22,60 +22,76 @@ class AccountController extends Controller
 
     public function index()
     {
-        // Determine the current user type and ID for data scoping
-        $currentUserId = null;
-        $userType = 'superadmin'; // default
-        
-        if (auth('admin')->check()) {
-            $currentUserId = auth('admin')->user()->id;
-            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
-        } elseif (auth()->check()) {
-            $currentUserId = auth()->user()->id;
-            $userType = 'staff';
+        try{
+            // Determine the current user type and ID for data scoping
+            $currentUserId = null;
+            $userType = 'superadmin'; // default
+            
+            if (auth('admin')->check()) {
+                $currentUserId = auth('admin')->user()->id;
+                $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+            } elseif (auth()->check()) {
+                $currentUserId = auth()->user()->id;
+                $userType = 'staff';
+            }
+            
+            // Calculate metrics (placeholder values - replace with actual calculations)
+            $todaySales = 15240;
+            $todayProfit = 4890;
+            $outstanding = 47650;
+            $cashInHand = 2350;
+            $bankBalance = 28750;
+            $upcomingTrips = 12;
+            
+            // Chart data (placeholder - replace with actual data from database)
+            $salesLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+            $salesData = [8500, 12000, 9800, 15240];
+            $profitLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+            $profitData = [2800, 4200, 3500, 4890];
+            
+            // Recent bookings (placeholder - replace with actual data)
+            $recentBookings = collect([
+                (object) ['booking_id' => 'BK000125', 'customer_name' => 'John Smith', 'amount' => 1250],
+                (object) ['booking_id' => 'BK000124', 'customer_name' => 'ADC Travels', 'amount' => 2450],
+                (object) ['booking_id' => 'BK000123', 'customer_name' => 'Maria Garcia', 'amount' => 780],
+            ]);
+            
+            // Recent payments (placeholder - replace with actual data)
+            $recentPayments = collect([
+                (object) ['payment_id' => 'PA1000001', 'payer_name' => 'John Smith', 'amount' => 1200],
+                (object) ['payment_id' => 'PAYCARTOO', 'payer_name' => 'ABC Travels', 'amount' => 2400],
+                (object) ['payment_id' => 'FA1000019', 'payer_name' => 'Global Corp', 'amount' => 1000],
+            ]);
+            
+            return view('admin.account-index', compact(
+                'todaySales',
+                'todayProfit',
+                'outstanding',
+                'cashInHand',
+                'bankBalance',
+                'upcomingTrips',
+                'salesLabels',
+                'salesData',
+                'profitLabels',
+                'profitData',
+                'recentBookings',
+                'recentPayments'
+            ));
+        } catch (\Exception $e) {
+            // Log error but don't prevent user creation
+            \Log::error('Failed to send email: ' . $e->getMessage());
+            if (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+                // Determine appropriate redirect route based on user type
+                return redirect()->route('admin.accounts.index')->with('error', 'Failed to create account: ' . $e->getMessage());
+            }
+            elseif (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+                return redirect()->route('customer.accounts.index')->with('error', 'Failed to create account: ' . $e->getMessage());
+
+            } elseif (auth()->check()) {
+                return redirect()->route('staff.accounts.index')->with('error', 'Failed to create account: ' . $e->getMessage());
+
+            } 
         }
-        
-        // Calculate metrics (placeholder values - replace with actual calculations)
-        $todaySales = 15240;
-        $todayProfit = 4890;
-        $outstanding = 47650;
-        $cashInHand = 2350;
-        $bankBalance = 28750;
-        $upcomingTrips = 12;
-        
-        // Chart data (placeholder - replace with actual data from database)
-        $salesLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-        $salesData = [8500, 12000, 9800, 15240];
-        $profitLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-        $profitData = [2800, 4200, 3500, 4890];
-        
-        // Recent bookings (placeholder - replace with actual data)
-        $recentBookings = collect([
-            (object) ['booking_id' => 'BK000125', 'customer_name' => 'John Smith', 'amount' => 1250],
-            (object) ['booking_id' => 'BK000124', 'customer_name' => 'ADC Travels', 'amount' => 2450],
-            (object) ['booking_id' => 'BK000123', 'customer_name' => 'Maria Garcia', 'amount' => 780],
-        ]);
-        
-        // Recent payments (placeholder - replace with actual data)
-        $recentPayments = collect([
-            (object) ['payment_id' => 'PA1000001', 'payer_name' => 'John Smith', 'amount' => 1200],
-            (object) ['payment_id' => 'PAYCARTOO', 'payer_name' => 'ABC Travels', 'amount' => 2400],
-            (object) ['payment_id' => 'FA1000019', 'payer_name' => 'Global Corp', 'amount' => 1000],
-        ]);
-        
-        return view('admin.account-index', compact(
-            'todaySales',
-            'todayProfit',
-            'outstanding',
-            'cashInHand',
-            'bankBalance',
-            'upcomingTrips',
-            'salesLabels',
-            'salesData',
-            'profitLabels',
-            'profitData',
-            'recentBookings',
-            'recentPayments'
-        ));
     }
 
     public function createBooking()
@@ -100,40 +116,56 @@ class AccountController extends Controller
 
     public function bookingIndex()
     {
-        // Determine the current user type and ID for data scoping
-        $currentUserId = null;
-        $userType = 'superadmin'; // default
-        
-        if (auth('admin')->check()) {
-            $currentUserId = auth('admin')->user()->id;
-            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
-        } elseif (auth()->check()) {
-            $currentUserId = auth()->user()->id;
-            $userType = 'staff';
+        try{
+            // Determine the current user type and ID for data scoping
+            $currentUserId = null;
+            $userType = 'superadmin'; // default
+            
+            if (auth('admin')->check()) {
+                $currentUserId = auth('admin')->user()->id;
+                $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+            } elseif (auth()->check()) {
+                $currentUserId = auth()->user()->id;
+                $userType = 'staff';
+            }
+            
+            // Get bookings based on user type
+            $query = Booking::with(['services', 'passengers', 'payments']);
+            
+            if ($userType === 'superadmin') {
+                // SuperAdmin can see all bookings
+                $bookings = $query->orderBy('created_at', 'desc')->get();
+                return view('admin.booking-index', compact('bookings', 'userType'));
+            } elseif ($userType === 'customer') {
+                // Customers can only see their own bookings
+                $bookings = $query->where('customer_id', $currentUserId)->orderBy('created_at', 'desc')->get();
+                return view('customer.booking-index', compact('bookings', 'userType'));
+            } elseif ($userType === 'staff') {
+                // Staff can see all bookings (or limit based on your requirements)
+                $bookings = $query->orderBy('created_at', 'desc')->get();
+                return view('staff.booking-index', compact('bookings', 'userType'));
+            }
+        } catch (\Exception $e) {
+            // Log error but don't prevent user creation
+            \Log::error('Failed to send email: ' . $e->getMessage());
+            if (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+                // Determine appropriate redirect route based on user type
+                return redirect()->route('admin.booking-index')->with('error', 'Failed to create account: ' . $e->getMessage());
+            }
+            elseif (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+                return redirect()->route('customer.booking-index')->with('error', 'Failed to create account: ' . $e->getMessage());
+
+            } elseif (auth()->check()) {
+                return redirect()->route('staff.booking-index')->with('error', 'Failed to create account: ' . $e->getMessage());
+
+            } 
         }
-        
-        // Get bookings based on user type
-        $query = Booking::with(['services', 'passengers', 'payments']);
-        
-        if ($userType === 'superadmin') {
-            // SuperAdmin can see all bookings
-            $bookings = $query->orderBy('created_at', 'desc')->get();
-            return view('admin.booking-index', compact('bookings', 'userType'));
-        } elseif ($userType === 'customer') {
-            // Customers can only see their own bookings
-            $bookings = $query->where('customer_id', $currentUserId)->orderBy('created_at', 'desc')->get();
-            return view('customer.booking-index', compact('bookings', 'userType'));
-        } elseif ($userType === 'staff') {
-            // Staff can see all bookings (or limit based on your requirements)
-            $bookings = $query->orderBy('created_at', 'desc')->get();
-            return view('staff.booking-index', compact('bookings', 'userType'));
-        }
-        
         
     }
 
     public function storeBooking(Request $request)
     {
+        try{
         // Determine the current user type and ID for data scoping
         $currentUserId = null;
         $userType = 'superadmin'; // default
@@ -336,24 +368,49 @@ class AccountController extends Controller
         
         // Determine appropriate redirect route based on user type
         $redirectRoute = 'admin.booking.index';
+        return redirect()->route('admin.booking.index')->with('success', 'Booking created successfully');
+
         if ($userType === 'customer') {
             $redirectRoute = 'customer.booking.index';
+            return redirect()->route('customer.booking.index')->with('success', 'Booking created successfully');
+
         } elseif ($userType === 'staff') {
-            $redirectRoute = 'staff.booking.index';
+            $redirectRoute = 'staff.booking.index';        
+            return redirect()->route('staff.booking.index')->with('success', 'Booking created successfully');
+
         }
         
         // Check if generate invoice button was clicked
         if ($request->has('generate_invoice')) {
             $invoiceRoute = 'admin.booking.invoice';
+            return redirect()->route('admin.booking.invoice', $booking->id);
+
             if ($userType === 'customer') {
                 $invoiceRoute = 'customer.booking.invoice';
+                return redirect()->route('customer.booking.invoice', $booking->id);
+
             } elseif ($userType === 'staff') {
                 $invoiceRoute = 'staff.booking.invoice';
+                return redirect()->route('staff.booking.invoice', $booking->id);
+
             }
-            return redirect()->route($invoiceRoute, $booking->id);
         }
         
-        return redirect()->route($redirectRoute)->with('success', 'Booking created successfully');
+        } catch (\Exception $e) {
+            // Log error but don't prevent user creation
+            \Log::error('Failed to send email: ' . $e->getMessage());
+            if (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+                // Determine appropriate redirect route based on user type
+                return redirect()->route('admin.booking.index')->with('error', 'Failed to create account: ' . $e->getMessage());
+            }
+            elseif (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+                return redirect()->route('customer.booking.index')->with('error', 'Failed to create account: ' . $e->getMessage());
+
+            } elseif (auth()->check()) {
+                return redirect()->route('staff.booking.index')->with('error', 'Failed to create account: ' . $e->getMessage());
+
+            } 
+        }
     }
 
     public function dropBookingTables()
@@ -369,6 +426,7 @@ class AccountController extends Controller
 
     public function generateInvoice($id)
     {
+        try{
         $booking = Booking::with(['services', 'passengers', 'payments', 'documents', 'customer'])->findOrFail($id);
         
         // Generate invoice number
@@ -388,24 +446,39 @@ class AccountController extends Controller
             'vatAmount',
             'total'
         ));
+        }
+        catch(\Exception $e){
+            return redirect()->back()->with('error', 'Failed to generate invoice: ' . $e->getMessage());
+        }
     }
 
     public function account()
     {
+        try{
         $accounts = AgentAccount::where('acc_no' ,'!=', NULL)->with('agent')->get();
         $agents = Agent::where('deleted_at', 'null')->get();
         return view('admin.add-customer-account', compact('accounts','agents'));
+        }
+        catch(\Exception $e){
+            return redirect()->back()->with('error', 'Failed to load accounts: ' . $e->getMessage());
+        }
     }
 
     public function viewAccount()
     {
+        try{
         $accounts = AgentAccount::where('acc_no' ,'!=', NULL)->with('agent')->get();
         $agents = Agent::where('deleted_at', 'null')->get();
         return view('admin.view-customer-accounts', compact('accounts','agents'));
+        }
+        catch(\Exception $e){
+            return redirect()->back()->with('error', 'Failed to load accounts: ' . $e->getMessage());
+        }
     }
 
     public function storeAccount(Request $request)
     {
+        try{
         // Add your logic for duties store
         $validator = Validator::make($request->all(),[
             'agent_id' => 'required',
@@ -429,19 +502,29 @@ class AccountController extends Controller
         $account->save();
 
         return redirect()->route('admin.accounts.view')->with('success', 'Account created successfully.');
+        }
+        catch(\Exception $e){
+            return redirect()->back()->with('error', 'Failed to create account: ' . $e->getMessage());
+        }
     }
 
     public function updateAccount(Request $request, $id)
     {
+        try{
         $account = AgentAccount::findorFail($id);
         $account->payment_pool = $request->payment_pool;
         $account->save();
 
         return redirect()->route('admin.accounts.view')->with('success', 'Account updated successfully.');
+        }
+        catch(\Exception $e){
+            return redirect()->back()->with('error', 'Failed to update account: ' . $e->getMessage());
+        }
     }
 
     public function updateStatus(Request $request)
     {
+        try{
         $leave = AgentAccount::find($request->id);
         if ($leave) {
             $leave->status = $request->status;
@@ -449,6 +532,10 @@ class AccountController extends Controller
             return response()->json(['success' => 'Status updated successfully.']);
         }
         return response()->json(['error' => 'Account not found.'], 404);
+        }
+        catch(\Exception $e){
+            return response()->json(['error' => 'Failed to update status: ' . $e->getMessage()], 500);
+        }
     }
 
     public function indexCustomerAccount()
@@ -469,6 +556,7 @@ class AccountController extends Controller
 
     public function storeCustomerAccount(Request $request)
     {
+        try{
         // Add your logic for duties store
         $validator = Validator::make($request->all(),[
             'customer_id' => 'required',
@@ -492,19 +580,29 @@ class AccountController extends Controller
         $account->save();
 
         return redirect()->route('admin.customer.accounts.view')->with('success', 'Account created successfully.');
+        }
+        catch(\Exception $e){
+            return redirect()->back()->with('error', 'Failed to create account: ' . $e->getMessage());
+        }
     }
 
     public function updateCustomerAccount(Request $request, $id)
     {
+        try{
         $account = CustomerAccount::findorFail($id);
         $account->payment_pool = $request->payment_pool;
         $account->save();
 
         return redirect()->route('admin.accounts.view')->with('success', 'Account updated successfully.');
+        }
+        catch(\Exception $e){
+            return redirect()->back()->with('error', 'Failed to update account: ' . $e->getMessage());
+        }
     }
 
     public function updateCustomerStatus(Request $request)
     {
+        try{
         $leave = CustomerAccount::find($request->id);
         if ($leave) {
             $leave->status = $request->status;
@@ -512,7 +610,11 @@ class AccountController extends Controller
             return response()->json(['success' => 'Status updated successfully.']);
         }
         return response()->json(['error' => 'Account not found.'], 404);
-    }
+        }
+        catch(\Exception $e){
+            return response()->json(['error' => 'Failed to update status: ' . $e->getMessage()], 500);
+        }
+    }   
 
     public function viewCustomerInvoice($id)
     {
@@ -537,6 +639,7 @@ class AccountController extends Controller
 
     public function customerLedger(Request $request)
     {
+
         $currentYear = date('Y');
         $currentMonth = date('m');
         
@@ -768,6 +871,7 @@ class AccountController extends Controller
 
     public function expenseEntry(Request $request)
     {
+        try{
         if ($request->isMethod('post')) {
             $validated = $request->validate([
                 'expense_date' => 'required|date',
@@ -811,6 +915,10 @@ class AccountController extends Controller
         }
 
         return view('admin.expense-entry');
+        }
+        catch(\Exception $e){
+            return redirect()->back()->with('error', 'Failed to save expense: ' . $e->getMessage());
+        }
     }
 
 }

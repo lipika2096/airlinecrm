@@ -11,11 +11,24 @@ class CommissionController extends Controller
 {
     public function index()
 {
+    if (auth()->check()) {
+            // Staff user from users table
+            $user = auth()->user();
+            $isSuperAdmin = false;
+            $isStaff = true;
+        } elseif (auth('admin')->check()) {
+            // Admin user from admins table
+            $user = Auth::guard('admin')->user();
+            $isSuperAdmin = $user->hasRole('SuperAdmin');
+            $isStaff = false;
+        } else {
+            return redirect()->route('admin.login');
+        }
     // Fetch all airlines
     $airlines = Airline::all();
 
     // Fetch agents where role_id is 2 (assuming role_id 2 corresponds to agents)
-    $agents = User::where('role_id', 2)->get();
+    $agents = User::where('role_id', 2)->where('created_by', $user->id)->get();
 
     // Fetch commissions where agent_id matches the authenticated user's id
     $authId = auth('admin')->id(); // Assuming you are using Laravel's built-in authentication
@@ -29,8 +42,21 @@ class CommissionController extends Controller
 
     public function create()
     {
+        if (auth()->check()) {
+            // Staff user from users table
+            $user = auth()->user();
+            $isSuperAdmin = false;
+            $isStaff = true;
+        } elseif (auth('admin')->check()) {
+            // Admin user from admins table
+            $user = Auth::guard('admin')->user();
+            $isSuperAdmin = $user->hasRole('SuperAdmin');
+            $isStaff = false;
+        } else {
+            return redirect()->route('admin.login');
+        }
         $airlines = Airline::all();
-        $agents = User::where('role_id', 2)->get();
+        $agents = User::where('role_id', 2)->where('created_by', $user->id)->get();
         return view('admin.commissions.create', compact('airlines', 'agents'));
     }
 
@@ -53,8 +79,21 @@ class CommissionController extends Controller
 
     public function edit(Commission $commission)
     {
+        if (auth()->check()) {
+            // Staff user from users table
+            $user = auth()->user();
+            $isSuperAdmin = false;
+            $isStaff = true;
+        } elseif (auth('admin')->check()) {
+            // Admin user from admins table
+            $user = Auth::guard('admin')->user();
+            $isSuperAdmin = $user->hasRole('SuperAdmin');
+            $isStaff = false;
+        } else {
+            return redirect()->route('admin.login');
+        }
         $airlines = Airline::all();
-        $agents = User::where('role_id', 2)->get();
+        $agents = User::where('role_id', 2)->where('created_by', $user->id)->get();
         return view('admin.commissions.edit', compact('commission', 'airlines', 'agents'));
     }
 
