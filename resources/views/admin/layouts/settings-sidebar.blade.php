@@ -6,7 +6,7 @@
             <nav class='greedy'>
                 <ul class="list-inline-item list-unstyled links">
                     <li> 
-                        <a href="admin-dashboard"><i class="la la-home"></i> <span>Back to Home</span></a>
+                        <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}"><i class="la la-home"></i> <span>Back to Home</span></a>
                     </li>
                     <li class="menu-title">Settings</li>
                     <li class=""> 

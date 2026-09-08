@@ -24,7 +24,7 @@ class Admin extends Authenticatable
         'email',
         'password',
         'plain_password',
-        'is_active'
+        'is_active',
     ];
 
     /**
@@ -48,6 +48,11 @@ class Admin extends Authenticatable
     public function adminDetail()
     {
         return $this->hasOne(AdminDetail::class, 'admin_id', 'id');
+    }
+
+    public function customerAddresses()
+    {
+        return $this->hasMany(CustomerAddress::class, 'customer_id', 'id');
     }
     
     public function getCompanyNameAttribute()

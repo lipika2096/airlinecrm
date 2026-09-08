@@ -184,18 +184,13 @@
                             <i class="fa fa-search"></i> Search
                         </button>
                     </div>
-                    <div id="search-results" class="mt-2" style="display: none;">
-                        <div class="list-group">
-                            <!-- Search results will be populated here -->
-                        </div>
-                    </div>
                 </div>
             </div>
 
             <!-- Tabs -->
             <ul class="nav nav-tabs" id="bookingTabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" id="customer-tab" data-bs-toggle="tab" href="#customer" role="tab">Customer</a>
+                    <a class="nav-link active" id="customers-tab" data-bs-toggle="tab" href="#customers" role="tab">Customers</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="services-tab" data-bs-toggle="tab" href="#services" role="tab">Services</a>
@@ -218,159 +213,161 @@
             </ul>
 
             <div class="tab-content mt-3">
-                <!-- Customer Tab -->
-                <div class="tab-pane fade show active" id="customer" role="tabpanel">
-                    <!-- B2C Form -->
-                    <div id="b2c-form" class="customer-form" style="display: none;">
-                        <div class="booking-form-card">
-                            <h4>B2C Customer Details</h4>
-                            <div class="row form-group">
-                                <div class="col-md-4">
-                                    <label class="form-label">First Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="b2c_first_name" id="b2c_first_name" placeholder="First Name">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Last Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="b2c_last_name" id="b2c_last_name" placeholder="Last Name">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Email <span class="text-danger">*</span></label>
-                                    <input type="email" class="form-control" name="b2c_email" id="b2c_email" placeholder="Email">
-                                </div>
+                <!-- Customers Tab -->
+                <div class="tab-pane fade show active" id="customers" role="tabpanel">
+                    <!-- B2C Customer Form -->
+                    <div id="b2c-customer-form" style="display: none;">
+                        <h5>B2C Customer Details</h5>
+                        <div class="row form-group">
+                            <div class="col-md-4">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" name="b2c_first_name" id="b2c_first_name">
                             </div>
-                            <div class="row form-group">
-                                <div class="col-md-4">
-                                    <label class="form-label">Phone <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="b2c_phone" id="b2c_phone" placeholder="Phone">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Street</label>
-                                    <input type="text" class="form-control" name="b2c_street" id="b2c_street" placeholder="Street">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">House No.</label>
-                                    <input type="text" class="form-control" name="b2c_house_no" id="b2c_house_no" placeholder="House No.">
-                                </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" name="b2c_last_name" id="b2c_last_name">
                             </div>
-                            <div class="row form-group">
-                                <div class="col-md-4">
-                                    <label class="form-label">City</label>
-                                    <input type="text" class="form-control" name="b2c_city" id="b2c_city" placeholder="City">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Pincode</label>
-                                    <input type="text" class="form-control" name="b2c_pincode" id="b2c_pincode" placeholder="Pincode">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">State</label>
-                                    <input type="text" class="form-control" name="b2c_state" id="b2c_state" placeholder="State">
-                                </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="b2c_email" id="b2c_email">
                             </div>
-                            <div class="row form-group">
-                                <div class="col-md-4">
-                                    <label class="form-label">Country</label>
-                                    <input type="text" class="form-control" name="b2c_country" id="b2c_country" placeholder="Country">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Language</label>
-                                    <input type="text" class="form-control" name="b2c_language" id="b2c_language" placeholder="Language">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Responsible</label>
-                                    <input type="text" class="form-control" name="b2c_responsible" id="b2c_responsible" placeholder="Responsible">
-                                </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-4">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" name="b2c_phone" id="b2c_phone">
                             </div>
-                            <div class="row form-group">
-                                <div class="col-md-12">
-                                    <label class="form-label">Remarks</label>
-                                    <textarea class="form-control" name="b2c_remarks" id="b2c_remarks" rows="3" placeholder="Remarks"></textarea>
-                                </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Street</label>
+                                <input type="text" class="form-control" name="b2c_street" id="b2c_street">
                             </div>
-                            <div class="mt-3">
-                                <button type="button" class="btn btn-save btn-sm tab-save-btn" data-tab="customer">
-                                    <i class="fa fa-save"></i> Save Customer Details
-                                </button>
+                            <div class="col-md-4">
+                                <label class="form-label">House No.</label>
+                                <input type="text" class="form-control" name="b2c_house_no" id="b2c_house_no">
                             </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-4">
+                                <label class="form-label">City</label>
+                                <input type="text" class="form-control" name="b2c_city" id="b2c_city">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Pincode</label>
+                                <input type="text" class="form-control" name="b2c_pincode" id="b2c_pincode">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">State</label>
+                                <input type="text" class="form-control" name="b2c_state" id="b2c_state">
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-4">
+                                <label class="form-label">Country</label>
+                                <input type="text" class="form-control" name="b2c_country" id="b2c_country">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Language</label>
+                                <input type="text" class="form-control" name="b2c_language" id="b2c_language">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Responsible</label>
+                                <input type="text" class="form-control" name="b2c_responsible" id="b2c_responsible">
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-12">
+                                <label class="form-label">Remarks</label>
+                                <textarea class="form-control" name="b2c_remarks" id="b2c_remarks" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Tab Save Button -->
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-save btn-sm tab-save-btn" data-tab="b2c-customers">
+                                <i class="fa fa-save"></i> Save B2C Customer
+                            </button>
                         </div>
                     </div>
 
-                    <!-- B2B Form -->
-                    <div id="b2b-form" class="customer-form" style="display: none;">
-                        <div class="booking-form-card">
-                            <h4>B2B Customer Details</h4>
-                            <div class="row form-group">
-                                <div class="col-md-4">
-                                    <label class="form-label">Company Group <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="b2b_group" id="b2b_group" placeholder="Company Group">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Company Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="b2b_company_name" id="b2b_company_name" placeholder="Company Name">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Email <span class="text-danger">*</span></label>
-                                    <input type="email" class="form-control" name="b2b_email" id="b2b_email" placeholder="Email">
-                                </div>
+                    <!-- B2B Customer Form -->
+                    <div id="b2b-customer-form" style="display: none;">
+                        <h5>B2B Customer Details</h5>
+                        <div class="row form-group">
+                            <div class="col-md-4">
+                                <label class="form-label">Company Group</label>
+                                <input type="text" class="form-control" name="b2b_company_group" id="b2b_company_group">
                             </div>
-                            <div class="row form-group">
-                                <div class="col-md-4">
-                                    <label class="form-label">Phone <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="b2b_phone" id="b2b_phone" placeholder="Phone">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Street</label>
-                                    <input type="text" class="form-control" name="b2b_street" id="b2b_street" placeholder="Street">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">House No.</label>
-                                    <input type="text" class="form-control" name="b2b_house_no" id="b2b_house_no" placeholder="House No.">
-                                </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Company Name</label>
+                                <input type="text" class="form-control" name="b2b_company_name" id="b2b_company_name">
                             </div>
-                            <div class="row form-group">
-                                <div class="col-md-4">
-                                    <label class="form-label">City</label>
-                                    <input type="text" class="form-control" name="b2b_city" id="b2b_city" placeholder="City">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Pincode</label>
-                                    <input type="text" class="form-control" name="b2b_pincode" id="b2b_pincode" placeholder="Pincode">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">State</label>
-                                    <input type="text" class="form-control" name="b2b_state" id="b2b_state" placeholder="State">
-                                </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="b2b_email" id="b2b_email">
                             </div>
-                            <div class="row form-group">
-                                <div class="col-md-4">
-                                    <label class="form-label">Country</label>
-                                    <input type="text" class="form-control" name="b2b_country" id="b2b_country" placeholder="Country">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Language</label>
-                                    <input type="text" class="form-control" name="b2b_language" id="b2b_language" placeholder="Language">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Responsible</label>
-                                    <input type="text" class="form-control" name="b2b_responsible" id="b2b_responsible" placeholder="Responsible">
-                                </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-4">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" name="b2b_phone" id="b2b_phone">
                             </div>
-                            <div class="row form-group">
-                                <div class="col-md-12">
-                                    <label class="form-label">Remarks</label>
-                                    <textarea class="form-control" name="b2b_remarks" id="b2b_remarks" rows="3" placeholder="Remarks"></textarea>
-                                </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Street</label>
+                                <input type="text" class="form-control" name="b2b_street" id="b2b_street">
                             </div>
-                            <div class="mt-3">
-                                <button type="button" class="btn btn-save btn-sm tab-save-btn" data-tab="customer">
-                                    <i class="fa fa-save"></i> Save Customer Details
-                                </button>
+                            <div class="col-md-4">
+                                <label class="form-label">House No.</label>
+                                <input type="text" class="form-control" name="b2b_house_no" id="b2b_house_no">
                             </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-4">
+                                <label class="form-label">City</label>
+                                <input type="text" class="form-control" name="b2b_city" id="b2b_city">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Pincode</label>
+                                <input type="text" class="form-control" name="b2b_pincode" id="b2b_pincode">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">State</label>
+                                <input type="text" class="form-control" name="b2b_state" id="b2b_state">
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-4">
+                                <label class="form-label">Country</label>
+                                <input type="text" class="form-control" name="b2b_country" id="b2b_country">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Language</label>
+                                <input type="text" class="form-control" name="b2b_language" id="b2b_language">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Responsible</label>
+                                <input type="text" class="form-control" name="b2b_responsible" id="b2b_responsible">
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-12">
+                                <label class="form-label">Remarks</label>
+                                <textarea class="form-control" name="b2b_remarks" id="b2b_remarks" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Tab Save Button -->
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-save btn-sm tab-save-btn" data-tab="b2b-customers">
+                                <i class="fa fa-save"></i> Save B2B Customer
+                            </button>
                         </div>
                     </div>
 
-                    <!-- No form selected message -->
-                    <div id="no-customer-form" class="alert alert-info">
-                        <i class="fa fa-info-circle"></i> Please select a Customer Type (B2B or B2C) in the Booking Details section above to view the customer form.
+                    <!-- No customer type selected message -->
+                    <div id="no-customer-type-message" style="display: none;">
+                        <div class="alert alert-info">
+                            Please select a customer type (B2B or B2C) in the booking details section to see the customer form.
+                        </div>
                     </div>
                 </div>
 
@@ -712,203 +709,6 @@
 <!-- /Page Wrapper -->
 
 <script>
-    // Customer Type Change Handler
-    document.querySelector('select[name="customer_type"]').addEventListener('change', function() {
-        const customerType = this.value;
-        const b2cForm = document.getElementById('b2c-form');
-        const b2bForm = document.getElementById('b2b-form');
-        const noFormMessage = document.getElementById('no-customer-form');
-
-        // Hide all forms initially
-        b2cForm.style.display = 'none';
-        b2bForm.style.display = 'none';
-        noFormMessage.style.display = 'none';
-
-        // Show appropriate form based on customer type
-        if (customerType === 'b2c') {
-            b2cForm.style.display = 'block';
-        } else if (customerType === 'b2b') {
-            b2bForm.style.display = 'block';
-        } else {
-            noFormMessage.style.display = 'block';
-        }
-    });
-
-    // Customer Search Functionality
-    document.getElementById('search-customer-btn').addEventListener('click', function() {
-        const searchTerm = document.getElementById('customer-search').value.trim();
-        const searchResults = document.getElementById('search-results');
-        const resultsList = searchResults.querySelector('.list-group');
-
-        if (!searchTerm) {
-            alert('Please enter a search term');
-            return;
-        }
-
-        // Show loading state
-        this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Searching...';
-        this.disabled = true;
-
-        // AJAX request to search customers
-        const searchUrl = `{{ \App\Helpers\RouteHelper::isCustomer() ? '../' : (\App\Helpers\RouteHelper::isStaff() ? '../' : '../') }}customers/search?q=${encodeURIComponent(searchTerm)}`;
-        fetch(searchUrl)
-            .then(response => response.json())
-            .then(data => {
-                // Clear previous results
-                resultsList.innerHTML = '';
-
-                if (data.length === 0) {
-                    resultsList.innerHTML = '<div class="list-group-item text-muted">No customers found</div>';
-                } else {
-                    data.forEach(customer => {
-                        const customerType = customer.customer_type || 'b2c';
-                        const displayName = customerType === 'b2b' 
-                            ? customer.company_name || customer.name 
-                            : customer.name;
-
-                        const item = document.createElement('a');
-                        item.className = 'list-group-item list-group-item-action';
-                        item.href = '#';
-                        item.innerHTML = `
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">${displayName}</h6>
-                                <small class="text-muted">${customerType.toUpperCase()}</small>
-                            </div>
-                            <p class="mb-1">${customer.email}</p>
-                            <small>${customer.phone || 'No phone'}</small>
-                        `;
-                        item.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            autofillCustomerForm(customer, customerType);
-                            searchResults.style.display = 'none';
-                        });
-                        resultsList.appendChild(item);
-                    });
-                }
-
-                searchResults.style.display = 'block';
-            })
-            .catch(error => {
-                console.error('Error searching customers:', error);
-                resultsList.innerHTML = '<div class="list-group-item text-danger">Error searching customers. Please try again.</div>';
-                searchResults.style.display = 'block';
-            })
-            .finally(() => {
-                this.innerHTML = '<i class="fa fa-search"></i> Search';
-                this.disabled = false;
-            });
-    });
-
-    // Auto-fill customer form based on search result
-    function autofillCustomerForm(customer, customerType) {
-        // Set customer type dropdown
-        const customerTypeSelect = document.querySelector('select[name="customer_type"]');
-        customerTypeSelect.value = customerType;
-        customerTypeSelect.dispatchEvent(new Event('change'));
-
-        // Set customer in the customer dropdown
-        const customerSelect = document.querySelector('select[name="customer_id"]');
-        if (customerSelect) {
-            // Check if customer exists in dropdown, if not add it
-            let optionExists = false;
-            for (let option of customerSelect.options) {
-                if (option.value == customer.id) {
-                    optionExists = true;
-                    break;
-                }
-            }
-            
-            if (!optionExists) {
-                const newOption = document.createElement('option');
-                newOption.value = customer.id;
-                newOption.textContent = customer.name || customer.company_name;
-                customerSelect.appendChild(newOption);
-            }
-            customerSelect.value = customer.id;
-        }
-
-        // Fill the appropriate form based on customer type
-        if (customerType === 'b2c') {
-            document.getElementById('b2c_first_name').value = customer.first_name || customer.name?.split(' ')[0] || '';
-            document.getElementById('b2c_last_name').value = customer.last_name || customer.name?.split(' ').slice(1).join(' ') || '';
-            document.getElementById('b2c_email').value = customer.email || '';
-            document.getElementById('b2c_phone').value = customer.phone || '';
-            document.getElementById('b2c_street').value = customer.street || customer.address || '';
-            document.getElementById('b2c_house_no').value = customer.house_no || '';
-            document.getElementById('b2c_city').value = customer.city || '';
-            document.getElementById('b2c_pincode').value = customer.pincode || '';
-            document.getElementById('b2c_state').value = customer.state || '';
-            document.getElementById('b2c_country').value = customer.country || '';
-            document.getElementById('b2c_language').value = customer.language || '';
-            document.getElementById('b2c_responsible').value = customer.responsible || '';
-            document.getElementById('b2c_remarks').value = customer.remarks || '';
-        } else if (customerType === 'b2b') {
-            document.getElementById('b2b_group').value = customer.group || '';
-            document.getElementById('b2b_company_name').value = customer.company_name || customer.name || '';
-            document.getElementById('b2b_email').value = customer.email || '';
-            document.getElementById('b2b_phone').value = customer.phone || '';
-            document.getElementById('b2b_street').value = customer.street || customer.address || '';
-            document.getElementById('b2b_house_no').value = customer.house_no || '';
-            document.getElementById('b2b_city').value = customer.city || '';
-            document.getElementById('b2b_pincode').value = customer.pincode || '';
-            document.getElementById('b2b_state').value = customer.state || '';
-            document.getElementById('b2b_country').value = customer.country || '';
-            document.getElementById('b2b_language').value = customer.language || '';
-            document.getElementById('b2b_responsible').value = customer.responsible || '';
-            document.getElementById('b2b_remarks').value = customer.remarks || '';
-        }
-
-        // Also fill the quick customer details in booking details
-        const customerNameInput = document.querySelector('input[name="customer_name"]');
-        const customerEmailInput = document.querySelector('input[name="customer_email"]');
-        const customerPhoneInput = document.querySelector('input[name="customer_phone"]');
-
-        if (customerNameInput) {
-            customerNameInput.value = customer.name || customer.company_name || '';
-        }
-        if (customerEmailInput) {
-            customerEmailInput.value = customer.email || '';
-        }
-        if (customerPhoneInput) {
-            customerPhoneInput.value = customer.phone || '';
-        }
-
-        // Switch to Customer tab to show the filled form
-        const customerTab = document.getElementById('customer-tab');
-        customerTab.click();
-    }
-
-    // Hide search results when clicking outside
-    document.addEventListener('click', function(e) {
-        const searchContainer = document.querySelector('.input-group');
-        const searchResults = document.getElementById('search-results');
-        if (!searchContainer.contains(e.target) && !searchResults.contains(e.target)) {
-            searchResults.style.display = 'none';
-        }
-    });
-
-    // Initialize customer form visibility on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        const customerType = document.querySelector('select[name="customer_type"]').value;
-        const b2cForm = document.getElementById('b2c-form');
-        const b2bForm = document.getElementById('b2b-form');
-        const noFormMessage = document.getElementById('no-customer-form');
-
-        // Hide all forms initially
-        b2cForm.style.display = 'none';
-        b2bForm.style.display = 'none';
-        noFormMessage.style.display = 'none';
-
-        // Show appropriate form based on initial customer type
-        if (customerType === 'b2c') {
-            b2cForm.style.display = 'block';
-        } else if (customerType === 'b2b') {
-            b2bForm.style.display = 'block';
-        } else {
-            noFormMessage.style.display = 'block';
-        }
-    });
-
     // Add Service Row
     document.getElementById('addService').addEventListener('click', function() {
         const tbody = document.querySelector('#services tbody');

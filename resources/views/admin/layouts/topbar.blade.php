@@ -66,14 +66,14 @@
             color: #ed5b24;
             text-decoration: none;
         }
-        .badge {
+        /* .badge {
             position: absolute;
             top: -5px;
             right: -5px;
             font-size: 10px;
             padding: 3px 6px;
             border-radius: 50%;
-        }
+        } */
     </style>
 
     <a id="toggle_btn" href="javascript:void(0);">

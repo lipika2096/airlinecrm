@@ -187,7 +187,7 @@
                     <p>Dashboard</p>
                     <ul>
                         <li>
-                            <a class="" href="admin-dashboard.php">Admin Dashboard</a>
+                            <a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Admin Dashboard</a>
                         </li>
                         <li>
                             <a class="" href="employee-dashboard.php">Employee Dashboard</a>

@@ -143,6 +143,9 @@ Route::get('/admin/toggle-status/{id}', [AdminController::class, 'toggleStatus']
 
 // SuperAdmin routes - only accessible by users with superAdmin role
 Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(function () {
+
+    Route::get('customers/search', [CustomerController::class, 'search'])->name('customers.search');
+
     Route::get('dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
     Route::get('/logout', [AdminController::class, 'logout'])->name('logout');
 
@@ -722,6 +725,7 @@ Route::middleware(['auth'])->prefix('staff')->name('staff.')->group(function () 
 Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
     Route::get('/logout', [AdminController::class, 'staffLogout'])->name('logout');
+        Route::get('customers/search', [CustomerController::class, 'search'])->name('customers.search');
 
     // Notification routes
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
@@ -1269,6 +1273,7 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
 // Staff routes - accessible by users from users table
 Route::prefix('staff')->name('staff.')->middleware(['staff'])->group(function () {
     Route::get('/logout', [StaffController::class, 'logout'])->name('logout');
+    Route::get('customers/search', [CustomerController::class, 'search'])->name('customers.search');
 
     // Notification routes
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');

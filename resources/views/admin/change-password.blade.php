@@ -9,7 +9,7 @@
                 <div class="account-content">
                     <!-- Account Logo -->
                     <div class="account-logo">
-                        <a href="admin-dashboard.html"><img src="{{asset('public/assets/img/logo2.png')}}" alt="Dreamguy's Technologies"></a>
+                        <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}"><img src="{{asset('public/assets/img/logo2.png')}}" alt="Dreamguy's Technologies"></a>
                     </div>
                     <div class="account-box">
                         <div class="account-wrapper">

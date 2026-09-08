@@ -4,7 +4,7 @@
         <div class="sidebar-menu">
             <ul>
                 <li>
-                    <a href="admin-dashboard.php"><i class="la la-home"></i> <span>Back to Home</span></a>
+                    <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}"><i class="la la-home"></i> <span>Back to Home</span></a>
                 </li>
                 <li class="menu-title"><span>Chat Groups</span> <a href="#" data-bs-toggle="modal" data-bs-target="#add_group"><i class="fa fa-plus"></i></a></li>
                 <li>

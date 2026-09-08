@@ -17,7 +17,7 @@
                             <div class="col">
                                 <h3 class="page-title">Daily Scheduling</h3>
                                 <ul class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Dashboard</a></li>
                                     <li class="breadcrumb-item"><a href="employees.php">Employees</a></li>
                                     <li class="breadcrumb-item active">Shift Scheduling</li>
                                 </ul>

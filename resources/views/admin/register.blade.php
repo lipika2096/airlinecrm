@@ -26,7 +26,7 @@
                             <p class="account-subtitle">Access to our dashboard</p>
 
                             <!-- Account Form -->
-                            <form class="needs-validation custom-form mt-4 pt-2" novalidate action="admin-dashboard.php">
+                            <form class="needs-validation custom-form mt-4 pt-2" novalidate action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">
                                 <div class="form-group">
                                     <label for="useremail" class="form-label">Email</label>
                                     <input type="email" class="form-control" id="useremail" placeholder="Enter email" required>

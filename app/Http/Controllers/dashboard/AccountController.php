@@ -156,6 +156,42 @@ class AccountController extends Controller
             'customer_email' => 'nullable|email',
             'customer_phone' => 'nullable|string',
             'booking_notes' => 'nullable|string',
+            // Invoice fields
+            'invoice_number' => 'nullable|string',
+            'invoice_date' => 'nullable|date',
+            'invoice_due_date' => 'nullable|date',
+            'invoice_tax_rate' => 'nullable|numeric',
+            'invoice_notes' => 'nullable|string',
+            'billing_address' => 'nullable|string',
+            'shipping_address' => 'nullable|string',
+            // B2C Customer Details
+            'b2c_first_name' => 'nullable|string',
+            'b2c_last_name' => 'nullable|string',
+            'b2c_email' => 'nullable|email',
+            'b2c_phone' => 'nullable|string',
+            'b2c_street' => 'nullable|string',
+            'b2c_house_no' => 'nullable|string',
+            'b2c_city' => 'nullable|string',
+            'b2c_pincode' => 'nullable|string',
+            'b2c_state' => 'nullable|string',
+            'b2c_country' => 'nullable|string',
+            'b2c_language' => 'nullable|string',
+            'b2c_responsible' => 'nullable|string',
+            'b2c_remarks' => 'nullable|string',
+            // B2B Customer Details
+            'b2b_group' => 'nullable|string',
+            'b2b_company_name' => 'nullable|string',
+            'b2b_email' => 'nullable|email',
+            'b2b_phone' => 'nullable|string',
+            'b2b_street' => 'nullable|string',
+            'b2b_house_no' => 'nullable|string',
+            'b2b_city' => 'nullable|string',
+            'b2b_pincode' => 'nullable|string',
+            'b2b_state' => 'nullable|string',
+            'b2b_country' => 'nullable|string',
+            'b2b_language' => 'nullable|string',
+            'b2b_responsible' => 'nullable|string',
+            'b2b_remarks' => 'nullable|string',
         ]);
         
         // Calculate totals
@@ -188,6 +224,42 @@ class AccountController extends Controller
             'profit' => $profit,
             'status' => 'pending',
             'created_by' => $currentUserId,
+            // Invoice fields
+            'invoice_number' => $validated['invoice_number'] ?? null,
+            'invoice_date' => $validated['invoice_date'] ?? null,
+            'invoice_due_date' => $validated['invoice_due_date'] ?? null,
+            'invoice_tax_rate' => $validated['invoice_tax_rate'] ?? null,
+            'invoice_notes' => $validated['invoice_notes'] ?? null,
+            'billing_address' => $validated['billing_address'] ?? null,
+            'shipping_address' => $validated['shipping_address'] ?? null,
+            // B2C Customer Details
+            'b2c_first_name' => $validated['b2c_first_name'] ?? null,
+            'b2c_last_name' => $validated['b2c_last_name'] ?? null,
+            'b2c_email' => $validated['b2c_email'] ?? null,
+            'b2c_phone' => $validated['b2c_phone'] ?? null,
+            'b2c_street' => $validated['b2c_street'] ?? null,
+            'b2c_house_no' => $validated['b2c_house_no'] ?? null,
+            'b2c_city' => $validated['b2c_city'] ?? null,
+            'b2c_pincode' => $validated['b2c_pincode'] ?? null,
+            'b2c_state' => $validated['b2c_state'] ?? null,
+            'b2c_country' => $validated['b2c_country'] ?? null,
+            'b2c_language' => $validated['b2c_language'] ?? null,
+            'b2c_responsible' => $validated['b2c_responsible'] ?? null,
+            'b2c_remarks' => $validated['b2c_remarks'] ?? null,
+            // B2B Customer Details
+            'b2b_group' => $validated['b2b_group'] ?? null,
+            'b2b_company_name' => $validated['b2b_company_name'] ?? null,
+            'b2b_email' => $validated['b2b_email'] ?? null,
+            'b2b_phone' => $validated['b2b_phone'] ?? null,
+            'b2b_street' => $validated['b2b_street'] ?? null,
+            'b2b_house_no' => $validated['b2b_house_no'] ?? null,
+            'b2b_city' => $validated['b2b_city'] ?? null,
+            'b2b_pincode' => $validated['b2b_pincode'] ?? null,
+            'b2b_state' => $validated['b2b_state'] ?? null,
+            'b2b_country' => $validated['b2b_country'] ?? null,
+            'b2b_language' => $validated['b2b_language'] ?? null,
+            'b2b_responsible' => $validated['b2b_responsible'] ?? null,
+            'b2b_remarks' => $validated['b2b_remarks'] ?? null,
         ]);
         
         // Save services
@@ -207,12 +279,15 @@ class AccountController extends Controller
         }
         
         // Save passengers
-        if ($request->has('passenger_name')) {
-            foreach ($request->passenger_name as $index => $name) {
-                if (!empty($name)) {
+        if ($request->has('passenger_first_name')) {
+            foreach ($request->passenger_first_name as $index => $firstName) {
+                if (!empty($firstName)) {
                     BookingPassenger::create([
                         'booking_id' => $booking->id,
-                        'name' => $name,
+                        'title' => $request->passenger_title[$index] ?? null,
+                        'gender' => $request->passenger_gender[$index] ?? null,
+                        'first_name' => $firstName,
+                        'last_name' => $request->passenger_last_name[$index] ?? null,
                         'passport_no' => $request->passport_no[$index] ?? null,
                         'nationality' => $request->nationality[$index] ?? null,
                         'dob' => $request->dob[$index] ?? null,
@@ -231,6 +306,7 @@ class AccountController extends Controller
                         'payment_method' => $request->payment_method[$index] ?? 'cash',
                         'amount' => $amount,
                         'status' => $request->payment_status[$index] ?? 'pending',
+                        'remarks' => $request->payment_remarks[$index] ?? null,
                     ]);
                 }
             }

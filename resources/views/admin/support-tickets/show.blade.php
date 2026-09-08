@@ -337,7 +337,7 @@
                                                             <i class="fa fa-paperclip fa-lg"></i>
                                                             <input type="file" name="attachments[]" multiple style="display: none;" class="attachment-input">
                                                         </label>
-                                                        <div class="attachment-preview mt-2" id="attachmentPreview"></div>
+                                                        <div class="attachment-preview mt-2" id="attachmentPreviewAdmin" style="display: block; min-height: 50px;"></div>
                                                     </div>
                                                     <button type="submit" class="btn btn-success" style="border-radius: 20px;">
                                                         <i class="fa fa-paper-plane"></i> Send
@@ -380,9 +380,9 @@
                                                 }}
                                                 @else
                                                 {{
-                                                    \App\Models\User::where('id', $ticket->created_by)->first()->first_name
+                                                    \App\Models\User::where('id', $ticket->created_by)->first()->first_name ?? ""
                                                 }} {{
-                                                    \App\Models\User::where('id', $ticket->created_by)->first()->last_name
+                                                    \App\Models\User::where('id', $ticket->created_by)->first()->last_name ?? ""
                                                 }}
                                                 @endif</td>
                                                     </tr>
@@ -533,7 +533,7 @@
                                                                 <input type="file" name="attachments[]" multiple style="display: none;" class="attachment-input">
                                                             </label>
                                                             <small style="color:unset;font-size: smaller;">You can attach additional files (images, documents, etc.)</small>
-                                                            <div class="attachment-preview mt-2" id="editNoteAttachmentPreview"></div>
+                                                            <div class="attachment-preview mt-2" id="editNoteAttachmentPreview" style="display: block; min-height: 50px;"></div>
                                                         </div>
                                                         <div class="d-flex gap-2" style="margin-top: 15px;">
                                                             <button type="submit" class="btn btn-primary">Update Note</button>
@@ -556,7 +556,7 @@
                                                         <input type="file" name="attachments[]" multiple style="display: none;" class="attachment-input">
                                                     </label>
                                                     <small style="color:unset;font-size: smaller;">You can attach multiple files (images, documents, etc.)</small>
-                                                    <div class="attachment-preview mt-2" id="internalNoteAttachmentPreview"></div>
+                                                    <div class="attachment-preview mt-2" id="internalNoteAttachmentPreview" style="display: block; min-height: 50px;"></div>
                                                 </div>
                                                 <button type="submit" class="btn btn-secondary">Submit</button>
                                             </form>
@@ -985,13 +985,13 @@
                                                 <div class="form-group" style="width:92%;">
                                                     <textarea class="form-control" name="comment" rows="3" placeholder="Type your message here..." required style="border-radius: 20px;"></textarea>
                                                 </div>
-                                                <div class="form-group" style="float: inline-end; margin-top: -65px;">
-                                                    <div style="float: inline-start;  margin-right: 16px;">
+                                                <div class="form-group">
+                                                    <div style="margin-right: 16px;">
                                                         <label class="btn btn-link p-0 text-success">
                                                             <i class="fa fa-paperclip fa-lg"></i>
                                                             <input type="file" name="attachments[]" multiple style="display: none;" class="attachment-input">
                                                         </label>
-                                                        <div class="attachment-preview mt-2" id="userAttachmentPreview"></div>
+                                                        <div class="attachment-preview mt-2" id="attachmentPreviewCustomer" style="display: block; min-height: 50px;"></div>
                                                     </div>
                                                     <button type="submit" class="btn btn-success" style="border-radius: 20px;">
                                                         <i class="fa fa-paper-plane"></i> Send
@@ -1318,7 +1318,66 @@
             padding: 8px 12px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .attachment-preview {
+            display: block !important;
+            width: 100%;
+            min-height: 50px;
+            visibility: visible !important;
+        }
+
+        .attachment-preview .attachment-preview-item {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            vertical-align: top;
+        }
+
+        .attachment-preview .attachment-preview-item img {
+            max-width: 80px;
+            max-height: 80px;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+
+        .attachment-preview .attachment-preview-item .file-icon {
+            font-size: 40px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .attachment-preview .attachment-preview-item .file-name {
+            font-size: 11px;
+            color: #495057;
+            word-break: break-all;
+            max-width: 100px;
+            text-align: center;
+        }
+
+        .attachment-preview .attachment-preview-item .remove-file {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
             font-size: 14px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .attachment-preview .attachment-preview-item .remove-file:hover {
+            background: #c82333;
         }
 
         .custom-name-wrapper .custom-file-name:focus {
@@ -1495,6 +1554,8 @@
             margin-top: 4px;
             border: 1px solid #ced4da;
             border-radius: 3px;
+            display: block !important;
+            visibility: visible !important;
         }
         
         .attachment-preview-item .remove-file {
@@ -1649,7 +1710,15 @@
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        // Check if jQuery is loaded
+        if (typeof jQuery === 'undefined') {
+            console.error('jQuery is not loaded!');
+        } else {
+            console.log('jQuery version:', jQuery.fn.jquery);
+        }
+
         $(document).ready(function() {
+            console.log('Document ready - Attachment preview script loaded');
             // Tab state persistence
             var ticketId = '{{ $ticket->id }}';
             var storageKey = 'active_tab_' + ticketId;
@@ -1719,22 +1788,36 @@
             });
             
             // Attachment preview functionality
-            $('.attachment-input').on('change', function() {
+            $(document).on('change', '.attachment-input', function() {
+                console.log('Attachment input changed');
                 var input = this;
-                var previewContainer = $(this).closest('.form-group').find('.attachment-preview');
+                var previewContainer = $(input).parent().next('.attachment-preview');
+                console.log('Preview container found:', previewContainer.length);
+
+                // Fallback to finding by ID if the next sibling approach doesn't work
+                if (previewContainer.length === 0) {
+                    var inputId = $(input).closest('form').find('.attachment-preview').attr('id');
+                    if (inputId) {
+                        previewContainer = $('#' + inputId);
+                        console.log('Preview container found by ID:', previewContainer.length);
+                    }
+                }
+
                 previewContainer.empty();
-                
+
                 if (input.files && input.files.length > 0) {
+                    console.log('Files selected:', input.files.length);
                     for (var i = 0; i < input.files.length; i++) {
                         (function(file, index) {
                             var reader = new FileReader();
-                            
+
                             reader.onload = function(e) {
-                                var previewItem = $('<div class="attachment-preview-item" data-file-name="' + file.name + '"></div>');
-                                
+                                console.log('Loading file:', file.name);
+                                var previewItem = $('<div class="attachment-preview-item" data-file-name="' + file.name + '" style="display: inline-flex; flex-direction: column; align-items: center; margin: 5px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; position: relative;"></div>');
+
                                 // Check if it's an image
                                 if (file.type.startsWith('image/')) {
-                                    previewItem.append('<img src="' + e.target.result + '" alt="' + file.name + '">');
+                                    previewItem.append('<img src="' + e.target.result + '" alt="' + file.name + '" style="max-width: 80px; max-height: 80px; border-radius: 4px; margin-bottom: 5px;">');
                                 } else {
                                     // Show file icon for non-image files
                                     var iconClass = 'fa-file';
@@ -1747,25 +1830,26 @@
                                     } else if (file.type.includes('zip') || file.name.endsWith('.zip') || file.name.endsWith('.rar')) {
                                         iconClass = 'fa-file-archive';
                                     }
-                                    previewItem.append('<i class="fa ' + iconClass + ' file-icon"></i>');
+                                    previewItem.append('<i class="fa ' + iconClass + '" style="font-size: 40px; color: #6c757d; margin-bottom: 5px;"></i>');
                                 }
 
-                                var iconInputContainer = $('<div class="icon-input-container"></div>');
-                                iconInputContainer.append(previewItem.find('.file-icon, img'));
-                                previewItem.append(iconInputContainer);
-                                previewItem.append('<div class="file-name">' + file.name + '</div>');
-                                previewItem.append('<button type="button" class="remove-file">×</button>');
+                                previewItem.append('<div class="file-name" style="font-size: 11px; color: #495057; word-break: break-all; max-width: 100px; text-align: center; margin-bottom: 5px;">' + file.name + '</div>');
+                                previewItem.append('<button type="button" class="remove-file" style="position: absolute; top: -8px; right: -8px; width: 20px; height: 20px; border-radius: 50%; background: #dc3545; color: white; border: none; cursor: pointer; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center;">×</button>');
 
-                                // Add custom name input separately before the preview container
-                                var customNameInput = $('<div class="custom-name-wrapper"><input type="text" class="form-control custom-file-name" placeholder="Custom name for ' + file.name + '" value="" required></div>');
-                                previewContainer.append(customNameInput);
-                                
+                                // Add custom name input inside the preview item
+                                var customNameInput = $('<input type="text" class="form-control custom-file-name" placeholder="Custom name" value="" style="width: 100%; margin-top: 5px; font-size: 11px; padding: 4px; display: block;">');
+                                previewItem.append(customNameInput);
+                                console.log('Custom name input added for:', file.name);
+
                                 previewContainer.append(previewItem);
+                                console.log('Preview item added for:', file.name);
                             };
-                            
+
                             reader.readAsDataURL(file);
                         })(input.files[i], i);
                     }
+                } else {
+                    console.log('No files selected');
                 }
             });
             
@@ -1773,8 +1857,15 @@
             $(document).on('click', '.remove-file', function() {
                 var previewItem = $(this).closest('.attachment-preview-item');
                 var fileNameToRemove = previewItem.data('file-name');
-                var input = $(this).closest('.form-group').find('.attachment-input')[0];
-                
+                var input = $(previewItem).closest('.attachment-preview').prev().find('.attachment-input')[0];
+
+                // Fallback to finding input in the same form if the above doesn't work
+                if (!input) {
+                    input = $(previewItem).closest('form').find('.attachment-input')[0];
+                }
+
+                console.log('Removing file:', fileNameToRemove);
+
                 // Create a new FileList without the removed file
                 var dt = new DataTransfer();
                 for (var i = 0; i < input.files.length; i++) {
@@ -1783,12 +1874,12 @@
                     }
                 }
                 input.files = dt.files;
-                
+
                 // Remove the preview item
                 previewItem.remove();
-                
+
                 // Update file count (if the element exists)
-                var fileCountElement = $(this).closest('.form-group').find('#file-count');
+                var fileCountElement = $(input).closest('.form-group').find('#file-count');
                 if (fileCountElement.length > 0) {
                     var count = input.files.length;
                     if (count > 0) {
@@ -1804,8 +1895,8 @@
                 var form = $(this);
                 var attachmentNames = [];
 
-                // Collect custom file names from custom-name-wrapper divs
-                form.find('.custom-name-wrapper').each(function(index) {
+                // Collect custom file names from attachment preview items
+                form.find('.attachment-preview-item').each(function(index) {
                     var customName = $(this).find('.custom-file-name').val();
                     if (customName && customName.trim() !== '') {
                         attachmentNames[index] = customName.trim();

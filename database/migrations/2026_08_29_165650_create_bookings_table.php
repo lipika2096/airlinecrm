@@ -30,6 +30,15 @@ return new class extends Migration
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
+
+            // Invoice fields
+            $table->string('invoice_number')->nullable();
+            $table->date('invoice_date')->nullable();
+            $table->date('invoice_due_date')->nullable();
+            $table->decimal('invoice_tax_rate', 5, 2)->nullable();
+            $table->text('invoice_notes')->nullable();
+            $table->text('billing_address')->nullable();
+            $table->text('shipping_address')->nullable();
         });
         
         // Booking Services table
@@ -50,12 +59,15 @@ return new class extends Migration
         Schema::create('booking_passengers', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('booking_id');
-            $table->string('name');
+            $table->string('title')->nullable();
+            $table->string('gender')->nullable();
+            $table->string('first_name');
+            $table->string('last_name')->nullable();
             $table->string('passport_no')->nullable();
             $table->string('nationality')->nullable();
             $table->date('dob')->nullable();
             $table->timestamps();
-            
+
             $table->foreign('booking_id')->references('id')->on('bookings')->onDelete('cascade');
         });
         
@@ -67,8 +79,9 @@ return new class extends Migration
             $table->string('payment_method')->default('cash');
             $table->decimal('amount', 10, 2)->default(0);
             $table->string('status')->default('pending');
+            $table->text('remarks')->nullable();
             $table->timestamps();
-            
+
             $table->foreign('booking_id')->references('id')->on('bookings')->onDelete('cascade');
         });
         

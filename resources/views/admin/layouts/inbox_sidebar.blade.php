@@ -4,7 +4,7 @@
         <div class="sidebar-menu">
             <ul>
                 <li> 
-                    <a href="admin-dashboard.php"><i class="la la-home"></i> <span>Back to Home</span></a>
+                    <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}"><i class="la la-home"></i> <span>Back to Home</span></a>
                 </li>
                 <li class="active"> 
                     <a href="inbox.php">Inbox <span class="mail-count">(21)</span></a>

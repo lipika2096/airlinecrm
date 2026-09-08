@@ -4,6 +4,14 @@
     <meta charset="utf-8" />
     <title>Reset Password | CRM admin template"</title>
 
+    <style>
+        .toggle-password {
+            transition: color 0.3s ease;
+        }
+        .toggle-password:hover {
+            color: #007bff !important;
+        }
+    </style>
 
       <!-- Main Wrapper -->
         <div class="main-wrapper">
@@ -33,12 +41,12 @@
                                 @csrf
                                 <input type="hidden" name="token" value="{{ $token }}">
                                 <input type="hidden" name="email" value="{{ $email }}">
-                                
+
                                 <div class="form-group">
                                     <label for="password" class="form-label">New Password</label>
-                                    <div class="position-relative">
-                                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter new password" required minlength="8">
-                                        <span class="fa fa-eye-slash" id="toggle-password" style="position: absolute; right: 15px; top: 12px; cursor: pointer;"></span>
+                                    <div class="position-relative" style="position: relative;">
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter new password" required minlength="8" style="padding-right: 40px;">
+                                        <span class="fa fa-eye-slash toggle-password" id="toggle-password" role="button" tabindex="0" aria-label="Show password" style="position: absolute; right: 15px; top: 12px; cursor: pointer; z-index: 999; pointer-events: auto; color: #6c757d; font-size: 16px;"></span>
                                     </div>
                                     <div class="invalid-feedback">
                                         Please enter a password (minimum 8 characters)
@@ -47,15 +55,15 @@
 
                                 <div class="form-group">
                                     <label for="password_confirmation" class="form-label">Confirm Password</label>
-                                    <div class="position-relative">
-                                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm new password" required>
-                                        <span class="fa fa-eye-slash" id="toggle-password-confirmation" style="position: absolute; right: 15px; top: 12px; cursor: pointer;"></span>
+                                    <div class="position-relative" style="position: relative;">
+                                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm new password" required style="padding-right: 40px;">
+                                        <span class="fa fa-eye-slash toggle-password" id="toggle-password-confirmation" role="button" tabindex="0" aria-label="Show password" style="position: absolute; right: 15px; top: 12px; cursor: pointer; z-index: 999; pointer-events: auto; color: #6c757d; font-size: 16px;"></span>
                                     </div>
                                     <div class="invalid-feedback">
                                         Please confirm your password
                                     </div>
                                 </div>
-                                
+
                                 <div class="form-group text-center">
                                     <button class="btn btn-primary account-btn" type="submit">Reset Password</button>
                                 </div>
@@ -66,10 +74,11 @@
                             <!-- /Account Form -->
 
                             <script>
-                                // Form validation
-                                (function() {
-                                    'use strict';
-                                    window.addEventListener('load', function() {
+                                document.addEventListener('DOMContentLoaded', function() {
+
+                                    // Form validation
+                                    (function() {
+                                        'use strict';
                                         var form = document.querySelector('.needs-validation');
                                         form.addEventListener('submit', function(event) {
                                             if (form.checkValidity() === false) {
@@ -78,36 +87,44 @@
                                             }
                                             form.classList.add('was-validated');
                                         }, false);
-                                    });
-                                })();
+                                    })();
 
-                                // Toggle password visibility
-                                document.getElementById('toggle-password').addEventListener('click', function() {
-                                    var passwordInput = document.getElementById('password');
-                                    var icon = this;
-                                    if (passwordInput.type === 'password') {
-                                        passwordInput.type = 'text';
-                                        icon.classList.remove('fa-eye-slash');
-                                        icon.classList.add('fa-eye');
-                                    } else {
-                                        passwordInput.type = 'password';
-                                        icon.classList.remove('fa-eye');
-                                        icon.classList.add('fa-eye-slash');
-                                    }
-                                });
+                                    // Toggle password visibility
+                                    function togglePasswordVisibility(inputId, iconId) {
+                                        var passwordInput = document.getElementById(inputId);
+                                        var icon = document.getElementById(iconId);
 
-                                document.getElementById('toggle-password-confirmation').addEventListener('click', function() {
-                                    var passwordInput = document.getElementById('password_confirmation');
-                                    var icon = this;
-                                    if (passwordInput.type === 'password') {
-                                        passwordInput.type = 'text';
-                                        icon.classList.remove('fa-eye-slash');
-                                        icon.classList.add('fa-eye');
-                                    } else {
-                                        passwordInput.type = 'password';
-                                        icon.classList.remove('fa-eye');
-                                        icon.classList.add('fa-eye-slash');
+                                        if (!passwordInput || !icon) {
+                                            return;
+                                        }
+
+                                        var isHidden = passwordInput.type === 'password';
+                                        passwordInput.type = isHidden ? 'text' : 'password';
+                                        icon.classList.toggle('fa-eye', isHidden);
+                                        icon.classList.toggle('fa-eye-slash', !isHidden);
+                                        icon.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
                                     }
+
+                                    function bindToggle(iconId, inputId) {
+                                        var icon = document.getElementById(iconId);
+                                        if (!icon) return;
+
+                                        icon.addEventListener('click', function() {
+                                            togglePasswordVisibility(inputId, iconId);
+                                        });
+
+                                        // Keyboard accessibility (Enter/Space)
+                                        icon.addEventListener('keydown', function(event) {
+                                            if (event.key === 'Enter' || event.key === ' ') {
+                                                event.preventDefault();
+                                                togglePasswordVisibility(inputId, iconId);
+                                            }
+                                        });
+                                    }
+
+                                    bindToggle('toggle-password', 'password');
+                                    bindToggle('toggle-password-confirmation', 'password_confirmation');
+
                                 });
                             </script>
 
@@ -117,8 +134,6 @@
             </div>
         </div>
         <!-- /Main Wrapper -->
-
-
 
     </body>
 

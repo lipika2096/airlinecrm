@@ -458,4 +458,50 @@ class CustomerController extends Controller
         return redirect()->back();
     }
 
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+        
+        if (empty($query)) {
+            return response()->json([]);
+        }
+
+        $customers = Admin::whereDoesntHave('roles', function ($q) {
+            $q->where('name', 'superAdmin');
+        })
+        ->with(['adminDetail', 'customerAddresses'])
+        ->where(function ($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%")
+              ->orWhere('email', 'like', "%{$query}%");
+        })
+        ->get()
+        ->map(function ($customer) {
+            $address = $customer->customerAddresses->first();
+            $nameParts = explode(' ', $customer->name, 2);
+            
+            return [
+                'id' => $customer->id,
+                'name' => $customer->name,
+                'email' => $customer->email,
+                'company_name' => $customer->adminDetail->company_name ?? null,
+                'customer_type' => $customer->adminDetail->company_name ? 'b2b' : 'b2c',
+                'first_name' => $nameParts[0] ?? null,
+                'last_name' => $nameParts[1] ?? null,
+                'street' => $customer->adminDetail->street ?? null,
+                'house_no' => null,
+                'city' => $customer->adminDetail->city ?? null,
+                'pincode' => $customer->adminDetail->pincode ?? null,
+                'state' => $customer->adminDetail->state ?? null,
+                'country' => $customer->adminDetail->country ?? null,
+                'language' => null,
+                'responsible' => null,
+                'remarks' => null,
+                'group' => null,
+                'address' => $customer->adminDetail->address ?? null,
+            ];
+        });
+
+        return response()->json($customers);
+    }
+
 }

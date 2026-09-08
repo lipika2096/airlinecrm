@@ -16,7 +16,7 @@
                     <div class="col-sm-12">
                         <h3 class="page-title">Update Agent Profile</h3>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Dashboard</a></li>
                             <li class="breadcrumb-item active"> Agent Profile</li>
                         </ul>
                     </div>
@@ -470,7 +470,7 @@
                             <div class="col">
                                 <h3 class="page-title">Case History </h3>
                                 <ul class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="admin-dashboard.php">Dashboard</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Dashboard</a></li>
                                     <li class="breadcrumb-item active">Case History</li>
                                 </ul>
                             </div>

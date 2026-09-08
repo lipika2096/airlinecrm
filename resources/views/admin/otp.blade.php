@@ -29,7 +29,7 @@
                             <p class="account-subtitle">Verification your account</p>
 
                             <!-- Account Form -->
-                            <form action="admin-dashboard.php">
+                            <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">
                                 <div class="otp-wrap">
                                     <input type="text" placeholder="0" maxlength="1" class="otp-input">
                                     <input type="text" placeholder="0" maxlength="1" class="otp-input">
