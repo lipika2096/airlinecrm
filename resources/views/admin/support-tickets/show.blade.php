@@ -181,9 +181,11 @@
                                             <label>Status</label>
                                             <select class="form-control" name="status">
                                                 @foreach($ticketStatuses as $status)
+                                                    @if($status->slug !== 'closed')
                                                     <option value="{{ $status->slug }}" {{ $ticket->status == $status->slug ? 'selected' : '' }}>
                                                         {{ $status->name }}
                                                     </option>
+                                                    @endif
                                                 @endforeach
                                             </select>
                                         </div>
@@ -191,6 +193,16 @@
                                     <div class="col-md-2">
                                         <button type="submit" class="btn btn-primary btn-block" style="margin-top: -60px !important;">Update</button>
                                     </div>
+                                    @if($ticket->assigned_to && $ticket->status !== 'closed')
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>&nbsp;</label>
+                                            <button type="button" class="btn btn-danger btn-block" data-bs-toggle="modal" data-bs-target="#closeTicketModal">
+                                                <i class="fa fa-times"></i> Close Ticket
+                                            </button>
+                                        </div>
+                                    </div>
+                                    @endif
                                     @else
                                     <div class="col-md-2">
                                         <div class="form-group">
@@ -329,6 +341,35 @@
                                                     </div>
                                                 </div>
                                             @endforeach
+                                        @endif
+
+                                        <!-- Final Comment (shown when ticket is closed) -->
+                                        @if($ticket->status === 'closed' && $ticket->final_comment)
+                                        @php
+                                            if($ticket->closed_by) {
+                                                $closer = \App\Models\Admin::find($ticket->closed_by);
+                                                if($closer) {
+                                                    $closerName = $closer->hasRole('SuperAdmin') ? 'Super Admin' : $closer->name;
+                                                } else {
+                                                    $closer = \App\Models\User::find($ticket->closed_by);
+                                                    $closerName = $closer ? ($closer->first_name . ' ' . $closer->last_name) : 'Unknown';
+                                                }
+                                            } else {
+                                                $closerName = 'Unknown';
+                                            }
+                                        @endphp
+                                        <div class="message-item note-dark mb-3">
+                                            <div class="message-header d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <strong>{{ $closerName }}</strong>
+                                                    <small class="message-time" style="margin-left: 1rem;">{{ $ticket->closed_at ? $ticket->closed_at->format('M d, Y h:i A') : $ticket->updated_at->format('M d, Y h:i A') }}</small>
+                                                </div>
+                                            </div>
+                                            <div class="message-body">
+                                                <p><strong>Final Resolution Comment:</strong></p>
+                                                <p>{{ nl2br($ticket->final_comment) }}</p>
+                                            </div>
+                                        </div>
                                         @endif
 
                                         <!-- Add Comment Form -->
@@ -1125,6 +1166,36 @@
         </div>
     </div>
     @endif
+
+    <!-- Close Ticket Modal -->
+    <div class="modal fade" id="closeTicketModal" tabindex="-1" role="dialog" aria-labelledby="closeTicketModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="closeTicketModalLabel">Close Ticket</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.update-status', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.update-status', $ticket->id) : route('customer.support-tickets.update-status', $ticket->id)) }}">
+                        @csrf
+                        @method('patch')
+                        <input type="hidden" name="status" value="closed">
+                        <div class="alert alert-warning">
+                            <i class="fa fa-exclamation-triangle"></i> You are about to close this ticket. This action cannot be undone.
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="final_comment">Final Comment <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="final_comment" name="final_comment" rows="4" placeholder="Please provide a final comment explaining the resolution..." required></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to close this ticket?')">Close Ticket</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <style>
         .ticket-header-card {

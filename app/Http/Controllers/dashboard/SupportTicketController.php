@@ -1198,6 +1198,7 @@ class SupportTicketController extends Controller
             'assigned_to' => 'nullable|exists:users,id',
             'priority' => 'nullable|string|max:255',
             'department' => 'nullable|string|in:technical_support,billing,booking,account,other',
+            'final_comment' => 'required_if:status,closed|string|max:1000',
         ]);
 
         $ticket = SupportTicket::findOrFail($id);
@@ -1216,6 +1217,12 @@ class SupportTicketController extends Controller
         if ($isCustomer) {
             return redirect()->back()
                 ->with('error', 'You do not have permission to update ticket status.');
+        }
+        
+        // Prevent closing unassigned tickets
+        if ($request->status === 'closed' && !$ticket->assigned_to) {
+            return redirect()->back()
+                ->with('error', 'Cannot close unassigned tickets. Please assign the ticket to a staff member first.');
         }
         
         $oldStatus = $ticket->status;
@@ -1243,12 +1250,20 @@ class SupportTicketController extends Controller
             if (!$ticket->resolved_at) {
                 $ticket->resolved_at = now();
             }
+            // Save final comment when closing ticket
+            if ($request->has('final_comment')) {
+                $ticket->final_comment = $request->final_comment;
+            }
+            // Save who closed the ticket
+            $ticket->closed_by = $userId;
         } elseif ($oldStatus === 'closed' && $request->status === 'open') {
             // Reopening ticket - clear timestamps and rating
             $ticket->resolved_at = null;
             $ticket->closed_at = null;
             $ticket->rating = null;
             $ticket->rating_comment = null;
+            $ticket->final_comment = null;
+            $ticket->closed_by = null;
         }
 
         $ticket->save();

@@ -25,6 +25,8 @@ class SupportTicket extends Model
         'attachments',
         'rating',
         'rating_comment',
+        'final_comment',
+        'closed_by',
         'resolved_at',
         'closed_at',
         'company_name',
