@@ -4,11 +4,14 @@
 
     @php
         // Define routes for all user types
-        $dashboardRoute = $isSuperAdmin ? route('admin.support-tickets.index') : ($isStaff ? route('staff.support-tickets.index') : route('customer.support-tickets.index'));
-        $createRoute = $isSuperAdmin ? route('admin.support-tickets.create') : ($isStaff ? route('staff.support-tickets.create') : route('customer.support-tickets.create'));
-        $showRouteBase = $isSuperAdmin ? 'admin.support-tickets.show' : ($isStaff ? 'staff.support-tickets.show' : 'customer.support-tickets.show');
-        $dashboardIndexRoute = $isSuperAdmin ? route('admin.support-tickets.index') : ($isStaff ? route('staff.support-tickets.dashboard') : route('customer.support-tickets.dashboard'));
-        $createRoute = $isSuperAdmin ? route('admin.support-tickets.create') : ($isStaff ? route('staff.support-tickets.create') : route('customer.support-tickets.create'));
+        $dashboardRoute = \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.index') : route('customer.support-tickets.index'));
+        $createRoute = \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.create') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.create') : route('customer.support-tickets.create'));
+        $showRouteBase = \App\Helpers\RouteHelper::isSuperAdmin() ? 'admin.support-tickets.show' : (\App\Helpers\RouteHelper::isStaff() ? 'staff.support-tickets.show' : 'customer.support-tickets.show');
+        $dashboardIndexRoute = \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') : route('customer.support-tickets.dashboard'));
+        $createRoute = \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.create') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.create') : route('customer.support-tickets.create'));
+
+        // Get current user ID regardless of authentication guard
+        $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
     @endphp
 
     <!-- Page Wrapper -->
@@ -21,15 +24,15 @@
             <div class="page-header">
                 <div class="row align-items-center">
                     <div class="col">
-                        <h3 class="page-title">{{ $isSuperAdmin ? 'All Tickets (Admin View)' : 'My Tickets' }}</h3>
+                        <h3 class="page-title">{{ \App\Helpers\RouteHelper::isSuperAdmin() ? 'All Tickets (Admin View)' : 'My Tickets' }}</h3>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ $dashboardRoute }}">Support Ticket Dashboard</a></li>
-                            <li class="breadcrumb-item active">{{ $isSuperAdmin ? 'All Tickets' : 'My Tickets' }}</li>
+                            <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.index') : route('customer.support-tickets.index')) }}">Support Ticket Dashboard</a></li>
+                            <li class="breadcrumb-item active">{{ \App\Helpers\RouteHelper::isSuperAdmin() ? 'All Tickets' : 'My Tickets' }}</li>
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
-                        <a href="{{ $createRoute }}" class="btn add-btn"><i class="fa fa-plus"></i> {{ $isSuperAdmin ? 'New Ticket' : 'Create Ticket' }}</a>
+                        <a href="{{ $createRoute }}" class="btn add-btn"><i class="fa fa-plus"></i> {{ \App\Helpers\RouteHelper::isSuperAdmin() ? 'New Ticket' : 'Create Ticket' }}</a>
                     </div>  
                 </div>
             </div>
@@ -42,7 +45,7 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-body">
-                                <form method="GET" action="{{ route('admin.support-tickets.index') }}">
+                                <form method="GET" action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') : route('admin.support-tickets.index')) }}">
                                     <div class="row align-items-end">
                                         <!-- <div class="col-md-2">
                                             <div class="form-group">
@@ -119,7 +122,7 @@
                                             <button type="submit" class="btn btn-primary btn-sm">
                                                 <i class="fa fa-search"></i> Search Tickets
                                             </button>
-                                            <a href="{{ route('admin.support-tickets.index') }}" class="btn btn-secondary btn-sm">
+                                            <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') : route('admin.support-tickets.index')) }}" class="btn btn-secondary btn-sm">
                                                 <i class="fa fa-refresh"></i> Reset Filters
                                             </a>
                                         </div>
@@ -136,39 +139,39 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="superadmin-filter-tabs">
-                                    <a href="{{ route('admin.support-tickets.index') }}?tab=all" 
+                                    <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') : route('admin.support-tickets.index')) }}?tab=all" 
                                     class="superadmin-tab {{ request('tab', 'all') == 'all' ? 'active' : '' }}">
                                         Total Tickets ({{ $counts['all'] ?? 0 }})
                                     </a>
-                                    <a href="{{ route('admin.support-tickets.index') }}?tab=new" 
+                                    <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') : route('admin.support-tickets.index')) }}?tab=new" 
                                     class="superadmin-tab {{ request('tab') == 'new' ? 'active' : '' }}">
                                         New Tickets ({{ $counts['new'] ?? 0 }})
                                     </a>
-                                    <a href="{{ route('admin.support-tickets.index') }}?tab=in_progress" 
+                                    <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') : route('admin.support-tickets.index')) }}?tab=in_progress" 
                                     class="superadmin-tab {{ request('tab') == 'in_progress' ? 'active' : '' }}">
                                         In Progress ({{ $counts['in_progress'] ?? 0 }})
                                     </a>
-                                    <a href="{{ route('admin.support-tickets.index') }}?tab=resolved" 
+                                    <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') : route('admin.support-tickets.index')) }}?tab=resolved" 
                                     class="superadmin-tab {{ request('tab') == 'resolved' ? 'active' : '' }}">
                                         Resolved ({{ $counts['resolved'] ?? 0 }})
                                     </a>
-                                    <a href="{{ route('admin.support-tickets.index') }}?tab=reopened" 
+                                    <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') : route('admin.support-tickets.index')) }}?tab=reopened" 
                                     class="superadmin-tab {{ request('tab') == 'reopened' ? 'active' : '' }}">
                                         Reopened ({{ $counts['reopened'] ?? 0 }})
                                     </a>
-                                    <a href="{{ route('admin.support-tickets.index') }}?tab=waiting_feedback" 
+                                    <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') : route('admin.support-tickets.index')) }}?tab=waiting_feedback" 
                                     class="superadmin-tab {{ request('tab') == 'waiting_feedback' ? 'active' : '' }}">
                                         Waiting (Feedback) ({{ $counts['waiting_feedback'] ?? 0 }})
                                     </a>
-                                    <a href="{{ route('admin.support-tickets.index') }}?tab=critical" 
+                                    <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') : route('admin.support-tickets.index')) }}?tab=critical" 
                                     class="superadmin-tab {{ request('tab') == 'critical' ? 'active' : '' }}">
                                         Critical ({{ $counts['critical'] ?? 0 }})
                                     </a>
-                                    <a href="{{ route('admin.support-tickets.index') }}?tab=closed" 
+                                    <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') : route('admin.support-tickets.index')) }}?tab=closed" 
                                     class="superadmin-tab {{ request('tab') == 'closed' ? 'active' : '' }}">
                                         Closed ({{ $counts['closed'] ?? 0 }})
                                     </a>
-                                    <a href="{{ route('admin.support-tickets.index') }}?tab=unassigned" 
+                                    <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') : route('admin.support-tickets.index')) }}?tab=unassigned" 
                                     class="superadmin-tab {{ request('tab') == 'unassigned' ? 'active' : '' }}">
                                         Unassigned ({{ $counts['unassigned'] ?? 0 }})
                                     </a>
@@ -177,7 +180,7 @@
                         </div>
                     </div>
                 </div>
-            @elseif(\App\Helpers\RouteHelper::isStaff() && (auth()->user()->created_by == 2))
+            @elseif(\App\Helpers\RouteHelper::isStaff() && $superAdminId && auth()->user()->created_by === $superAdminId)
             <!-- SuperAdmin Advanced Filters -->
                 <div class="row filter-row mb-3">
                     <div class="col-md-12">
@@ -260,7 +263,7 @@
                                             <button type="submit" class="btn btn-primary btn-sm">
                                                 <i class="fa fa-search"></i> Search Tickets
                                             </button>
-                                            <a href="{{ route('admin.support-tickets.index') }}" class="btn btn-secondary btn-sm">
+                                            <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') : route('admin.support-tickets.index')) }}" class="btn btn-secondary btn-sm">
                                                 <i class="fa fa-refresh"></i> Reset Filters
                                             </a>
                                         </div>
@@ -335,8 +338,12 @@
                                         <th>COMPANY</th>
                                         <th>SUBJECT</th>
                                         <th>CATEGORY</th>
+                                        @if(\App\Helpers\RouteHelper::isSuperAdmin() || (\App\Helpers\RouteHelper::isStaff() && auth()->user()?->created_by == \App\Models\Admin::role('SuperAdmin')->first()?->id))
                                         <th>PRIORITY</th>
+                                        @endif
+                                        @if(\App\Helpers\RouteHelper::isSuperAdmin() || (\App\Helpers\RouteHelper::isStaff() && auth()->user()?->created_by == \App\Models\Admin::role('SuperAdmin')->first()?->id))
                                         <th>STATUS</th>
+                                        @endif
                                         <th>ASSIGNED TO</th>
                                         <th class="text-end">Action</th>
                                     </tr>
@@ -354,6 +361,7 @@
                                                     <span class="text-muted">-</span>
                                                 @endif
                                             </td>
+                                            @if(\App\Helpers\RouteHelper::isSuperAdmin() || (\App\Helpers\RouteHelper::isStaff() && auth()->user()?->created_by == \App\Models\Admin::role('SuperAdmin')->first()?->id))
                                             <td>
                                                 @if($ticket->priority == 'low')
                                                     <span class="badge bg-success">Low</span>
@@ -367,6 +375,8 @@
                                                     <span class="badge bg-danger">Urgent</span>
                                                 @endif
                                             </td>
+                                            @endif
+                                            @if(\App\Helpers\RouteHelper::isSuperAdmin() || (\App\Helpers\RouteHelper::isStaff() && auth()->user()?->created_by == \App\Models\Admin::role('SuperAdmin')->first()?->id))
                                             <td>
                                                 @php
                                                     $superAdminTicketStatus = $ticketStatuses->where('slug', $ticket->status)->first();
@@ -381,14 +391,15 @@
                                                     </span>
                                                 @endif
                                             </td>
+                                            @endif
                                             <td>{{ $ticket->assignedTo ? $ticket->assignedTo->first_name . ' ' . $ticket->assignedTo->last_name : 'Unassigned' }}</td>
                                             <td class="text-end">
                                                 <div class="dropdown-action">
                                                     @if($isSuperAdmin)
-                                                        <a href="{{ route('admin.support-tickets.show', $ticket->id) }}" class="btn btn-sm btn-view-ticket">
+                                                        <a href="{{ \App\Helpers\RouteHelper::isCustomer() ?  route('customer.support-tickets.show', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ?  route('staff.support-tickets.show', $ticket->id)  :  route('admin.support-tickets.show', $ticket->id) ) }}" class="btn btn-sm btn-view-ticket">
                                                             <i class="fa fa-eye"></i> View
                                                         </a>
-                                                        @if($ticket->status !== 'closed' && ( ($ticket->assigned_to === null || $ticket->assigned_to === auth('admin')->user()->id)))
+                                                        @if($ticket->status !== 'closed' && ( ($ticket->assigned_to === null || $ticket->assigned_to === $currentUserId)))
                                                         <button type="button" class="btn btn-sm btn-assign-ticket" data-bs-toggle="modal" data-bs-target="#assignTicketModal" data-ticket-id="{{ $ticket->id }}" data-current-assigned="{{ $ticket->assigned_to ?? '' }}">
                                                             <i class="fa fa-user-plus"></i> Assign
                                                         </button>
@@ -430,7 +441,7 @@
                                         <h5 class="modal-title" id="assignTicketModalLabel">
                                             Update Ticket Assignment
                                         </h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
@@ -476,7 +487,7 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                             Cancel
                                         </button>
                                         <button type="submit" class="btn btn-primary">
@@ -596,7 +607,7 @@
                                         <h5 class="modal-title" id="transferTicketModalLabel">
                                             Transfer Ticket
                                         </h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
@@ -642,7 +653,7 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                             Cancel
                                         </button>
                                         <button type="submit" class="btn btn-primary">
@@ -1223,7 +1234,7 @@
                 const ticketId = button.getAttribute('data-ticket-id');
 
                 // Laravel route with placeholder
-                let actionUrl = "{{ $isSuperAdmin? route('admin.support-tickets.update-status', ':ticketId'): ($isStaff ? route('staff.support-tickets.update-status', ':ticketId'): route('customer.support-tickets.update-status', ':ticketId')) }}";
+                let actionUrl = "{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.support-tickets.update-status', ':ticketId') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.update-status', ':ticketId') : route('admin.support-tickets.update-status', ':ticketId')) }}"
 
                 // Replace placeholder with actual ticket ID
                 actionUrl = actionUrl.replace(':ticketId', ticketId);

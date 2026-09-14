@@ -857,7 +857,32 @@
                                             </button>
                                         </div>
                                         <div class="modal-body">
+                                            @if(\App\Helpers\RouteHelper::isSuperAdmin())
+
                                             <form action="{{ route('admin.employee.destroy', $data->id) }}" method="POST"
+                                                onsubmit="return confirm('Are you sure you want to delete this?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <p>Are you sure want to delete?</p>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </div>
+                                            </form>
+                                            @elseif(\App\Helpers\RouteHelper::isStaff())
+)
+                                            <form action="{{ route('staff.employee.destroy', $data->id) }}" method="POST"
+                                                onsubmit="return confirm('Are you sure you want to delete this?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <p>Are you sure want to delete?</p>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </div>
+                                            </form>
+                                            @else
+                                            <form action="{{ route('customer.employee.destroy', $data->id) }}" method="POST"
                                                 onsubmit="return confirm('Are you sure you want to delete this?');">
                                                 @csrf
                                                 @method('DELETE')

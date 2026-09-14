@@ -42,6 +42,7 @@
             confirmationModal.show();
         @endif
     </script>
+    <script src="{{asset('public/assets/js/app.js')}}"></script>
 
     <!-- Bootstrap JS and Dependencies -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>

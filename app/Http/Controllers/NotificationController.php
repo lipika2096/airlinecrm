@@ -22,23 +22,48 @@ class NotificationController extends Controller
         }
 
         if (!$userId || !$userType) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+            return redirect()->route('admin.login');
         }
 
+        // Check if this is the API endpoint (for AJAX dropdown)
+        $routeName = $request->route() ? $request->route()->getName() : null;
+        $isApiRequest = $request->header('Accept') === 'application/json' || 
+                       $request->ajax() || 
+                       $routeName === 'notifications.api' ||
+                       $request->wantsJson();
+        
+        // Always return JSON for API requests
+        if ($isApiRequest) {
+            $notifications = Notification::forUser($userId, $userType)
+                ->with('supportTicket')
+                ->latest()
+                ->limit(20)
+                ->get();
+
+            $unreadCount = Notification::forUser($userId, $userType)
+                ->unread()
+                ->count();
+
+            return response()->json([
+                'notifications' => $notifications,
+                'unread_count' => $unreadCount
+            ]);
+        }
+
+        // Return view for page request
         $notifications = Notification::forUser($userId, $userType)
             ->with('supportTicket')
             ->latest()
-            ->limit(20)
-            ->get();
+            ->paginate(20);
 
         $unreadCount = Notification::forUser($userId, $userType)
             ->unread()
             ->count();
 
-        return response()->json([
-            'notifications' => $notifications,
-            'unread_count' => $unreadCount
-        ]);
+        return view('admin.notifications.index', compact('notifications', 'unreadCount'));
     }
 
     public function markAsRead(Request $request, $id)

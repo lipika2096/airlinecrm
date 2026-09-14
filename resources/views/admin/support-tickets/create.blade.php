@@ -31,7 +31,7 @@
                             <h5 class="card-title">New Support Ticket</h5>
                         </div>
                         <div class="card-body">
-                            <form method="post" action="{{ $isStaff ? route('staff.support-tickets.store') : ($isSuperAdmin ? route('admin.support-tickets.store') : route('customer.support-tickets.store')) }}" enctype="multipart/form-data">
+                            <form method="post" action="{{ \App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.store') : (\App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.store') : route('customer.support-tickets.store')) }}" enctype="multipart/form-data">
                                 @csrf
                                 
                                 <div class="form-group">

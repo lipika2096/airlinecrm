@@ -1,13 +1,290 @@
 @extends('admin/layouts/head-main')
 @section('content')
 
+@php
+    use Carbon\Carbon;
+@endphp
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Profile</title>
+    <style>
+        .profile-header {
+            background: linear-gradient(135deg, #0F2747 0%, #1a3a5c 100%);
+            color: white;
+            padding: 40px 0;
+            margin: 0px;
+            border-radius: 20px;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #2563EB;
+            background: #EFF6FF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: #2563EB;
+            margin: 0 auto 20px;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+        
+        .profile-name {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .profile-role {
+            font-size: 16px;
+            opacity: 0.9;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .profile-card {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .profile-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profile-card-header {
+            background: #F8FAFC;
+            border-bottom: 1px solid #E2E8F0;
+            padding: 20px;
+            border-radius: 12px 12px 0 0;
+            font-weight: 600;
+            color: #172033;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .profile-card-header i {
+            color: #2563EB;
+            font-size: 20px;
+        }
+        
+        .profile-card-body {
+            padding: 25px;
+        }
+        
+        .info-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            width: 180px;
+            font-weight: 500;
+            color: #64748B;
+            font-size: 14px;
+        }
+        
+        .info-value {
+            flex: 1;
+            color: #172033;
+            font-size: 14px;
+        }
+        
+        .nav-tabs-custom {
+            border-bottom: 2px solid #E2E8F0;
+            margin-bottom: 25px;
+        }
+        
+        .nav-tabs-custom .nav-link {
+            border: none;
+            color: #64748B;
+            font-weight: 500;
+            padding: 12px 20px;
+            margin-right: 5px;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-tabs-custom .nav-link:hover {
+            color: #2563EB;
+            background: #EFF6FF;
+        }
+        
+        .nav-tabs-custom .nav-link.active {
+            color: #2563EB;
+            background: #EFF6FF;
+            border-bottom: 2px solid #2563EB;
+        }
+        
+        .form-control {
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 14px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #172033;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .btn-primary {
+            background: #2563EB;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #1D4ED8;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: #EFF6FF;
+            color: #2563EB;
+            border: 1px solid #2563EB;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #DBEAFE;
+        }
+        
+        .alert {
+            border-radius: 8px;
+            border: none;
+            padding: 15px 20px;
+        }
+        
+        .alert-success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .alert-danger {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .stat-card p {
+            margin: 5px 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .company-info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .company-info-table tr {
+            border-bottom: 1px solid #F1F5F9;
+        }
+        
+        .company-info-table tr:last-child {
+            border-bottom: none;
+        }
+        
+        .company-info-table th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 500;
+            color: #64748B;
+            width: 200px;
+            background: #F8FAFC;
+        }
+        
+        .company-info-table td {
+            padding: 12px 15px;
+            color: #172033;
+        }
+        
+        .company-info-table ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .company-info-table li {
+            margin: 5px 0;
+        }
+        
+        .text-red {
+            color: #DC2626;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-header {
+                padding: 30px 0;
+            }
+            
+            .info-row {
+                flex-direction: column;
+            }
+            
+            .info-label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            
+            .company-info-table th {
+                width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
     <!-- Page Wrapper -->
     <div class="page-wrapper">
-
         <!-- Page Content -->
         <div class="content container-fluid">
-
+            
             <!-- Page Header -->
             <div class="page-header">
                 <div class="row">
@@ -20,44 +297,189 @@
                     </div>
                 </div>
             </div>
-            <!-- /Page Header -->
-
-            <div class="card mb-0">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="profile-view">
-                                {{-- <div class="profile-img-wrap">
-                                    <div class="profile-img">
-                                        <a href="">
-                                            <img src="{{asset('public/assets/img/profiles/avatar-19.jpg')}}" alt="">
-                                        </a>
-                                    </div>
-                                </div> --}}
-                                <div class="profile-basic">
+            
+            <div class="row">
+                <div class="col-lg-4">
+                    <!-- Profile Card -->
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="profile-avatar">
+                                {{ strtoupper(substr($profile->first_name ?? $profile->name, 0, 1)) }}
+                            </div>
+                            <h3 class="profile-name text-center">{{ $profile->first_name ?? $profile->name }} {{ $profile->last_name ?? '' }}</h3>
+                            <p class="text-center">
+                                <span class="profile-role">
+                                    {{ $profile->adminDetail->company_name ?? 'Employee' }}
+                                </span>
+                            </p>
+                            <p class="text-center mt-2">
+                                <small class="text-white-50">Employee ID: {{ $profile->unique_id ?? $profile->id }}</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-8">
+                    <!-- Main Content -->
+                    <div class="profile-card">
+                        <div class="profile-card-body">
+                            <ul class="nav nav-tabs nav-tabs-custom" id="profileTab" role="tablist">
+                                <li class="nav-item">
+                                    <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button">
+                                        <i class="fas fa-user me-2"></i>Personal Info
+                                    </button>
+                                </li>
+                                <li class="nav-item">
+                                    <button class="nav-link" id="company-tab" data-bs-toggle="tab" data-bs-target="#company" type="button">
+                                        <i class="fas fa-building me-2"></i>Company Info
+                                    </button>
+                                </li>
+                            </ul>
+                            
+                            <div class="tab-content mt-4" id="profileTabContent">
+                                <!-- Personal Information Tab -->
+                                <div class="tab-pane fade show active" id="personal" role="tabpanel">
                                     <div class="row">
-                                        <div class="col-md-5">
-                                            <div class="profile-info-left">
-                                                <h3 class="user-name m-t-0">{{$profile->first_name." ". $profile->last_name ?? $profile->name}}</h3>
-                                                <small class="text-muted">{{$profile->adminDetail->company_name ?? 'Customer'}}</small>
-                                                <div class="staff-id">Customer ID : {{$profile->id}}</div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Full Name</label>
+                                                <input type="text" class="form-control" value="{{ $profile->first_name ?? $profile->name }} {{ $profile->last_name ?? '' }}" readonly>
                                             </div>
                                         </div>
-                                        <div class="col-md-7">
-                                            <ul class="personal-info">
-                                                <li>
-                                                    <span class="title">Email:</span>
-                                                    <span class="text"><a href="mailto:{{$profile->email}}">{{$profile->email}}</a></span>
-                                                </li>
-                                                {{-- <li>
-                                                    <span class="title">Address:</span>
-                                                    <span class="text">5754 Airport Rd, Coosada, AL, 36020</span>
-                                                </li>
-                                                <li>
-                                                    <span class="title">Gender:</span>
-                                                    <span class="text">Male</span>
-                                                </li> --}}
-                                            </ul>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Email Address</label>
+                                                <input type="email" class="form-control" value="{{ $profile->email }}" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Account Status</label>
+                                                <input type="text" class="form-control" value="{{ $profile->is_active ? 'Active' : 'Inactive' }}" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Created At</label>
+                                                <input type="text" class="form-control" value="{{ $profile->created_at ? Carbon::parse($profile->created_at)->format('M d, Y') : '-' }}" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Personal information is view-only.
+                                    </div>
+                                </div>
+                                
+                                <!-- Company Details Tab -->
+                                <div class="tab-pane fade" id="company" role="tabpanel">
+                                    <div id="company-section">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h5 class="mb-0">Company Information</h5>
+                                            <span class="badge bg-secondary">View Only</span>
+                                        </div>
+                                        
+                                        <div class="table-responsive">
+                                            <table class="company-info-table">
+                                                <tbody>
+                                                    <tr>
+                                                        <th>Company Name</th>
+                                                        <td>{{ $profile->adminDetail->company_name ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Brand Name</th>
+                                                        <td>{{ $profile->name ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Group</th>
+                                                        <td>{{ $profile->adminDetail->group ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Street Address</th>
+                                                        <td>{{ $profile->adminDetail->address ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>City</th>
+                                                        <td>{{ $profile->adminDetail->city ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Pincode</th>
+                                                        <td>{{ $profile->adminDetail->pincode ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Country</th>
+                                                        <td>{{ $profile->adminDetail->country ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Company Reg. No.</th>
+                                                        <td>{{ $profile->adminDetail->company_registration_no ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="text-red">Subscription Type</th>
+                                                        <td class="text-red">{{ $profile->adminDetail->subscription_type ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="text-red">Subscription Charge</th>
+                                                        <td class="text-red">{{ $profile->adminDetail->subscription_charge ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="text-red">Subscription Expiring</th>
+                                                        <td class="text-red">{{ $profile->adminDetail->subscription_expiring ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="text-red">Remarks</th>
+                                                        <td class="text-red">{{ $profile->adminDetail->remarks ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="text-red">Business Model</th>
+                                                        <td class="text-red">{{ $profile->adminDetail->business_mode ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Focused Destinations</th>
+                                                        <td>
+                                                            <ul>
+                                                                @if (!empty($profile->adminDetail?->business_focus))
+                                                                    @foreach (json_decode($profile->adminDetail->business_focus, true) ?? [] as $destination)
+                                                                        <li>{{ $destination ?? '-' }}</li>
+                                                                    @endforeach
+                                                                @endif
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Key People</th>
+                                                        <td>{{ $profile->adminDetail->key_people ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Parent Company</th>
+                                                        <td>{{ $profile->adminDetail->parent_company ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Headquarters</th>
+                                                        <td>{{ $profile->adminDetail->headquarters ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Websites</th>
+                                                        <td>
+                                                            <ul>
+                                                                @if (!empty($profile->adminDetail?->websites))
+                                                                    @foreach (json_decode($profile->adminDetail->websites, true) ?? [] as $websites)
+                                                                        <li>{{ $websites ?? '-' }}</li>
+                                                                    @endforeach
+                                                                @endif
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Number of Employees</th>
+                                                        <td>{{ $profile->adminDetail->no_employees ?? '-' }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
@@ -66,624 +488,8 @@
                     </div>
                 </div>
             </div>
-            {{-- <div class="card tab-box">
-                <div class="row user-tabs">
-                    <div class="col-lg-12 col-md-12 col-sm-12 line-tabs">
-                        <ul class="nav nav-tabs nav-tabs-bottom">
-                            <li class="nav-item col-sm-3"><a class="nav-link active" data-bs-toggle="tab" href="#myprojects">Projects</a></li>
-                            <li class="nav-item col-sm-3"><a class="nav-link" data-bs-toggle="tab" href="#tasks">Tasks</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div> --}}
-
-            {{-- <div class="row">
-                <div class="col-lg-12">
-                    <div class="tab-content profile-tab-content">
-
-                        <!-- Projects Tab -->
-                        <div id="myprojects" class="tab-pane fade show active">
-                            <div class="row">
-                                <div class="col-lg-4 col-sm-6 col-md-4 col-xl-3">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="dropdown profile-action">
-                                                <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_project"><i class="fa fa-pencil m-r-5"></i> Edit</a>
-                                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_project"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
-                                                </div>
-                                            </div>
-                                            <h4 class="project-title"><a href="{{route('admin.project-view')}}">Office Management</a></h4>
-                                            <small class="block text-ellipsis m-b-15">
-                                                <span class="text-xs">1</span> <span class="text-muted">open tasks, </span>
-                                                <span class="text-xs">9</span> <span class="text-muted">tasks completed</span>
-                                            </small>
-                                            <p class="text-muted">Lorem Ipsum is simply dummy text of the printing and
-                                                typesetting industry. When an unknown printer took a galley of type and
-                                                scrambled it...
-                                            </p>
-                                            <div class="pro-deadline m-b-15">
-                                                <div class="sub-title">
-                                                    Deadline:
-                                                </div>
-                                                <div class="text-muted">
-                                                    17 Apr 2019
-                                                </div>
-                                            </div>
-                                            <div class="project-members m-b-15">
-                                                <div>Project Leader :</div>
-                                                <ul class="team-members">
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="Jeffery Lalor"><img alt="" src="{{asset('public/assets/img/profiles/avatar-16.jpg')}}"></a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div class="project-members m-b-15">
-                                                <div>Team :</div>
-                                                <ul class="team-members">
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="John Doe"><img alt="" src="{{asset('public/assets/img/profiles/avatar-02.jpg')}}"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="Richard Miles"><img alt="" src="{{asset('public/assets/img/profiles/avatar-09.jpg')}}"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="John Smith"><img alt="" src="{{asset('public/assets/img/profiles/avatar-10.jpg')}}"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="Mike Litorus"><img alt="" src="{{asset('public/assets/img/profiles/avatar-05.jpg')}}"></a>
-                                                    </li>
-                                                    <li class="dropdown avatar-dropdown">
-                                                        <a href="#" class="all-users dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">+15</a>
-                                                        <div class="dropdown-menu dropdown-menu-right">
-                                                            <div class="avatar-group">
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-02.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-09.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-10.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-05.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-11.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-12.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-13.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-01.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-16.jpg')}}">
-                                                                </a>
-                                                            </div>
-                                                            <div class="avatar-pagination">
-                                                                <ul class="pagination">
-                                                                    <li class="page-item">
-                                                                        <a class="page-link" href="#" aria-label="Previous">
-                                                                            <span aria-hidden="true">«</span>
-                                                                            <span class="visually-hidden">Previous</span>
-                                                                        </a>
-                                                                    </li>
-                                                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                                                    <li class="page-item">
-                                                                        <a class="page-link" href="#" aria-label="Next">
-                                                                            <span aria-hidden="true">»</span>
-                                                                        <span class="visually-hidden">Next</span>
-                                                                        </a>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <p class="m-b-5">Progress <span class="text-success float-end">40%</span></p>
-                                            <div class="progress progress-xs mb-0">
-                                                <div class="progress-bar bg-success" role="progressbar" data-bs-toggle="tooltip" title="40%" style="width: 40%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-4 col-sm-6 col-md-4 col-xl-3">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="dropdown profile-action">
-                                                <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_project"><i class="fa fa-pencil m-r-5"></i> Edit</a>
-                                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_project"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
-                                                </div>
-                                            </div>
-                                            <h4 class="project-title"><a href="{{route('admin.project-view')}}">Project Management</a></h4>
-                                            <small class="block text-ellipsis m-b-15">
-                                                <span class="text-xs">2</span> <span class="text-muted">open tasks, </span>
-                                                <span class="text-xs">5</span> <span class="text-muted">tasks completed</span>
-                                            </small>
-                                            <p class="text-muted">Lorem Ipsum is simply dummy text of the printing and
-                                                typesetting industry. When an unknown printer took a galley of type and
-                                                scrambled it...
-                                            </p>
-                                            <div class="pro-deadline m-b-15">
-                                                <div class="sub-title">
-                                                    Deadline:
-                                                </div>
-                                                <div class="text-muted">
-                                                    17 Apr 2019
-                                                </div>
-                                            </div>
-                                            <div class="project-members m-b-15">
-                                                <div>Project Leader :</div>
-                                                <ul class="team-members">
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="Jeffery Lalor"><img alt="" src="{{asset('public/assets/img/profiles/avatar-16.jpg')}}"></a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div class="project-members m-b-15">
-                                                <div>Team :</div>
-                                                <ul class="team-members">
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="John Doe"><img alt="" src="{{asset('public/assets/img/profiles/avatar-02.jpg')}}"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="Richard Miles"><img alt="" src="{{asset('public/assets/img/profiles/avatar-09.jpg')}}"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="John Smith"><img alt="" src="{{asset('public/assets/img/profiles/avatar-10.jpg')}}"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="Mike Litorus"><img alt="" src="{{asset('public/assets/img/profiles/avatar-05.jpg')}}"></a>
-                                                    </li>
-                                                    <li class="dropdown avatar-dropdown">
-                                                        <a href="#" class="all-users dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">+15</a>
-                                                        <div class="dropdown-menu dropdown-menu-right">
-                                                            <div class="avatar-group">
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-02.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-09.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-10.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-05.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-11.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-12.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-13.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-01.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-16.jpg')}}">
-                                                                </a>
-                                                            </div>
-                                                            <div class="avatar-pagination">
-                                                                <ul class="pagination">
-                                                                    <li class="page-item">
-                                                                        <a class="page-link" href="#" aria-label="Previous">
-                                                                            <span aria-hidden="true">«</span>
-                                                                            <span class="visually-hidden">Previous</span>
-                                                                        </a>
-                                                                    </li>
-                                                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                                                    <li class="page-item">
-                                                                        <a class="page-link" href="#" aria-label="Next">
-                                                                            <span aria-hidden="true">»</span>
-                                                                        <span class="visually-hidden">Next</span>
-                                                                        </a>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <p class="m-b-5">Progress <span class="text-success float-end">40%</span></p>
-                                            <div class="progress progress-xs mb-0">
-                                                <div class="progress-bar bg-success" role="progressbar" data-bs-toggle="tooltip" title="40%" style="width: 40%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-4 col-sm-6 col-md-4 col-xl-3">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="dropdown profile-action">
-                                                <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_project"><i class="fa fa-pencil m-r-5"></i> Edit</a>
-                                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_project"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
-                                                </div>
-                                            </div>
-                                            <h4 class="project-title"><a href="{{route('admin.project-view')}}">Video Calling App</a></h4>
-                                            <small class="block text-ellipsis m-b-15">
-                                                <span class="text-xs">3</span> <span class="text-muted">open tasks, </span>
-                                                <span class="text-xs">3</span> <span class="text-muted">tasks completed</span>
-                                            </small>
-                                            <p class="text-muted">Lorem Ipsum is simply dummy text of the printing and
-                                                typesetting industry. When an unknown printer took a galley of type and
-                                                scrambled it...
-                                            </p>
-                                            <div class="pro-deadline m-b-15">
-                                                <div class="sub-title">
-                                                    Deadline:
-                                                </div>
-                                                <div class="text-muted">
-                                                    17 Apr 2019
-                                                </div>
-                                            </div>
-                                            <div class="project-members m-b-15">
-                                                <div>Project Leader :</div>
-                                                <ul class="team-members">
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="Jeffery Lalor"><img alt="" src="{{asset('public/assets/img/profiles/avatar-16.jpg')}}"></a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div class="project-members m-b-15">
-                                                <div>Team :</div>
-                                                <ul class="team-members">
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="John Doe"><img alt="" src="{{asset('public/assets/img/profiles/avatar-02.jpg')}}"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="Richard Miles"><img alt="" src="{{asset('public/assets/img/profiles/avatar-09.jpg')}}"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="John Smith"><img alt="" src="{{asset('public/assets/img/profiles/avatar-10.jpg')}}"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="Mike Litorus"><img alt="" src="{{asset('public/assets/img/profiles/avatar-05.jpg')}}"></a>
-                                                    </li>
-                                                    <li class="dropdown avatar-dropdown">
-                                                        <a href="#" class="all-users dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">+15</a>
-                                                        <div class="dropdown-menu dropdown-menu-right">
-                                                            <div class="avatar-group">
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-02.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-09.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-10.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-05.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-11.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-12.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-13.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-01.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-16.jpg')}}">
-                                                                </a>
-                                                            </div>
-                                                            <div class="avatar-pagination">
-                                                                <ul class="pagination">
-                                                                    <li class="page-item">
-                                                                        <a class="page-link" href="#" aria-label="Previous">
-                                                                            <span aria-hidden="true">«</span>
-                                                                            <span class="visually-hidden">Previous</span>
-                                                                        </a>
-                                                                    </li>
-                                                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                                                    <li class="page-item">
-                                                                        <a class="page-link" href="#" aria-label="Next">
-                                                                            <span aria-hidden="true">»</span>
-                                                                        <span class="visually-hidden">Next</span>
-                                                                        </a>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <p class="m-b-5">Progress <span class="text-success float-end">40%</span></p>
-                                            <div class="progress progress-xs mb-0">
-                                                <div class="progress-bar bg-success" role="progressbar" data-bs-toggle="tooltip" title="40%" style="width: 40%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-4 col-sm-6 col-md-4 col-xl-3">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="dropdown profile-action">
-                                                <a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit_project"><i class="fa fa-pencil m-r-5"></i> Edit</a>
-                                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#delete_project"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
-                                                </div>
-                                            </div>
-                                            <h4 class="project-title"><a href="{{route('admin.project-view')}}">Hospital Administration</a></h4>
-                                            <small class="block text-ellipsis m-b-15">
-                                                <span class="text-xs">12</span> <span class="text-muted">open tasks, </span>
-                                                <span class="text-xs">4</span> <span class="text-muted">tasks completed</span>
-                                            </small>
-                                            <p class="text-muted">Lorem Ipsum is simply dummy text of the printing and
-                                                typesetting industry. When an unknown printer took a galley of type and
-                                                scrambled it...
-                                            </p>
-                                            <div class="pro-deadline m-b-15">
-                                                <div class="sub-title">
-                                                    Deadline:
-                                                </div>
-                                                <div class="text-muted">
-                                                    17 Apr 2019
-                                                </div>
-                                            </div>
-                                            <div class="project-members m-b-15">
-                                                <div>Project Leader :</div>
-                                                <ul class="team-members">
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="Jeffery Lalor"><img alt="" src="{{asset('public/assets/img/profiles/avatar-16.jpg')}}"></a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div class="project-members m-b-15">
-                                                <div>Team :</div>
-                                                <ul class="team-members">
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="John Doe"><img alt="" src="{{asset('public/assets/img/profiles/avatar-02.jpg')}}"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="Richard Miles"><img alt="" src="{{asset('public/assets/img/profiles/avatar-09.jpg')}}"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="John Smith"><img alt="" src="{{asset('public/assets/img/profiles/avatar-10.jpg')}}"></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="#" data-bs-toggle="tooltip" title="Mike Litorus"><img alt="" src="{{asset('public/assets/img/profiles/avatar-05.jpg')}}"></a>
-                                                    </li>
-                                                    <li class="dropdown avatar-dropdown">
-                                                        <a href="#" class="all-users dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">+15</a>
-                                                        <div class="dropdown-menu dropdown-menu-right">
-                                                            <div class="avatar-group">
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-02.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-09.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-10.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-05.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-11.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-12.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-13.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-01.jpg')}}">
-                                                                </a>
-                                                                <a class="avatar avatar-xs" href="#">
-                                                                    <img alt="" src="{{asset('public/assets/img/profiles/avatar-16.jpg')}}">
-                                                                </a>
-                                                            </div>
-                                                            <div class="avatar-pagination">
-                                                                <ul class="pagination">
-                                                                    <li class="page-item">
-                                                                        <a class="page-link" href="#" aria-label="Previous">
-                                                                            <span aria-hidden="true">«</span>
-                                                                            <span class="visually-hidden">Previous</span>
-                                                                        </a>
-                                                                    </li>
-                                                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                                                    <li class="page-item">
-                                                                        <a class="page-link" href="#" aria-label="Next">
-                                                                            <span aria-hidden="true">»</span>
-                                                                        <span class="visually-hidden">Next</span>
-                                                                        </a>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <p class="m-b-5">Progress <span class="text-success float-end">40%</span></p>
-                                            <div class="progress progress-xs mb-0">
-                                                <div class="progress-bar bg-success" role="progressbar" data-bs-toggle="tooltip" title="40%" style="width: 40%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /Projects Tab -->
-
-                        <!-- Task Tab -->
-                        <div id="tasks" class="tab-pane fade">
-                            <div class="project-task">
-                                <ul class="nav nav-tabs nav-tabs-top nav-justified mb-0">
-                                    <li class="nav-item"><a class="nav-link active" href="#all_tasks" data-bs-toggle="tab" aria-expanded="true">All Tasks</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="#pending_tasks" data-bs-toggle="tab" aria-expanded="false">Pending Tasks</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="#completed_tasks" data-bs-toggle="tab" aria-expanded="false">Completed Tasks</a></li>
-                                </ul>
-                                <div class="tab-content">
-                                    <div class="tab-pane show active" id="all_tasks">
-                                        <div class="task-wrapper">
-                                            <div class="task-list-container">
-                                                <div class="task-list-body">
-                                                    <ul id="task-list">
-                                                        <li class="task">
-                                                            <div class="task-container">
-                                                                <span class="task-action-btn task-check">
-                                                                    <span class="action-circle large complete-btn" title="Mark Complete">
-                                                                        <i class="material-icons">check</i>
-                                                                    </span>
-                                                                </span>
-                                                                <span class="task-label" contenteditable="true">Patient appointment booking</span>
-                                                                <span class="task-action-btn task-btn-right">
-                                                                    <span class="action-circle large" title="Assign">
-                                                                        <i class="material-icons">person_add</i>
-                                                                    </span>
-                                                                    <span class="action-circle large delete-btn" title="Delete Task">
-                                                                        <i class="material-icons">delete</i>
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-                                                        </li>
-                                                        <li class="task">
-                                                            <div class="task-container">
-                                                                <span class="task-action-btn task-check">
-                                                                    <span class="action-circle large complete-btn" title="Mark Complete">
-                                                                        <i class="material-icons">check</i>
-                                                                    </span>
-                                                                </span>
-                                                                <span class="task-label" contenteditable="true">Appointment booking with payment gateway</span>
-                                                                <span class="task-action-btn task-btn-right">
-                                                                    <span class="action-circle large" title="Assign">
-                                                                        <i class="material-icons">person_add</i>
-                                                                    </span>
-                                                                    <span class="action-circle large delete-btn" title="Delete Task">
-                                                                        <i class="material-icons">delete</i>
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-                                                        </li>
-                                                        <li class="completed task">
-                                                            <div class="task-container">
-                                                                <span class="task-action-btn task-check">
-                                                                    <span class="action-circle large complete-btn" title="Mark Complete">
-                                                                        <i class="material-icons">check</i>
-                                                                    </span>
-                                                                </span>
-                                                                <span class="task-label">Doctor available module</span>
-                                                                <span class="task-action-btn task-btn-right">
-                                                                    <span class="action-circle large" title="Assign">
-                                                                        <i class="material-icons">person_add</i>
-                                                                    </span>
-                                                                    <span class="action-circle large delete-btn" title="Delete Task">
-                                                                        <i class="material-icons">delete</i>
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-                                                        </li>
-                                                        <li class="task">
-                                                            <div class="task-container">
-                                                                <span class="task-action-btn task-check">
-                                                                    <span class="action-circle large complete-btn" title="Mark Complete">
-                                                                        <i class="material-icons">check</i>
-                                                                    </span>
-                                                                </span>
-                                                                <span class="task-label" contenteditable="true">Patient and Doctor video conferencing</span>
-                                                                <span class="task-action-btn task-btn-right">
-                                                                    <span class="action-circle large" title="Assign">
-                                                                        <i class="material-icons">person_add</i>
-                                                                    </span>
-                                                                    <span class="action-circle large delete-btn" title="Delete Task">
-                                                                        <i class="material-icons">delete</i>
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-                                                        </li>
-                                                        <li class="task">
-                                                            <div class="task-container">
-                                                                <span class="task-action-btn task-check">
-                                                                    <span class="action-circle large complete-btn" title="Mark Complete">
-                                                                        <i class="material-icons">check</i>
-                                                                    </span>
-                                                                </span>
-                                                                <span class="task-label" contenteditable="true">Private chat module</span>
-                                                                <span class="task-action-btn task-btn-right">
-                                                                    <span class="action-circle large" title="Assign">
-                                                                        <i class="material-icons">person_add</i>
-                                                                    </span>
-                                                                    <span class="action-circle large delete-btn" title="Delete Task">
-                                                                        <i class="material-icons">delete</i>
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-                                                        </li>
-                                                        <li class="task">
-                                                            <div class="task-container">
-                                                                <span class="task-action-btn task-check">
-                                                                    <span class="action-circle large complete-btn" title="Mark Complete">
-                                                                        <i class="material-icons">check</i>
-                                                                    </span>
-                                                                </span>
-                                                                <span class="task-label" contenteditable="true">Patient Profile add</span>
-                                                                <span class="task-action-btn task-btn-right">
-                                                                    <span class="action-circle large" title="Assign">
-                                                                        <i class="material-icons">person_add</i>
-                                                                    </span>
-                                                                    <span class="action-circle large delete-btn" title="Delete Task">
-                                                                        <i class="material-icons">delete</i>
-                                                                    </span>
-                                                                </span>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                                <div class="task-list-footer">
-                                                    <div class="new-task-wrapper">
-                                                        <textarea  id="new-task" placeholder="Enter new task here. . ."></textarea>
-                                                        <span class="error-message hidden">You need to enter a task first</span>
-                                                        <span class="add-new-task-btn btn" id="add-task">Add Task</span>
-                                                        <span class="btn" id="close-task-panel">Close</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tab-pane" id="pending_tasks"></div>
-                                    <div class="tab-pane" id="completed_tasks"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /Task Tab -->
-
-                    </div>
-                </div>
-            </div> --}}
         </div>
-        <!-- /Page Content -->
-
-            </div>
-
-
+    </div>
+</body>
+</html>
 @endsection

@@ -134,15 +134,7 @@
                         <label class="form-label">Booking Date <span class="text-danger">*</span></label>
                         <input type="date" class="form-control" name="booking_date" required>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Customer <span class="text-danger">*</span></label>
-                        <select class="form-control" name="customer_id">
-                            <option value="">Select Customer</option>
-                            <option value="1">John Smith</option>
-                            <option value="2">ADC Travels</option>
-                            <option value="3">Maria Garcia</option>
-                        </select>
-                    </div>
+                    
                 <div class="col-md-3">
                     <label class="form-label">Customer Type</label>
                     <select class="form-control" name="customer_type">
@@ -152,27 +144,8 @@
                 </div>
             </div>
 
-            <div class="row form-group">
-                <div class="col-md-4">
-                    <label class="form-label">Customer Name</label>
-                    <input type="text" class="form-control" name="customer_name">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-control" name="customer_email">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Phone</label>
-                    <input type="text" class="form-control" name="customer_phone">
-                </div>
-            </div>
+            
 
-            <!-- Booking Details Save Button -->
-            <div class="booking-details-save">
-                <button type="button" class="btn btn-save btn-sm tab-save-btn" data-tab="booking-details">
-                    <i class="fa fa-save"></i> Save Booking Details
-                </button>
-            </div>
 
             <!-- Customer Search Box -->
             <div class="row form-group mt-3">
@@ -201,19 +174,19 @@
                     <a class="nav-link" id="services-tab" data-bs-toggle="tab" href="#services" role="tab">Services</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="passengers-tab" data-bs-toggle="tab" href="#passengers" role="tab">Passengers <span id="passengerCount">(1)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="payments-tab" data-bs-toggle="tab" href="#payments" role="tab">Payments</a>
+                    <a class="nav-link" id="passengers-tab" data-bs-toggle="tab" href="#passengers" role="tab">Passengers </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="documents-tab" data-bs-toggle="tab" href="#documents" role="tab">Documents</a>
+                </li>                
+                <li class="nav-item">
+                    <a class="nav-link" id="invoice-tab" data-bs-toggle="tab" href="#invoice" role="tab">Invoice</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="payments-tab" data-bs-toggle="tab" href="#payments" role="tab">Payment Recieved</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="notes-tab" data-bs-toggle="tab" href="#notes" role="tab">Notes</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="invoice-tab" data-bs-toggle="tab" href="#invoice" role="tab">Invoice</a>
                 </li>
             </ul>
 

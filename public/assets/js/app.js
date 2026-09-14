@@ -4,7 +4,17 @@ Template Name: SmartHR - php Admin Template
 Version      : 3.6
 */
 
-$(document).ready(function() {
+// Wait for jQuery to be loaded
+(function() {
+    // Check if jQuery is loaded
+    if (typeof window.jQuery === 'undefined') {
+        console.error('jQuery is not loaded. Please ensure jQuery is loaded before app.js');
+        return;
+    }
+    
+    var $ = window.jQuery;
+    
+    $(document).ready(function() {
 	
 	// Variables declarations
 	
@@ -456,6 +466,132 @@ $(document).ready(function() {
 		$(".hidden-links").addClass("hidden");
 	  });
 
-});
+	// Notification System
+	function loadNotifications() {
+		const apiUrl = '../../notifications/api';
+		
+		console.log('Loading notifications from:', apiUrl);
+		console.log('Current pathname:', window.location.pathname);
+		
+		// Show loading state
+		const list = $('#notificationList');
+		list.html('<div class="loading-notifications"><i class="fa fa-spinner"></i><p>Loading notifications...</p></div>');
+		
+		$.ajax({
+			url: apiUrl,
+			method: 'GET',
+			dataType: 'json',
+			headers: {
+				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+				'Accept': 'application/json'
+			},
+			success: function(response) {
+				console.log('Notifications response:', response);
+				const notifications = response.notifications;
+				const unreadCount = response.unread_count;
+				
+				// Update badge
+				const badge = $('#notificationBadge');
+				if (unreadCount > 0) {
+					badge.text(unreadCount > 99 ? '99+' : unreadCount);
+					badge.show();
+				} else {
+					badge.hide();
+				}
+				
+				// Update notification list
+				if (notifications.length === 0) {
+					list.html('<div class="empty-notifications"><i class="fa fa-bell-slash"></i><p>No notifications</p></div>');
+				} else {
+					let html = '';
+					notifications.forEach(function(notification) {
+						const unreadClass = notification.is_read ? '' : 'unread';
+						const timeAgo = getTimeAgo(notification.created_at);
+						html += `
+							<div class="notification-item ${unreadClass}" data-id="${notification.id}">
+								<div class="notification-title">${notification.title}</div>
+								<div class="notification-message">${notification.message}</div>
+								<div class="notification-time">${timeAgo}</div>
+							</div>
+						`;
+					});
+					list.html(html);
+				}
+			},
+			error: function(xhr, status, error) {
+				console.error('Failed to load notifications:', error);
+				console.error('Status:', status);
+				console.error('Response:', xhr.responseText);
+				console.error('XHR:', xhr);
+				
+				// Show error state
+				list.html('<div class="empty-notifications"><i class="fa fa-exclamation-circle"></i><p>Failed to load notifications</p></div>');
+			}
+		});
+	}
+	
+	function getTimeAgo(dateString) {
+		const date = new Date(dateString);
+		const now = new Date();
+		const seconds = Math.floor((now - date) / 1000);
+		
+		if (seconds < 60) return 'Just now';
+		if (seconds < 3600) return Math.floor(seconds / 60) + ' minutes ago';
+		if (seconds < 86400) return Math.floor(seconds / 3600) + ' hours ago';
+		if (seconds < 604800) return Math.floor(seconds / 86400) + ' days ago';
+		return date.toLocaleDateString();
+	}
+	
+	// Load notifications on page load
+	$(document).ready(function() {
+		console.log('Document ready, loading notifications');
+		loadNotifications();
+	});
+	
+	// Refresh notifications every 30 seconds
+	setInterval(function() {
+		console.log('Refreshing notifications');
+		loadNotifications();
+	}, 30000);
+	
+	// Mark notification as read when clicked
+	$(document).on('click', '.notification-item', function() {
+		const id = $(this).data('id');
+		$.ajax({
+			url: '/notifications/' + id + '/read',
+			method: 'POST',
+			headers: {
+				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+			},
+			success: function() {
+				loadNotifications();
+			}
+		});
+	});
+	
+	// Mark all as read
+	$('#markAllRead').on('click', function(e) {
+		e.preventDefault();
+		$.ajax({
+			url: '/notifications/read-all',
+			method: 'POST',
+			headers: {
+				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+			},
+			success: function() {
+				loadNotifications();
+			}
+		});
+	});
+	
+	// View all notifications
+	$('#viewAllNotifications').on('click', function(e) {
+		e.preventDefault();
+		// Navigate to notifications page
+		window.location.href = '/notifications';
+	});
 
+	});
+
+})();
 

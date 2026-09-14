@@ -5,11 +5,8 @@
     <title>Reset Password | CRM admin template"</title>
 
     <style>
-        .toggle-password {
-            transition: color 0.3s ease;
-        }
-        .toggle-password:hover {
-            color: #007bff !important;
+        .show-passwords-container {
+            margin-top: 10px;
         }
     </style>
 
@@ -44,10 +41,7 @@
 
                                 <div class="form-group">
                                     <label for="password" class="form-label">New Password</label>
-                                    <div class="position-relative" style="position: relative;">
-                                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter new password" required minlength="8" style="padding-right: 40px;">
-                                        <span class="fa fa-eye-slash toggle-password" id="toggle-password" role="button" tabindex="0" aria-label="Show password" style="position: absolute; right: 15px; top: 12px; cursor: pointer; z-index: 999; pointer-events: auto; color: #6c757d; font-size: 16px;"></span>
-                                    </div>
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter new password" required minlength="8">
                                     <div class="invalid-feedback">
                                         Please enter a password (minimum 8 characters)
                                     </div>
@@ -55,12 +49,18 @@
 
                                 <div class="form-group">
                                     <label for="password_confirmation" class="form-label">Confirm Password</label>
-                                    <div class="position-relative" style="position: relative;">
-                                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm new password" required style="padding-right: 40px;">
-                                        <span class="fa fa-eye-slash toggle-password" id="toggle-password-confirmation" role="button" tabindex="0" aria-label="Show password" style="position: absolute; right: 15px; top: 12px; cursor: pointer; z-index: 999; pointer-events: auto; color: #6c757d; font-size: 16px;"></span>
-                                    </div>
+                                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm new password" required>
                                     <div class="invalid-feedback">
                                         Please confirm your password
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="show-passwords" name="show-passwords">
+                                        <label class="form-check-label" for="show-passwords">
+                                            Show passwords
+                                        </label>
                                     </div>
                                 </div>
 
@@ -75,55 +75,43 @@
 
                             <script>
                                 document.addEventListener('DOMContentLoaded', function() {
+                                    console.log('DOM loaded, initializing password toggle functionality');
 
                                     // Form validation
                                     (function() {
                                         'use strict';
                                         var form = document.querySelector('.needs-validation');
-                                        form.addEventListener('submit', function(event) {
-                                            if (form.checkValidity() === false) {
-                                                event.preventDefault();
-                                                event.stopPropagation();
-                                            }
-                                            form.classList.add('was-validated');
-                                        }, false);
+                                        if (form) {
+                                            form.addEventListener('submit', function(event) {
+                                                if (form.checkValidity() === false) {
+                                                    event.preventDefault();
+                                                    event.stopPropagation();
+                                                }
+                                                form.classList.add('was-validated');
+                                            }, false);
+                                        }
                                     })();
 
-                                    // Toggle password visibility
-                                    function togglePasswordVisibility(inputId, iconId) {
-                                        var passwordInput = document.getElementById(inputId);
-                                        var icon = document.getElementById(iconId);
+                                    // Show/Hide passwords for both fields using checkbox
+                                    var showPasswordsCheckbox = document.getElementById('show-passwords');
+                                    var passwordInput = document.getElementById('password');
+                                    var confirmInput = document.getElementById('password_confirmation');
 
-                                        if (!passwordInput || !icon) {
-                                            return;
-                                        }
-
-                                        var isHidden = passwordInput.type === 'password';
-                                        passwordInput.type = isHidden ? 'text' : 'password';
-                                        icon.classList.toggle('fa-eye', isHidden);
-                                        icon.classList.toggle('fa-eye-slash', !isHidden);
-                                        icon.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
-                                    }
-
-                                    function bindToggle(iconId, inputId) {
-                                        var icon = document.getElementById(iconId);
-                                        if (!icon) return;
-
-                                        icon.addEventListener('click', function() {
-                                            togglePasswordVisibility(inputId, iconId);
-                                        });
-
-                                        // Keyboard accessibility (Enter/Space)
-                                        icon.addEventListener('keydown', function(event) {
-                                            if (event.key === 'Enter' || event.key === ' ') {
-                                                event.preventDefault();
-                                                togglePasswordVisibility(inputId, iconId);
-                                            }
-                                        });
-                                    }
-
-                                    bindToggle('toggle-password', 'password');
-                                    bindToggle('toggle-password-confirmation', 'password_confirmation');
+                                    if (showPasswordsCheckbox && passwordInput && confirmInput) {
+                                        showPasswordsCheckbox.addEventListener('change', function() {
+                                            var showPasswords = this.checked;
+                    
+                    // Toggle both password fields
+                    passwordInput.type = showPasswords ? 'text' : 'password';
+                    confirmInput.type = showPasswords ? 'text' : 'password';
+                    
+                    console.log('Passwords visibility:', showPasswords ? 'shown' : 'hidden');
+                });
+                
+                console.log('Password checkbox toggle functionality initialized');
+            } else {
+                console.error('Required elements not found for password toggle');
+            }
 
                                 });
                             </script>

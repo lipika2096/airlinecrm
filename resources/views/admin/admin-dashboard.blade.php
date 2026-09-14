@@ -89,6 +89,8 @@
                         </div>
                     </div>
                 </div>
+                @if(\App\Helpers\RouteHelper::isSuperadmin() || (\App\Helpers\RouteHelper::isStaff() && (auth()->user()->created_by == 2)))
+
                 <div class="col-lg-4 col-md-6 mb-3">
                     <div class="stat-card" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 2px solid #ff9800;">
                         <div class="d-flex justify-content-between align-items-center">
@@ -102,6 +104,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
                 <div class="col-lg-4 col-md-6 mb-3">
                     <div class="stat-card" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 2px solid #4caf50;">
                         <div class="d-flex justify-content-between align-items-center">
@@ -116,7 +119,7 @@
                     </div>
                 </div>
             </div>
-
+            @if(\App\Helpers\RouteHelper::isSuperadmin() || (\App\Helpers\RouteHelper::isStaff() && (auth()->user()->created_by == 2)))
             <!-- Recent Tickets -->
             <div class="row">
                 <div class="col-12">
@@ -196,6 +199,7 @@
                     </div>
                 </div>
             </div>
+            @endif
 
         </div>
 

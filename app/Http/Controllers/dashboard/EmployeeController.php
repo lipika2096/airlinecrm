@@ -5,6 +5,7 @@ namespace App\Http\Controllers\dashboard;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Employee;
+use App\Models\Admin;
 use App\Models\Department;
 use App\Models\DepartmentRight;
 use App\Models\Designation;
@@ -222,6 +223,7 @@ class EmployeeController extends Controller
 
     public function storeUserProfile(Request $request)
     {
+        dd($request);
         // Validate the request
         $request->validate([
             'first_name' => 'required|string|max:255',
@@ -248,21 +250,10 @@ class EmployeeController extends Controller
                            substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 3) . 
                            rand(100, 999);
 
-        // Auto-generate unique employee ID
+        // Auto-generate random employee ID
         $year = date('Y');
-        $lastEmployee = User::where('unique_id', 'like', 'EMP-' . $year . '%')
-                           ->orderBy('id', 'desc')
-                           ->first();
-        
-        if ($lastEmployee) {
-            // Extract the last number and increment
-            $lastNumber = (int) substr($lastEmployee->unique_id, -4);
-            $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-        } else {
-            $newNumber = '0001';
-        }
-        
-        $employeeId = 'EMP-' . $year . '-' . $newNumber;
+        $randomNumber = str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        $employeeId = 'EMP-' . $year . '-' . $randomNumber;
 
         // Create a new client record
         $client = new Client();
@@ -450,6 +441,8 @@ class EmployeeController extends Controller
         // Determine the current user type and ID for data scoping
         $currentUserId = null;
         $userType = 'superadmin'; // default
+        $createdBySuperadmin = false;
+        $superadminId = null;
         
         if (auth('admin')->check() ) {
             $currentUserId = auth('admin')->user()->id;
@@ -457,17 +450,41 @@ class EmployeeController extends Controller
         } elseif (auth()->check()) {
             $currentUserId = auth()->user()->id;
             $userType = 'staff';
+            
+            // Check if this staff was created by a superadmin
+            $currentUser = User::find($currentUserId);
+            if ($currentUser && $currentUser->created_by) {
+                $creator = Admin::find($currentUser->created_by);
+                if ($creator && $creator->hasRole('SuperAdmin')) {
+                    $createdBySuperadmin = true;
+                    $superadminId = $creator->id;
+                }
+            }
         }
         
         // Build query based on user type
         $query = User::with(['client', 'userDepartments'])->where('role_id', 2);
         
-        // For non-superadmin users, only show employees they created
-        if ($userType !== 'superadmin') {
-            $query->where('created_by', $currentUserId);
+        // Apply filtering based on user type
+        if ($userType === 'superadmin') {
+            // Superadmin sees all staff members
+            $query->where('created_by', $currentUserId)->where('deleted_at', NULL);
+        } elseif ($userType === 'customer') {
+            // Customer sees only staff members they created
+            $query->where('created_by', $currentUserId)->where('deleted_at', NULL);
+        } elseif ($userType === 'staff') {
+            // Staff: if created by superadmin, show all staff created by that superadmin
+            // Otherwise, show only staff they created
+            $currentUserDetail = User::find(auth()->user()->id);
+            //dd($superadminId);
+            if ($currentUserDetail->created_by == $superadminId) {
+                $query->where('created_by', $superadminId)->where('deleted_at', NULL)->orWhere('created_by', $currentUserId);
+            } else {
+                $query->where('created_by', $currentUserId)->where('deleted_at', NULL);
+            }
         }
         
-        $employees = $query->where('created_by', $currentUserId)->get();
+        $employees = $query->where('deleted_at', NULL)->get();
 
         // Load department names for each employee from both sources
         foreach ($employees as $employee) {
@@ -491,8 +508,23 @@ class EmployeeController extends Controller
 
         // Build department employees query with same scoping
         $deptQuery = User::with('userDepartments')->where('role_id', 2);
-        if ($userType !== 'superadmin') {
-            $deptQuery->where('created_by', $currentUserId);
+        
+        // Apply same filtering logic as main query
+        if ($userType === 'superadmin') {
+            // Superadmin sees all staff members
+            $deptQuery->where('deleted_at', NULL);
+        } elseif ($userType === 'customer') {
+            // Customer sees only staff members they created
+            $deptQuery->where('created_by', $currentUserId)->where('deleted_at', NULL);
+        } elseif ($userType === 'staff') {
+            // Staff: if created by superadmin, show all staff created by that superadmin
+            // Otherwise, show only staff they created
+            $currentUserDetail = User::find(auth()->user()->id);
+            if ($currentUserDetail->created_by == $superadminId) {
+                $deptQuery->where('created_by', $superadminId)->where('deleted_at', NULL)->orwhere('created_by', $currentUserId);
+            } else {
+                $deptQuery->where('created_by', $currentUserId)->where('deleted_at', NULL);
+            }
         }
         
         $departmentEmployees = $deptQuery->get()
@@ -842,6 +874,7 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         try{
+            
         // Validate the request
         $request->validate([
             'first_name' => 'required|string|max:255',
@@ -871,22 +904,11 @@ class EmployeeController extends Controller
                            substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 3) . 
                            rand(100, 999);
 
-        // Auto-generate unique employee ID
+        // Auto-generate random employee ID
         $year = date('Y');
-        $lastEmployee = User::where('unique_id', 'like', 'EMP-' . $year . '%')
-                           ->orderBy('id', 'desc')
-                           ->first();
-        
-        if ($lastEmployee) {
-            // Extract the last number and increment
-            $lastNumber = (int) substr($lastEmployee->unique_id, -4);
-            $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-        } else {
-            $newNumber = '0001';
-        }
-        
-        $employeeId = 'EMP-' . $year . '-' . $newNumber;
-
+        $randomNumber = str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        $employeeId = 'EMP-' . $year . '-' . $randomNumber;
+        //dd($request);
         // Create a new client record
         $client = new Client();
         $client->client_creatorid = 0;
@@ -952,16 +974,16 @@ class EmployeeController extends Controller
             \Log::error('Failed to send email: ' . $e->getMessage());
         }
 
-        if (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+        if (\App\Helpers\RouteHelper::isSuperAdmin()) {
             // Determine appropriate redirect route based on user type
             $redirectRoute = 'admin.employees';
             return redirect()->route('admin.employees')->with('success', 'Employee added successfully. Password sent to email.');
         }
-        elseif (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+        elseif (\App\Helpers\RouteHelper::isCustomer()) {
             $redirectRoute = 'customer.employees';
             return redirect()->route('customer.employees')->with('success', 'Employee added successfully. Password sent to email.');
 
-        } elseif (auth()->check()) {
+        } elseif (\App\Helpers\RouteHelper::isStaff()) {
             $redirectRoute = 'staff.employees';
             return redirect()->route('staff.employees')->with('success', 'Employee added successfully. Password sent to email.');
 
@@ -969,16 +991,16 @@ class EmployeeController extends Controller
         } catch (\Exception $e) {
             // Log error but don't prevent user creation
             \Log::error('Failed to create account: ' . $e->getMessage());
-            if (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+            if (\App\Helpers\RouteHelper::isSuperAdmin()) {
                 // Determine appropriate redirect route based on user type
                 $redirectRoute = 'admin.employees';
                 return redirect()->route('admin.employees')->with('error', 'Failed to create account: ' . $e->getMessage());
             }
-            elseif (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+            elseif (\App\Helpers\RouteHelper::isCustomer()) {
                 $redirectRoute = 'customer.employees';
                 return redirect()->route('customer.employees')->with('error', 'Failed to create account: ' . $e->getMessage());
 
-            } elseif (auth()->check()) {
+            } else {
                 $redirectRoute = 'staff.employees';
                 return redirect()->route('staff.employees')->with('error', 'Failed to create account: ' . $e->getMessage());
 
@@ -1039,23 +1061,12 @@ class EmployeeController extends Controller
 
         $primaryDepartment = is_array($departments) && !empty($departments) ? $departments[0] : null;
 
-        // Auto-generate employee ID if null or empty
+        // Auto-generate random employee ID if null or empty
         $employeeId = $request->input('employee_id');
         if (empty($employeeId)) {
             $year = date('Y');
-            $lastEmployee = User::where('unique_id', 'like', 'EMP-' . $year . '%')
-                               ->orderBy('id', 'desc')
-                               ->first();
-
-            if ($lastEmployee) {
-                // Extract the last number and increment
-                $lastNumber = (int) substr($lastEmployee->unique_id, -4);
-                $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-            } else {
-                $newNumber = '0001';
-            }
-
-            $employeeId = 'EMP-' . $year . '-' . $newNumber;
+            $randomNumber = str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+            $employeeId = 'EMP-' . $year . '-' . $randomNumber;
         }
         
         // Determine appropriate auth guard for updated_by field
@@ -1111,6 +1122,8 @@ class EmployeeController extends Controller
             // Check if user has permission to delete this employee
             $currentUserId = null;
             $userType = 'superadmin';
+            $createdBySuperadmin = false;
+            $superadminId = null;
             
             if (auth('admin')->check()) {
                 $currentUserId = auth('admin')->user()->id;
@@ -1118,11 +1131,39 @@ class EmployeeController extends Controller
             } elseif (auth()->check()) {
                 $currentUserId = auth()->user()->id;
                 $userType = 'staff';
+                
+                // Check if this staff was created by a superadmin
+                $currentUser = User::find($currentUserId);
+                if ($currentUser && $currentUser->created_by) {
+                    $creator = User::find($currentUser->created_by);
+                    if ($creator && $creator->hasRole('SuperAdmin')) {
+                        $createdBySuperadmin = true;
+                        $superadminId = $creator->id;
+                    }
+                }
             }
             
-            // Non-superadmin users can only delete employees they created
-            if ($userType !== 'superadmin' && $user->created_by != $currentUserId) {
-                return redirect()->back()->with('error', 'You do not have permission to delete this employee');
+            // Apply permission logic matching allEmployees function
+            if ($userType === 'superadmin') {
+                // Superadmin can delete any employee
+                // No additional restrictions
+            } elseif ($userType === 'customer') {
+                // Customer can only delete employees they created
+                if ($user->created_by != $currentUserId) {
+                    return redirect()->back()->with('error', 'You do not have permission to delete this employee');
+                }
+            } elseif ($userType === 'staff') {
+                // Staff: if created by superadmin, can delete employees created by that superadmin
+                // Otherwise, can only delete employees they created
+                if ($createdBySuperadmin && $superadminId) {
+                    if ($user->created_by != $superadminId) {
+                        return redirect()->back()->with('error', 'You do not have permission to delete this employee');
+                    }
+                } else {
+                    if ($user->created_by != $currentUserId) {
+                        return redirect()->back()->with('error', 'You do not have permission to delete this employee');
+                    }
+                }
             }
 
             // Find the client associated with this user
@@ -1130,11 +1171,17 @@ class EmployeeController extends Controller
 
             // Delete the user and client records
             if ($user) {
-                $user->delete();
+                $user->update([
+                    'deleted_at' => now()
+                ]);
+                //$user->delete();
             }
 
             if ($client) {
-                $client->delete();
+                $client->update([
+                    'deleted_at' => now()
+                ]);
+                //$client->delete();
             }
 
             // Determine appropriate redirect route based on user type

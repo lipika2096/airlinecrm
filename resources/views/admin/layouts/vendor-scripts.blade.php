@@ -130,7 +130,7 @@ $routesWithDatatable = [
  @endif
 
 <!-- Custom JS -->
-<script src="{{ asset('public/assets/js/app.js') }}"></script>
+<script src="{{ asset('public/assets/js/app.js') }}?v={{ time() }}"></script>
 
 
 <script>

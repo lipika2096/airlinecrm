@@ -15,13 +15,13 @@
                         <h3 class="page-title">{{ $isSuperAdmin ? 'Ticket Details' : 'Support Ticket Details' }}</h3>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ $isSuperAdmin ? route('admin.support-tickets.dashboard') : ($isStaff ? route('staff.support-tickets.index') : route('customer.support-tickets.index')) }}">Support Ticket Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ $isSuperAdmin ? route('admin.support-tickets.index') : ($isStaff ? route('staff.support-tickets.dashboard') : route('customer.support-tickets.dashboard')) }}">{{ $isSuperAdmin ? 'All Tickets' : 'Support Tickets' }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.index') : route('customer.support-tickets.index')) }}">Support Ticket Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') : route('customer.support-tickets.dashboard')) }}">{{ $isSuperAdmin ? 'All Tickets' : 'Support Tickets' }}</a></li>
                             <li class="breadcrumb-item active">{{ $ticket->ticket_number }}</li>
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
-                        <a href="{{ $isSuperAdmin ? route('admin.support-tickets.index') : ($isStaff ? route('staff.support-tickets.dashboard') : route('customer.support-tickets.dashboard')) }}" class="btn btn-secondary">
+                        <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') : route('customer.support-tickets.dashboard')) }}" class="btn btn-secondary">
                             <i class="fa fa-arrow-left"></i> {{ $isSuperAdmin ? 'Back to All Tickets' : 'Back to List' }}
                         </a>
                     </div>
@@ -39,7 +39,7 @@
                             <div class="row align-items-center">
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-center mb-3">
-                                        <h4 class="mb-0" style="margin-right: 1rem;">Ticket #{{ $ticket->id }}</h4>
+                                        <h4 class="mb-0" style="margin-right: 1rem;">Ticket {{ $ticket->ticket_number }}</h4>
                                         @php
                                             $currentStatus = $ticketStatuses->where('slug', $ticket->status)->first();
                                         @endphp
@@ -129,7 +129,7 @@
                     <div class="card mt-3">
                         <div class="card-body">
                             @if($ticket->status !== 'closed')
-                            <form method="post" action="{{ $isSuperAdmin ? route('admin.support-tickets.update-status', $ticket->id) : ($isStaff ? route('staff.support-tickets.update-status', $ticket->id) : route('customer.support-tickets.update-status', $ticket->id)) }}">
+                            <form method="post" action="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.update-status', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.update-status', $ticket->id) : route('customer.support-tickets.update-status', $ticket->id)) }}">
                                 @csrf
                                 @method('patch')
                                 <div class="row align-items-end">
@@ -175,6 +175,7 @@
                                             </select>
                                         </div>
                                     </div> -->
+                                    @if(\App\Helpers\RouteHelper::isSuperAdmin() || (\App\Helpers\RouteHelper::isStaff() && auth()->user()?->created_by == \App\Models\Admin::role('SuperAdmin')->first()?->id))
                                     <div class="col-md-2">
                                         <div class="form-group">
                                             <label>Status</label>
@@ -190,13 +191,21 @@
                                     <div class="col-md-2">
                                         <button type="submit" class="btn btn-primary btn-block" style="margin-top: -60px !important;">Update</button>
                                     </div>
+                                    @else
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Status</label>
+                                            <input type="text" class="form-control" value="{{ $ticketStatuses->where('slug', $ticket->status)->first()?->name ?? $ticket->status }}" readonly>
+                                        </div>
+                                    </div>
+                                    @endif
                                 </div>
                             </form>
                             @else
                             <!-- Closed Ticket Actions -->
                             <div class="row align-items-center">
                                     <div class="col-md-6 text-center">
-                                        <form method="post" action="{{ $isSuperAdmin ? route('admin.support-tickets.update-status', $ticket->id) : ($isStaff ? route('admin.support-tickets.update-status', $ticket->id) : route('admin.support-tickets.update-status', $ticket->id)) }}">
+                                        <form method="post" action="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.update-status', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.update-status', $ticket->id) : route('customer.support-tickets.update-status', $ticket->id)) }}">
                                             @csrf
                                             @method('patch')
                                             <input type="hidden" name="status" value="open">
@@ -249,7 +258,7 @@
                                     <div class="conversation-section {{ $isSuperAdmin ? 'superadmin-conversation' : 'user-conversation' }}">
                                         <!-- Initial Ticket Message -->
                                         @php
-                                            $currentUserId = $isStaff ? auth()->user()->id : auth('admin')->user()->id;
+                                            $currentUserId = $isStaff ? (auth()->user()?->id ?? null) : (auth('admin')->user()?->id ?? null);
                                             $isTicketCreatorCurrentUser = $ticket->creator && $ticket->creator->id == $currentUserId;
                                             $creatorName = $ticket->creator_name;
                                             $creatorType = $ticket->creator_type;
@@ -325,12 +334,12 @@
                                         <!-- Add Comment Form -->
                                         @if($ticket->status !== 'closed')
                                         <div class="add-comment-section mt-4">
-                                            <form method="post" action="{{ $isSuperAdmin ? route('admin.support-tickets.add-comment', $ticket->id) : ($isStaff ? route('staff.support-tickets.add-comment', $ticket->id) : route('customer.support-tickets.add-comment', $ticket->id)) }}" enctype="multipart/form-data">
+                                            <form method="post" action="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.add-comment', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.add-comment', $ticket->id) : route('customer.support-tickets.add-comment', $ticket->id)) }}" enctype="multipart/form-data">
                                                 @csrf
                                                 <div class="form-group" style="width:92%;">
                                                     <textarea class="form-control" name="comment" rows="3" placeholder="Type your message here..." required style="border-radius: 20px;"></textarea>
                                                 </div>
-                                                <input class="form-control" name="commented_by" value="{{ $isSuperAdmin ? 'superadmin' : ($isStaff ? 'staff' : 'customer') }}" style="display:none;">
+                                                <input class="form-control" name="commented_by" value="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? 'superadmin' : (\App\Helpers\RouteHelper::isStaff() ? 'staff' : 'customer') }}" style="display:none;">
                                                 <div class="form-group" style="margin-top: 0px;">
                                                     <div style="margin-right: 16px;">
                                                         <label class="btn btn-link p-0 text-success">
@@ -520,7 +529,7 @@
                                             <div class="card">
                                                 <div class="card-body">
                                                     <h5 class="card-title mb-3">Edit Internal Note</h5>
-                                                    <form method="post" action="{{ $isSuperAdmin ? route('admin.support-tickets.update-internal-note', $ticket->id) : route('staff.support-tickets.update-internal-note', $ticket->id) }}" id="editNoteForm" enctype="multipart/form-data">
+                                                    <form method="post" action="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.update-internal-note', $ticket->id) : route('staff.support-tickets.update-internal-note', $ticket->id) }}" id="editNoteForm" enctype="multipart/form-data">
                                                         @csrf
                                                         @method('patch')
                                                         <input type="hidden" name="note_id" id="editNoteId">
@@ -545,7 +554,7 @@
                                         </div>
 
                                         <div class="add-note-section mt-4">
-                                            <form method="post" action="{{ $isSuperAdmin ? route('admin.support-tickets.add-internal-note', $ticket->id) : route('staff.support-tickets.add-internal-note', $ticket->id) }}" enctype="multipart/form-data">
+                                            <form method="post" action="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.add-internal-note', $ticket->id) : route('staff.support-tickets.add-internal-note', $ticket->id) }}" enctype="multipart/form-data">
                                                 @csrf
                                                 <div class="form-group">
                                                     <textarea class="form-control" name="note" rows="3" placeholder="Add internal note..." required></textarea>
@@ -712,7 +721,7 @@
                                 <!-- Rating Form -->
                                 <div class="rating-section mt-5">
                                     <h4 class="rating-title">How was your support experience?</h4>
-                                    <form method="post" action="{{ $isSuperAdmin ? route('admin.support-tickets.submit-rating', $ticket->id) : ($isStaff ? route('staff.support-tickets.submit-rating', $ticket->id) : route('customer.support-tickets.submit-rating', $ticket->id)) }}">
+                                    <form method="post" action="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.submit-rating', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.submit-rating', $ticket->id) : route('customer.support-tickets.submit-rating', $ticket->id)) }}">
                                         @csrf
                                         <div class="star-rating mb-3" id="starRating">
                                             @for($i = 1; $i <= 5; $i++)
@@ -732,7 +741,7 @@
                                 @endif
                                 
                                 <div class="mt-5">
-                                    <a href="{{ $isSuperAdmin ? route('admin.support-tickets.index') : ($isStaff ? route('staff.support-tickets.dashboard') : route('customer.support-tickets.dashboard')) }}" class="btn btn-primary btn-lg">
+                                    <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.dashboard') : route('customer.support-tickets.dashboard')) }}" class="btn btn-primary btn-lg">
                                         View All Tickets
                                     </a>
                                 </div>
@@ -769,6 +778,8 @@
                                                         <span style="color:unset;font-size: smaller;">-</span>
                                                     @endif
                                                 </p>
+                                                @if(\App\Helpers\RouteHelper::isSuperAdmin() || (\App\Helpers\RouteHelper::isStaff() && auth()->user()?->created_by == \App\Models\Admin::role('SuperAdmin')->first()?->id))
+
                                                 <p><strong>Priority:</strong> 
                                                     @if($ticket->priority == 'low')
                                                         <span class="badge bg-success">Low</span>
@@ -782,6 +793,7 @@
                                                         <span class="badge bg-danger">Urgent</span>
                                                     @endif
                                                 </p>
+                                                @endif
                                             </div>
                                             <div class="col-md-4">
                                                 <p><strong>Created:</strong> {{ $ticket->created_at->format('M d, Y h:i A') }}</p>
@@ -855,6 +867,8 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <table class="table table-bordered">
+                                                @if(\App\Helpers\RouteHelper::isSuperAdmin() || (\App\Helpers\RouteHelper::isStaff() && auth()->user()?->created_by == \App\Models\Admin::role('SuperAdmin')->first()?->id))
+
                                                     <tr>
                                                         <th>Priority</th>
                                                         <td>
@@ -870,6 +884,7 @@
                                                             <span >{{ ucfirst($ticket->priority ) }}</span>
                                                         </td>
                                                     </tr>
+                                                @endif
                                                     @if($isSuperAdmin || $isStaff)
                                                     <tr>
                                                         <th>Status</th>
@@ -905,10 +920,10 @@
 
                                 <!-- Conversation Tab -->
                                 <div class="tab-pane fade" id="conversation" role="tabpanel">
-                                    <div class="conversation-section {{ $isSuperAdmin ? 'superadmin-conversation' : 'user-conversation' }}">
+                                    <div class="conversation-section {{ \App\Helpers\RouteHelper::isSuperAdmin() ? 'superadmin-conversation' : 'user-conversation' }}">
                                         <!-- Initial Ticket Message -->
                                         @php
-                                            $currentUserId = $isStaff ? auth()->user()->id : auth('admin')->user()->id;
+                                            $currentUserId = $isStaff ? (auth()->user()?->id ?? null) : (auth('admin')->user()?->id ?? null);
                                             $isTicketCreatorCurrentUser = $ticket->creator && $ticket->creator->id == $currentUserId;
                                             $creatorName = $ticket->creator_name;
                                             $creatorType = $ticket->creator_type;
@@ -980,7 +995,7 @@
                                         <!-- Add Comment Form -->
                                         @if($ticket->status !== 'closed')
                                         <div class="add-comment-section mt-4">
-                                            <form method="post" action="{{ $isSuperAdmin ? route('admin.support-tickets.add-comment', $ticket->id) : ($isStaff ? route('staff.support-tickets.add-comment', $ticket->id) : route('customer.support-tickets.add-comment', $ticket->id)) }}" enctype="multipart/form-data">
+                                            <form method="post" action="{{ \App\Helpers\RouteHelper::issuperAdmin() ? route('admin.support-tickets.add-comment', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.add-comment', $ticket->id) : route('customer.support-tickets.add-comment', $ticket->id)) }}" enctype="multipart/form-data">
                                                 @csrf
                                                 <div class="form-group" style="width:92%;">
                                                     <textarea class="form-control" name="comment" rows="3" placeholder="Type your message here..." required style="border-radius: 20px;"></textarea>
@@ -1086,7 +1101,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form method="post" action="{{ route('admin.support-tickets.update-company-name', $ticket->id) }}">
+                    <form method="post" action="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.update-company-name', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.update-company-name', $ticket->id) : route('customer.support-tickets.update-company-name', $ticket->id)) }}">
                         @csrf
                         @method('patch')
                         <div class="form-group">
@@ -1913,7 +1928,7 @@
             });
 
             // Filter staff members by department for SuperAdmin
-            @if($isSuperAdmin)
+           
             $('#departmentSelect').on('change', function() {
                 var departmentId = $(this).val();
                 var staffSelect = $('#staffSelect');
@@ -1955,7 +1970,6 @@
                     @endforeach
                 }
             });
-            @endif
             
             // Interactive star rating
             $('#starRating .star').on('click', function() {
@@ -2067,7 +2081,7 @@
             // Change priority function
             window.changePriority = function(priority) {
                 var ticketId = {{ $ticket->id }};
-                var route = "{{ $isSuperAdmin ? route('admin.support-tickets.update-status', $ticket->id) : ($isStaff ? route('admin.support-tickets.update-status', $ticket->id) : route('admin.support-tickets.update-status', $ticket->id)) }}";
+                var route = "{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.update-status', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.update-status', $ticket->id) : route('customer.support-tickets.update-status', $ticket->id)) }}";
                 
                 $.ajax({
                     url: route,

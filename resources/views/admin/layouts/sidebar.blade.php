@@ -17,7 +17,22 @@
                     <li><a class="{{ request()->routeIs('customer.support-tickets.index') ? 'active' : '' }}" href="{{ route('customer.support-tickets.index') }}"><i class="la la-life-ring"></i> <span> Support Tickets</span></a>
                     </li>
                 @elseif(\App\Helpers\RouteHelper::isStaff())
-                    <li><a class="{{ request()->routeIs('staff.support-tickets.index') ? 'active' : '' }}" href="{{ route('staff.support-tickets.index') }}"><i class="la la-life-ring"></i> <span> Support Tickets</span></a>
+                    <li class="submenu">
+                        <a href="#" class="{{ request()->routeIs('staff.support-tickets.*') ? 'active' : '' }}"><i class="la la-life-ring"></i> <span> Support Tickets</span> <span class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            <li>
+                                <a class="{{ request()->routeIs('staff.support-tickets.dashboard') ? 'active' : '' }}" href="{{ route('staff.support-tickets.dashboard') }}">Dashboard</a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('staff.support-tickets.my-created') ? 'active' : '' }}" href="{{ route('staff.support-tickets.my-created') }}">My Created Tickets</a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('staff.support-tickets.assigned') ? 'active' : '' }}" href="{{ route('staff.support-tickets.assigned') }}">Assigned Tickets</a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('staff.support-tickets.create') ? 'active' : '' }}" href="{{ route('staff.support-tickets.create') }}">Create Ticket</a>
+                            </li>
+                        </ul>
                     </li>
                 @endif
                 @if(auth('admin')->check() && auth('admin')->user()?->getDirectPermissions()->contains('name', 'hr'))

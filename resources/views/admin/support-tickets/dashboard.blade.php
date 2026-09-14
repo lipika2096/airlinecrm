@@ -53,6 +53,8 @@
                         </div>
                     </div>
                 </div>
+                @if(\App\Helpers\RouteHelper::isSuperadmin() || (\App\Helpers\RouteHelper::isStaff() && (auth()->user()->created_by == 2)))
+
                 <div class="col-lg-3 col-md-6 mb-3">
                     <div class="stat-card" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #ff9800;">
                         <div class="d-flex justify-content-between align-items-center">
@@ -92,6 +94,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
                 <div class="col-lg-3 col-md-6 mb-3">
                     <div class="stat-card" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #9e9e9e;">
                         <div class="d-flex justify-content-between align-items-center">
@@ -153,8 +156,12 @@
                                         <th style="border: none; padding: 12px; font-weight: 600; color: #333;">Company</th>
                                         <th style="border: none; padding: 12px; font-weight: 600; color: #333;">Subject</th>
                                         <th style="border: none; padding: 12px; font-weight: 600; color: #333;">Category</th>
+                                        @if(\App\Helpers\RouteHelper::isSuperAdmin() || (\App\Helpers\RouteHelper::isStaff() && auth()->user()?->created_by == \App\Models\Admin::role('SuperAdmin')->first()?->id))
                                         <th style="border: none; padding: 12px; font-weight: 600; color: #333;">Priority</th>
+                                        @endif
+                                        @if(\App\Helpers\RouteHelper::isSuperAdmin() || (\App\Helpers\RouteHelper::isStaff() && auth()->user()?->created_by == \App\Models\Admin::role('SuperAdmin')->first()?->id))
                                         <th style="border: none; padding: 12px; font-weight: 600; color: #333;">Status</th>
+                                        @endif
                                         <th style="border: none; padding: 12px; font-weight: 600; color: #333;">Assigned To</th>
                                         <th style="border: none; padding: 12px; font-weight: 600; color: #333;">Actions</th>
                                     </tr>
@@ -177,6 +184,7 @@
                                                 <td style="padding: 12px; vertical-align: middle;">
                                                     {{ $ticket->department ? ucfirst(str_replace('_', ' ', $ticket->department)) : 'N/A' }}
                                                 </td>
+                                                @if(\App\Helpers\RouteHelper::isSuperAdmin() || (\App\Helpers\RouteHelper::isStaff() && auth()->user()?->created_by == \App\Models\Admin::role('SuperAdmin')->first()?->id))
                                                 <td style="padding: 12px; vertical-align: middle;">
                                                     @if($ticket->priority == 'low')
                                                     <span class="badge bg-success">Low</span>
@@ -190,6 +198,8 @@
                                                         <span class="badge bg-danger">Urgent</span>
                                                     @endif
                                                 </td>
+                                                @endif
+                                                @if(\App\Helpers\RouteHelper::isSuperAdmin() || (\App\Helpers\RouteHelper::isStaff() && auth()->user()?->created_by == \App\Models\Admin::role('SuperAdmin')->first()?->id))
                                                 <td style="padding: 12px; vertical-align: middle;">
                                                     @php
                                                         $dashboardStatus = $ticketStatuses->where('slug', $ticket->status)->first();
@@ -200,6 +210,7 @@
                                                         <span class="badge" style="background: #f5f5f5; color: #616161; padding: 6px 12px; border-radius: 12px; font-size: 12px;">{{ ucfirst($ticket->status) }}</span>
                                                     @endif
                                                 </td>
+                                                @endif
                                                 <td style="padding: 12px; vertical-align: middle;">
                                                     {{ $ticket->assignedTo ? $ticket->assignedTo->first_name . ' ' . $ticket->assignedTo->last_name : 'Unassigned' }}
                                                 </td>

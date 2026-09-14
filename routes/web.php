@@ -38,8 +38,10 @@ use App\Http\Controllers\dashboard\{
     SectorController,
     HoldController,
     WalletController,
-    WalletRequestController,
+    SupportTicketController,
     TicketStatusController,
+    DashboardSupportTicketController,
+    WalletRequestController,
     InventoryController,
     AdminHoldController,
     AirlineLibraryController,
@@ -64,10 +66,18 @@ use App\Http\Controllers\dashboard\{
     SalesPackageController,
     BankAccountController,
     PaymentPoolController,
-    SupportTicketController,
     PasswordResetController
 };
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\StaffController;
+
+// Notification routes (accessible from all user types)
+Route::get('notifications/api', [NotificationController::class, 'index'])->name('notifications.api');
+Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+Route::post('notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+Route::delete('notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
 Route::get('/run-migration', function () {
 
     Artisan::call('migrate', [
@@ -149,12 +159,6 @@ Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(functi
     Route::get('dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
     Route::get('/logout', [AdminController::class, 'logout'])->name('logout');
 
-    // Notification routes
-    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-    Route::post('notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
-    Route::delete('notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
-    
     // Include all other admin routes here
     Route::get('/get-departments', [EmployeeController::class, 'getDepartments']);
     Route::get('/get-employees/{department}', [EmployeeController::class, 'getEmployeesByDepartment']);
@@ -675,6 +679,9 @@ Route::middleware(['auth'])->prefix('staff')->name('staff.')->group(function () 
     Route::get('support-tickets/dashboard', [SupportTicketController::class, 'ticketDashboard'])->name('support-tickets.dashboard');
     Route::get('support-tickets/all', [SupportTicketController::class, 'dashboardStatistics'])->name('support-tickets.all');
     Route::get('support-tickets', [SupportTicketController::class, 'index'])->name('support-tickets.index');
+    Route::get('support-tickets/my-created', [SupportTicketController::class, 'myCreatedTickets'])->name('support-tickets.my-created');
+    Route::get('support-tickets/assigned', [SupportTicketController::class, 'assignedTickets'])->name('support-tickets.assigned');
+    Route::get('support-tickets/unassigned', [SupportTicketController::class, 'unassignedTickets'])->name('support-tickets.unassigned');
     Route::get('support-tickets/create', [SupportTicketController::class, 'create'])->name('support-tickets.create');
     Route::post('support-tickets', [SupportTicketController::class, 'store'])->name('support-tickets.store');
     Route::get('support-tickets/{id}', [SupportTicketController::class, 'show'])->name('support-tickets.show');
@@ -727,12 +734,6 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
     Route::get('/logout', [AdminController::class, 'staffLogout'])->name('logout');
         Route::get('customers/search', [CustomerController::class, 'search'])->name('customers.search');
 
-    // Notification routes
-    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-    Route::post('notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
-    Route::delete('notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
-    
     // Include customer-accessible routes here
     Route::get('customer/case-history', [CustomerController::class, 'caseHistorySearch'])->name('case-history');
     Route::post('customer/casehistory/store', [CustomerController::class, 'caseStore'])->name('case.store');
@@ -1274,12 +1275,6 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
 Route::prefix('staff')->name('staff.')->middleware(['staff'])->group(function () {
     Route::get('/logout', [StaffController::class, 'logout'])->name('logout');
     Route::get('customers/search', [CustomerController::class, 'search'])->name('customers.search');
-
-    // Notification routes
-    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-    Route::post('notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
-    Route::delete('notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
     // Staff dashboard and other routes can be added here
     Route::get('dashboard', [DashboardController::class, 'staffDashboard'])->name('dashboard');
@@ -1858,6 +1853,9 @@ Route::prefix('staff')->name('staff.')->middleware(['staff'])->group(function ()
     Route::patch('customer/update-package/{id}', [CustomerController::class, 'updatePackage'])->name('customer.update-package');
 
     Route::post('admin/update-customer-permission', [CustomerController::class, 'updatePermission'])->name('update.customer.permission');
+
+    Route::get('/toggle-status/{id}', [AdminController::class, 'toggleStatus'])->name('toggle.status');
+
 
 });
 
