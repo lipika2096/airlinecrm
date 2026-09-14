@@ -734,7 +734,7 @@
                                 <div class="ticket-closed-icon mb-4">
                                     <i class="fa fa-check-circle fa-4x text-success"></i>
                                 </div>
-                                <h2 class="ticket-closed-title">Ticket #{{ $ticket->id }}</h2>
+                                <h2 class="ticket-closed-title">Ticket #{{ $ticket->ticket_number }}</h2>
                                 <h4 class="ticket-closed-title">{{ $ticket->ticket_number }}</h4>
                                 <span class="badge bg-success badge-lg mb-3">Closed</span>
                                 <p class="ticket-closed-message">
@@ -797,7 +797,7 @@
                             <div class="row align-items-center">
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-center mb-2">
-                                        <h4 class="mb-0" style="margin-right: 1rem;">Ticket #{{ $ticket->id }}</h4>
+                                        <h4 class="mb-0" style="margin-right: 1rem;">Ticket {{ $ticket->ticket_number }}</h4>
                                         @if($isSuperAdmin || $isStaff)
                                         @php
                                             $headerStatus = $ticketStatuses->where('slug', $ticket->status)->first();

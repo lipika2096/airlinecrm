@@ -334,6 +334,7 @@
                             <table class="table table-modern-tickets">
                                 <thead>
                                     <tr>
+                                        <th>Sr.no.</th>
                                         <th>TICKET ID</th>
                                         <th>COMPANY</th>
                                         <th>SUBJECT</th>
@@ -351,7 +352,8 @@
                                 <tbody>
                                     @foreach ($tickets as $ticket)
                                         <tr>
-                                            <td><span class="ticket-id-badge">#{{ $ticket->id }}</span></td>
+                                            <td>{{$ticket->id}}</td>
+                                            <td><span class="ticket-id-badge">#{{ $ticket->ticket_number }}</span></td>
                                             <td>{{ $ticket->company_name ?? 'Superadmin' }}</td>
                                             <td><a href="{{ route('admin.support-tickets.show', $ticket->id) }}" class="ticket-subject-link">{{ Str::limit($ticket->subject, 50) }}</a></td>
                                             <td>
@@ -507,6 +509,7 @@
                                 <table class="table table-user-friendly">
                                     <thead>
                                         <tr>
+                                            <th>Sr.no.</th>
                                             <th>Ticket ID</th>
                                             <th>Subject</th>
                                             <th>Category</th>
@@ -518,9 +521,9 @@
                                     </thead>
                                     <tbody>
                                         @forelse($tickets as $ticket)
-                                        <tr>
+                                        <tr>                           <td>{{$ticket->id}}</td>
                                             <td>
-                                                <span class="ticket-id-modern">#{{ $ticket->id }}</span>
+                                                <span class="ticket-id-modern">#{{ $ticket->ticket_number }}</span>
                                             </td>
                                             <td>
                                                 <a href="{{ route($showRouteBase, $ticket->id) }}" class="subject-link">

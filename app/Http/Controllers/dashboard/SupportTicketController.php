@@ -1218,13 +1218,19 @@ class SupportTicketController extends Controller
             return redirect()->back()
                 ->with('error', 'You do not have permission to update ticket status.');
         }
-        
+
         // Prevent closing unassigned tickets
         if ($request->status === 'closed' && !$ticket->assigned_to) {
             return redirect()->back()
                 ->with('error', 'Cannot close unassigned tickets. Please assign the ticket to a staff member first.');
         }
-        
+
+        // Prevent resolving unassigned tickets
+        if ($request->status === 'resolved' && !$ticket->assigned_to) {
+            return redirect()->back()
+                ->with('error', 'Cannot resolve unassigned tickets. Please assign the ticket to a staff member first.');
+        }
+
         $oldStatus = $ticket->status;
         $ticket->status = $request->status ?? $ticket->status;
 
