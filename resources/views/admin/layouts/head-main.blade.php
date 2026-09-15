@@ -7,6 +7,8 @@
     <title>@yield('title') </title>
     @include('admin/layouts/title-meta')
 
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     @include('admin/layouts/head-css')
 
 </head>
@@ -81,10 +83,11 @@
             });
         });
     </script>
+    <!-- Vendor Scripts (jQuery, etc.) -->
+    @include('admin/layouts/vendor-scripts')
+
     <!-- Layout Content -->
     @yield('content')
-
-    @include('admin/layouts/vendor-scripts')
 
 </div>
 

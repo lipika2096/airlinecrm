@@ -56,18 +56,28 @@ class SupportTicketController extends Controller
             // Get staff members based on user type
             if ($isSuperAdmin) {
                 // Superadmin-created staff should see all active staff members
-                $staffMembers = User::where('role_id', 2)->where('status', 'active')->get();
+                $staffMembers = User::where('role_id', 2)->where('status', 'active')->whereNull('deleted_at')->get();
             } else {
-                $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->get();
+                $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->whereNull('deleted_at')->get();
             }
 
 
             $query = SupportTicket::with(['creator', 'assignedTo', 'relatedUser'])
                 ->when($isStaff, function ($query) use ($user) {
                     // For staff users, show tickets assigned to them or created by them
+                    // Also show tickets created by the admin (customer) who created this staff member
                     return $query->where(function($q) use ($user) {
                         $q->where('assigned_to', $user->id)
-                          ->orWhere('created_by', $user->id);
+                          ->orWhere('created_by', $user->id)
+                          ->orWhere(function($subQuery) use ($user) {
+                              // If ticket was created by an admin (customer), show it to staff created by that admin
+                              $subQuery->whereExists(function($existsQuery) use ($user) {
+                                  $existsQuery->select(\DB::raw(1))
+                                      ->from('admins')
+                                      ->whereColumn('support_tickets.created_by', 'admins.id')
+                                      ->where('admins.id', $user->created_by);
+                              });
+                          });
                     });
                 })
                 ->when(!$isSuperAdmin && !$isStaff, function ($query) use ($user) {
@@ -681,7 +691,7 @@ class SupportTicketController extends Controller
             // Get staff members based on user type
             if ($isSuperAdmin) {
                 // Superadmin-created staff should see all active staff members
-                $staffMembers = User::where('role_id', 2)->where('status', 'active')->get();
+                $staffMembers = User::where('role_id', 2)->where('status', 'active')->whereNull('deleted_at')->get();
             } else {
                 // Check if this staff user was created by superadmin
                 $superAdmin = Admin::role('SuperAdmin')->first();
@@ -691,6 +701,7 @@ class SupportTicketController extends Controller
                     // Show both superadmin's staff and own created staff
                     $staffMembers = User::where('role_id', 2)
                         ->where('status', 'active')
+                        ->whereNull('deleted_at')
                         ->where(function($query) use ($user, $superAdmin) {
                             $query->where('created_by', $superAdmin->id)
                                   ->orWhere('created_by', $user->id);
@@ -698,7 +709,7 @@ class SupportTicketController extends Controller
                         ->get();
                 } else {
                     // Regular staff sees only their created staff
-                    $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->get();
+                    $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->whereNull('deleted_at')->get();
                 }
             }
 
@@ -742,25 +753,28 @@ class SupportTicketController extends Controller
             $company = Admin::with('adminDetail')->whereDoesntHave('roles', function ($query) {
             $query->where('name', 'superAdmin');})->latest()->get();
             // Superadmin-created staff should see all active staff members
-            $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->where('deleted_at', NULL)->get();
+            $staffMembers = User::where('role_id', 2)->where('status', 'active')->whereNull('deleted_at')->get();
         } elseif (\App\Helpers\RouteHelper::isStaff()) {
             $superAdminDetail = Admin::role('SuperAdmin')->first();
             if($user->created_by == $superAdminDetail->id){
                 // For staff users, get all staff members for assignment
                 $company = Admin::with('adminDetail')->whereDoesntHave('roles', function ($query) {
                     $query->where('name', 'superAdmin');})->latest()->get();
-                $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->where('deleted_at', NULL)
-                ->orWhere('created_by', $superAdminDetail->id)->get();
+                $staffMembers = User::where('role_id', 2)->where('status', 'active')->whereNull('deleted_at')
+                ->where(function($query) use ($user, $superAdminDetail) {
+                    $query->where('created_by', $user->id)
+                          ->orWhere('created_by', $superAdminDetail->id);
+                })->get();
             }
             else{
                 $company = "";
                 // For staff users, get all staff members for assignment
-                $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->where('deleted_at', NULL)->get();
+                $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->whereNull('deleted_at')->get();
             }
         } else {
             $company = "";
             // For non-SuperAdmin, get staff created by current user
-            $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->where('deleted_at', NULL)->get();
+            $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->whereNull('deleted_at')->get();
         }
         
         return view('admin.support-tickets.create', compact('company','staffMembers', 'clients', 'isStaff', 'isSuperAdmin'));
@@ -958,6 +972,26 @@ class SupportTicketController extends Controller
         }
 
         $ticket = SupportTicket::with(['creator', 'assignedTo', 'relatedUser', 'comments.user', 'internalNotes.user'])
+            ->when($isStaff, function ($query) use ($user) {
+                // For staff users, only show tickets assigned to them, created by them, or created by their customer
+                return $query->where(function($q) use ($user) {
+                    $q->where('assigned_to', $user->id)
+                      ->orWhere('created_by', $user->id)
+                      ->orWhere(function($subQuery) use ($user) {
+                          // If ticket was created by an admin (customer), show it to staff created by that admin
+                          $subQuery->whereExists(function($existsQuery) use ($user) {
+                              $existsQuery->select(\DB::raw(1))
+                                  ->from('admins')
+                                  ->whereColumn('support_tickets.created_by', 'admins.id')
+                                  ->where('admins.id', $user->created_by);
+                          });
+                      });
+                });
+            })
+            ->when(!$isSuperAdmin && !$isStaff, function ($query) use ($user) {
+                // For non-SuperAdmin admin users (customers), use existing logic
+                return $query->forUser($user->id);
+            })
             ->findOrFail($id);
 
         $comments = $ticket->comments()->get();
@@ -965,7 +999,7 @@ class SupportTicketController extends Controller
 
         // Get staff members for assignment dropdown
         if ($isSuperAdmin) {
-            $staffMembers = User::where('role_id', 2)->where('status', 'active')->get();
+            $staffMembers = User::where('role_id', 2)->where('status', 'active')->whereNull('deleted_at')->get();
         } else {
             // Check if this staff user was created by superadmin
             $superAdmin = Admin::role('SuperAdmin')->first();
@@ -975,6 +1009,7 @@ class SupportTicketController extends Controller
                 // Show both superadmin's staff and own created staff
                 $staffMembers = User::where('role_id', 2)
                     ->where('status', 'active')
+                    ->whereNull('deleted_at')
                     ->where(function($query) use ($user, $superAdmin) {
                         $query->where('created_by', $superAdmin->id)
                               ->orWhere('created_by', $user->id);
@@ -982,7 +1017,7 @@ class SupportTicketController extends Controller
                     ->get();
             } else {
                 // Regular staff sees only their created staff
-                $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->get();
+                $staffMembers = User::where('role_id', 2)->where('status', 'active')->where('created_by', $user->id)->whereNull('deleted_at')->get();
             }
         }
 
@@ -1157,12 +1192,20 @@ class SupportTicketController extends Controller
     {
         $departmentName = $request->input('department_id');
 
+        // Debug logging
+        \Log::info('getStaffByDepartment called with department: ' . $departmentName);
+
         // Get staff members (role_id=2) who have this department in their user_departments
+        // Also filter out deleted staff and only show active staff
         $staff = User::where('role_id', 2)
+            ->where('status', 'active')
+            ->whereNull('deleted_at')
             ->whereHas('userDepartments', function($query) use ($departmentName) {
                 $query->where('department_name', $departmentName);
             })
             ->get();
+
+        \Log::info('Found staff count: ' . $staff->count());
 
         return response()->json([
             'staff' => $staff
@@ -1177,6 +1220,7 @@ class SupportTicketController extends Controller
         $isCustomer = auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin');
 
         // Check if staff user was created by superadmin
+        $isSuperAdminCreatedStaff = false;
         if ($isStaff) {
             $superAdmin = Admin::role('SuperAdmin')->first();
             $isSuperAdminCreatedStaff = $superAdmin && auth()->user()->created_by == $superAdmin->id;
@@ -1184,11 +1228,19 @@ class SupportTicketController extends Controller
             // If staff was created by superadmin, give them superadmin privileges
             if ($isSuperAdminCreatedStaff) {
                 $isSuperAdmin = true;
-                $isStaff = false;
+                // Keep $isStaff as true to ensure correct user ID retrieval
             }
         }
 
-        $userId = $isStaff ? (auth()->user()?->id ?? null) : (auth('admin')->user()?->id ?? null);
+        // Get user ID - always use auth() for staff (including superadmin-created staff)
+        // and auth('admin') for actual admins
+        if (auth()->check()) {
+            $userId = auth()->user()->id;
+        } elseif (auth('admin')->check()) {
+            $userId = auth('admin')->user()->id;
+        } else {
+            $userId = null;
+        }
         
         // Get available statuses from database
         $availableStatuses = TicketStatus::where('is_active', true)->pluck('slug')->toArray();
@@ -1199,12 +1251,14 @@ class SupportTicketController extends Controller
             'priority' => 'nullable|string|max:255',
             'department' => 'nullable|string|in:technical_support,billing,booking,account,other',
             'final_comment' => 'required_if:status,closed|string|max:1000',
+            'rating' => 'nullable|integer|min:1|max:5',
+            'rating_comment' => 'nullable|string|max:1000',
         ]);
 
         $ticket = SupportTicket::findOrFail($id);
         
         // Check if staff user has permission to update this ticket
-        if ($isStaff) {
+        if ($isStaff && !$isSuperAdminCreatedStaff) {
             // Regular staff can only update tickets assigned to them or created by them
             if ($ticket->assigned_to != $userId && $ticket->created_by != $userId) {
                 return redirect()->back()
@@ -1251,25 +1305,42 @@ class SupportTicketController extends Controller
         // Handle status changes and timestamps
         if ($request->status === 'resolved') {
             $ticket->resolved_at = now();
+            // Save who resolved the ticket
+            $ticket->resolved_by = $userId;
         } elseif ($request->status === 'closed') {
             $ticket->closed_at = now();
             if (!$ticket->resolved_at) {
                 $ticket->resolved_at = now();
             }
+            // Save who resolved the ticket if not already set
+            if (!$ticket->resolved_by) {
+                $ticket->resolved_by = $userId;
+            }
             // Save final comment when closing ticket
             if ($request->has('final_comment')) {
                 $ticket->final_comment = $request->final_comment;
             }
+            // Save rating and feedback when closing ticket
+            if ($request->has('rating')) {
+                $ticket->rating = $request->rating;
+            }
+            if ($request->has('rating_comment')) {
+                $ticket->rating_comment = $request->rating_comment;
+            }
             // Save who closed the ticket
             $ticket->closed_by = $userId;
         } elseif ($oldStatus === 'closed' && $request->status === 'open') {
-            // Reopening ticket - clear timestamps and rating
+            // Reopening ticket - clear timestamps and rating only
+            // Keep final_comment, closed_by, and resolved_by for historical records
             $ticket->resolved_at = null;
             $ticket->closed_at = null;
             $ticket->rating = null;
             $ticket->rating_comment = null;
-            $ticket->final_comment = null;
-            $ticket->closed_by = null;
+            // Don't clear final_comment, closed_by, resolved_by - preserve them for history
+        } elseif ($oldStatus === 'resolved' && $request->status === 'open') {
+            // Reopening from resolved - clear timestamp but keep resolved_by for history
+            $ticket->resolved_at = null;
+            // Don't clear resolved_by - preserve it for historical records
         }
 
         $ticket->save();

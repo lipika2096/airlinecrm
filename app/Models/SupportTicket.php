@@ -27,6 +27,7 @@ class SupportTicket extends Model
         'rating_comment',
         'final_comment',
         'closed_by',
+        'resolved_by',
         'resolved_at',
         'closed_at',
         'company_name',
@@ -169,5 +170,79 @@ class SupportTicket extends Model
     public function scopeClosed($query)
     {
         return $query->where('status', 'closed');
+    }
+
+    /**
+     * Get the name of the user who closed the ticket
+     * Checks if it's a staff member (users table) or admin (admins table)
+     */
+    public function getClosedByNameAttribute()
+    {
+        if (!$this->closed_by) {
+            return 'N/A';
+        }
+
+        // First check if it's a staff member (users table)
+        $user = User::find($this->closed_by);
+        if ($user) {
+            return $user->first_name . ' ' . $user->last_name;
+        }
+
+        // Then check if it's an admin (admins table)
+        $admin = Admin::find($this->closed_by);
+        if ($admin) {
+            return $admin->hasRole('SuperAdmin') ? 'Super Admin' : $admin->name;
+        }
+
+        return 'Unknown';
+    }
+
+    /**
+     * Get the name of the user who resolved the ticket
+     * Checks if it's a staff member (users table) or admin (admins table)
+     */
+    public function getResolvedByNameAttribute()
+    {
+        if (!$this->resolved_by) {
+            return 'N/A';
+        }
+
+        // First check if it's a staff member (users table)
+        $user = User::find($this->resolved_by);
+        if ($user) {
+            return $user->first_name . ' ' . $user->last_name;
+        }
+
+        // Then check if it's an admin (admins table)
+        $admin = Admin::find($this->resolved_by);
+        if ($admin) {
+            return $admin->hasRole('SuperAdmin') ? 'Super Admin' : $admin->name;
+        }
+
+        return 'Unknown';
+    }
+
+    /**
+     * Get the customer details from admins table
+     */
+    public function getCustomerDetailsAttribute()
+    {
+        if (!$this->created_by) {
+            return null;
+        }
+
+        // Check if the creator is an admin (customer)
+        $admin = Admin::find($this->created_by);
+        if ($admin) {
+            return $admin;
+        }
+
+        // If creator is staff, get their customer (admin who created them)
+        $user = User::find($this->created_by);
+        if ($user && $user->created_by) {
+            return Admin::find($user->created_by);
+        }
+
+        return null;
     }
 }

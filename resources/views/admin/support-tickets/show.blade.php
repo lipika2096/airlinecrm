@@ -343,30 +343,28 @@
                                             @endforeach
                                         @endif
 
-                                        <!-- Final Comment (shown when ticket is closed) -->
-                                        @if($ticket->status === 'closed' && $ticket->final_comment)
+                                        <!-- Final Comment (shown when ticket is closed or reopened) -->
+                                        @if($ticket->final_comment)
                                         @php
-                                            if($ticket->closed_by) {
-                                                $closer = \App\Models\Admin::find($ticket->closed_by);
-                                                if($closer) {
-                                                    $closerName = $closer->hasRole('SuperAdmin') ? 'Super Admin' : $closer->name;
-                                                } else {
-                                                    $closer = \App\Models\User::find($ticket->closed_by);
-                                                    $closerName = $closer ? ($closer->first_name . ' ' . $closer->last_name) : 'Unknown';
-                                                }
-                                            } else {
-                                                $closerName = 'Unknown';
-                                            }
+                                            $closerName = $ticket->closed_by_name;
+                                            $isReopened = $ticket->status !== 'closed';
                                         @endphp
                                         <div class="message-item note-dark mb-3">
                                             <div class="message-header d-flex justify-content-between align-items-start">
                                                 <div>
                                                     <strong>{{ $closerName }}</strong>
                                                     <small class="message-time" style="margin-left: 1rem;">{{ $ticket->closed_at ? $ticket->closed_at->format('M d, Y h:i A') : $ticket->updated_at->format('M d, Y h:i A') }}</small>
+                                                    @if($isReopened)
+                                                        <span class="badge bg-secondary ms-2">Previously Closed</span>
+                                                    @endif
                                                 </div>
                                             </div>
                                             <div class="message-body">
-                                                <p><strong>Final Resolution Comment:</strong></p>
+                                                @if($ticket->status === 'closed')
+                                                    <p><strong>Final Resolution Comment:</strong></p>
+                                                @else
+                                                    <p><strong>Previous Final Comment (Ticket Reopened):</strong></p>
+                                                @endif
                                                 <p>{{ nl2br($ticket->final_comment) }}</p>
                                             </div>
                                         </div>
@@ -440,15 +438,21 @@
                                                         <th>Assigned To</th>
                                                         <td>{{ $ticket->assignedTo ? $ticket->assignedTo->first_name . ' ' . $ticket->assignedTo->last_name : 'Unassigned' }}</td>
                                                     </tr>
-                                                    @if($ticket->status == 'closed')
+                                                    @if($ticket->status == 'closed' || $ticket->status == 'resolved')
                                                     <tr>
                                                         <th>Resolved On</th>
                                                         <td>{{ $ticket->resolved_at ? $ticket->resolved_at->format('M d, Y h:i A') : 'N/A' }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>Resolved By</th>
-                                                        <td>{{ $ticket->assignedTo ? $ticket->assignedTo->first_name . ' ' . $ticket->assignedTo->last_name : 'N/A' }}</td>
+                                                        <td>{{ $ticket->resolved_by_name }}</td>
                                                     </tr>
+                                                    @if($ticket->status == 'closed')
+                                                    <tr>
+                                                        <th>Closed By</th>
+                                                        <td>{{ $ticket->closed_by_name }}</td>
+                                                    </tr>
+                                                    @endif
                                                     @if($ticket->rating)
                                                     <tr>
                                                         <th>User Rating</th>
@@ -1187,6 +1191,43 @@
                             <label for="final_comment">Final Comment <span class="text-danger">*</span></label>
                             <textarea class="form-control" id="final_comment" name="final_comment" rows="4" placeholder="Please provide a final comment explaining the resolution..." required></textarea>
                         </div>
+                        <div class="form-group mb-3">
+                            <label>Rating</label>
+                            <div class="star-rating">
+                                <input type="radio" id="star5" name="rating" value="5"><label for="star5" class="fa fa-star"></label>
+                                <input type="radio" id="star4" name="rating" value="4"><label for="star4" class="fa fa-star"></label>
+                                <input type="radio" id="star3" name="rating" value="3"><label for="star3" class="fa fa-star"></label>
+                                <input type="radio" id="star2" name="rating" value="2"><label for="star2" class="fa fa-star"></label>
+                                <input type="radio" id="star1" name="rating" value="1"><label for="star1" class="fa fa-star"></label>
+                            </div>
+                            <style>
+                                .star-rating {
+                                    display: flex;
+                                    flex-direction: row-reverse;
+                                    justify-content: flex-end;
+                                }
+                                .star-rating input {
+                                    display: none;
+                                }
+                                .star-rating label {
+                                    font-size: 24px;
+                                    color: #ddd;
+                                    cursor: pointer;
+                                    margin: 0 5px;
+                                }
+                                .star-rating input:checked ~ label {
+                                    color: #ffc107;
+                                }
+                                .star-rating label:hover,
+                                .star-rating label:hover ~ label {
+                                    color: #ffc107;
+                                }
+                            </style>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="rating_comment">Feedback</label>
+                            <textarea class="form-control" id="rating_comment" name="rating_comment" rows="3" placeholder="Please provide your feedback about the support..."></textarea>
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to close this ticket?')">Close Ticket</button>
@@ -1803,23 +1844,45 @@
             console.log('jQuery version:', jQuery.fn.jquery);
         }
 
+        // Change priority function - defined globally for inline onclick handlers
+        window.changePriority = function(priority) {
+            var ticketId = {{ $ticket->id }};
+            var route = "{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.update-status', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.update-status', $ticket->id) : route('customer.support-tickets.update-status', $ticket->id)) }}";
+
+            $.ajax({
+                url: route,
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    _method: 'PATCH',
+                    priority: priority
+                },
+                success: function(response) {
+                    location.reload();
+                },
+                error: function(xhr) {
+                    alert('Error updating priority: ' + xhr.responseJSON?.message || 'Unknown error');
+                }
+            });
+        };
+
         $(document).ready(function() {
             console.log('Document ready - Attachment preview script loaded');
             // Tab state persistence
             var ticketId = '{{ $ticket->id }}';
             var storageKey = 'active_tab_' + ticketId;
             var initialActiveTab = '{{ $activeTab ?? 'details' }}';
-            
+
             // Function to activate a specific tab
             function activateTab(tabId) {
                 // Remove active class from all tabs and panes
                 $('#ticketTabs .nav-link').removeClass('active');
                 $('#ticketTabsContent .tab-pane').removeClass('show active');
-                
+
                 // Add active class to the clicked tab and corresponding pane
                 $('#' + tabId + '-tab').addClass('active');
                 $('#' + tabId).addClass('show active');
-                
+
                 // Save to localStorage
                 localStorage.setItem(storageKey, tabId);
             }
@@ -1999,11 +2062,23 @@
             });
 
             // Filter staff members by department for SuperAdmin
-           
+
+            @if($isSuperAdmin)
+            var staffByDepartmentRoute = '{{ route('admin.get-staff-by-department') }}';
+            @elseif($isStaff)
+            var staffByDepartmentRoute = '{{ route('staff.get-staff-by-department') }}';
+            @else
+            var staffByDepartmentRoute = null; // Not applicable for customers
+            @endif
+
+            @if($isSuperAdmin || $isStaff)
             $('#departmentSelect').on('change', function() {
                 var departmentId = $(this).val();
                 var staffSelect = $('#staffSelect');
                 var currentAssignedTo = '{{ $ticket->assigned_to ?? '' }}';
+
+                console.log('Department changed:', departmentId);
+                console.log('Route URL:', staffByDepartmentRoute);
 
                 // Show loading state
                 staffSelect.html('<option value="">Loading...</option>');
@@ -2011,10 +2086,11 @@
                 if (departmentId) {
                     // Fetch staff members by department via AJAX
                     $.ajax({
-                        url: '{{ route('admin.get-staff-by-department') }}',
+                        url: staffByDepartmentRoute,
                         type: 'GET',
                         data: { department_id: departmentId },
                         success: function(response) {
+                            console.log('Staff response:', response);
                             staffSelect.empty();
                             staffSelect.append('<option value="">Select Staff Member</option>');
 
@@ -2028,6 +2104,7 @@
                             }
                         },
                         error: function(xhr) {
+                            console.error('Error loading staff:', xhr);
                             staffSelect.empty();
                             staffSelect.append('<option value="">Error loading staff</option>');
                         }
@@ -2041,7 +2118,8 @@
                     @endforeach
                 }
             });
-            
+            @endif
+
             // Interactive star rating
             $('#starRating .star').on('click', function() {
                 var rating = $(this).data('rating');
@@ -2148,28 +2226,6 @@
                     }
                 }
             });
-            
-            // Change priority function
-            window.changePriority = function(priority) {
-                var ticketId = {{ $ticket->id }};
-                var route = "{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.update-status', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.update-status', $ticket->id) : route('customer.support-tickets.update-status', $ticket->id)) }}";
-                
-                $.ajax({
-                    url: route,
-                    method: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        _method: 'PATCH',
-                        priority: priority
-                    },
-                    success: function(response) {
-                        location.reload();
-                    },
-                    error: function(xhr) {
-                        alert('Error updating priority: ' + xhr.responseJSON?.message || 'Unknown error');
-                    }
-                });
-            };
         });
     </script>
 @endsection

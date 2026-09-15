@@ -1146,19 +1146,33 @@
 
     <script>
         $(document).ready(function() {
+            @if($isSuperAdmin)
+            var staffByDepartmentRoute = '{{ route('admin.get-staff-by-department') }}';
+            @elseif($isStaff)
+            var staffByDepartmentRoute = '{{ route('staff.get-staff-by-department') }}';
+            @else
+            var staffByDepartmentRoute = null;
+            @endif
+
+            @if($isSuperAdmin || $isStaff)
             $('#departmentSelect').on('change', function() {
                 var departmentId = $(this).val();
                 var staffSelect = $('#staffSelect');
                 var currentAssignedTo = '{{ $ticket->assigned_to ?? '' }}';
+
+                console.log('Department changed:', departmentId);
+                console.log('Route URL:', staffByDepartmentRoute);
+
                 // Show loading state
                 staffSelect.html('<option value="">Loading...</option>');
                 if (departmentId) {
                 // Fetch staff members by department via AJAX
                     $.ajax({
-                        url: '{{ route('admin.get-staff-by-department') }}',
+                        url: staffByDepartmentRoute,
                         type: 'GET',
                         data: { department_id: departmentId },
                         success: function(response) {
+                            console.log('Staff response:', response);
                             staffSelect.empty();
                             staffSelect.append('<option value="">Select Staff Member</option>');
                             if (response.staff && response.staff.length > 0) {
@@ -1171,6 +1185,7 @@
                             }
                         },
                         error: function(xhr) {
+                            console.error('Error loading staff:', xhr);
                             staffSelect.empty();
                             staffSelect.append('<option value="">Error loading staff</option>');
                         }
@@ -1184,20 +1199,27 @@
                     @endforeach
                 }
             });
+            @endif
 
+            @if($isSuperAdmin || $isStaff)
             $('#departmentStaffSelect').on('change', function() {
                 var departmentId = $(this).val();
                 var staffSelect2 = $('#staffSelect2');
                 var currentAssignedTo = '{{ $ticket->assigned_to ?? '' }}';
+
+                console.log('DepartmentStaffSelect changed:', departmentId);
+                console.log('Route URL:', staffByDepartmentRoute);
+
                 // Show loading state
                 staffSelect2.html('<option value="">Loading...</option>');
                 if (departmentId) {
                 // Fetch staff members by department via AJAX
                     $.ajax({
-                        url: '{{ route('admin.get-staff-by-department') }}',
+                        url: staffByDepartmentRoute,
                         type: 'GET',
                         data: { department_id: departmentId },
                         success: function(response) {
+                            console.log('Staff response for departmentStaffSelect:', response);
                             staffSelect2.empty();
                             staffSelect2.append('<option value="">Select Staff Member</option>');
                             if (response.staff && response.staff.length > 0) {
@@ -1210,6 +1232,7 @@
                             }
                         },
                         error: function(xhr) {
+                            console.error('Error loading staff for departmentStaffSelect:', xhr);
                             staffSelect2.empty();
                             staffSelect2.append('<option value="">Error loading staff</option>');
                         }
@@ -1223,6 +1246,7 @@
                     @endforeach
                 }
             });
+            @endif
         });
         
         document.addEventListener('DOMContentLoaded', function () {

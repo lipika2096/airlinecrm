@@ -691,6 +691,9 @@ Route::middleware(['auth'])->prefix('staff')->name('staff.')->group(function () 
     Route::post('support-tickets/{id}/internal-note', [SupportTicketController::class, 'addInternalNote'])->name('support-tickets.add-internal-note');
     Route::patch('support-tickets/{id}/internal-note', [SupportTicketController::class, 'updateInternalNote'])->name('support-tickets.update-internal-note');
     
+    // Get staff by department for staff users
+    Route::get('get-staff-by-department', [SupportTicketController::class, 'getStaffByDepartment'])->name('get-staff-by-department');
+    
     // Employee management routes for staff
     Route::get('employees', [EmployeeController::class, 'allEmployees'])->name('employees');
     Route::get('add-staff', [EmployeeController::class, 'addStaff'])->name('add-staff');

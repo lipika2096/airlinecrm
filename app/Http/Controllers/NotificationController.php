@@ -63,7 +63,9 @@ class NotificationController extends Controller
             ->unread()
             ->count();
 
-        return view('admin.notifications.index', compact('notifications', 'unreadCount'));
+        $title_meta = 'Notifications';
+
+        return view('admin.notifications.index', compact('notifications', 'unreadCount', 'title_meta'));
     }
 
     public function markAsRead(Request $request, $id)

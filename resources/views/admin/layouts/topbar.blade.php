@@ -186,7 +186,7 @@
                     <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
                 </span>
             </a>
-            <div class="dropdown-menu dropdown-menu-right" style="min-width: 320px;">
+            <div class="dropdown-menu dropdown-menu-right" style="min-width: 320px !important;position: absolute;inset: 0px auto auto -90px;margin: 0px;transform: translate(0px, 63px);">
                 <div class="notification-header">
                     <h6>Notifications</h6>
                     <a href="#" id="markAllRead" class="mark-all-read">Mark all as read</a>
