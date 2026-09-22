@@ -1210,15 +1210,42 @@ class EmployeeController extends Controller
 
     public function manageStaff()
     {
+        // Determine current user ID and type
+        $currentUserId = null;
+        $userType = 'superadmin'; // default
+
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+
         // Reuse the existing logic to fetch employees
-        $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-        ->where('users.role_id', 2)->where('users.created_by', auth('admin')->user()->id)
-            ->get(['clients.*', 'users.*']);
+        $employeesQuery = Client::join('users', 'users.clientid', '=', 'clients.client_id')
+            ->where('users.role_id', 2);
+
+        // Filter by created_by based on user type
+        if ($userType !== 'superadmin') {
+            $employeesQuery->where('users.created_by', $currentUserId);
+        }
+
+        $employees = $employeesQuery->get(['clients.*', 'users.*']);
 
         $department = Department::latest()->get();
         $designation = Designation::latest()->get();
-        $total_employee = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-        ->where('users.role_id', 2)->where('users.created_by', auth('admin')->user()->id)->count();
+
+        // Count total employees with same filtering logic
+        $totalEmployeeQuery = Client::join('users', 'users.clientid', '=', 'clients.client_id')
+            ->where('users.role_id', 2);
+
+        if ($userType !== 'superadmin') {
+            $totalEmployeeQuery->where('users.created_by', $currentUserId);
+        }
+
+        $total_employee = $totalEmployeeQuery->count();
+
         $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
             ->whereDate('to', '>=', now()->toDateString())->count();
         $total_pending_leaves = EmployeeLeave::where('status', 2)->count();

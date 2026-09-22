@@ -62,6 +62,36 @@ class ProfileController extends Controller
         return redirect()->back()->with('password_success', 'Password updated successfully!');
     }
 
+    /**
+     * Update user timezone
+     */
+    public function updateTimezone(Request $request)
+    {
+        $user = null;
+        
+        if (auth()->guard('admin')->check()) {
+            $user = auth()->guard('admin')->user();
+        } elseif (auth()->guard('employee')->check()) {
+            $user = auth()->guard('employee')->user();
+        } elseif (auth()->check()) {
+            $user = auth()->user();
+        }
+        
+        if (!$user) {
+            return redirect()->back()->with('timezone_error', 'User not authenticated!');
+        }
+        
+        $request->validate([
+            'timezone' => 'required|string',
+        ]);
+
+        // Update timezone
+        $user->timezone = $request->timezone;
+        $user->save();
+
+        return redirect()->back()->with('timezone_success', 'Timezone updated successfully!');
+    }
+
 
     // Add other methods as per your defined routes
 }

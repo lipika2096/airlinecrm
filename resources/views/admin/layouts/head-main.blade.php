@@ -11,6 +11,14 @@
 
     @include('admin/layouts/head-css')
 
+    <style>
+        a{
+            text-decoration:none !important;
+        }
+        button.btn.btn-secondary{
+            color: white !important;
+        }
+    </style>
 </head>
 
 <body class="account-page">

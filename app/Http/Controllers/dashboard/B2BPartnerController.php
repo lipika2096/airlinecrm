@@ -1,0 +1,751 @@
+<?php
+
+namespace App\Http\Controllers\dashboard;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\B2BPartner;
+use App\Models\B2BPartnerContact;
+use App\Models\B2BPartnerAirline;
+use App\Models\B2BPartnerProduct;
+use App\Models\B2BPartnerDocument;
+use App\Models\B2BPartnerNote;
+use App\Models\B2BPartnerActivity;
+use App\Models\Airline;
+use App\Models\Admin;
+use App\Models\Booking;
+use App\Models\Product;
+use App\Helpers\RouteHelper;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+
+class B2BPartnerController extends Controller
+{
+    public function index(Request $request)
+    {
+        $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
+        $userType = RouteHelper::isSuperAdmin() ? 'superadmin' : (RouteHelper::isCustomer() ? 'customer' : 'staff');
+
+        $query = B2BPartner::with('contacts', 'airlines', 'products')->whereNull('deleted_at');
+
+        if ($userType !== 'superadmin') {
+            $query->where('created_by', $currentUserId);
+        }
+
+        if ($request->has('search') && !empty($request->input('search'))) {
+            $searchValue = $request->input('search');
+            $query->where(function ($q) use ($searchValue) {
+                $q->where('partner_name', 'like', '%' . $searchValue . '%')
+                  ->orWhere('partner_code', 'like', '%' . $searchValue . '%')
+                  ->orWhere('iata_tids_no', 'like', '%' . $searchValue . '%')
+                  ->orWhere('email', 'like', '%' . $searchValue . '%')
+                  ->orWhere('country', 'like', '%' . $searchValue . '%');
+            });
+        }
+
+        if ($request->has('partner_type') && !empty($request->input('partner_type'))) {
+            $query->where('partner_type', $request->input('partner_type'));
+        }
+
+        if ($request->has('status') && !empty($request->input('status'))) {
+            $query->where('status', $request->input('status'));
+        }
+
+        $partners = $query->latest()->paginate(10);
+
+        return view('admin.b2b-partners.index', compact('partners'));
+    }
+
+    public function create()
+    {
+        $airlines = Airline::all();
+        $products = Product::where('status', 'Active')->get();
+        return view('admin.b2b-partners.create', compact('airlines', 'products'));
+    }
+
+    public function store(Request $request)
+    {
+        try {
+            $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
+            $userType = RouteHelper::isSuperAdmin() ? 'superadmin' : (RouteHelper::isCustomer() ? 'customer' : 'staff');
+
+            $validated = $request->validate([
+                'partner_name' => 'required|string|max:255',
+                'partner_type' => 'required|in:Travel Agent,Tour Operator,Corporate,TMC',
+                'iata_tids_no' => 'nullable|string|max:255',
+                'country' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'phone' => 'nullable|string|max:255',
+                'website' => 'nullable|url|max:255',
+                'remarks' => 'nullable|string',
+                'status' => 'required|in:Active,Pending,Inactive',
+                'responsible_person' => 'nullable|string|max:255',
+                'region' => 'nullable|string|max:255',
+                'airline_responsibility' => 'nullable|string|max:255',
+                'product_responsibility' => 'nullable|string|max:255',
+                'tsa_status' => 'nullable|in:Activated,Deactivated',
+            ]);
+
+            $partnerCode = 'B' . str_pad(B2BPartner::count() + 1, 3, '0', STR_PAD_LEFT);
+
+            $partner = B2BPartner::create([
+                'partner_code' => $partnerCode,
+                'partner_name' => $validated['partner_name'],
+                'partner_type' => $validated['partner_type'],
+                'iata_tids_no' => $validated['iata_tids_no'] ?? null,
+                'country' => $validated['country'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'] ?? null,
+                'website' => $validated['website'] ?? null,
+                'remarks' => $validated['remarks'] ?? null,
+                'status' => $validated['status'],
+                'responsible_person' => $validated['responsible_person'] ?? null,
+                'region' => $validated['region'] ?? null,
+                'airline_responsibility' => $validated['airline_responsibility'] ?? null,
+                'product_responsibility' => $validated['product_responsibility'] ?? null,
+                'tsa_status' => $validated['tsa_status'] ?? null,
+                'created_by' => $currentUserId,
+                'created_by_type' => $userType,
+            ]);
+
+            // Log activity (try-catch to prevent blocking main operation)
+            try {
+                B2BPartnerActivity::create([
+                    'b2b_partner_id' => $partner->id,
+                    'activity_type' => 'created',
+                    'description' => 'B2B Partner ' . $partner->partner_name . ' was created',
+                    'new_values' => $partner->toArray(),
+                    'performed_by' => $currentUserId,
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Error logging B2B partner activity: ' . $e->getMessage());
+            }
+
+            if ($request->has('contacts') && is_array($request->contacts)) {
+                foreach ($request->contacts as $contact) {
+                    if (!empty($contact['name'])) {
+                        B2BPartnerContact::create([
+                            'b2b_partner_id' => $partner->id,
+                            'name' => $contact['name'],
+                            'designation' => $contact['designation'] ?? null,
+                            'phone' => $contact['phone'] ?? null,
+                            'email' => $contact['email'] ?? null,
+                            'role' => $contact['role'] ?? 'Secondary',
+                            'created_by' => $currentUserId,
+                        ]);
+                    }
+                }
+            }
+
+            if ($request->has('airlines') && is_array($request->airlines)) {
+                foreach ($request->airlines as $airlineId) {
+                    B2BPartnerAirline::create([
+                        'b2b_partner_id' => $partner->id,
+                        'airline_id' => $airlineId,
+                        'created_by' => $currentUserId,
+                    ]);
+                }
+            }
+
+            if ($request->has('products') && is_array($request->products)) {
+                foreach ($request->products as $productId) {
+                    $product = Product::find($productId);
+                    if ($product) {
+                        B2BPartnerProduct::create([
+                            'b2b_partner_id' => $partner->id,
+                            'product_id' => $productId,
+                            'product_name' => $product->product_name,
+                            'created_by' => $currentUserId,
+                        ]);
+                    }
+                }
+            }
+
+            toastr()->success('B2B Partner added successfully');
+            $routePrefix = RouteHelper::isSuperAdmin() ? 'admin.' : (RouteHelper::isCustomer() ? 'customer.' : 'staff.');
+            return redirect()->route($routePrefix . 'b2b-partners');
+        } catch (\Exception $e) {
+            Log::error('Error adding B2B partner: ' . $e->getMessage());
+            toastr()->error('There was an error adding the B2B partner. Please try again.');
+            return redirect()->back()->withInput();
+        }
+    }
+
+    public function show($id)
+    {
+        $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
+        $userType = RouteHelper::isSuperAdmin() ? 'superadmin' : (RouteHelper::isCustomer() ? 'customer' : 'staff');
+
+        $partner = B2BPartner::with('contacts', 'airlines.airline', 'products', 'documents', 'notes.createdBy')->find($id);
+        
+        if (!$partner) {
+            $routePrefix = RouteHelper::isSuperAdmin() ? 'admin.' : (RouteHelper::isCustomer() ? 'customer.' : 'staff.');
+            return redirect()->route($routePrefix . 'b2b-partners')->with('error', 'Partner not found.');
+        }
+
+        if ($userType !== 'superadmin' && $partner->created_by != $currentUserId) {
+            return redirect()->back()->with('error', 'You do not have permission to view this partner');
+        }
+
+        $bookings = Booking::where('b2b_partner_id', $id)
+            ->latest()
+            ->paginate(10);
+
+        $activities = B2BPartnerActivity::where('b2b_partner_id', $id)
+            ->with('performedBy')
+            ->latest()
+            ->get();
+
+        $airlines = Airline::all();
+
+        return view('admin.b2b-partners.show', compact('partner', 'airlines', 'bookings', 'activities'));
+    }
+
+    public function edit($id)
+    {
+        $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
+        $userType = RouteHelper::isSuperAdmin() ? 'superadmin' : (RouteHelper::isCustomer() ? 'customer' : 'staff');
+
+        $partner = B2BPartner::with('contacts', 'airlines', 'products')->find($id);
+
+        if (!$partner) {
+            $routePrefix = RouteHelper::isSuperAdmin() ? 'admin.' : (RouteHelper::isCustomer() ? 'customer.' : 'staff.');
+            return redirect()->route($routePrefix . 'b2b-partners')->with('error', 'Partner not found.');
+        }
+
+        if ($userType !== 'superadmin' && $partner->created_by != $currentUserId) {
+            return redirect()->back()->with('error', 'You do not have permission to edit this partner');
+        }
+
+        $airlines = Airline::all();
+        $products = Product::where('status', 'Active')->get();
+
+        return view('admin.b2b-partners.edit', compact('partner', 'airlines', 'products'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        try {
+            $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
+            $userType = RouteHelper::isSuperAdmin() ? 'superadmin' : (RouteHelper::isCustomer() ? 'customer' : 'staff');
+
+            $partner = B2BPartner::find($id);
+
+            if (!$partner) {
+                $routePrefix = RouteHelper::isSuperAdmin() ? 'admin.' : (RouteHelper::isCustomer() ? 'customer.' : 'staff.');
+                return redirect()->route($routePrefix . 'b2b-partners')->with('error', 'Partner not found.');
+            }
+
+            if ($userType !== 'superadmin' && $partner->created_by != $currentUserId) {
+                return redirect()->back()->with('error', 'You do not have permission to edit this partner');
+            }
+
+            $validated = $request->validate([
+                'partner_name' => 'required|string|max:255',
+                'partner_type' => 'required|in:Travel Agent,Tour Operator,Corporate,TMC',
+                'iata_tids_no' => 'nullable|string|max:255',
+                'country' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'phone' => 'nullable|string|max:255',
+                'website' => 'nullable|url|max:255',
+                'remarks' => 'nullable|string',
+                'status' => 'required|in:Active,Pending,Inactive',
+                'responsible_person' => 'nullable|string|max:255',
+                'region' => 'nullable|string|max:255',
+                'airline_responsibility' => 'nullable|string|max:255',
+                'product_responsibility' => 'nullable|string|max:255',
+                'tsa_status' => 'nullable|in:Activated,Deactivated',
+            ]);
+
+            $oldValues = $partner->toArray();
+            
+            $partner->update([
+                'partner_name' => $validated['partner_name'],
+                'partner_type' => $validated['partner_type'],
+                'iata_tids_no' => $validated['iata_tids_no'] ?? null,
+                'country' => $validated['country'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'] ?? null,
+                'website' => $validated['website'] ?? null,
+                'remarks' => $validated['remarks'] ?? null,
+                'status' => $validated['status'],
+                'responsible_person' => $validated['responsible_person'] ?? null,
+                'region' => $validated['region'] ?? null,
+                'airline_responsibility' => $validated['airline_responsibility'] ?? null,
+                'product_responsibility' => $validated['product_responsibility'] ?? null,
+                'tsa_status' => $validated['tsa_status'] ?? null,
+                'updated_by' => $currentUserId,
+            ]);
+
+            // Log activity (try-catch to prevent blocking main operation)
+            try {
+                B2BPartnerActivity::create([
+                    'b2b_partner_id' => $partner->id,
+                    'activity_type' => 'updated',
+                    'description' => 'B2B Partner ' . $partner->partner_name . ' was updated',
+                    'old_values' => $oldValues,
+                    'new_values' => $partner->toArray(),
+                    'performed_by' => $currentUserId,
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Error logging B2B partner activity: ' . $e->getMessage());
+            }
+
+            if ($request->has('contacts') && is_array($request->contacts)) {
+                B2BPartnerContact::where('b2b_partner_id', $partner->id)->delete();
+                foreach ($request->contacts as $contact) {
+                    if (!empty($contact['name'])) {
+                        B2BPartnerContact::create([
+                            'b2b_partner_id' => $partner->id,
+                            'name' => $contact['name'],
+                            'designation' => $contact['designation'] ?? null,
+                            'phone' => $contact['phone'] ?? null,
+                            'email' => $contact['email'] ?? null,
+                            'role' => $contact['role'] ?? 'Secondary',
+                            'created_by' => $currentUserId,
+                        ]);
+                    }
+                }
+            }
+
+            if ($request->has('airlines') && is_array($request->airlines)) {
+                B2BPartnerAirline::where('b2b_partner_id', $partner->id)->delete();
+                foreach ($request->airlines as $airlineId) {
+                    B2BPartnerAirline::create([
+                        'b2b_partner_id' => $partner->id,
+                        'airline_id' => $airlineId,
+                        'created_by' => $currentUserId,
+                    ]);
+                }
+            }
+
+            if ($request->has('products') && is_array($request->products)) {
+                B2BPartnerProduct::where('b2b_partner_id', $partner->id)->delete();
+                foreach ($request->products as $productId) {
+                    $product = Product::find($productId);
+                    if ($product) {
+                        B2BPartnerProduct::create([
+                            'b2b_partner_id' => $partner->id,
+                            'product_id' => $productId,
+                            'product_name' => $product->product_name,
+                            'created_by' => $currentUserId,
+                        ]);
+                    }
+                }
+            }
+
+            toastr()->success('B2B Partner updated successfully');
+            $routePrefix = RouteHelper::isSuperAdmin() ? 'admin.' : (RouteHelper::isCustomer() ? 'customer.' : 'staff.');
+            return redirect()->route($routePrefix . 'b2b-partners.show', $partner->id);
+        } catch (\Exception $e) {
+            Log::error('Error updating B2B partner: ' . $e->getMessage());
+            toastr()->error('There was an error updating the B2B partner. Please try again.');
+            return redirect()->back()->withInput();
+        }
+    }
+
+    public function destroy($id)
+    {
+        $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
+        $userType = RouteHelper::isSuperAdmin() ? 'superadmin' : (RouteHelper::isCustomer() ? 'customer' : 'staff');
+
+        $partner = B2BPartner::find($id);
+
+        if (!$partner) {
+            $routePrefix = RouteHelper::isSuperAdmin() ? 'admin.' : (RouteHelper::isCustomer() ? 'customer.' : 'staff.');
+            return redirect()->route($routePrefix . 'b2b-partners')->with('error', 'Partner not found.');
+        }
+
+        if ($userType !== 'superadmin' && $partner->created_by != $currentUserId) {
+            return redirect()->back()->with('error', 'You do not have permission to delete this partner');
+        }
+
+        $partner->delete();
+
+        toastr()->success('B2B Partner deleted successfully');
+        $routePrefix = RouteHelper::isSuperAdmin() ? 'admin.' : (RouteHelper::isCustomer() ? 'customer.' : 'staff.');
+        return redirect()->route($routePrefix . 'b2b-partners');
+    }
+
+    public function storeContact(Request $request, $partnerId)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'designation' => 'required|string|max:255',
+            'phone' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'role' => 'required|in:Primary,Secondary',
+        ]);
+
+        $currentUserId = auth('admin')->user()->id ?? auth()->user()->id;
+
+        B2BPartnerContact::create([
+            'b2b_partner_id' => $partnerId,
+            'name' => $validated['name'],
+            'designation' => $validated['designation'],
+            'phone' => $validated['phone'],
+            'email' => $validated['email'],
+            'role' => $validated['role'],
+            'created_by' => $currentUserId,
+        ]);
+
+        return redirect()->back()->with('success', 'Contact added successfully');
+    }
+
+    public function updateContact(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'designation' => 'required|string|max:255',
+            'phone' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'role' => 'required|in:Primary,Secondary',
+        ]);
+
+        $currentUserId = auth('admin')->user()->id ?? auth()->user()->id;
+
+        $contact = B2BPartnerContact::find($id);
+        $contact->update([
+            'name' => $validated['name'],
+            'designation' => $validated['designation'],
+            'phone' => $validated['phone'],
+            'email' => $validated['email'],
+            'role' => $validated['role'],
+            'updated_by' => $currentUserId,
+        ]);
+
+        return redirect()->back()->with('success', 'Contact updated successfully');
+    }
+
+    public function deleteContact($id)
+    {
+        $contact = B2BPartnerContact::find($id);
+        $contact->delete();
+        return redirect()->back()->with('success', 'Contact deleted successfully');
+    }
+
+    public function storeDocument(Request $request, $partnerId)
+    {
+        $validated = $request->validate([
+            'file' => 'required|file|max:10240',
+            'document_type' => 'required|in:Agreement,TSA,Contract,License,Other',
+        ]);
+
+        $currentUserId = auth('admin')->user()->id ?? auth()->user()->id;
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('b2b-documents', $fileName, 'public');
+            $fileExtension = $file->getClientOriginalExtension();
+
+            B2BPartnerDocument::create([
+                'b2b_partner_id' => $partnerId,
+                'file_name' => $fileName,
+                'file_type' => $fileExtension,
+                'document_type' => $validated['document_type'],
+                'file_path' => $filePath,
+                'created_by' => $currentUserId,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Document uploaded successfully');
+    }
+
+    public function deleteDocument($id)
+    {
+        $document = B2BPartnerDocument::find($id);
+        
+        if ($document) {
+            Storage::disk('public')->delete($document->file_path);
+            $document->delete();
+        }
+
+        return redirect()->back()->with('success', 'Document deleted successfully');
+    }
+
+    public function storeNote(Request $request, $partnerId)
+    {
+        $validated = $request->validate([
+            'note' => 'required|string',
+        ]);
+
+        $currentUserId = auth('admin')->user()->id ?? auth()->user()->id;
+
+        B2BPartnerNote::create([
+            'b2b_partner_id' => $partnerId,
+            'note' => $validated['note'],
+            'created_by' => $currentUserId,
+        ]);
+
+        return redirect()->back()->with('success', 'Note added successfully');
+    }
+
+    public function deleteNote($id)
+    {
+        $note = B2BPartnerNote::find($id);
+        $note->delete();
+        return redirect()->back()->with('success', 'Note deleted successfully');
+    }
+
+    public function deleteAirline($id)
+    {
+        $airline = B2BPartnerAirline::find($id);
+        if ($airline) {
+            $airline->delete();
+        }
+        return redirect()->back()->with('success', 'Airline removed successfully');
+    }
+
+    public function deleteProduct($id)
+    {
+        $product = B2BPartnerProduct::find($id);
+        if ($product) {
+            $product->delete();
+        }
+        return redirect()->back()->with('success', 'Product removed successfully');
+    }
+
+    public function reports(Request $request)
+    {
+        $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
+        $userType = RouteHelper::isSuperAdmin() ? 'superadmin' : (RouteHelper::isCustomer() ? 'customer' : 'staff');
+
+        $query = B2BPartner::with('bookings')->whereNull('deleted_at');
+
+        if ($userType !== 'superadmin') {
+            $query->where('created_by', $currentUserId);
+        }
+
+        // Apply date range filter
+        if ($request->has('date_range') && !empty($request->input('date_range'))) {
+            $dateRange = $request->input('date_range');
+            $startDate = null;
+            $endDate = now();
+
+            switch ($dateRange) {
+                case 'last_month':
+                    $startDate = now()->subMonth();
+                    break;
+                case 'last_3_months':
+                    $startDate = now()->subMonths(3);
+                    break;
+                case 'last_6_months':
+                    $startDate = now()->subMonths(6);
+                    break;
+                case 'last_year':
+                    $startDate = now()->subYear();
+                    break;
+                case 'custom':
+                    if ($request->has('start_date') && !empty($request->input('start_date'))) {
+                        $startDate = \Carbon\Carbon::parse($request->input('start_date'));
+                    }
+                    if ($request->has('end_date') && !empty($request->input('end_date'))) {
+                        $endDate = \Carbon\Carbon::parse($request->input('end_date'));
+                    }
+                    break;
+            }
+
+            if ($startDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            }
+        }
+
+        // Apply partner type filter
+        if ($request->has('partner_type') && !empty($request->input('partner_type'))) {
+            $query->where('partner_type', $request->input('partner_type'));
+        }
+
+        $partners = $query->latest()->get();
+
+        // Calculate report data
+        $reportData = [
+            'total_partners' => $partners->count(),
+            'active_partners' => $partners->where('status', 'Active')->count(),
+            'total_bookings' => $partners->sum('total_bookings'),
+            'total_revenue' => $partners->sum('revenue'),
+            'total_passengers' => $partners->sum('total_passengers'),
+            'partners_by_type' => $partners->groupBy('partner_type')->map->count(),
+            'top_partners' => $partners->sortByDesc('revenue')->take(10),
+        ];
+
+        return view('admin.b2b-partners.reports', compact('partners', 'reportData'));
+    }
+
+    public function generateReport(Request $request)
+    {
+        $reportType = $request->input('report_type');
+        $dateRange = $request->input('date_range');
+        $partnerType = $request->input('partner_type');
+
+        $query = B2BPartner::with('bookings')->whereNull('deleted_at');
+
+        // Apply filters
+        if ($partnerType && $partnerType !== 'all') {
+            $query->where('partner_type', $partnerType);
+        }
+
+        if ($dateRange && $dateRange !== 'all') {
+            $startDate = null;
+            $endDate = now();
+
+            switch ($dateRange) {
+                case 'last_month':
+                    $startDate = now()->subMonth();
+                    break;
+                case 'last_3_months':
+                    $startDate = now()->subMonths(3);
+                    break;
+                case 'last_6_months':
+                    $startDate = now()->subMonths(6);
+                    break;
+                case 'last_year':
+                    $startDate = now()->subYear();
+                    break;
+            }
+
+            if ($startDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            }
+        }
+
+        $partners = $query->latest()->get();
+
+        // Generate report based on type
+        switch ($reportType) {
+            case 'booking':
+                return $this->generateBookingReport($partners);
+            case 'revenue':
+                return $this->generateRevenueReport($partners);
+            case 'performance':
+                return $this->generatePerformanceReport($partners);
+            case 'tsa':
+                return $this->generateTSAReport($partners);
+            default:
+                return redirect()->back()->with('error', 'Invalid report type');
+        }
+    }
+
+    private function generateBookingReport($partners)
+    {
+        $data = [];
+        foreach ($partners as $partner) {
+            $data[] = [
+                'Partner Name' => $partner->partner_name,
+                'Partner Code' => $partner->partner_code,
+                'Type' => $partner->partner_type,
+                'Total Bookings' => $partner->total_bookings,
+                'Total Passengers' => $partner->total_passengers,
+                'Status' => $partner->status,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+            'report_type' => 'Booking Report'
+        ]);
+    }
+
+    private function generateRevenueReport($partners)
+    {
+        $data = [];
+        foreach ($partners as $partner) {
+            $data[] = [
+                'Partner Name' => $partner->partner_name,
+                'Partner Code' => $partner->partner_code,
+                'Type' => $partner->partner_type,
+                'Revenue (INR)' => $partner->revenue,
+                'Average Booking Value' => $partner->total_bookings > 0 ? $partner->revenue / $partner->total_bookings : 0,
+                'Status' => $partner->status,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+            'report_type' => 'Revenue Report'
+        ]);
+    }
+
+    private function generatePerformanceReport($partners)
+    {
+        $data = [];
+        foreach ($partners as $partner) {
+            $data[] = [
+                'Partner Name' => $partner->partner_name,
+                'Partner Code' => $partner->partner_code,
+                'Type' => $partner->partner_type,
+                'Total Bookings' => $partner->total_bookings,
+                'Revenue (INR)' => $partner->revenue,
+                'Passenger Count' => $partner->total_passengers,
+                'Performance Score' => $partner->total_bookings > 0 ? round(($partner->revenue / $partner->total_bookings) * 0.1, 2) : 0,
+                'Status' => $partner->status,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+            'report_type' => 'Partner Performance Report'
+        ]);
+    }
+
+    private function generateTSAReport($partners)
+    {
+        $data = [];
+        foreach ($partners as $partner) {
+            $data[] = [
+                'Partner Name' => $partner->partner_name,
+                'Partner Code' => $partner->partner_code,
+                'Type' => $partner->partner_type,
+                'TSA Status' => $partner->tsa_status ?? 'Not Set',
+                'Airline Responsibility' => $partner->airline_responsibility ?? 'Not Set',
+                'Product Responsibility' => $partner->product_responsibility ?? 'Not Set',
+                'Status' => $partner->status,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+            'report_type' => 'TSA Status Report'
+        ]);
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+        
+        if (empty($query)) {
+            return response()->json([]);
+        }
+
+        $partners = B2BPartner::where(function ($q) use ($query) {
+            $q->where('partner_name', 'like', "%{$query}%")
+              ->orWhere('email', 'like', "%{$query}%")
+              ->orWhere('phone', 'like', "%{$query}%")
+              ->orWhere('partner_code', 'like', "%{$query}%");
+        })
+        ->get()
+        ->map(function ($partner) {
+            return [
+                'id' => $partner->id,
+                'partner_name' => $partner->partner_name,
+                'partner_type' => $partner->partner_type,
+                'email' => $partner->email,
+                'phone' => $partner->phone,
+                'country' => $partner->country,
+                'remarks' => $partner->remarks,
+                'responsible_person' => $partner->responsible_person,
+            ];
+        });
+
+        return response()->json($partners);
+    }
+}

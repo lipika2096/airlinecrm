@@ -162,6 +162,8 @@
                             <!-- Search results will be populated here -->
                         </div>
                     </div>
+                    <input type="hidden" name="selected_customer_id" id="selected_customer_id" value="">
+                    <input type="hidden" name="selected_customer_type" id="selected_customer_type" value="">
                 </div>
             </div>
 
@@ -400,15 +402,15 @@
                     <div class="summary-section">
                         <div class="summary-item">
                             <span>Total Cost:</span>
-                            <strong>€ <span id="totalCost">1,115.00</span></strong>
+                            <strong>€ <span id="totalCost">0</span></strong>
                         </div>
                         <div class="summary-item">
                             <span>Total Sell:</span>
-                            <strong>€ <span id="totalSell">1,590.00</span></strong>
+                            <strong>€ <span id="totalSell">0</span></strong>
                         </div>
                         <div class="summary-item profit">
                             <span>Profit:</span>
-                            <strong>€ <span id="totalProfit">475.00</span></strong>
+                            <strong>€ <span id="totalProfit">0</span></strong>
                         </div>
                     </div>
 
@@ -710,6 +712,7 @@
     // Customer Search Functionality
     document.getElementById('search-customer-btn').addEventListener('click', function() {
         const searchTerm = document.getElementById('customer-search').value.trim();
+        const customerType = document.querySelector('select[name="customer_type"]').value;
         const searchResults = document.getElementById('search-results');
         const resultsList = searchResults.querySelector('.list-group');
 
@@ -722,8 +725,26 @@
         this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Searching...';
         this.disabled = true;
 
-        // AJAX request to search customers
-        const searchUrl = `{{ \App\Helpers\RouteHelper::isCustomer() ? '../' : (\App\Helpers\RouteHelper::isStaff() ? '../' : '../') }}customers/search?q=${encodeURIComponent(searchTerm)}`;
+        // AJAX request to search customers based on type
+        let searchUrl;
+        if (customerType === 'b2b') {
+            @if(\App\Helpers\RouteHelper::isCustomer())
+                searchUrl = `{{ route('customer.b2b-partners.search') }}?q=${encodeURIComponent(searchTerm)}`;
+            @elseif(\App\Helpers\RouteHelper::isStaff())
+                searchUrl = `{{ route('staff.b2b-partners.search') }}?q=${encodeURIComponent(searchTerm)}`;
+            @else
+                searchUrl = `{{ route('admin.b2b-partners.search') }}?q=${encodeURIComponent(searchTerm)}`;
+            @endif
+        } else {
+            @if(\App\Helpers\RouteHelper::isCustomer())
+                searchUrl = `{{ route('customer.b2c-customers.search') }}?q=${encodeURIComponent(searchTerm)}`;
+            @elseif(\App\Helpers\RouteHelper::isStaff())
+                searchUrl = `{{ route('staff.b2c-customers.search') }}?q=${encodeURIComponent(searchTerm)}`;
+            @else
+                searchUrl = `{{ route('admin.b2c-customers.search') }}?q=${encodeURIComponent(searchTerm)}`;
+            @endif
+        }
+
         fetch(searchUrl)
             .then(response => response.json())
             .then(data => {
@@ -734,10 +755,9 @@
                     resultsList.innerHTML = '<div class="list-group-item text-muted">No customers found</div>';
                 } else {
                     data.forEach(customer => {
-                        const customerType = customer.customer_type || 'b2c';
                         const displayName = customerType === 'b2b' 
-                            ? customer.company_name || customer.name 
-                            : customer.name;
+                            ? customer.partner_name || customer.name 
+                            : (customer.first_name + ' ' + customer.last_name);
 
                         const item = document.createElement('a');
                         item.className = 'list-group-item list-group-item-action';
@@ -779,6 +799,10 @@
         customerTypeSelect.value = customerType;
         customerTypeSelect.dispatchEvent(new Event('change'));
 
+        // Set hidden fields for selected customer
+        document.getElementById('selected_customer_id').value = customer.id;
+        document.getElementById('selected_customer_type').value = customerType;
+
         // Set customer in the customer dropdown
         const customerSelect = document.querySelector('select[name="customer_id"]');
         if (customerSelect) {
@@ -794,7 +818,7 @@
             if (!optionExists) {
                 const newOption = document.createElement('option');
                 newOption.value = customer.id;
-                newOption.textContent = customer.name || customer.company_name;
+                newOption.textContent = customerType === 'b2b' ? customer.partner_name : (customer.first_name + ' ' + customer.last_name);
                 customerSelect.appendChild(newOption);
             }
             customerSelect.value = customer.id;
@@ -802,32 +826,32 @@
 
         // Fill the appropriate form based on customer type
         if (customerType === 'b2c') {
-            document.getElementById('b2c_first_name').value = customer.first_name || customer.name?.split(' ')[0] || '';
-            document.getElementById('b2c_last_name').value = customer.last_name || customer.name?.split(' ').slice(1).join(' ') || '';
+            document.getElementById('b2c_first_name').value = customer.first_name || '';
+            document.getElementById('b2c_last_name').value = customer.last_name || '';
             document.getElementById('b2c_email').value = customer.email || '';
             document.getElementById('b2c_phone').value = customer.phone || '';
-            document.getElementById('b2c_street').value = customer.street || customer.address || '';
-            document.getElementById('b2c_house_no').value = customer.house_no || '';
-            document.getElementById('b2c_city').value = customer.city || '';
-            document.getElementById('b2c_pincode').value = customer.pincode || '';
-            document.getElementById('b2c_state').value = customer.state || '';
+            document.getElementById('b2c_street').value = customer.address ? customer.address.split(',')[0] : '';
+            document.getElementById('b2c_house_no').value = '';
+            document.getElementById('b2c_city').value = '';
+            document.getElementById('b2c_pincode').value = '';
+            document.getElementById('b2c_state').value = '';
             document.getElementById('b2c_country').value = customer.country || '';
-            document.getElementById('b2c_language').value = customer.language || '';
-            document.getElementById('b2c_responsible').value = customer.responsible || '';
-            document.getElementById('b2c_remarks').value = customer.remarks || '';
+            document.getElementById('b2c_language').value = '';
+            document.getElementById('b2c_responsible').value = '';
+            document.getElementById('b2c_remarks').value = customer.special_requests || '';
         } else if (customerType === 'b2b') {
-            document.getElementById('b2b_group').value = customer.group || '';
-            document.getElementById('b2b_company_name').value = customer.company_name || customer.name || '';
+            document.getElementById('b2b_group').value = customer.partner_type || '';
+            document.getElementById('b2b_company_name').value = customer.partner_name || '';
             document.getElementById('b2b_email').value = customer.email || '';
             document.getElementById('b2b_phone').value = customer.phone || '';
-            document.getElementById('b2b_street').value = customer.street || customer.address || '';
-            document.getElementById('b2b_house_no').value = customer.house_no || '';
-            document.getElementById('b2b_city').value = customer.city || '';
-            document.getElementById('b2b_pincode').value = customer.pincode || '';
-            document.getElementById('b2b_state').value = customer.state || '';
+            document.getElementById('b2b_street').value = '';
+            document.getElementById('b2b_house_no').value = '';
+            document.getElementById('b2b_city').value = '';
+            document.getElementById('b2b_pincode').value = '';
+            document.getElementById('b2b_state').value = '';
             document.getElementById('b2b_country').value = customer.country || '';
-            document.getElementById('b2b_language').value = customer.language || '';
-            document.getElementById('b2b_responsible').value = customer.responsible || '';
+            document.getElementById('b2b_language').value = '';
+            document.getElementById('b2b_responsible').value = customer.responsible_person || '';
             document.getElementById('b2b_remarks').value = customer.remarks || '';
         }
 
@@ -837,7 +861,7 @@
         const customerPhoneInput = document.querySelector('input[name="customer_phone"]');
 
         if (customerNameInput) {
-            customerNameInput.value = customer.name || customer.company_name || '';
+            customerNameInput.value = customerType === 'b2b' ? customer.partner_name : (customer.first_name + ' ' + customer.last_name);
         }
         if (customerEmailInput) {
             customerEmailInput.value = customer.email || '';

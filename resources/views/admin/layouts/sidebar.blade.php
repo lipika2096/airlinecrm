@@ -279,6 +279,9 @@
                              <li>
                                 <a class="{{ request()->routeIs('admin.customer.case-history') ? 'active' : '' }}" href="{{ route('admin.customer.case-history') }}">Case History</a>
                             </li>
+                            <li>
+                                <a class="{{ request()->routeIs('admin.b2c-customers.index') ? 'active' : '' }}" href="{{ route('admin.b2c-customers.index') }}">B2C Customers</a>
+                            </li>
                         </ul>
                     </li>
                 @elseif(\App\Helpers\RouteHelper::isCustomer())
@@ -288,6 +291,15 @@
                         <ul style="display: none;">
                             <li>
                                 <a class="{{ request()->routeIs('customer.view.case-history') ? 'active' : '' }}" href="{{ route('customer.view.case-history') }}">Case History</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="submenu">
+                        <a href="javascript:void(0);"><i class="la la-user"></i> <span>B2C Customers</span> <span
+                                class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            <li>
+                                <a class="{{ request()->routeIs('customer.b2c-customers.index') ? 'active' : '' }}" href="{{ route('customer.b2c-customers.index') }}">B2C Customers List</a>
                             </li>
                         </ul>
                     </li>
@@ -306,10 +318,31 @@
                                 <a class="{{ request()->routeIs('staff.kyc.documents') ? 'active' : '' }}" href="{{ route('staff.kyc.documents') }}">Library</a>
                             </li>
                             <li>
+                                <a class="{{ request()->routeIs('staff.b2c-customers.index') ? 'active' : '' }}" href="{{ route('staff.b2c-customers.index') }}">B2C Customers</a>
+                            </li>
+                            <li>
                                 <a class="{{ request()->routeIs('staff.customer-reports') ? 'active' : '' }}" href="{{ route('staff.customer-reports') }}">Reports</a>
                             </li>
-                             <li>
-                                <a class="{{ request()->routeIs('staff.customer.case-history') ? 'active' : '' }}" href="{{ route('staff.customer.case-history') }}">Case History</a>
+                        </ul>
+                    </li>
+                    <li class="submenu">
+                        <a href="javascript:void(0);"><i class="la la-users"></i> <span>B2B Partners</span> <span
+                                class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            <li>
+                                <a class="{{ request()->routeIs('staff.b2b-partners') ? 'active' : '' }}" href="{{ route('staff.b2b-partners') }}">B2B Partners List</a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->routeIs('staff.b2b-partners.reports') ? 'active' : '' }}" href="{{ route('staff.b2b-partners.reports') }}">Reports & Insights</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="submenu">
+                        <a href="javascript:void(0);"><i class="la la-user"></i> <span>B2C Customers</span> <span
+                                class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            <li>
+                                <a class="{{ request()->routeIs('staff.b2c-customers.index') ? 'active' : '' }}" href="{{ route('staff.b2c-customers.index') }}">B2C Customers List</a>
                             </li>
                         </ul>
                     </li>
@@ -339,6 +372,7 @@
                             <li><a class="{{ request()->routeIs('admin.events.status') ? 'active' : '' }}" href="{{ route('admin.events.status') }}">Add Status</a></li>
                             <li><a class="{{ request()->routeIs('admin.ticket-status.index') ? 'active' : '' }}" href="{{ route('admin.ticket-status.index') }}">Add Ticket Status</a></li>
                             <li><a class="{{ request()->routeIs('admin.leave-type') ? 'active' : '' }}" href="{{ route('admin.leave-type') }}">Add Leave Types</a></li>
+                            <li><a class="{{ request()->routeIs('admin.products') ? 'active' : '' }}" href="{{ route('admin.products') }}">Products & Services</a></li>
                             @if(auth('admin')->check() && auth('admin')->user()->getRoleNames()->first() != 'SuperAdmin')
                                 <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{ route('admin.comingSoon') }}">Add Agent Types</a></li>
                                 <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{ route('admin.comingSoon') }}">Add Report Types</a></li>
@@ -414,6 +448,38 @@
                         </ul>
                     </li>
                 @endif
+                @if(auth('admin')->check() && auth('admin')->user()?->getDirectPermissions()->contains('name', 'b2b-partners') || \App\Helpers\RouteHelper::isSuperAdmin())
+
+                    <li class="submenu">
+                        <a href="#" class=""><i class="la la-users"></i> <span> B2B Partners</span>
+                            <span class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            @if (auth('admin')->check())
+                                <li><a class="{{ request()->routeIs('admin.b2b-partners') ? 'active' : '' }}" href="{{ route('admin.b2b-partners') }}">B2B Partners List</a></li>
+                            @endif
+                        </ul>
+                    </li>
+                @endif
+                @if(auth('admin')->check() && auth('admin')->user()?->getDirectPermissions()->contains('name', 'b2c-customers') || \App\Helpers\RouteHelper::isSuperAdmin())
+
+                    <li class="submenu">
+                        <a href="#" class=""><i class="la la-user"></i> <span> B2C Customers</span>
+                            <span class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            @if (auth('admin')->check())
+                                <li><a class="{{ request()->routeIs('admin.b2c-customers.index') ? 'active' : '' }}" href="{{ route('admin.b2c-customers.index') }}">B2C Customers List</a></li>
+                            @endif
+                        </ul>
+                    </li>
+                @endif
+                @if(auth('admin')->check() && auth('admin')->user()?->getDirectPermissions()->contains('name', 'airline'))
+                                <li><a class="{{ request()->routeIs('customer.agent-library') ? 'active' : '' }}" href="{{ route('customer.agent-library') }}">Library</a></li>
+                                <li><a class="{{ request()->routeIs('customer.agent-reports') ? 'active' : '' }}" href="{{ route('customer.agent-reports') }}">Reports</a></li>
+                                 <li><a class="{{ request()->routeIs('customer.view.case-history') ? 'active' : '' }}" href="{{ route('customer.view.case-history') }}">Case History</a></li>
+                        
+                        </ul>
+                    </li>
+                @endif
                 @if(auth('admin')->check() && auth('admin')->user()?->getDirectPermissions()->contains('name', 'airline'))
                 
                     <li class="submenu">
@@ -440,16 +506,19 @@
                     </li>
 
                 @endif
-                @if(auth('admin')->check() && auth('admin')->user()?->getDirectPermissions()->contains('name', 'reservations'))
+                @if((auth('admin')->check() && auth('admin')->user()?->getDirectPermissions()->contains('name', 'reservations')) ||(\App\Helpers\RouteHelper::isSuperAdmin() || (\App\Helpers\RouteHelper::isStaff() && (auth()->user()->created_by == 2))) )
                     <li class="submenu">
                         <a href="#"><i class="la la-ticket"></i> <span>Reservations</span> <span
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
-                            <li><a class="{{ request()->routeIs('admin.air-tickets') ? 'active' : '' }}" href="{{ route('admin.air-tickets') }}">Manage Reservations</a></li>
+                            <li><a class="{{ request()->routeIs('admin.booking.index', 'customer.booking.index', 'staff.booking.index') ? 'active' : '' }}" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.index') : route('admin.booking.index')) }}">Manage Reservations</a></li>
+                            <li><a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.create') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.create') : route('admin.booking.create')) }}">New Reservations</a></li>
+                            
+                            <!-- <li><a class="{{ request()->routeIs('admin.air-tickets') ? 'active' : '' }}" href="{{ route('admin.air-tickets') }}">Manage Reservations</a></li>
                             <li><a class="{{ request()->routeIs('admin.reservation.newsale') ? 'active' : '' }}" href="{{ route('admin.reservation.newsale') }}">New Sale</a></li>
                             <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{url('/admin/coming-soon')}}">Modify Booking</a></li>
                             <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{url('/admin/coming-soon')}}">Refunds</a></li>
-                            <li><a class="{{ request()->routeIs('admin.groups') ? 'active' : '' }}" href="{{ route('admin.groups') }}">Groups</a></li>
+                            <li><a class="{{ request()->routeIs('admin.groups') ? 'active' : '' }}" href="{{ route('admin.groups') }}">Groups</a></li> -->
                         </ul>
                     </li>
 
@@ -460,8 +529,6 @@
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
                             <li><a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.accounts.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.accounts.index') : route('admin.accounts.index')) }}">Account</a></li>
-                            <li><a class="{{ request()->routeIs('admin.booking.index', 'customer.booking.index', 'staff.booking.index') ? 'active' : '' }}" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.index') : route('admin.booking.index')) }}">Bookings</a></li>
-                            <li><a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.create') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.create') : route('admin.booking.create')) }}">New Booking</a></li>
                             <li><a class="{{ request()->routeIs('admin.accounts.view') ? 'active' : '' }}" href="{{route('admin.accounts.view')}}">Add account</a></li>
                             <li><a class="{{ request()->routeIs('admin.accounts.all') ? 'active' : '' }}" href="{{route('admin.accounts.all')}}">View accounts </a></li>
                             <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{url('/admin/coming-soon')}}">Add Payment to Pool </a></li>

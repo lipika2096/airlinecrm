@@ -48,6 +48,7 @@ use App\Http\Controllers\dashboard\{
     GroupRequestController,
     AirlineDetailController,
     DelaycodeController,
+    B2BPartnerController,
     CategoryController,
     DutyController,
     LeaveTypeController,
@@ -68,6 +69,8 @@ use App\Http\Controllers\dashboard\{
     PaymentPoolController,
     PasswordResetController
 };
+use App\Http\Controllers\B2CCustomerController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\StaffController;
 
@@ -158,6 +161,32 @@ Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(functi
 
     Route::get('dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
     Route::get('/logout', [AdminController::class, 'logout'])->name('logout');
+
+    // B2C Customers routes
+    Route::get('b2c-customers', [B2CCustomerController::class, 'index'])->name('b2c-customers.index');
+    Route::get('b2c-customers/create', [B2CCustomerController::class, 'create'])->name('b2c-customers.create');
+    Route::post('b2c-customers', [B2CCustomerController::class, 'store'])->name('b2c-customers.store');
+    Route::get('b2c-customers/{id}', [B2CCustomerController::class, 'show'])->name('b2c-customers.show');
+    Route::get('b2c-customers/{id}/edit', [B2CCustomerController::class, 'edit'])->name('b2c-customers.edit');
+    Route::put('b2c-customers/{id}', [B2CCustomerController::class, 'update'])->name('b2c-customers.update');
+    Route::delete('b2c-customers/{id}', [B2CCustomerController::class, 'destroy'])->name('b2c-customers.destroy');
+    Route::patch('b2c-customers/{id}/toggle-status', [B2CCustomerController::class, 'toggleStatus'])->name('b2c-customers.toggle-status');
+    
+    // B2C Passenger routes
+    Route::get('b2c-customers/{customerId}/passengers/create', [B2CCustomerController::class, 'addPassenger'])->name('b2c-customers.passengers.create');
+    Route::post('b2c-customers/{customerId}/passengers', [B2CCustomerController::class, 'storePassenger'])->name('b2c-customers.passengers.store');
+    Route::get('b2c-customers/{customerId}/passengers/{passengerId}/edit', [B2CCustomerController::class, 'editPassenger'])->name('b2c-customers.passengers.edit');
+    Route::put('b2c-customers/{customerId}/passengers/{passengerId}', [B2CCustomerController::class, 'updatePassenger'])->name('b2c-customers.passengers.update');
+    Route::delete('b2c-customers/{customerId}/passengers/{passengerId}', [B2CCustomerController::class, 'deletePassenger'])->name('b2c-customers.passengers.delete');
+    
+    // B2C Notes routes
+    Route::post('b2c-customers/{customerId}/notes', [B2CCustomerController::class, 'storeNote'])->name('b2c-customers.notes.store');
+    Route::delete('b2c-customers/{customerId}/notes/{noteId}', [B2CCustomerController::class, 'deleteNote'])->name('b2c-customers.notes.delete');
+    
+    // B2C Documents routes
+    Route::post('b2c-customers/{customerId}/documents', [B2CCustomerController::class, 'storeDocument'])->name('b2c-customers.documents.store');
+    Route::delete('b2c-customers/{customerId}/documents/{documentId}', [B2CCustomerController::class, 'deleteDocument'])->name('b2c-customers.documents.delete');
+    Route::get('b2c-customers/search', [B2CCustomerController::class, 'search'])->name('b2c-customers.search');
 
     // Include all other admin routes here
     Route::get('/get-departments', [EmployeeController::class, 'getDepartments']);
@@ -330,6 +359,36 @@ Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(functi
     Route::post('airlines/approved-staff/upadte/{id}', [AirlineController::class, 'approvedStaffUpdate'])->name('airline.approvedstaff.update');
     Route::get('agent', [AgentController::class, 'index'])->name('agents');
     Route::get('deleted/agent', [AgentController::class, 'deletedAgent'])->name('deleted.agents');
+
+    // B2B Partners routes
+    Route::get('b2b-partners', [B2BPartnerController::class, 'index'])->name('b2b-partners');
+    Route::get('b2b-partners/create', [B2BPartnerController::class, 'create'])->name('b2b-partners.create');
+    Route::post('b2b-partners/store', [B2BPartnerController::class, 'store'])->name('b2b-partners.store');
+    Route::get('b2b-partners/{id}', [B2BPartnerController::class, 'show'])->name('b2b-partners.show');
+    Route::get('b2b-partners/{id}/edit', [B2BPartnerController::class, 'edit'])->name('b2b-partners.edit');
+    Route::put('b2b-partners/{id}', [B2BPartnerController::class, 'update'])->name('b2b-partners.update');
+    Route::delete('b2b-partners/{id}', [B2BPartnerController::class, 'destroy'])->name('b2b-partners.destroy');
+    Route::post('b2b-partners/{partnerId}/contacts', [B2BPartnerController::class, 'storeContact'])->name('b2b-partners.contacts.store');
+    Route::put('b2b-partners/contacts/{id}', [B2BPartnerController::class, 'updateContact'])->name('b2b-partners.contacts.update');
+    Route::delete('b2b-partners/contacts/{id}', [B2BPartnerController::class, 'deleteContact'])->name('b2b-partners.contacts.destroy');
+    Route::post('b2b-partners/{partnerId}/documents', [B2BPartnerController::class, 'storeDocument'])->name('b2b-partners.documents.store');
+    Route::delete('b2b-partners/documents/{id}', [B2BPartnerController::class, 'deleteDocument'])->name('b2b-partners.documents.destroy');
+    Route::post('b2b-partners/{partnerId}/notes', [B2BPartnerController::class, 'storeNote'])->name('b2b-partners.notes.store');
+    Route::delete('b2b-partners/notes/{id}', [B2BPartnerController::class, 'deleteNote'])->name('b2b-partners.notes.destroy');
+    Route::delete('b2b-partners/airlines/{id}', [B2BPartnerController::class, 'deleteAirline'])->name('b2b-partners.airlines.destroy');
+    Route::delete('b2b-partners/products/{id}', [B2BPartnerController::class, 'deleteProduct'])->name('b2b-partners.products.destroy');
+    Route::get('b2b-partners/reports', [B2BPartnerController::class, 'reports'])->name('b2b-partners.reports');
+    Route::post('b2b-partners/generate-report', [B2BPartnerController::class, 'generateReport'])->name('b2b-partners.generate-report');
+    Route::get('b2b-partners/search', [B2BPartnerController::class, 'search'])->name('b2b-partners.search');
+    Route::get('b2b-partners/search', [B2BPartnerController::class, 'search'])->name('b2b-partners.search');
+
+    // Products routes
+    Route::get('products', [ProductController::class, 'index'])->name('products');
+    Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::post('products', [ProductController::class, 'store'])->name('products.store');
+    Route::get('products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::put('products/{id}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::patch('airlines/specialfares/update/{id}', [AirlineController::class, 'specialfaresUpdate'])->name('airline.specialfares.update');
     Route::get('deleted/airlines', [AirlineController::class, 'deletedAirline'])->name('deleted.airlines');
     Route::post('airlines/SLA/store', [AirlineController::class, 'slaStore'])->name('airline.sla.store');
@@ -411,12 +470,12 @@ Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(functi
     Route::post('support-tickets', [SupportTicketController::class, 'store'])->name('support-tickets.store');
     Route::get('support-tickets/{id}', [SupportTicketController::class, 'show'])->name('support-tickets.show');
     Route::patch('support-tickets/{id}/status', [SupportTicketController::class, 'updateStatus'])->name('support-tickets.update-status');
-    Route::post('support-tickets/{id}/comment', [SupportTicketController::class, 'addComment'])->name('support-tickets.add-comment');
     Route::post('support-tickets/{id}/assign', [SupportTicketController::class, 'assign'])->name('support-tickets.assign');
+    Route::post('support-tickets/{id}/comment', [SupportTicketController::class, 'addComment'])->name('support-tickets.add-comment');
     Route::post('support-tickets/{id}/rating', [SupportTicketController::class, 'submitRating'])->name('support-tickets.submit-rating');
     Route::post('support-tickets/{id}/internal-note', [SupportTicketController::class, 'addInternalNote'])->name('support-tickets.add-internal-note');
     Route::patch('support-tickets/{id}/internal-note', [SupportTicketController::class, 'updateInternalNote'])->name('support-tickets.update-internal-note');
-    
+
     // Employee management routes for staff
     Route::get('employees', [EmployeeController::class, 'allEmployees'])->name('employees');
     Route::get('add-staff', [EmployeeController::class, 'addStaff'])->name('add-staff');
@@ -651,6 +710,7 @@ Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(functi
     Route::get('client-profile', [ProfileController::class, 'clientProfile'])->name('client-profile');
     Route::get('admin-profile', [ProfileController::class, 'adminProfile'])->name('admin-profile');
     Route::post('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('profile/timezone', [ProfileController::class, 'updateTimezone'])->name('profile.timezone');
     Route::get('subscriptions', [SubscriptionController::class, 'subscriptionsAdmin'])->name('subscriptions');
     Route::get('subscriptions-company', [SubscriptionController::class, 'subscriptionsCompany'])->name('subscriptions.company');
     Route::get('subscribed-companies', [SubscriptionController::class, 'subscribedCompanies'])->name('subscribed.companies');
@@ -685,7 +745,7 @@ Route::middleware(['auth'])->prefix('staff')->name('staff.')->group(function () 
     Route::get('support-tickets/create', [SupportTicketController::class, 'create'])->name('support-tickets.create');
     Route::post('support-tickets', [SupportTicketController::class, 'store'])->name('support-tickets.store');
     Route::get('support-tickets/{id}', [SupportTicketController::class, 'show'])->name('support-tickets.show');
-    Route::patch('support-tickets/{id}/status', [SupportTicketController::class, 'updateStatus'])->name('support-tickets.update-status');
+    Route::post('support-tickets/{id}/status', [SupportTicketController::class, 'updateStatus'])->name('support-tickets.update-status');
     Route::post('support-tickets/{id}/comment', [SupportTicketController::class, 'addComment'])->name('support-tickets.add-comment');
     Route::post('support-tickets/{id}/rating', [SupportTicketController::class, 'submitRating'])->name('support-tickets.submit-rating');
     Route::post('support-tickets/{id}/internal-note', [SupportTicketController::class, 'addInternalNote'])->name('support-tickets.add-internal-note');
@@ -773,7 +833,51 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
 
     Route::get('profile', [ProfileController::class, 'clientProfile'])->name('profile');
     Route::post('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('profile/timezone', [ProfileController::class, 'updateTimezone'])->name('profile.timezone');
+
+    // B2B Partners routes for customers
+    Route::get('b2b-partners', [B2BPartnerController::class, 'index'])->name('b2b-partners');
+    Route::get('b2b-partners/create', [B2BPartnerController::class, 'create'])->name('b2b-partners.create');
+    Route::post('b2b-partners', [B2BPartnerController::class, 'store'])->name('b2b-partners.store');
+    Route::get('b2b-partners/{id}', [B2BPartnerController::class, 'show'])->name('b2b-partners.show');
+    Route::get('b2b-partners/{id}/edit', [B2BPartnerController::class, 'edit'])->name('b2b-partners.edit');
+    Route::put('b2b-partners/{id}', [B2BPartnerController::class, 'update'])->name('b2b-partners.update');
+    Route::delete('b2b-partners/{id}', [B2BPartnerController::class, 'destroy'])->name('b2b-partners.destroy');
+    Route::post('b2b-partners/{partnerId}/contacts', [B2BPartnerController::class, 'storeContact'])->name('b2b-partners.contacts.store');
+    Route::put('b2b-partners/contacts/{id}', [B2BPartnerController::class, 'updateContact'])->name('b2b-partners.contacts.update');
+    Route::delete('b2b-partners/contacts/{id}', [B2BPartnerController::class, 'deleteContact'])->name('b2b-partners.contacts.destroy');
+    Route::post('b2b-partners/{partnerId}/documents', [B2BPartnerController::class, 'storeDocument'])->name('b2b-partners.documents.store');
+    Route::delete('b2b-partners/documents/{id}', [B2BPartnerController::class, 'deleteDocument'])->name('b2b-partners.documents.destroy');
+    Route::post('b2b-partners/{partnerId}/notes', [B2BPartnerController::class, 'storeNote'])->name('b2b-partners.notes.store');
+    Route::delete('b2b-partners/notes/{id}', [B2BPartnerController::class, 'deleteNote'])->name('b2b-partners.notes.destroy');
+    Route::get('b2b-partners/search', [B2BPartnerController::class, 'search'])->name('b2b-partners.search');
+
+    // B2C Customers routes for customers
+    Route::get('b2c-customers', [B2CCustomerController::class, 'index'])->name('b2c-customers.index');
+    Route::get('b2c-customers/create', [B2CCustomerController::class, 'create'])->name('b2c-customers.create');
+    Route::post('b2c-customers', [B2CCustomerController::class, 'store'])->name('b2c-customers.store');
+    Route::get('b2c-customers/{id}', [B2CCustomerController::class, 'show'])->name('b2c-customers.show');
+    Route::get('b2c-customers/{id}/edit', [B2CCustomerController::class, 'edit'])->name('b2c-customers.edit');
+    Route::put('b2c-customers/{id}', [B2CCustomerController::class, 'update'])->name('b2c-customers.update');
+    Route::delete('b2c-customers/{id}', [B2CCustomerController::class, 'destroy'])->name('b2c-customers.destroy');
+    Route::patch('b2c-customers/{id}/toggle-status', [B2CCustomerController::class, 'toggleStatus'])->name('b2c-customers.toggle-status');
     
+    // B2C Passenger routes for customers
+    Route::get('b2c-customers/{customerId}/passengers/create', [B2CCustomerController::class, 'addPassenger'])->name('b2c-customers.passengers.create');
+    Route::post('b2c-customers/{customerId}/passengers', [B2CCustomerController::class, 'storePassenger'])->name('b2c-customers.passengers.store');
+    Route::get('b2c-customers/{customerId}/passengers/{passengerId}/edit', [B2CCustomerController::class, 'editPassenger'])->name('b2c-customers.passengers.edit');
+    Route::put('b2c-customers/{customerId}/passengers/{passengerId}', [B2CCustomerController::class, 'updatePassenger'])->name('b2c-customers.passengers.update');
+    Route::delete('b2c-customers/{customerId}/passengers/{passengerId}', [B2CCustomerController::class, 'deletePassenger'])->name('b2c-customers.passengers.delete');
+    
+    // B2C Notes routes for customers
+    Route::post('b2c-customers/{customerId}/notes', [B2CCustomerController::class, 'storeNote'])->name('b2c-customers.notes.store');
+    Route::delete('b2c-customers/{customerId}/notes/{noteId}', [B2CCustomerController::class, 'deleteNote'])->name('b2c-customers.notes.delete');
+    Route::get('b2c-customers/search', [B2CCustomerController::class, 'search'])->name('b2c-customers.search');
+    
+    // B2C Documents routes for customers
+    Route::post('b2c-customers/{customerId}/documents', [B2CCustomerController::class, 'storeDocument'])->name('b2c-customers.documents.store');
+    Route::delete('b2c-customers/{customerId}/documents/{documentId}', [B2CCustomerController::class, 'deleteDocument'])->name('b2c-customers.documents.delete');
+
     // Support Tickets routes for customers
     Route::get('support-tickets', [SupportTicketController::class, 'ticketDashboard'])->name('support-tickets.dashboard');
     Route::get('support-tickets/all', [SupportTicketController::class, 'dashboardStatistics'])->name('support-tickets.index');
@@ -781,9 +885,10 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
     Route::post('support-tickets', [SupportTicketController::class, 'store'])->name('support-tickets.store');
     Route::get('support-tickets/{id}', [SupportTicketController::class, 'show'])->name('support-tickets.show');
     Route::patch('support-tickets/{id}/status', [SupportTicketController::class, 'updateStatus'])->name('support-tickets.update-status');
+    Route::post('support-tickets/{id}/assign', [SupportTicketController::class, 'assign'])->name('support-tickets.assign');
     Route::post('support-tickets/{id}/comment', [SupportTicketController::class, 'addComment'])->name('support-tickets.add-comment');
     Route::post('support-tickets/{id}/rating', [SupportTicketController::class, 'submitRating'])->name('support-tickets.submit-rating');
-    
+
     // Employee management routes for customers
     Route::get('employees', [EmployeeController::class, 'allEmployees'])->name('employees');
     Route::get('add-staff', [EmployeeController::class, 'addStaff'])->name('add-staff');
@@ -819,7 +924,24 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
     Route::post('agent/prov/update/{id}', [AgentController::class, 'provUpdate'])->name('agent.prov.update');
     Route::post('agent/pli/store', [AgentController::class, 'pliStore'])->name('pli.store');
     Route::post('agent/pli/update/{id}', [AgentController::class, 'pliUpdate'])->name('agent.pli.update');
-    
+
+    // B2B Partners routes for customers
+    Route::get('b2b-partners', [B2BPartnerController::class, 'index'])->name('b2b-partners');
+    Route::get('b2b-partners/create', [B2BPartnerController::class, 'create'])->name('b2b-partners.create');
+    Route::post('b2b-partners', [B2BPartnerController::class, 'store'])->name('b2b-partners.store');
+    Route::get('b2b-partners/{id}', [B2BPartnerController::class, 'show'])->name('b2b-partners.show');
+    Route::get('b2b-partners/{id}/edit', [B2BPartnerController::class, 'edit'])->name('b2b-partners.edit');
+    Route::put('b2b-partners/{id}', [B2BPartnerController::class, 'update'])->name('b2b-partners.update');
+    Route::delete('b2b-partners/{id}', [B2BPartnerController::class, 'destroy'])->name('b2b-partners.destroy');
+    Route::post('b2b-partners/{partnerId}/contacts', [B2BPartnerController::class, 'storeContact'])->name('b2b-partners.contacts.store');
+    Route::put('b2b-partners/contacts/{id}', [B2BPartnerController::class, 'updateContact'])->name('b2b-partners.contacts.update');
+    Route::delete('b2b-partners/contacts/{id}', [B2BPartnerController::class, 'deleteContact'])->name('b2b-partners.contacts.destroy');
+    Route::post('b2b-partners/{partnerId}/documents', [B2BPartnerController::class, 'storeDocument'])->name('b2b-partners.documents.store');
+    Route::delete('b2b-partners/documents/{id}', [B2BPartnerController::class, 'deleteDocument'])->name('b2b-partners.documents.destroy');
+    Route::post('b2b-partners/{partnerId}/notes', [B2BPartnerController::class, 'storeNote'])->name('b2b-partners.notes.store');
+    Route::delete('b2b-partners/notes/{id}', [B2BPartnerController::class, 'deleteNote'])->name('b2b-partners.notes.destroy');
+    Route::get('b2b-partners/search', [B2BPartnerController::class, 'search'])->name('b2b-partners.search');
+
     // Airline management routes for customers
     Route::get('airlines-details', [AirlineDetailController::class, 'index'])->name('airlines-details');
     Route::post('airlines-details/store', [AirlineController::class, 'store'])->name('airlines-details.store');
@@ -1070,6 +1192,54 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
     Route::post('airlines/approved-staff/upadte/{id}', [AirlineController::class, 'approvedStaffUpdate'])->name('airline.approvedstaff.update');
     Route::get('agent', [AgentController::class, 'index'])->name('agents');
     Route::get('deleted/agent', [AgentController::class, 'deletedAgent'])->name('deleted.agents');
+
+    // B2B Partners routes
+    Route::get('b2b-partners', [B2BPartnerController::class, 'index'])->name('b2b-partners');
+    Route::get('b2b-partners/create', [B2BPartnerController::class, 'create'])->name('b2b-partners.create');
+    Route::post('b2b-partners', [B2BPartnerController::class, 'store'])->name('b2b-partners.store');
+    Route::get('b2b-partners/{id}', [B2BPartnerController::class, 'show'])->name('b2b-partners.show');
+    Route::get('b2b-partners/{id}/edit', [B2BPartnerController::class, 'edit'])->name('b2b-partners.edit');
+    Route::put('b2b-partners/{id}', [B2BPartnerController::class, 'update'])->name('b2b-partners.update');
+    Route::delete('b2b-partners/{id}', [B2BPartnerController::class, 'destroy'])->name('b2b-partners.destroy');
+    Route::post('b2b-partners/{partnerId}/contacts', [B2BPartnerController::class, 'storeContact'])->name('b2b-partners.contacts.store');
+    Route::put('b2b-partners/contacts/{id}', [B2BPartnerController::class, 'updateContact'])->name('b2b-partners.contacts.update');
+    Route::delete('b2b-partners/contacts/{id}', [B2BPartnerController::class, 'deleteContact'])->name('b2b-partners.contacts.destroy');
+    Route::post('b2b-partners/{partnerId}/documents', [B2BPartnerController::class, 'storeDocument'])->name('b2b-partners.documents.store');
+    Route::delete('b2b-partners/documents/{id}', [B2BPartnerController::class, 'deleteDocument'])->name('b2b-partners.documents.destroy');
+    Route::post('b2b-partners/{partnerId}/notes', [B2BPartnerController::class, 'storeNote'])->name('b2b-partners.notes.store');
+    Route::delete('b2b-partners/notes/{id}', [B2BPartnerController::class, 'deleteNote'])->name('b2b-partners.notes.destroy');
+    Route::delete('b2b-partners/airlines/{id}', [B2BPartnerController::class, 'deleteAirline'])->name('b2b-partners.airlines.destroy');
+    Route::delete('b2b-partners/products/{id}', [B2BPartnerController::class, 'deleteProduct'])->name('b2b-partners.products.destroy');
+    Route::get('b2b-partners/reports', [B2BPartnerController::class, 'reports'])->name('b2b-partners.reports');
+    Route::post('b2b-partners/generate-report', [B2BPartnerController::class, 'generateReport'])->name('b2b-partners.generate-report');
+    Route::get('b2b-partners/search', [B2BPartnerController::class, 'search'])->name('b2b-partners.search');
+
+    // B2C Customers routes for staff
+    Route::get('b2c-customers', [B2CCustomerController::class, 'index'])->name('b2c-customers.index');
+    Route::get('b2c-customers/create', [B2CCustomerController::class, 'create'])->name('b2c-customers.create');
+    Route::post('b2c-customers', [B2CCustomerController::class, 'store'])->name('b2c-customers.store');
+    Route::get('b2c-customers/{id}', [B2CCustomerController::class, 'show'])->name('b2c-customers.show');
+    Route::get('b2c-customers/{id}/edit', [B2CCustomerController::class, 'edit'])->name('b2c-customers.edit');
+    Route::put('b2c-customers/{id}', [B2CCustomerController::class, 'update'])->name('b2c-customers.update');
+    Route::delete('b2c-customers/{id}', [B2CCustomerController::class, 'destroy'])->name('b2c-customers.destroy');
+    Route::patch('b2c-customers/{id}/toggle-status', [B2CCustomerController::class, 'toggleStatus'])->name('b2c-customers.toggle-status');
+    
+    // B2C Passenger routes for staff
+    Route::get('b2c-customers/{customerId}/passengers/create', [B2CCustomerController::class, 'addPassenger'])->name('b2c-customers.passengers.create');
+    Route::post('b2c-customers/{customerId}/passengers', [B2CCustomerController::class, 'storePassenger'])->name('b2c-customers.passengers.store');
+    Route::get('b2c-customers/{customerId}/passengers/{passengerId}/edit', [B2CCustomerController::class, 'editPassenger'])->name('b2c-customers.passengers.edit');
+    Route::put('b2c-customers/{customerId}/passengers/{passengerId}', [B2CCustomerController::class, 'updatePassenger'])->name('b2c-customers.passengers.update');
+    Route::delete('b2c-customers/{customerId}/passengers/{passengerId}', [B2CCustomerController::class, 'deletePassenger'])->name('b2c-customers.passengers.delete');
+    
+    // B2C Notes routes for staff
+    Route::post('b2c-customers/{customerId}/notes', [B2CCustomerController::class, 'storeNote'])->name('b2c-customers.notes.store');
+    Route::delete('b2c-customers/{customerId}/notes/{noteId}', [B2CCustomerController::class, 'deleteNote'])->name('b2c-customers.notes.delete');
+    Route::get('b2c-customers/search', [B2CCustomerController::class, 'search'])->name('b2c-customers.search');
+    
+    // B2C Documents routes for staff
+    Route::post('b2c-customers/{customerId}/documents', [B2CCustomerController::class, 'storeDocument'])->name('b2c-customers.documents.store');
+    Route::delete('b2c-customers/{customerId}/documents/{documentId}', [B2CCustomerController::class, 'deleteDocument'])->name('b2c-customers.documents.delete');
+
     Route::patch('airlines/specialfares/update/{id}', [AirlineController::class, 'specialfaresUpdate'])->name('airline.specialfares.update');
     Route::get('deleted/airlines', [AirlineController::class, 'deletedAirline'])->name('deleted.airlines');
     Route::post('airlines/SLA/store', [AirlineController::class, 'slaStore'])->name('airline.sla.store');
@@ -1250,6 +1420,7 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
     Route::get('client-profile', [ProfileController::class, 'clientProfile'])->name('client-profile');
     Route::get('admin-profile', [ProfileController::class, 'adminProfile'])->name('admin-profile');
     Route::post('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('profile/timezone', [ProfileController::class, 'updateTimezone'])->name('profile.timezone');
     Route::get('subscriptions', [SubscriptionController::class, 'subscriptionsAdmin'])->name('subscriptions');
     Route::get('subscriptions-company', [SubscriptionController::class, 'subscriptionsCompany'])->name('subscriptions.company');
     Route::get('subscribed-companies', [SubscriptionController::class, 'subscribedCompanies'])->name('subscribed.companies');
@@ -1288,7 +1459,11 @@ Route::prefix('staff')->name('staff.')->middleware(['staff'])->group(function ()
 
     Route::post('support-tickets', [SupportTicketController::class, 'store'])->name('support-tickets.store');
     Route::get('support-tickets/{id}', [SupportTicketController::class, 'show'])->name('support-tickets.show');
+    Route::patch('support-tickets/{id}/status', [SupportTicketController::class, 'updateStatus'])->name('support-tickets.update-status');
+    Route::post('support-tickets/{id}/assign', [SupportTicketController::class, 'assign'])->name('support-tickets.assign');
     Route::post('support-tickets/{id}/comment', [SupportTicketController::class, 'addComment'])->name('support-tickets.add-comment');
+    Route::post('support-tickets/{id}/internal-note', [SupportTicketController::class, 'addInternalNote'])->name('support-tickets.add-internal-note');
+    Route::patch('support-tickets/{id}/internal-note', [SupportTicketController::class, 'updateInternalNote'])->name('support-tickets.update-internal-note');
     Route::post('support-tickets/{id}/rating', [SupportTicketController::class, 'submitRating'])->name('support-tickets.submit-rating');
 
     Route::get('employees', [EmployeeController::class, 'allEmployees'])->name('employees');
@@ -1337,6 +1512,7 @@ Route::prefix('staff')->name('staff.')->middleware(['staff'])->group(function ()
     Route::get('booking/invoice/{id}', [AccountController::class, 'generateInvoice'])->name('booking.invoice');
     Route::get('profile', [ProfileController::class, 'employeeProfile'])->name('profile');
     Route::post('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('profile/timezone', [ProfileController::class, 'updateTimezone'])->name('profile.timezone');
     
     // Include all other admin routes here
     Route::get('/get-departments', [EmployeeController::class, 'getDepartments']);
@@ -1509,6 +1685,54 @@ Route::prefix('staff')->name('staff.')->middleware(['staff'])->group(function ()
     Route::post('airlines/approved-staff/upadte/{id}', [AirlineController::class, 'approvedStaffUpdate'])->name('airline.approvedstaff.update');
     Route::get('agent', [AgentController::class, 'index'])->name('agents');
     Route::get('deleted/agent', [AgentController::class, 'deletedAgent'])->name('deleted.agents');
+
+    // B2B Partners routes
+    Route::get('b2b-partners', [B2BPartnerController::class, 'index'])->name('b2b-partners');
+    Route::get('b2b-partners/create', [B2BPartnerController::class, 'create'])->name('b2b-partners.create');
+    Route::post('b2b-partners', [B2BPartnerController::class, 'store'])->name('b2b-partners.store');
+    Route::get('b2b-partners/{id}', [B2BPartnerController::class, 'show'])->name('b2b-partners.show');
+    Route::get('b2b-partners/{id}/edit', [B2BPartnerController::class, 'edit'])->name('b2b-partners.edit');
+    Route::put('b2b-partners/{id}', [B2BPartnerController::class, 'update'])->name('b2b-partners.update');
+    Route::delete('b2b-partners/{id}', [B2BPartnerController::class, 'destroy'])->name('b2b-partners.destroy');
+    Route::post('b2b-partners/{partnerId}/contacts', [B2BPartnerController::class, 'storeContact'])->name('b2b-partners.contacts.store');
+    Route::put('b2b-partners/contacts/{id}', [B2BPartnerController::class, 'updateContact'])->name('b2b-partners.contacts.update');
+    Route::delete('b2b-partners/contacts/{id}', [B2BPartnerController::class, 'deleteContact'])->name('b2b-partners.contacts.destroy');
+    Route::post('b2b-partners/{partnerId}/documents', [B2BPartnerController::class, 'storeDocument'])->name('b2b-partners.documents.store');
+    Route::delete('b2b-partners/documents/{id}', [B2BPartnerController::class, 'deleteDocument'])->name('b2b-partners.documents.destroy');
+    Route::post('b2b-partners/{partnerId}/notes', [B2BPartnerController::class, 'storeNote'])->name('b2b-partners.notes.store');
+    Route::delete('b2b-partners/notes/{id}', [B2BPartnerController::class, 'deleteNote'])->name('b2b-partners.notes.destroy');
+    Route::delete('b2b-partners/airlines/{id}', [B2BPartnerController::class, 'deleteAirline'])->name('b2b-partners.airlines.destroy');
+    Route::delete('b2b-partners/products/{id}', [B2BPartnerController::class, 'deleteProduct'])->name('b2b-partners.products.destroy');
+    Route::get('b2b-partners/reports', [B2BPartnerController::class, 'reports'])->name('b2b-partners.reports');
+    Route::post('b2b-partners/generate-report', [B2BPartnerController::class, 'generateReport'])->name('b2b-partners.generate-report');
+    Route::get('b2b-partners/search', [B2BPartnerController::class, 'search'])->name('b2b-partners.search');
+
+    // B2C Customers routes for staff
+    Route::get('b2c-customers', [B2CCustomerController::class, 'index'])->name('b2c-customers.index');
+    Route::get('b2c-customers/create', [B2CCustomerController::class, 'create'])->name('b2c-customers.create');
+    Route::post('b2c-customers', [B2CCustomerController::class, 'store'])->name('b2c-customers.store');
+    Route::get('b2c-customers/{id}', [B2CCustomerController::class, 'show'])->name('b2c-customers.show');
+    Route::get('b2c-customers/{id}/edit', [B2CCustomerController::class, 'edit'])->name('b2c-customers.edit');
+    Route::put('b2c-customers/{id}', [B2CCustomerController::class, 'update'])->name('b2c-customers.update');
+    Route::delete('b2c-customers/{id}', [B2CCustomerController::class, 'destroy'])->name('b2c-customers.destroy');
+    Route::patch('b2c-customers/{id}/toggle-status', [B2CCustomerController::class, 'toggleStatus'])->name('b2c-customers.toggle-status');
+    
+    // B2C Passenger routes for staff
+    Route::get('b2c-customers/{customerId}/passengers/create', [B2CCustomerController::class, 'addPassenger'])->name('b2c-customers.passengers.create');
+    Route::post('b2c-customers/{customerId}/passengers', [B2CCustomerController::class, 'storePassenger'])->name('b2c-customers.passengers.store');
+    Route::get('b2c-customers/{customerId}/passengers/{passengerId}/edit', [B2CCustomerController::class, 'editPassenger'])->name('b2c-customers.passengers.edit');
+    Route::put('b2c-customers/{customerId}/passengers/{passengerId}', [B2CCustomerController::class, 'updatePassenger'])->name('b2c-customers.passengers.update');
+    Route::delete('b2c-customers/{customerId}/passengers/{passengerId}', [B2CCustomerController::class, 'deletePassenger'])->name('b2c-customers.passengers.delete');
+    
+    // B2C Notes routes for staff
+    Route::post('b2c-customers/{customerId}/notes', [B2CCustomerController::class, 'storeNote'])->name('b2c-customers.notes.store');
+    Route::delete('b2c-customers/{customerId}/notes/{noteId}', [B2CCustomerController::class, 'deleteNote'])->name('b2c-customers.notes.delete');
+    Route::get('b2c-customers/search', [B2CCustomerController::class, 'search'])->name('b2c-customers.search');
+    
+    // B2C Documents routes for staff
+    Route::post('b2c-customers/{customerId}/documents', [B2CCustomerController::class, 'storeDocument'])->name('b2c-customers.documents.store');
+    Route::delete('b2c-customers/{customerId}/documents/{documentId}', [B2CCustomerController::class, 'deleteDocument'])->name('b2c-customers.documents.delete');
+
     Route::patch('airlines/specialfares/update/{id}', [AirlineController::class, 'specialfaresUpdate'])->name('airline.specialfares.update');
     Route::get('deleted/airlines', [AirlineController::class, 'deletedAirline'])->name('deleted.airlines');
     Route::post('airlines/SLA/store', [AirlineController::class, 'slaStore'])->name('airline.sla.store');
@@ -1816,6 +2040,7 @@ Route::prefix('staff')->name('staff.')->middleware(['staff'])->group(function ()
     Route::get('client-profile', [ProfileController::class, 'clientProfile'])->name('client-profile');
     Route::get('admin-profile', [ProfileController::class, 'adminProfile'])->name('admin-profile');
     Route::post('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('profile/timezone', [ProfileController::class, 'updateTimezone'])->name('profile.timezone');
     Route::get('subscriptions', [SubscriptionController::class, 'subscriptionsAdmin'])->name('subscriptions');
     Route::get('subscriptions-company', [SubscriptionController::class, 'subscriptionsCompany'])->name('subscriptions.company');
     Route::get('subscribed-companies', [SubscriptionController::class, 'subscribedCompanies'])->name('subscribed.companies');

@@ -1,6 +1,20 @@
 @extends('admin/layouts/head-main')
 @section('content')
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.snow.css" />
     <title>View Support Ticket</title>
+    <style>
+        .ql-toolbar {
+            border-top-left-radius: 20px !important;
+            border-top-right-radius: 20px !important;
+        }
+        .ql-container {
+            border-bottom-left-radius: 20px !important;
+            border-bottom-right-radius: 20px !important;
+        }
+    </style>
 
     <!-- Page Wrapper -->
     <div class="page-wrapper">
@@ -140,7 +154,7 @@
                                             <select class="form-control"  id="departmentSelect">
                                                 <option value="">Select Department</option>
                                                 @foreach($departments as $department)
-                                                <option value="{{$department}}">{{$department}}</option>
+                                                <option value="{{ trim($department) }}">{{ trim($department) }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -150,11 +164,6 @@
                                             <label>Assign To</label>
                                             <select class="form-control" name="assigned_to" id="staffSelect">
                                                 <option value="">Select Staff Member</option>
-                                                @foreach($staffMembers as $staff)
-                                                    <option value="{{ $staff->id }}" {{ $ticket->assigned_to == $staff->id ? 'selected' : '' }}>
-                                                        {{ $staff->first_name }} {{ $staff->last_name }}
-                                                    </option>
-                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
@@ -283,7 +292,7 @@
                                                 </div>
                                             </div>
                                             <div class="message-body">
-                                                <p>{{ nl2br($ticket->description) }}</p>
+                                                <div>{!! $ticket->description !!}</div>
                                                 @if($ticket->attachments && !empty(json_decode($ticket->attachments)))
                                                     @php
                                                         $ticketAttachments = json_decode($ticket->attachments, true);
@@ -304,70 +313,73 @@
                                             </div>
                                         </div>
 
-                                        <!-- Comments -->
-                                        @if($comments->count() > 0)
-                                            @foreach ($comments as $comment)
-                                                @php
-                                                    $isCommentAuthorCurrentUser = $comment->user_id == $currentUserId;
-                                                    $commentAuthorName = $comment->author_name;
-                                                    $commentAuthorType = $comment->author_type;
-                                                @endphp
-                                                <div class="message-item {{ $isCommentAuthorCurrentUser ? 'note-dark mb-3' : 'note-light mb-3' }}">
-                                                    <div class="message-header d-flex justify-content-between align-items-start">
-                                                        <div>
-                                                            <strong>{{ $commentAuthorName }}</strong>
-                                                            <small class="message-time" style="margin-left: 1rem;">{{ $comment->created_at->format('M d, Y h:i A') }}</small>
+                                        <!-- Comments (including final comments in chronological order) -->
+                                        @if(isset($allComments) && $allComments->count() > 0)
+                                            @foreach ($allComments as $commentItem)
+                                                @if($commentItem['type'] === 'regular')
+                                                    @php
+                                                        $comment = $commentItem['data'];
+                                                        $isCommentAuthorCurrentUser = $comment->user_id == $currentUserId;
+                                                        $commentAuthorName = $comment->author_name;
+                                                        $commentAuthorType = $comment->author_type;
+                                                    @endphp
+                                                    <div class="message-item {{ $isCommentAuthorCurrentUser ? 'note-dark mb-3' : 'note-light mb-3' }}">
+                                                        <div class="message-header d-flex justify-content-between align-items-start">
+                                                            <div>
+                                                                <strong>{{ $commentAuthorName }}</strong>
+                                                                <small class="message-time" style="margin-left: 1rem;">{{ $comment->created_at->format('M d, Y h:i A') }}</small>
+                                                            </div>
+                                                        </div>
+                                                        <div class="message-body">
+                                                            <div>{!! $comment->comment !!}</div>
+                                                            @if($comment->attachments && !empty($comment->attachments))
+                                                                @php $attachments = is_array($comment->attachments) ? $comment->attachments : json_decode($comment->attachments, true); @endphp
+                                                                @if($attachments && !empty($attachments))
+                                                                    <div class="attachments mt-2">
+                                                                        <strong>Attachments:</strong><br>
+                                                                        @foreach($attachments as $attachment)
+                                                                            @php
+                                                                                $attachmentPath = is_array($attachment) ? $attachment['path'] : $attachment;
+                                                                                $attachmentName = is_array($attachment) && isset($attachment['original_name']) ? $attachment['original_name'] : basename($attachmentPath);
+                                                                            @endphp
+                                                                            <a href="{{ asset('storage/app/public/' . $attachmentPath) }}" target="_blank" class="btn btn-sm btn-outline-success">
+                                                                                <i class="fa fa-paperclip"></i> {{ $attachmentName }}
+                                                                            </a>
+                                                                        @endforeach
+                                                                    </div>
+                                                                @endif
+                                                            @endif
                                                         </div>
                                                     </div>
-                                                    <div class="message-body">
-                                                        <p>{{ nl2br($comment->comment) }}</p>
-                                                        @if($comment->attachments && !empty($comment->attachments))
-                                                            @php $attachments = is_array($comment->attachments) ? $comment->attachments : json_decode($comment->attachments, true); @endphp
-                                                            @if($attachments && !empty($attachments))
-                                                                <div class="attachments mt-2">
-                                                                    <strong>Attachments:</strong><br>
-                                                                    @foreach($attachments as $attachment)
-                                                                        @php
-                                                                            $attachmentPath = is_array($attachment) ? $attachment['path'] : $attachment;
-                                                                            $attachmentName = is_array($attachment) && isset($attachment['original_name']) ? $attachment['original_name'] : basename($attachmentPath);
-                                                                        @endphp
-                                                                        <a href="{{ asset('storage/app/public/' . $attachmentPath) }}" target="_blank" class="btn btn-sm btn-outline-success">
-                                                                            <i class="fa fa-paperclip"></i> {{ $attachmentName }}
-                                                                        </a>
-                                                                    @endforeach
-                                                                </div>
+                                                @elseif($commentItem['type'] === 'final')
+                                                    @php
+                                                        $ticket = $commentItem['data'];
+                                                        $closerName = $ticket->closed_by_name;
+                                                        $isReopened = $ticket->status !== 'closed';
+                                                    @endphp
+                                                    <div class="message-item note-dark mb-3">
+                                                        <div class="message-header d-flex justify-content-between align-items-start">
+                                                            <div>
+                                                                <strong>{{ $closerName }}</strong>
+                                                                <small class="message-time" style="margin-left: 1rem;">{{ $ticket->closed_at ? $ticket->closed_at->format('M d, Y h:i A') : $ticket->updated_at->format('M d, Y h:i A') }}</small>
+                                                                @if($isReopened)
+                                                                    <span class="badge bg-secondary ms-2">Previously Closed</span>
+                                                                @else
+                                                                    <span class="badge bg-success ms-2">Final Resolution</span>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                        <div class="message-body">
+                                                            @if($ticket->status === 'closed')
+                                                                <p><strong>Final Resolution Comment:</strong></p>
+                                                            @else
+                                                                <p><strong>Previous Final Comment (Ticket Reopened):</strong></p>
                                                             @endif
-                                                        @endif
+                                                            <p>{{ nl2br($ticket->final_comment) }}</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            @endforeach
-                                        @endif
-
-                                        <!-- Final Comment (shown when ticket is closed or reopened) -->
-                                        @if($ticket->final_comment)
-                                        @php
-                                            $closerName = $ticket->closed_by_name;
-                                            $isReopened = $ticket->status !== 'closed';
-                                        @endphp
-                                        <div class="message-item note-dark mb-3">
-                                            <div class="message-header d-flex justify-content-between align-items-start">
-                                                <div>
-                                                    <strong>{{ $closerName }}</strong>
-                                                    <small class="message-time" style="margin-left: 1rem;">{{ $ticket->closed_at ? $ticket->closed_at->format('M d, Y h:i A') : $ticket->updated_at->format('M d, Y h:i A') }}</small>
-                                                    @if($isReopened)
-                                                        <span class="badge bg-secondary ms-2">Previously Closed</span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                            <div class="message-body">
-                                                @if($ticket->status === 'closed')
-                                                    <p><strong>Final Resolution Comment:</strong></p>
-                                                @else
-                                                    <p><strong>Previous Final Comment (Ticket Reopened):</strong></p>
                                                 @endif
-                                                <p>{{ nl2br($ticket->final_comment) }}</p>
-                                            </div>
-                                        </div>
+                                            @endforeach
                                         @endif
 
                                         <!-- Add Comment Form -->
@@ -376,7 +388,8 @@
                                             <form method="post" action="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.add-comment', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.add-comment', $ticket->id) : route('customer.support-tickets.add-comment', $ticket->id)) }}" enctype="multipart/form-data">
                                                 @csrf
                                                 <div class="form-group" style="width:92%;">
-                                                    <textarea class="form-control" name="comment" rows="3" placeholder="Type your message here..." required style="border-radius: 20px;"></textarea>
+                                                    <div id="commentEditorAdmin" style="height: 150px; border-radius: 20px;"></div>
+                                                    <input type="hidden" name="comment" id="commentInputAdmin">
                                                 </div>
                                                 <input class="form-control" name="commented_by" value="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? 'superadmin' : (\App\Helpers\RouteHelper::isStaff() ? 'staff' : 'customer') }}" style="display:none;">
                                                 <div class="form-group" style="margin-top: 0px;">
@@ -981,7 +994,7 @@
                                                 </div>
                                             </div>
                                             <div class="message-body">
-                                                <p>{{ nl2br($ticket->description) }}</p>
+                                                <div>{!! $ticket->description !!}</div>
                                                 @if($ticket->attachments && !empty(json_decode($ticket->attachments)))
                                                     @php
                                                         $ticketAttachments = json_decode($ticket->attachments, true);
@@ -1002,48 +1015,79 @@
                                             </div>
                                         </div>
 
-                                        <!-- Comments -->
-                                        @if($comments->count() > 0)
-                                            @foreach ($comments as $comment)
-                                                @php
-                                                    $isCommentAuthorCurrentUser = $comment->user_id == $currentUserId;
-                                                    $commentAuthorName = $comment->author_name;
-                                                    $commentAuthorType = $comment->author_type;
-                                                @endphp
-                                                <div class="message-item {{ $isCommentAuthorCurrentUser ? 'note-dark mb-3' : 'note-light mb-3' }}">
-                                                    <div class="message-header d-flex justify-content-between align-items-start">
-                                                        <div>
-                                                            <strong>{{ $commentAuthorName }}</strong>
-                                                            <small class="message-time" style="margin-left: 1rem;">{{ $comment->created_at->format('M d, Y h:i A') }}</small>
+                                        <!-- Comments (including final comments in chronological order) -->
+                                        @if(isset($allComments) && $allComments->count() > 0)
+                                            @foreach ($allComments as $commentItem)
+                                                @if($commentItem['type'] === 'regular')
+                                                    @php
+                                                        $comment = $commentItem['data'];
+                                                        $isCommentAuthorCurrentUser = $comment->user_id == $currentUserId;
+                                                        $commentAuthorName = $comment->author_name;
+                                                        $commentAuthorType = $comment->author_type;
+                                                    @endphp
+                                                    <div class="message-item {{ $isCommentAuthorCurrentUser ? 'note-dark mb-3' : 'note-light mb-3' }}">
+                                                        <div class="message-header d-flex justify-content-between align-items-start">
+                                                            <div>
+                                                                <strong>{{ $commentAuthorName }}</strong>
+                                                                <small class="message-time" style="margin-left: 1rem;">{{ $comment->created_at->format('M d, Y h:i A') }}</small>
+                                                            </div>
+                                                        </div>
+                                                        <div class="message-body">
+                                                            <div>{!! $comment->comment !!}</div>
+                                                            @if($comment->attachments && !empty($comment->attachments))
+                                                                @php $attachments = is_array($comment->attachments) ? $comment->attachments : json_decode($comment->attachments, true); @endphp
+                                                                @if($attachments && !empty($attachments))
+                                                                    <div class="attachments mt-2">
+                                                                        <strong>Attachments:</strong><br>
+                                                                        @foreach($attachments as $attachment)
+                                                                            <a href="{{ asset('storage/app/public/' . (is_array($attachment) ? $attachment['path'] : $attachment)) }}" target="_blank" class class="btn btn-sm btn-outline-success">
+                                                                                <i class="fa fa-file"></i> {{ is_array($attachment) && isset($attachment['original_name']) ? $attachment['original_name'] : basename(is_array($attachment) ? $attachment['path'] : $attachment) }}
+                                                                            </a>
+                                                                        @endforeach
+                                                                    </div>
+                                                                @endif
+                                                            @endif
                                                         </div>
                                                     </div>
-                                                    <div class="message-body">
-                                                        <p>{{ nl2br($comment->comment) }}</p>
-                                                        @if($comment->attachments && !empty($comment->attachments))
-                                                            @php $attachments = is_array($comment->attachments) ? $comment->attachments : json_decode($comment->attachments, true); @endphp
-                                                            @if($attachments && !empty($attachments))
-                                                                <div class="attachments mt-2">
-                                                                    <strong>Attachments:</strong><br>
-                                                                    @foreach($attachments as $attachment)
-                                                                        <a href="{{ asset('storage/app/public/' . (is_array($attachment) ? $attachment['path'] : $attachment)) }}" target="_blank" class class="btn btn-sm btn-outline-success">
-                                                                            <i class="fa fa-file"></i> {{ is_array($attachment) && isset($attachment['original_name']) ? $attachment['original_name'] : basename(is_array($attachment) ? $attachment['path'] : $attachment) }}
-                                                                        </a>
-                                                                    @endforeach
-                                                                </div>
+                                                @elseif($commentItem['type'] === 'final')
+                                                    @php
+                                                        $ticket = $commentItem['data'];
+                                                        $closerName = $ticket->closed_by_name;
+                                                        $isReopened = $ticket->status !== 'closed';
+                                                    @endphp
+                                                    <div class="message-item note-dark mb-3">
+                                                        <div class="message-header d-flex justify-content-between align-items-start">
+                                                            <div>
+                                                                <strong>{{ $closerName }}</strong>
+                                                                <small class="message-time" style="margin-left: 1rem;">{{ $ticket->closed_at ? $ticket->closed_at->format('M d, Y h:i A') : $ticket->updated_at->format('M d, Y h:i A') }}</small>
+                                                                @if($isReopened)
+                                                                    <span class="badge bg-secondary ms-2">Previously Closed</span>
+                                                                @else
+                                                                    <span class="badge bg-success ms-2">Final Resolution</span>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                        <div class="message-body">
+                                                            @if($ticket->status === 'closed')
+                                                                <p><strong>Final Resolution Comment:</strong></p>
+                                                            @else
+                                                                <p><strong>Previous Final Comment (Ticket Reopened):</strong></p>
                                                             @endif
-                                                        @endif
+                                                            <p>{{ nl2br($ticket->final_comment) }}</p>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                @endif
                                             @endforeach
                                         @endif
 
                                         <!-- Add Comment Form -->
                                         @if($ticket->status !== 'closed')
                                         <div class="add-comment-section mt-4">
-                                            <form method="post" action="{{ \App\Helpers\RouteHelper::issuperAdmin() ? route('admin.support-tickets.add-comment', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.add-comment', $ticket->id) : route('customer.support-tickets.add-comment', $ticket->id)) }}" enctype="multipart/form-data">
+                                            <form method="post" action="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.add-comment', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.add-comment', $ticket->id) : route('customer.support-tickets.add-comment', $ticket->id)) }}" enctype="multipart/form-data">
                                                 @csrf
                                                 <div class="form-group" style="width:92%;">
-                                                    <textarea class="form-control" name="comment" rows="3" placeholder="Type your message here..." required style="border-radius: 20px;"></textarea>
+                                                    <div id="commentEditorCustomer" style="height: 150px; border-radius: 20px;"></div>
+                                                    <input type="hidden" name="comment" id="commentInputCustomer">
                                                 </div>
                                                 <div class="form-group">
                                                     <div style="margin-right: 16px;">
@@ -1237,7 +1281,7 @@
             </div>
         </div>
     </div>
-    
+
     <style>
         .ticket-header-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1288,8 +1332,8 @@
         
         .superadmin-conversation .note-dark:hover {
             background-color: #174f8d;
-    border-left: 4px solid #3047b3;
-    color: white;
+            border-left: 4px solid #3047b3;
+            color: white;
 
         }
         
@@ -1753,7 +1797,6 @@
             color: rgba(255, 255, 255, 0.9) !important;
         }
 
-        @if($isSuperAdmin)
         #departmentSelect {
             cursor: pointer;
         }
@@ -1761,7 +1804,7 @@
         #staffSelect {
             cursor: pointer;
         }
-        @endif
+        
         
         .note-header {
             margin-bottom: 10px;
@@ -1835,7 +1878,7 @@
             margin-bottom: 0;
         }
     </style>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
     <script>
         // Check if jQuery is loaded
         if (typeof jQuery === 'undefined') {
@@ -1843,6 +1886,112 @@
         } else {
             console.log('jQuery version:', jQuery.fn.jquery);
         }
+
+        $(document).ready(function() {
+            @if(\App\Helpers\RouteHelper::isSuperAdmin())
+            var staffByDepartmentRoute = '{{ route('admin.get-staff-by-department') }}';
+            @elseif(\App\Helpers\RouteHelper::isStaff())
+            var staffByDepartmentRoute = '{{ route('staff.get-staff-by-department') }}';
+            @else
+            var staffByDepartmentRoute = null;
+            @endif
+
+            $('#departmentSelect').on('change', function() {
+                var departmentId = $(this).val();
+                var staffSelect = $('#staffSelect');
+                var currentAssignedTo = '{{ $ticket->assigned_to ?? '' }}';
+
+                console.log('Department changed:', departmentId);
+                console.log('Route URL:', staffByDepartmentRoute);
+
+                // Show loading state
+                staffSelect.html('<option value="">Loading...</option>');
+                if (departmentId && staffByDepartmentRoute) {
+                // Fetch staff members by department via AJAX
+                    $.ajax({
+                        url: staffByDepartmentRoute,
+                        type: 'GET',
+                        data: { department_id: departmentId.trim() },
+                        success: function(response) {
+                            console.log('Staff response:', response);
+                            staffSelect.empty();
+                            staffSelect.append('<option value="">Select Staff Member</option>');
+                            if (response.staff && response.staff.length > 0) {
+                                response.staff.forEach(function(staff) {
+                                    console.log(staff);
+                                    var selected = staff.id == currentAssignedTo ? 'selected' : '';
+                                    staffSelect.append('<option value="' + staff.id + '" ' + selected + '>' + staff.first_name + ' ' + staff.last_name + '</option>');
+                                });
+                            } else {
+                                staffSelect.append('<option value="">No staff members found</option>');
+                            }
+                        },
+                        error: function(xhr) {
+                            console.error('Error loading staff:', xhr);
+                            console.error('Response status:', xhr.status);
+                            console.error('Response text:', xhr.responseText);
+                            staffSelect.empty();
+                            staffSelect.append('<option value="">Error loading staff</option>');
+                        }
+                    });
+                } else {
+                    // Reset to all staff members
+                    staffSelect.empty();
+                    staffSelect.append('<option value="">Select Staff Member</option>');
+                    @foreach($staffMembers as $staff)
+                        staffSelect.append('<option value="{{ $staff->id }}">{{ $staff->first_name }} {{ $staff->last_name }}</option>');
+                    @endforeach
+                }
+            });
+
+            $('#departmentStaffSelect').on('change', function() {
+                var departmentId = $(this).val();
+                var staffSelect2 = $('#staffSelect2');
+                var currentAssignedTo = '{{ $ticket->assigned_to ?? '' }}';
+
+                console.log('DepartmentStaffSelect changed:', departmentId);
+                console.log('Route URL:', staffByDepartmentRoute);
+
+                // Show loading state
+                staffSelect2.html('<option value="">Loading...</option>');
+                if (departmentId && staffByDepartmentRoute) {
+                // Fetch staff members by department via AJAX
+                    $.ajax({
+                        url: staffByDepartmentRoute,
+                        type: 'GET',
+                        data: { department_id: departmentId.trim() },
+                        success: function(response) {
+                            console.log('Staff response for departmentStaffSelect:', response);
+                            staffSelect2.empty();
+                            staffSelect2.append('<option value="">Select Staff Member</option>');
+                            if (response.staff && response.staff.length > 0) {
+                                response.staff.forEach(function(staff) {
+                                    var selected = staff.id == currentAssignedTo ? 'selected' : '';
+                                    staffSelect2.append('<option value="' + staff.id + '" ' + selected + '>' + staff.first_name + ' ' + staff.last_name + '</option>');
+                                });
+                            } else {
+                                staffSelect2.append('<option value="">No staff members found</option>');
+                            }
+                        },
+                        error: function(xhr) {
+                            console.error('Error loading staff for departmentStaffSelect:', xhr);
+                            console.error('Response status:', xhr.status);
+                            console.error('Response text:', xhr.responseText);
+                            staffSelect2.empty();
+                            staffSelect2.append('<option value="">Error loading staff</option>');
+                        }
+                    });
+                } else {
+                    // Reset to all staff members
+                    staffSelect2.empty();
+                    staffSelect2.append('<option value="">Select Staff Member</option>');
+                    @foreach($staffMembers as $staff)
+                        staffSelect2.append('<option value="{{ $staff->id }}">{{ $staff->first_name }} {{ $staff->last_name }}</option>');
+                    @endforeach
+                }
+            });
+            
+        });
 
         // Change priority function - defined globally for inline onclick handlers
         window.changePriority = function(priority) {
@@ -1940,16 +2089,31 @@
             $(document).on('change', '.attachment-input', function() {
                 console.log('Attachment input changed');
                 var input = this;
-                var previewContainer = $(input).parent().next('.attachment-preview');
-                console.log('Preview container found:', previewContainer.length);
+                var previewContainer = null;
 
-                // Fallback to finding by ID if the next sibling approach doesn't work
-                if (previewContainer.length === 0) {
-                    var inputId = $(input).closest('form').find('.attachment-preview').attr('id');
-                    if (inputId) {
-                        previewContainer = $('#' + inputId);
-                        console.log('Preview container found by ID:', previewContainer.length);
-                    }
+                // Try to find the preview container by checking which form we're in
+                var form = $(input).closest('form');
+                if (form.find('#attachmentPreviewAdmin').length > 0) {
+                    previewContainer = $('#attachmentPreviewAdmin');
+                    console.log('Using attachmentPreviewAdmin');
+                } else if (form.find('#attachmentPreviewCustomer').length > 0) {
+                    previewContainer = $('#attachmentPreviewCustomer');
+                    console.log('Using attachmentPreviewCustomer');
+                } else if (form.find('#editNoteAttachmentPreview').length > 0) {
+                    previewContainer = $('#editNoteAttachmentPreview');
+                    console.log('Using editNoteAttachmentPreview');
+                } else if (form.find('#internalNoteAttachmentPreview').length > 0) {
+                    previewContainer = $('#internalNoteAttachmentPreview');
+                    console.log('Using internalNoteAttachmentPreview');
+                } else {
+                    // Fallback to finding by DOM structure
+                    previewContainer = $(input).parent().next('.attachment-preview');
+                    console.log('Preview container found via parent().next():', previewContainer.length);
+                }
+
+                if (!previewContainer || previewContainer.length === 0) {
+                    console.error('Could not find preview container');
+                    return;
                 }
 
                 previewContainer.empty();
@@ -2006,7 +2170,15 @@
             $(document).on('click', '.remove-file', function() {
                 var previewItem = $(this).closest('.attachment-preview-item');
                 var fileNameToRemove = previewItem.data('file-name');
-                var input = $(previewItem).closest('.attachment-preview').prev().find('.attachment-input')[0];
+                var previewContainer = $(previewItem).closest('.attachment-preview');
+                var input = null;
+
+                // Find the input based on which preview container we're in
+                if (previewContainer.attr('id') === 'attachmentPreviewAdmin' || previewContainer.attr('id') === 'attachmentPreviewCustomer') {
+                    input = previewContainer.prev().find('.attachment-input')[0];
+                } else {
+                    input = previewContainer.closest('form').find('.attachment-input')[0];
+                }
 
                 // Fallback to finding input in the same form if the above doesn't work
                 if (!input) {
@@ -2063,62 +2235,6 @@
 
             // Filter staff members by department for SuperAdmin
 
-            @if($isSuperAdmin)
-            var staffByDepartmentRoute = '{{ route('admin.get-staff-by-department') }}';
-            @elseif($isStaff)
-            var staffByDepartmentRoute = '{{ route('staff.get-staff-by-department') }}';
-            @else
-            var staffByDepartmentRoute = null; // Not applicable for customers
-            @endif
-
-            @if($isSuperAdmin || $isStaff)
-            $('#departmentSelect').on('change', function() {
-                var departmentId = $(this).val();
-                var staffSelect = $('#staffSelect');
-                var currentAssignedTo = '{{ $ticket->assigned_to ?? '' }}';
-
-                console.log('Department changed:', departmentId);
-                console.log('Route URL:', staffByDepartmentRoute);
-
-                // Show loading state
-                staffSelect.html('<option value="">Loading...</option>');
-
-                if (departmentId) {
-                    // Fetch staff members by department via AJAX
-                    $.ajax({
-                        url: staffByDepartmentRoute,
-                        type: 'GET',
-                        data: { department_id: departmentId },
-                        success: function(response) {
-                            console.log('Staff response:', response);
-                            staffSelect.empty();
-                            staffSelect.append('<option value="">Select Staff Member</option>');
-
-                            if (response.staff && response.staff.length > 0) {
-                                response.staff.forEach(function(staff) {
-                                    var selected = staff.id == currentAssignedTo ? 'selected' : '';
-                                    staffSelect.append('<option value="' + staff.id + '" ' + selected + '>' + staff.first_name + ' ' + staff.last_name + '</option>');
-                                });
-                            } else {
-                                staffSelect.append('<option value="">No staff members found</option>');
-                            }
-                        },
-                        error: function(xhr) {
-                            console.error('Error loading staff:', xhr);
-                            staffSelect.empty();
-                            staffSelect.append('<option value="">Error loading staff</option>');
-                        }
-                    });
-                } else {
-                    // Reset to all staff members
-                    staffSelect.empty();
-                    staffSelect.append('<option value="">Select Staff Member</option>');
-                    @foreach($staffMembers as $staff)
-                    staffSelect.append('<option value="{{ $staff->id }}" {{ $ticket->assigned_to == $staff->id ? 'selected' : '' }}>{{ $staff->first_name }} {{ $staff->last_name }}</option>');
-                    @endforeach
-                }
-            });
-            @endif
 
             // Interactive star rating
             $('#starRating .star').on('click', function() {
@@ -2227,5 +2343,80 @@
                 }
             });
         });
+    </script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <script>
+        // Initialize Quill editor for admin/staff comments
+        if (document.getElementById('commentEditorAdmin')) {
+            console.log('hello');
+            var quillAdmin = new Quill('#commentEditorAdmin', {
+                theme: 'snow',
+                placeholder: 'Type your message here...',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        ['blockquote', 'code-block'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        ['link'],
+                        ['clean']
+                    ]
+                }
+            });
+
+            // Update hidden input on form submission
+            quillAdmin.on('text-change', function() {
+                document.getElementById('commentInputAdmin').value = quillAdmin.root.innerHTML;
+            });
+
+            // Validate form before submission
+            var adminForm = document.getElementById('commentEditorAdmin').closest('form');
+            if (adminForm) {
+                adminForm.addEventListener('submit', function(e) {
+                    var content = quillAdmin.getText().trim();
+                    if (content === '') {
+                        e.preventDefault();
+                        alert('Please enter a comment');
+                    }
+                });
+            }
+        }
+
+        // Initialize Quill editor for customer comments
+        if (document.getElementById('commentEditorCustomer')) {
+            var quillCustomer = new Quill('#commentEditorCustomer', {
+                theme: 'snow',
+                placeholder: 'Type your message here...',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        ['blockquote', 'code-block'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        ['link'],
+                        ['clean']
+                    ]
+                }
+            });
+
+            // Update hidden input on form submission
+            quillCustomer.on('text-change', function() {
+                document.getElementById('commentInputCustomer').value = quillCustomer.root.innerHTML;
+            });
+
+            // Validate form before submission
+            var customerForm = document.getElementById('commentEditorCustomer').closest('form');
+            if (customerForm) {
+                customerForm.addEventListener('submit', function(e) {
+                    var content = quillCustomer.getText().trim();
+                    if (content === '') {
+                        e.preventDefault();
+                        alert('Please enter a comment');
+                    }
+                });
+            }
+        }
     </script>
 @endsection

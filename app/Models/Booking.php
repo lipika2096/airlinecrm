@@ -16,6 +16,8 @@ class Booking extends Model
         'booking_date',
         'customer_id',
         'customer_type',
+        'b2b_partner_id',
+        'b2c_customer_id',
         'customer_name',
         'customer_email',
         'customer_phone',
@@ -76,6 +78,16 @@ class Booking extends Model
     public function customer()
     {
         return $this->belongsTo(User::class, 'customer_id');
+    }
+
+    public function b2bPartner()
+    {
+        return $this->belongsTo(B2BPartner::class, 'b2b_partner_id');
+    }
+
+    public function b2cCustomer()
+    {
+        return $this->belongsTo(B2CCustomer::class, 'b2c_customer_id');
     }
 
     public function services()

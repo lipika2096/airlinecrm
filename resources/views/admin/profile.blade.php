@@ -363,40 +363,67 @@
                             <div class="tab-content mt-4" id="profileTabContent">
                                 <!-- Personal Information Tab -->
                                 <div class="tab-pane fade show active" id="personal" role="tabpanel">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Full Name</label>
-                                                <input type="text" class="form-control" value="{{ $customer->name }}" readonly>
-                                            </div>
+                                    @if(session('timezone_success'))
+                                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                            {{ session('timezone_success') }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Email Address</label>
-                                                <input type="email" class="form-control" value="{{ $customer->email }}" readonly>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    @endif
                                     
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Account Status</label>
-                                                <input type="text" class="form-control" value="{{ $customer->is_active ? 'Active' : 'Inactive' }}" readonly>
+                                    <form action="{{ route('profile.timezone') }}" method="POST">
+                                        @csrf
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Full Name</label>
+                                                    <input type="text" class="form-control" value="{{ $customer->name }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Email Address</label>
+                                                    <input type="email" class="form-control" value="{{ $customer->email }}" readonly>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Created At</label>
-                                                <input type="text" class="form-control" value="{{ $customer->created_at ? Carbon::parse($customer->created_at)->format('M d, Y') : '-' }}" readonly>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Account Status</label>
+                                                    <input type="text" class="form-control" value="{{ $customer->is_active ? 'Active' : 'Inactive' }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Created At</label>
+                                                    <input type="text" class="form-control" value="{{ $customer->created_at ? Carbon::parse($customer->created_at)->format('M d, Y') : '-' }}" readonly>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    
-                                    <div class="alert alert-info">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        Personal information is view-only. To update your password, use the "Change Password" tab.
-                                    </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Timezone</label>
+                                                    <select class="form-control" name="timezone" required>
+                                                        <option value="">Select Timezone</option>
+                                                        @foreach(\App\Helpers\TimezoneHelper::getAvailableTimezones() as $value => $label)
+                                                            <option value="{{ $value }}" {{ $customer->timezone == $value ? 'selected' : '' }}>{{ $label }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <small class="text-muted">Select your timezone to see times in your local time</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-clock me-2"></i>Update Timezone
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
                                 
                                 <!-- Change Password Tab -->

@@ -15,7 +15,7 @@
             <!-- Header -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h2 style="margin: 0; color: #333; font-weight: 600; text-transform: capitalize;">Welcome, {{$user->name}}</h2>
+                    <h2 style="margin: 0; color: #333; font-weight: 600; text-transform: capitalize;">Welcome, {{ $user->first_name ." ". $user->last_name ?? $user->name}}</h2>
                     <p style="margin: 5px 0 0 0; color: #666;">{{ $user->company_name ?? 'CRM SAAS' }}</p>
                 </div>
                 <div class="d-flex align-items-center gap-3">

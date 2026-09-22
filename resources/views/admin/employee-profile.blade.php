@@ -1009,6 +1009,18 @@
                                         <input class="form-control" type="text">
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Timezone <span class="text-danger">*</span></label>
+                                        <select class="select form-control" name="timezone">
+                                            <option value="">Select Timezone</option>
+                                            @foreach(\App\Helpers\TimezoneHelper::getAvailableTimezones() as $value => $label)
+                                                <option value="{{ $value }}" {{ isset($employee) && $employee->timezone == $value ? 'selected' : '' }}>{{ $label }}</option>
+                                            @endforeach
+                                        </select>
+                                        <small class="text-muted">Select your timezone to see times in your local time</small>
+                                    </div>
+                                </div>
                             </div>
                             <div class="submit-section">
                                 <button class="btn btn-primary submit-btn">Submit</button>

@@ -259,6 +259,24 @@
             color: #DC2626;
         }
         
+        .password-strength {
+            height: 4px;
+            border-radius: 2px;
+            margin-top: 8px;
+            background: #E2E8F0;
+            overflow: hidden;
+        }
+        
+        .password-strength-bar {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+        
+        .password-strength-weak { background: #DC2626; }
+        .password-strength-medium { background: #F59E0B; }
+        .password-strength-strong { background: #10B981; }
+        
         @media (max-width: 768px) {
             .profile-header {
                 padding: 30px 0;
@@ -330,6 +348,11 @@
                                     </button>
                                 </li>
                                 <li class="nav-item">
+                                    <button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password" type="button">
+                                        <i class="fas fa-lock me-2"></i>Change Password
+                                    </button>
+                                </li>
+                                <li class="nav-item">
                                     <button class="nav-link" id="company-tab" data-bs-toggle="tab" data-bs-target="#company" type="button">
                                         <i class="fas fa-building me-2"></i>Company Info
                                     </button>
@@ -339,39 +362,117 @@
                             <div class="tab-content mt-4" id="profileTabContent">
                                 <!-- Personal Information Tab -->
                                 <div class="tab-pane fade show active" id="personal" role="tabpanel">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Full Name</label>
-                                                <input type="text" class="form-control" value="{{ $profile->first_name ?? $profile->name }} {{ $profile->last_name ?? '' }}" readonly>
-                                            </div>
+                                    @if(session('timezone_success'))
+                                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                            {{ session('timezone_success') }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Email Address</label>
-                                                <input type="email" class="form-control" value="{{ $profile->email }}" readonly>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    @endif
                                     
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Account Status</label>
-                                                <input type="text" class="form-control" value="{{ $profile->is_active ? 'Active' : 'Inactive' }}" readonly>
+                                    <form action="{{ \App\Helpers\RouteHelper::isStaff() ? route('staff.profile.timezone') : route('customer.profile.timezone') }}" method="POST">
+                                        @csrf
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Full Name</label>
+                                                    <input type="text" class="form-control" value="{{ $profile->first_name ?? $profile->name }} {{ $profile->last_name ?? '' }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Email Address</label>
+                                                    <input type="email" class="form-control" value="{{ $profile->email }}" readonly>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Created At</label>
-                                                <input type="text" class="form-control" value="{{ $profile->created_at ? Carbon::parse($profile->created_at)->format('M d, Y') : '-' }}" readonly>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Account Status</label>
+                                                    <input type="text" class="form-control" value="{{ $profile->is_active ? 'Active' : 'Inactive' }}" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Created At</label>
+                                                    <input type="text" class="form-control" value="{{ $profile->created_at ? Carbon::parse($profile->created_at)->format('M d, Y') : '-' }}" readonly>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    
-                                    <div class="alert alert-info">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        Personal information is view-only.
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Timezone</label>
+                                                    <select class="form-control" name="timezone" required>
+                                                        <option value="">Select Timezone</option>
+                                                        @foreach(\App\Helpers\TimezoneHelper::getAvailableTimezones() as $value => $label)
+                                                            <option value="{{ $value }}" {{ $profile->timezone == $value ? 'selected' : '' }}>{{ $label }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <small class="text-muted">Select your timezone to see times in your local time</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-clock me-2"></i>Update Timezone
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                                <!-- Change Password Tab -->
+                                <div class="tab-pane fade" id="password" role="tabpanel">
+                                    <div id="password-section">
+                                        @if(session('password_success'))
+                                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                                {{ session('password_success') }}
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                            </div>
+                                        @endif
+                                        
+                                        @if(session('password_error'))
+                                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                {{ session('password_error') }}
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                            </div>
+                                        @endif
+                                        
+                                        <form action="{{ \App\Helpers\RouteHelper::isStaff() ? route('staff.profile.password') : route('customer.profile.password') }}" method="POST" id="passwordForm">
+                                            @csrf
+                                            
+                                            <div class="mb-3">
+                                                <label class="form-label">Current Password</label>
+                                                <input type="password" class="form-control" name="current_password" required>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label class="form-label">New Password</label>
+                                                <input type="password" class="form-control" name="new_password" id="newPassword" required minlength="8">
+                                                <div class="password-strength">
+                                                    <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                                                </div>
+                                                <small class="text-muted">Minimum 8 characters with mix of letters, numbers & symbols</small>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label class="form-label">Confirm New Password</label>
+                                                <input type="password" class="form-control" name="confirm_password" id="confirmPassword" required minlength="8">
+                                            </div>
+                                            
+                                            <div class="d-flex gap-2">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fas fa-key me-2"></i>Update Password
+                                                </button>
+                                                <button type="reset" class="btn btn-secondary">
+                                                    <i class="fas fa-undo me-2"></i>Reset
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                                 
@@ -490,6 +591,47 @@
             </div>
         </div>
     </div>
+    
+    <script>
+        // Password strength checker
+        document.getElementById('newPassword').addEventListener('input', function() {
+            const password = this.value;
+            const strengthBar = document.getElementById('passwordStrengthBar');
+            
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+            if (password.match(/\d/)) strength++;
+            if (password.match(/[^a-zA-Z\d]/)) strength++;
+            
+            strengthBar.className = 'password-strength-bar';
+            
+            if (strength <= 1) {
+                strengthBar.style.width = '25%';
+                strengthBar.classList.add('password-strength-weak');
+            } else if (strength <= 2) {
+                strengthBar.style.width = '50%';
+                strengthBar.classList.add('password-strength-medium');
+            } else if (strength <= 3) {
+                strengthBar.style.width = '75%';
+                strengthBar.classList.add('password-strength-medium');
+            } else {
+                strengthBar.style.width = '100%';
+                strengthBar.classList.add('password-strength-strong');
+            }
+        });
+        
+        // Password confirmation validation
+        document.getElementById('passwordForm').addEventListener('submit', function(e) {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                e.preventDefault();
+                alert('New password and confirm password do not match!');
+            }
+        });
+    </script>
 </body>
 </html>
 @endsection

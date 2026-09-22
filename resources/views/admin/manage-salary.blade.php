@@ -151,7 +151,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                    <form id="salaryForm" method="post" action="{{ route('admin.manage-salary.store') }}" enctype="multipart/form-data">
+                    <form id="salaryForm" method="post" action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.manage-salary.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.manage-salary.store') : route('admin.manage-salary.store')) }}" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="employee_id" value="{{ $id }}">
                             <div class="row">

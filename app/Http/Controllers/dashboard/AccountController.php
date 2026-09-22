@@ -13,6 +13,8 @@ use App\Models\BookingPassenger;
 use App\Models\BookingPayment;
 use App\Models\BookingDocument;
 use App\Models\User;
+use App\Models\B2BPartner;
+use App\Models\B2CCustomer;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -150,15 +152,15 @@ class AccountController extends Controller
             \Log::error('Failed to send email: ' . $e->getMessage());
             if (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
                 // Determine appropriate redirect route based on user type
-                return redirect()->route('admin.booking-index')->with('error', 'Failed to create account: ' . $e->getMessage());
+                return redirect()->route('admin.booking.index')->with('error', 'Failed to create account: ' . $e->getMessage());
             }
             elseif (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
-                return redirect()->route('customer.booking-index')->with('error', 'Failed to create account: ' . $e->getMessage());
+                return redirect()->route('customer.booking.index')->with('error', 'Failed to create account: ' . $e->getMessage());
 
             } elseif (auth()->check()) {
-                return redirect()->route('staff.booking-index')->with('error', 'Failed to create account: ' . $e->getMessage());
+                return redirect()->route('staff.booking.index')->with('error', 'Failed to create account: ' . $e->getMessage());
 
-            } 
+            }
         }
         
     }
@@ -183,11 +185,13 @@ class AccountController extends Controller
             'booking_no' => 'required|string|unique:bookings,booking_no',
             'booking_date' => 'required|date',
             'customer_id' => 'nullable|exists:users,id',
-            'customer_type' => 'required|string|in:individual,corporate,agent',
+            'customer_type' => 'required|string|in:b2b,b2c',
             'customer_name' => 'required|string',
             'customer_email' => 'nullable|email',
             'customer_phone' => 'nullable|string',
             'booking_notes' => 'nullable|string',
+            'selected_customer_id' => 'nullable|integer',
+            'selected_customer_type' => 'nullable|string|in:b2b,b2c',
             // Invoice fields
             'invoice_number' => 'nullable|string',
             'invoice_date' => 'nullable|date',
@@ -241,6 +245,77 @@ class AccountController extends Controller
         
         $profit = $totalSell - $totalCost;
         
+        // Handle B2B partner creation if customer type is B2B and data doesn't exist
+        $b2bPartnerId = null;
+        
+        // Check if customer was selected from search
+        if (!empty($validated['selected_customer_id']) && $validated['selected_customer_type'] === 'b2b') {
+            $b2bPartnerId = $validated['selected_customer_id'];
+        } elseif ($validated['customer_type'] === 'b2b' && !empty($validated['b2b_company_name'])) {
+            // Check if B2B partner already exists by email or company name
+            $existingPartner = B2BPartner::where('email', $validated['b2b_email'])
+                ->orWhere('partner_name', $validated['b2b_company_name'])
+                ->first();
+            
+            if (!$existingPartner) {
+                // Generate partner code
+                $partnerCode = 'B' . str_pad(B2BPartner::count() + 1, 3, '0', STR_PAD_LEFT);
+                
+                // Create new B2B partner
+                $b2bPartner = B2BPartner::create([
+                    'partner_code' => $partnerCode,
+                    'partner_name' => $validated['b2b_company_name'],
+                    'partner_type' => $validated['b2b_group'] ?? 'Corporate',
+                    'email' => $validated['b2b_email'],
+                    'phone' => $validated['b2b_phone'],
+                    'country' => $validated['b2b_country'],
+                    'remarks' => $validated['b2b_remarks'],
+                    'responsible_person' => $validated['b2b_responsible'],
+                    'status' => 'Active',
+                    'created_by' => $currentUserId,
+                    'created_by_type' => $userType,
+                ]);
+                
+                $b2bPartnerId = $b2bPartner->id;
+            } else {
+                $b2bPartnerId = $existingPartner->id;
+            }
+        }
+        
+        // Handle B2C customer creation if customer type is B2C and data doesn't exist
+        $b2cCustomerId = null;
+        
+        // Check if customer was selected from search
+        if (!empty($validated['selected_customer_id']) && $validated['selected_customer_type'] === 'b2c') {
+            $b2cCustomerId = $validated['selected_customer_id'];
+        } elseif ($validated['customer_type'] === 'b2c' && !empty($validated['b2c_first_name']) && !empty($validated['b2c_last_name'])) {
+            // Check if B2C customer already exists by email
+            $existingCustomer = B2CCustomer::where('email', $validated['b2c_email'])
+                ->where('first_name', $validated['b2c_first_name'])
+                ->where('last_name', $validated['b2c_last_name'])
+                ->first();
+            
+            if (!$existingCustomer) {
+                // Create new B2C customer
+                $b2cCustomer = B2CCustomer::create([
+                    'customer_type' => 'individual',
+                    'first_name' => $validated['b2c_first_name'],
+                    'last_name' => $validated['b2c_last_name'],
+                    'email' => $validated['b2c_email'],
+                    'phone' => $validated['b2c_phone'],
+                    'address' => $validated['b2c_street'] . ', ' . $validated['b2c_house_no'] . ', ' . $validated['b2c_city'] . ', ' . $validated['b2c_state'] . ', ' . $validated['b2c_pincode'],
+                    'country' => $validated['b2c_country'],
+                    'special_requests' => $validated['b2c_remarks'],
+                    'status' => 'Active',
+                    'created_by' => $currentUserId,
+                ]);
+                
+                $b2cCustomerId = $b2cCustomer->id;
+            } else {
+                $b2cCustomerId = $existingCustomer->id;
+            }
+        }
+        
         // Create booking
         $booking = Booking::create([
             'booking_no' => $validated['booking_no'],
@@ -256,6 +331,8 @@ class AccountController extends Controller
             'profit' => $profit,
             'status' => 'pending',
             'created_by' => $currentUserId,
+            'b2b_partner_id' => $b2bPartnerId,
+            'b2c_customer_id' => $b2cCustomerId,
             // Invoice fields
             'invoice_number' => $validated['invoice_number'] ?? null,
             'invoice_date' => $validated['invoice_date'] ?? null,

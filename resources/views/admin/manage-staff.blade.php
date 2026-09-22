@@ -120,7 +120,7 @@
                                                     <td>{{ $data->min_hrs }}</td>
                                                     <td>{{ $data->max_hrs }}</td>
                                                     <td>
-                                                            <a href="{{ route('admin.manage-salary', ['id' => $data->id]) }}" class="btn btn-primary">Manage Salary</a>
+                                                            <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.manage-salary', ['id' => $data->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.manage-salary', ['id' => $data->id]) : route('admin.manage-salary', ['id' => $data->id])) }}" class="btn btn-primary">Manage Salary</a>
                                                         </td>
                                                 </tr>
                                             @endforeach

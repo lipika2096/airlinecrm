@@ -14,7 +14,8 @@ class DatabaseSeeder extends Seeder
             //RolePermissionSeeder::class,
             //TicketStatusSeeder::class,
             //StaffRoleSeeder::class
-            SupportTicketCommentsSeeder::class
+            //SupportTicketCommentsSeeder::class
+            ProductSeeder::class
 
         ]);
 

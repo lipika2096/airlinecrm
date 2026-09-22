@@ -25,6 +25,7 @@ class Admin extends Authenticatable
         'password',
         'plain_password',
         'is_active',
+        'timezone',
     ];
 
     /**
