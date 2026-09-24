@@ -32,12 +32,62 @@ class TimezoneHelper
             return $employee->timezone;
         }
 
-        // Default to UTC if no user is logged in or timezone is not set
-        return 'UTC';
+        // Default to system timezone if no user is logged in or timezone is not set
+        return self::getSystemTimezone();
     }
 
     /**
-     * Convert UTC datetime to user's timezone
+     * Format any datetime automatically based on user timezone
+     * This is the main method for global timezone handling
+     *
+     * @param mixed $datetime
+     * @param string $format
+     * @return string
+     */
+    public static function format($datetime, string $format = 'Y-m-d H:i:s'): string
+    {
+        if (empty($datetime)) {
+            return '-';
+        }
+
+        try {
+            return self::formatInUserTimezone($datetime, $format);
+        } catch (\Exception $e) {
+            // Fallback to simple formatting if conversion fails
+            if (is_string($datetime)) {
+                return date($format, strtotime($datetime));
+            }
+            return $datetime->format($format);
+        }
+    }
+
+    /**
+     * Auto-format datetime from model attributes
+     * Use this in Blade views: {{ TimezoneHelper::autoFormat($model->created_at) }}
+     *
+     * @param mixed $datetime
+     * @param string $format
+     * @return string
+     */
+    public static function autoFormat($datetime, string $format = 'Y-m-d H:i:s'): string
+    {
+        return self::format($datetime, $format);
+    }
+
+    /**
+     * Get the system timezone from config
+     *
+     * @return string
+     */
+    public static function getSystemTimezone(): string
+    {
+        // First check timezone config, fallback to app config
+        return config('timezone.system_timezone', config('app.timezone', 'UTC'));
+    }
+
+    /**
+     * Convert datetime to user's timezone
+     * Assumes the input datetime is in system timezone (from config)
      *
      * @param string|Carbon $datetime
      * @param string|null $timezone
@@ -46,12 +96,32 @@ class TimezoneHelper
     public static function convertToUserTimezone($datetime, ?string $timezone = null): Carbon
     {
         $timezone = $timezone ?? self::getUserTimezone();
+        $systemTimezone = self::getSystemTimezone();
         
         if (is_string($datetime)) {
-            $datetime = Carbon::parse($datetime, 'UTC');
+            $datetime = Carbon::parse($datetime, $systemTimezone);
         }
 
         return $datetime->setTimezone($timezone);
+    }
+
+    /**
+     * Convert user's timezone datetime to system timezone
+     *
+     * @param string|Carbon $datetime
+     * @param string|null $timezone
+     * @return Carbon
+     */
+    public static function convertToSystemTimezone($datetime, ?string $timezone = null): Carbon
+    {
+        $timezone = $timezone ?? self::getUserTimezone();
+        $systemTimezone = self::getSystemTimezone();
+        
+        if (is_string($datetime)) {
+            $datetime = Carbon::parse($datetime, $timezone);
+        }
+
+        return $datetime->setTimezone($systemTimezone);
     }
 
     /**
@@ -108,6 +178,23 @@ class TimezoneHelper
     }
 
     /**
+     * Format datetime in system timezone
+     *
+     * @param string|Carbon $datetime
+     * @param string $format
+     * @return string
+     */
+    public static function formatInSystemTimezone($datetime, string $format = 'Y-m-d H:i:s'): string
+    {
+        $systemTimezone = self::getSystemTimezone();
+        if (is_string($datetime)) {
+            $datetime = Carbon::parse($datetime, $systemTimezone);
+        }
+
+        return $datetime->format($format);
+    }
+
+    /**
      * Format datetime in UTC
      *
      * @param string|Carbon $datetime
@@ -132,7 +219,8 @@ class TimezoneHelper
     {
         $timezone = self::getUserTimezone();
         date_default_timezone_set($timezone);
-        config(['app.timezone' => $timezone]);
+        // Don't modify config as it could cause issues with request-to-request consistency
+        // Only set the PHP timezone for the current request
     }
 
     /**

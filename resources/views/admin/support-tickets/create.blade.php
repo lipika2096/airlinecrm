@@ -95,8 +95,17 @@
                                 @if($isSuperAdmin)
                                 <div class="form-group">
                                     <label>Company Name <span class="text-danger">*</span></label>
-                                    <input class="form-control" type="text" name="company_name" required>
-                                    <small class="text-muted">Enter the company name for whom this ticket is being created</small>
+                                    <select class="select form-control" name="company_name" required>
+                                        <option value="">Select Company</option>
+                                        @if(isset($company) && $company)
+                                            @foreach($company as $comp)
+                                                <option value="{{ $comp->adminDetail->company_name ?? $comp->name }}">
+                                                    {{ $comp->adminDetail->company_name ?? $comp->name }}
+                                                </option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                    <small class="text-muted">Select the company for whom this ticket is being created</small>
                                 </div>
                                 
                                 <div class="form-group">

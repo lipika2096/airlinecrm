@@ -15,7 +15,7 @@
             <!-- Header -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h2 style="margin: 0; color: #333; font-weight: 600;">Super Admin Dashboard</h2>
+                    <h2 style="margin: 0; color: #333; font-weight: 600;">Welcome, {{ auth('admin')->check() ? auth('admin')->user()->name : auth()->user()->first_name ." ".auth()->user()->last_name}} </h2>
                     <p style="margin: 5px 0 0 0; color: #666;">{{ Carbon::now()->format('l, d F Y') }}</p>
                 </div>
                 <!-- <div class="date-range-picker" style="background: white; padding: 10px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">

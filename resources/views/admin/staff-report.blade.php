@@ -123,8 +123,8 @@
                                         <th>Position</th>
                                         <th>Staff No</th>
                                         <th>DOJ</th>
-                                        <th>Min Hrs</th>
-                                        <th>Max Hrs</th>
+                                        <!-- <th>Min Hrs</th>
+                                        <th>Max Hrs</th> -->
                                         @if($reportType === 'Overtime')
                                         <th>Overtime</th>
                                         @endif
@@ -151,8 +151,8 @@
                                             <td>{{ $report['user']->position }}</td>
                                             <td>{{ $report['user']->unique_id }}</td>
                                             <td>{{ $report['user']->joining_date }}</td>
-                                            <td>{{ $report['user']->min_hrs }}</td>
-                                            <td>{{ $report['user']->max_hrs }}</td>
+                                            <!-- <td>{{ $report['user']->min_hrs }}</td>
+                                            <td>{{ $report['user']->max_hrs }}</td> -->
                                             @if($reportType === 'Overtime')
                                             <td>{{ $report->overtime ?? 0 }}</td>
                                             @endif

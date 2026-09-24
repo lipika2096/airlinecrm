@@ -28,7 +28,7 @@ class CommissionController extends Controller
     $airlines = Airline::all();
 
     // Fetch agents where role_id is 2 (assuming role_id 2 corresponds to agents)
-    $agents = User::where('role_id', 2)->where('created_by', $user->id)->get();
+    $agents = User::where('role_id', 2)->where('created_by', $user->id)->whereNull('deleted_at')->get();
 
     // Fetch commissions where agent_id matches the authenticated user's id
     $authId = auth('admin')->id(); // Assuming you are using Laravel's built-in authentication
@@ -56,7 +56,7 @@ class CommissionController extends Controller
             return redirect()->route('admin.login');
         }
         $airlines = Airline::all();
-        $agents = User::where('role_id', 2)->where('created_by', $user->id)->get();
+        $agents = User::where('role_id', 2)->where('created_by', $user->id)->whereNull('deleted_at')->get();
         return view('admin.commissions.create', compact('airlines', 'agents'));
     }
 
@@ -93,7 +93,7 @@ class CommissionController extends Controller
             return redirect()->route('admin.login');
         }
         $airlines = Airline::all();
-        $agents = User::where('role_id', 2)->where('created_by', $user->id)->get();
+        $agents = User::where('role_id', 2)->where('created_by', $user->id)->whereNull('deleted_at')->get();
         return view('admin.commissions.edit', compact('commission', 'airlines', 'agents'));
     }
 

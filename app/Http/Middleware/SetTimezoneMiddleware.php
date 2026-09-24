@@ -17,6 +17,7 @@ class SetTimezoneMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         // Set the application timezone based on the logged-in user
+        // This sets the PHP timezone for the current request only
         TimezoneHelper::setAppTimezone();
         
         return $next($request);

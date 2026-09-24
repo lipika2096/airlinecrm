@@ -88,7 +88,7 @@ class AgentController extends Controller
     {
         try {
             // Find the user record
-            $user = User::findOrFail($id);
+            $user = User::where('id', $id)->whereNull('deleted_at')->firstOrFail();
 
             // Handle image upload
             if ($request->hasFile('avatar_filename')) {
@@ -128,7 +128,7 @@ class AgentController extends Controller
     public function view($id)
     {
 
-        $agent = User::find($id);
+        $agent = User::where('id', $id)->whereNull('deleted_at')->first();
 
         if (!$agent) {
             return redirect()->route('admin.agents')->with('error', 'Agent not found.');
@@ -147,7 +147,7 @@ class AgentController extends Controller
         $fareConditions = FareCondition::where('agent_id', $id)->get();
         $group = Group::where('agent_id', $id)->get();
         $commissions = Commission::all();
-        $agents = User::all();
+        $agents = User::whereNull('deleted_at')->get();
         $airlines = Airline::all();
 
 

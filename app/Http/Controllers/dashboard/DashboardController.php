@@ -42,59 +42,13 @@ class DashboardController extends Controller
             return $this->superAdminDashboard();
         }
 
-        // Get booking statistics for the current user
-        $myBookings = DB::table('air_tickets')->where('created_by', $user->id)->count();
-        
-        // Get pending invoices count
-        $pendingInvoices = 0;
-        
-        // Get outstanding amount
-        $outstandingAmount =  0;
+        // If staff, route to appropriate dashboard
+        if ($isStaff) {
+            return $this->staffDashboard();
+        }
 
-        // Get support ticket statistics for the current user
-        $openTickets = SupportTicket::where('status', 'open')
-            ->where(function($query) use ($user) {
-                $query->where('created_by', $user->id)
-                      ->orWhere('assigned_to', $user->id);
-            })
-            ->count();
-        
-        $pendingTickets = SupportTicket::where('status', 'in_progress')
-            ->where(function($query) use ($user) {
-                $query->where('created_by', $user->id)
-                      ->orWhere('assigned_to', $user->id);
-            })
-            ->count();
-        
-        $closedTickets = SupportTicket::where('status', 'closed')
-            ->where(function($query) use ($user) {
-                $query->where('created_by', $user->id)
-                      ->orWhere('assigned_to', $user->id);
-            })
-            ->count();
-
-        // Get recent tickets for the current user
-        $recentTickets = SupportTicket::where(function($query) use ($user) {
-                $query->where('created_by', $user->id)
-                      ->orWhere('assigned_to', $user->id);
-            })
-            ->orderBy('updated_at', 'desc')
-            ->limit(5)
-            ->get();
-
-        // Pass data to the view
-        return view('admin.admin-dashboard', compact(
-            'myBookings',
-            'pendingInvoices', 
-            'outstandingAmount',
-            'openTickets',
-            'pendingTickets',
-            'closedTickets',
-            'recentTickets',
-            'user'  ,
-            'isSuperAdmin',
-            'isStaff'
-        ));
+        // Otherwise, show customer dashboard (non-superadmin admin)
+        return $this->customerDashboard();
     }
 
     public function superAdminDashboard()
@@ -283,14 +237,54 @@ class DashboardController extends Controller
             return $this->superAdminDashboard();
         }
 
-        //dd($user);
+        // Check if staff is superadmin staff (created_by == 2)
+        $isSuperAdminStaff = ($user->created_by == 2);
+        
+        // If superadmin staff, show superadmin dashboard
+        if ($isSuperAdminStaff) {
+            return $this->superAdminDashboard();
+        }
+
+        // Otherwise, show customer dashboard (customer staff)
+        return $this->customerDashboard();
+    }
+
+    public function customerDashboard()
+    {
+        if (auth()->check()) {
+            // Staff user from users table
+            $user = auth()->user();
+            $isStaff = true;
+            $isSuperAdmin = false;
+        } elseif (auth('admin')->check()) {
+            // Admin user from admins table
+            $user = Auth::guard('admin')->user();
+            $isSuperAdmin = $user->hasRole('SuperAdmin');
+            $isStaff = false;
+        } else {
+            $user = Auth::user();
+            $isSuperAdmin = false;
+            $isStaff = false;
+        }
+
+        // If SuperAdmin, show the new SuperAdmin dashboard
+        if ($isSuperAdmin) {
+            return $this->superAdminDashboard();
+        }
+
         // Ensure user has a name field
         if (empty($user->name) && !empty($user->first_name) && !empty($user->last_name)) {
             $user->name = $user->first_name . ' ' . $user->last_name;
         }
         
-        // Get basic statistics for staff dashboard
+        // Get basic statistics for customer dashboard
         $myBookings = DB::table('air_tickets')->where('created_by', $user->id)->count();
+        
+        // Get pending invoices count
+        $pendingInvoices = 0;
+        
+        // Get outstanding amount
+        $outstandingAmount = 0;
         
         // Get support ticket statistics for the current user
         $openTickets = SupportTicket::where('status', 'open')
@@ -323,18 +317,101 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        // Get data for Tickets Overview chart (last 7 days) for current user
+        $ticketsOverviewData = $this->getCustomerTicketsOverviewData($user);
+
+        // Get data for Ticket Categories chart for current user
+        $ticketCategoriesData = $this->getCustomerTicketCategoriesData($user);
+
         // Pass data to the view
         return view('admin.admin-dashboard', compact(
             'myBookings',
+            'pendingInvoices', 
+            'outstandingAmount',
             'openTickets',
             'pendingTickets',
             'closedTickets',
             'recentTickets',
+            'ticketsOverviewData',
+            'ticketCategoriesData',
             'user',
             'isSuperAdmin',
             'isStaff'
 
         ));
+    }
+
+    private function getCustomerTicketsOverviewData($user)
+    {
+        // Get data for last 7 days for current user's tickets
+        $days = [];
+        $newTicketsData = [];
+        $resolvedTicketsData = [];
+        $closedTicketsData = [];
+        
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $days[] = $date->format('d M');
+            
+            // Count new tickets created on this day by current user
+            $newTicketsData[] = SupportTicket::whereDate('created_at', $date->toDateString())
+                ->where(function($query) use ($user) {
+                    $query->where('created_by', $user->id)
+                          ->orWhere('assigned_to', $user->id);
+                })
+                ->count();
+            
+            // Count resolved tickets on this day for current user
+            $resolvedTicketsData[] = SupportTicket::whereDate('resolved_at', $date->toDateString())
+                ->where('status', 'resolved')
+                ->where(function($query) use ($user) {
+                    $query->where('created_by', $user->id)
+                          ->orWhere('assigned_to', $user->id);
+                })
+                ->count();
+            
+            // Count closed tickets on this day for current user
+            $closedTicketsData[] = SupportTicket::whereDate('closed_at', $date->toDateString())
+                ->where('status', 'closed')
+                ->where(function($query) use ($user) {
+                    $query->where('created_by', $user->id)
+                          ->orWhere('assigned_to', $user->id);
+                })
+                ->count();
+        }
+
+        return [
+            'labels' => $days,
+            'new_tickets' => $newTicketsData,
+            'resolved_tickets' => $resolvedTicketsData,
+            'closed_tickets' => $closedTicketsData
+        ];
+    }
+
+    private function getCustomerTicketCategoriesData($user)
+    {
+        // Get ticket distribution by department for current user
+        $departments = SupportTicket::select('department', DB::raw('count(*) as total'))
+            ->where(function($query) use ($user) {
+                $query->where('created_by', $user->id)
+                      ->orWhere('assigned_to', $user->id);
+            })
+            ->groupBy('department')
+            ->orderByDesc('total')
+            ->get();
+        
+        $labels = [];
+        $data = [];
+        
+        foreach ($departments as $dept) {
+            $labels[] = ucfirst(str_replace('_', ' ', $dept->department));
+            $data[] = $dept->total;
+        }
+
+        return [
+            'labels' => $labels,
+            'data' => $data
+        ];
     }
 
     public function comingSoon(){

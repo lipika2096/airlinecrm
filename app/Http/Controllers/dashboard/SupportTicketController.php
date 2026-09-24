@@ -1198,7 +1198,7 @@ class SupportTicketController extends Controller
             ->whereHas('userDepartments', function($query) use ($departmentName) {
                 $query->where('department_name', $departmentName);
             })
-            ->where('deleted_at', NULL)->get();
+            ->get();
 
         \Log::info('Found staff count: ' . $staff->count());
 
@@ -1328,6 +1328,26 @@ class SupportTicketController extends Controller
         }
 
         // Handle status changes and timestamps
+        // Automatically change status from on_hold to reopened when any status change occurs (except to on_hold)
+        if (in_array(strtolower($oldStatus), ['on_hold', 'onhold']) && 
+            $request->status && 
+            !in_array(strtolower($request->status), ['on_hold', 'onhold'])) {
+            $reopenedStatus = TicketStatus::where('name', 'Reopened')->first();
+            $reopenedStatusSlug = $reopenedStatus ? $reopenedStatus->slug : 'reopened';
+            $ticket->status = $reopenedStatusSlug;
+            
+            // Log the status change for audit purposes
+            \Log::info('Ticket status automatically changed from on_hold to reopened', [
+                'ticket_id' => $ticket->id,
+                'ticket_number' => $ticket->ticket_number,
+                'previous_status' => $oldStatus,
+                'requested_status' => $request->status,
+                'new_status' => $reopenedStatusSlug,
+                'triggered_by' => 'manual_status_update',
+                'user_id' => $userId
+            ]);
+        }
+        
         if ($request->status === 'resolved') {
             $ticket->resolved_at = now();
             // Save who resolved the ticket
@@ -1561,10 +1581,22 @@ class SupportTicketController extends Controller
         }
 
         // Automatically change status from on_hold to reopened when a comment is added
-        if ($ticket->status === 'on_hold') {
-            $reopenedStatusSlug = TicketStatus::where('name', 'Reopened')->first()?->slug ?? 'reopened';
+        // Check for both 'on_hold' and 'onhold' to handle different formats
+        if (in_array(strtolower($ticket->status), ['on_hold', 'onhold'])) {
+            $reopenedStatus = TicketStatus::where('name', 'Reopened')->first();
+            $reopenedStatusSlug = $reopenedStatus ? $reopenedStatus->slug : 'reopened';
             $ticket->status = $reopenedStatusSlug;
             $ticket->save();
+            
+            // Log the status change for audit purposes
+            \Log::info('Ticket status automatically changed from on_hold to reopened', [
+                'ticket_id' => $ticket->id,
+                'ticket_number' => $ticket->ticket_number,
+                'previous_status' => $ticket->status,
+                'new_status' => $reopenedStatusSlug,
+                'triggered_by' => 'comment_addition',
+                'user_id' => $userId
+            ]);
         }
 
         return redirect()->back()
@@ -1581,6 +1613,26 @@ class SupportTicketController extends Controller
         $ticket = SupportTicket::findOrFail($id);
         $previousAssignedTo = $ticket->assigned_to;
         $ticket->assigned_to = $request->assigned_to;
+        
+        // Automatically change status from on_hold to reopened when ticket is reassigned
+        // Check for both 'on_hold' and 'onhold' to handle different formats
+        if (in_array(strtolower($ticket->status), ['on_hold', 'onhold'])) {
+            $reopenedStatus = TicketStatus::where('name', 'Reopened')->first();
+            $reopenedStatusSlug = $reopenedStatus ? $reopenedStatus->slug : 'reopened';
+            $ticket->status = $reopenedStatusSlug;
+            
+            // Log the status change for audit purposes
+            \Log::info('Ticket status automatically changed from on_hold to reopened', [
+                'ticket_id' => $ticket->id,
+                'ticket_number' => $ticket->ticket_number,
+                'previous_status' => $ticket->status,
+                'new_status' => $reopenedStatusSlug,
+                'triggered_by' => 'reassignment',
+                'assigned_to' => $request->assigned_to,
+                'previous_assigned_to' => $previousAssignedTo
+            ]);
+        }
+        
         $ticket->save();
 
         // Notify newly assigned staff
@@ -1741,6 +1793,25 @@ class SupportTicketController extends Controller
             'note' => $request->note,
             'attachments' => json_encode($attachmentPaths),
         ]);
+
+        // Automatically change status from on_hold to reopened when an internal note is added
+        // Check for both 'on_hold' and 'onhold' to handle different formats
+        if (in_array(strtolower($ticket->status), ['on_hold', 'onhold'])) {
+            $reopenedStatus = TicketStatus::where('name', 'Reopened')->first();
+            $reopenedStatusSlug = $reopenedStatus ? $reopenedStatus->slug : 'reopened';
+            $ticket->status = $reopenedStatusSlug;
+            $ticket->save();
+            
+            // Log the status change for audit purposes
+            \Log::info('Ticket status automatically changed from on_hold to reopened', [
+                'ticket_id' => $ticket->id,
+                'ticket_number' => $ticket->ticket_number,
+                'previous_status' => $ticket->status,
+                'new_status' => $reopenedStatusSlug,
+                'triggered_by' => 'internal_note_addition',
+                'user_id' => $user->id
+            ]);
+        }
 
         return redirect()->back()
             ->with('success', 'Internal note added successfully.')

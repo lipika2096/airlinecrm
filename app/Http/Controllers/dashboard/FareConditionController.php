@@ -33,7 +33,7 @@ class FareConditionController extends Controller
             return redirect()->route('admin.login');
         }
         // Fetch agents where role is 2
-        $agents = User::where('role_id', 2)->where('created_by', $user->id)->get();
+        $agents = User::where('role_id', 2)->where('created_by', $user->id)->whereNull('deleted_at')->get();
         return view('admin.fare_conditions.create', compact('agents'));
     }
 
@@ -83,7 +83,7 @@ if (auth()->check()) {
         }
 
     // Fetch agents where role is 2
-    $agents = User::where('role_id', 2)->where('created_by', $user->id)->get();
+    $agents = User::where('role_id', 2)->where('created_by', $user->id)->whereNull('deleted_at')->get();
     return view('admin.fare_conditions.edit', compact('fareCondition', 'agents'));
 }
 

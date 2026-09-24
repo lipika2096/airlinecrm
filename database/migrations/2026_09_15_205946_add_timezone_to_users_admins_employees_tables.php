@@ -13,13 +13,19 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             if (!Schema::hasColumn('users', 'timezone')) {
-                $table->string('timezone')->default('UTC')->nullable();
+                $table->string('timezone')->nullable();
             }
         });
 
         Schema::table('admins', function (Blueprint $table) {
             if (!Schema::hasColumn('admins', 'timezone')) {
-                $table->string('timezone')->default('UTC')->nullable();
+                $table->string('timezone')->nullable();
+            }
+        });
+
+        Schema::table('employees', function (Blueprint $table) {
+            if (!Schema::hasColumn('employees', 'timezone')) {
+                $table->string('timezone')->nullable();
             }
         });
 
@@ -38,6 +44,12 @@ return new class extends Migration
 
         Schema::table('admins', function (Blueprint $table) {
             if (Schema::hasColumn('admins', 'timezone')) {
+                $table->dropColumn('timezone');
+            }
+        });
+
+        Schema::table('employees', function (Blueprint $table) {
+            if (Schema::hasColumn('employees', 'timezone')) {
                 $table->dropColumn('timezone');
             }
         });

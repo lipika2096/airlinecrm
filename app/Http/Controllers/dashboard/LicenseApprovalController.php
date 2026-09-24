@@ -24,7 +24,7 @@ class LicenseApprovalController extends Controller
         } else {
             return redirect()->route('admin.login');
         }
-        $staff = User::where('role_id', 2)->where('created_by', $user->id)->get();
+        $staff = User::where('role_id', 2)->where('created_by', $user->id)->whereNull('deleted_at')->get();
         $licenseApprovals = LicenseApproval::with('staff')->get();
         return view('admin.license-approval', compact('licenseApprovals', 'staff'));
     }
@@ -83,7 +83,7 @@ class LicenseApprovalController extends Controller
         } else {
             return redirect()->route('admin.login');
         }
-        $staff = User::where('role_id', 2)->where('created_by', $user->id)->get();
+        $staff = User::where('role_id', 2)->where('created_by', $user->id)->whereNull('deleted_at')->get();
         return view('admin.license-approval.edit', compact('licenseApproval', 'staff'));
     }
 

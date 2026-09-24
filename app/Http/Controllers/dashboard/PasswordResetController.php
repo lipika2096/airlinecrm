@@ -33,7 +33,7 @@ class PasswordResetController extends Controller
         $admin = Admin::where('email', $request->email)->first();
 
         if (!$admin) {
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('email', $request->email)->whereNull('deleted_at')->first();
             if(!$user){
                 return back()->with('error', 'We cannot find a user with that email address.');
 
@@ -118,7 +118,7 @@ class PasswordResetController extends Controller
         $admin = Admin::where('email', $request->email)->first();
 
         if (!$admin) {
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('email', $request->email)->whereNull('deleted_at')->first();
             if(!$user){
                 return back()->with('error', 'We cannot find a user with that email address.');
             }

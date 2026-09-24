@@ -53,7 +53,7 @@
                             <div class="row align-items-center">
                                 <div class="col-md-12">
                                     <div class="d-flex align-items-center mb-3">
-                                        <h4 class="mb-0" style="margin-right: 1rem;">Ticket {{ $ticket->ticket_number }}</h4>
+                                        <h4 class="mb-0" style="margin-right: 1rem;">Ticket #{{ $ticket->id }}({{ $ticket->ticket_number }})</h4>
                                         @php
                                             $currentStatus = $ticketStatuses->where('slug', $ticket->status)->first();
                                         @endphp
@@ -125,8 +125,8 @@
                                                 </p>
                                             </div>
                                             <div class="col-md-4">
-                                                <p><strong>Created:</strong> {{ $ticket->created_at->format('M d, Y h:i A') }}</p>
-                                                <p><strong>SLA Due:</strong> {{ $slaDue->format('M d, Y h:i A') }}
+                                                <p><strong>Created:</strong> {{ \App\Helpers\TimezoneHelper::format($ticket->created_at, 'M d, Y h:i A') }}</p>
+                                                <p><strong>SLA Due:</strong> {{ \App\Helpers\TimezoneHelper::format($slaDue, 'M d, Y h:i A') }}
                                                     @if($isOverdue)
                                                         <span class="badge bg-danger ms-2">Overdue</span>
                                                     @endif
@@ -154,7 +154,7 @@
                                             <select class="form-control"  id="departmentSelect">
                                                 <option value="">Select Department</option>
                                                 @foreach($departments as $department)
-                                                <option value="{{ trim($department) }}">{{ trim($department) }}</option>
+                                                <option value="{{ trim($department) }}" {{ $ticket->department == trim($department) ? 'selected' : '' }}>{{ trim($department) }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -163,7 +163,10 @@
                                         <div class="form-group">
                                             <label>Assign To</label>
                                             <select class="form-control" name="assigned_to" id="staffSelect">
-                                                <option value="">Select Staff Member</option>
+                                                <option value="" disabled>Select Staff Member</option>
+                                                @if($ticket->assigned_to && $ticket->assignedTo)
+                                                    <option value="{{ $ticket->assigned_to }}" selected data-is-current="true">{{ $ticket->assignedTo->first_name }} {{ $ticket->assignedTo->last_name }}</option>
+                                                @endif
                                             </select>
                                         </div>
                                     </div>
@@ -238,7 +241,7 @@
                                     <div class="col-md-6 text-center">
                                     <div class="ticket-resolution-info">
                                         <h6 style="color:unset;font-size: smaller;">Resolution Details</h6>
-                                        <p><strong>Resolved On:</strong> {{ $ticket->closed_at ? $ticket->closed_at->format('M d, Y h:i A') : 'N/A' }}</p>
+                                        <p><strong>Resolved On:</strong> {{ $ticket->closed_at ? \App\Helpers\TimezoneHelper::format($ticket->closed_at, 'M d, Y h:i A') : 'N/A' }}</p>
                                         <p><strong>Feedback:</strong> {{ $ticket->rating_comment ? $ticket->rating_comment : 'N/A' }}</p>
                                         @if($ticket->rating)
                                         <p><strong>User Rating:</strong> 
@@ -288,7 +291,7 @@
                                             <div class="message-header d-flex justify-content-between align-items-start">
                                                 <div>
                                                     <strong>{{ $creatorName }}</strong>
-                                                    <small class="message-time" style="margin-left: 1rem;">{{ $ticket->created_at->format('M d, Y h:i A') }}</small>
+                                                    <small class="message-time" style="margin-left: 1rem;">{{ \App\Helpers\TimezoneHelper::format($ticket->created_at, 'M d, Y h:i A') }}</small>
                                                 </div>
                                             </div>
                                             <div class="message-body">
@@ -327,7 +330,7 @@
                                                         <div class="message-header d-flex justify-content-between align-items-start">
                                                             <div>
                                                                 <strong>{{ $commentAuthorName }}</strong>
-                                                                <small class="message-time" style="margin-left: 1rem;">{{ $comment->created_at->format('M d, Y h:i A') }}</small>
+                                                                <small class="message-time" style="margin-left: 1rem;">{{ \App\Helpers\TimezoneHelper::format($comment->created_at, 'M d, Y h:i A') }}</small>
                                                             </div>
                                                         </div>
                                                         <div class="message-body">
@@ -361,7 +364,7 @@
                                                         <div class="message-header d-flex justify-content-between align-items-start">
                                                             <div>
                                                                 <strong>{{ $closerName }}</strong>
-                                                                <small class="message-time" style="margin-left: 1rem;">{{ $ticket->closed_at ? $ticket->closed_at->format('M d, Y h:i A') : $ticket->updated_at->format('M d, Y h:i A') }}</small>
+                                                                <small class="message-time" style="margin-left: 1rem;">{{ $ticket->closed_at ? \App\Helpers\TimezoneHelper::format($ticket->closed_at, 'M d, Y h:i A') : \App\Helpers\TimezoneHelper::format($ticket->updated_at, 'M d, Y h:i A') }}</small>
                                                                 @if($isReopened)
                                                                     <span class="badge bg-secondary ms-2">Previously Closed</span>
                                                                 @else
@@ -454,7 +457,7 @@
                                                     @if($ticket->status == 'closed' || $ticket->status == 'resolved')
                                                     <tr>
                                                         <th>Resolved On</th>
-                                                        <td>{{ $ticket->resolved_at ? $ticket->resolved_at->format('M d, Y h:i A') : 'N/A' }}</td>
+                                                        <td>{{ $ticket->resolved_at ? \App\Helpers\TimezoneHelper::format($ticket->resolved_at, 'M d, Y h:i A') : 'N/A' }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>Resolved By</th>
@@ -521,11 +524,11 @@
                                                     </tr>
                                                     <tr>
                                                         <th>Created At</th>
-                                                        <td>{{ $ticket->created_at->format('M d, Y h:i A') }}</td>
+                                                        <td>{{ \App\Helpers\TimezoneHelper::format($ticket->created_at, 'M d, Y h:i A') }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>Updated At</th>
-                                                        <td>{{ $ticket->updated_at->format('M d, Y h:i A') }}</td>
+                                                        <td>{{ \App\Helpers\TimezoneHelper::format($ticket->updated_at, 'M d, Y h:i A') }}</td>
                                                     </tr>
                                                 </table>
                                             </div>
@@ -546,7 +549,7 @@
                                                     <div class="note-header d-flex justify-content-between align-items-start">
                                                         <div>
                                                             <strong>{{ $note->user ? $note->user->name : 'Unknown' }}</strong>
-                                                            <small class="message-time" style="margin-left: 1rem;">{{ $note->created_at->format('M d, Y h:i A') }}</small>
+                                                            <small class="message-time" style="margin-left: 1rem;">{{ \App\Helpers\TimezoneHelper::format($note->created_at, 'M d, Y h:i A') }}</small>
                                                         </div>
                                                         @if($note->user_id == $currentUserId)
                                                             <button type="button" class="btn btn-sm btn-outline-primary edit-note-btn" data-note-id="{{ $note->id }}" data-note-content="{{ $note->note }}">
@@ -654,7 +657,7 @@
                                                         'path' => $path,
                                                         'name' => $name,
                                                         'source' => 'Ticket',
-                                                        'date' => $ticket->created_at->format('M d, Y h:i A'),
+                                                        'date' => \App\Helpers\TimezoneHelper::format($ticket->created_at, 'M d, Y h:i A'),
                                                     ];
                                                 }
                                             }
@@ -676,7 +679,7 @@
                                                                 'path' => $path,
                                                                 'name' => $name,
                                                                 'source' => 'Comment by ' . ($comment->user ? $comment->user->name : 'Unknown'),
-                                                                'date' => $comment->created_at->format('M d, Y h:i A'),
+                                                                'date' => \App\Helpers\TimezoneHelper::format($comment->created_at, 'M d, Y h:i A'),
                                                             ];
                                                         }
                                                     }
@@ -700,7 +703,7 @@
                                                                 'path' => $path,
                                                                 'name' => $name,
                                                                 'source' => 'Internal Note by ' . ($note->user ? $note->user->name : 'Unknown'),
-                                                                'date' => $note->created_at->format('M d, Y h:i A'),
+                                                                'date' => \App\Helpers\TimezoneHelper::format($note->created_at, 'M d, Y h:i A'),
                                                             ];
                                                         }
                                                     }
@@ -755,7 +758,7 @@
                                 <h4 class="ticket-closed-title">{{ $ticket->ticket_number }}</h4>
                                 <span class="badge bg-success badge-lg mb-3">Closed</span>
                                 <p class="ticket-closed-message">
-                                    This ticket was closed on {{ $ticket->closed_at ? $ticket->closed_at->format('M d, Y h:i A') : $ticket->updated_at->format('M d, Y h:i A') }}
+                                    This ticket was closed on {{ $ticket->closed_at ? \App\Helpers\TimezoneHelper::format($ticket->closed_at, 'M d, Y h:i A') : \App\Helpers\TimezoneHelper::format($ticket->updated_at, 'M d, Y h:i A') }}
                                 </p>
                                 
                                 @if($ticket->rating)
@@ -854,8 +857,8 @@
                                                 @endif
                                             </div>
                                             <div class="col-md-4">
-                                                <p><strong>Created:</strong> {{ $ticket->created_at->format('M d, Y h:i A') }}</p>
-                                                <p><strong>Last Updated:</strong> {{ $ticket->updated_at->format('M d, Y h:i A') }}</p>
+                                                <p><strong>Created:</strong> {{ \App\Helpers\TimezoneHelper::format($ticket->created_at, 'M d, Y h:i A') }}</p>
+                                                <p><strong>Last Updated:</strong> {{ \App\Helpers\TimezoneHelper::format($ticket->updated_at, 'M d, Y h:i A') }}</p>
                                             </div>
                                             
                                             <div class="col-md-4">
@@ -964,11 +967,11 @@
                                                     </tr>
                                                     <tr>
                                                         <th>Created At</th>
-                                                        <td>{{ $ticket->created_at->format('M d, Y h:i A') }}</td>
+                                                        <td>{{ \App\Helpers\TimezoneHelper::format($ticket->created_at, 'M d, Y h:i A') }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>Updated At</th>
-                                                        <td>{{ $ticket->updated_at->format('M d, Y h:i A') }}</td>
+                                                        <td>{{ \App\Helpers\TimezoneHelper::format($ticket->updated_at, 'M d, Y h:i A') }}</td>
                                                     </tr>
                                                 </table>
                                             </div>
@@ -990,7 +993,7 @@
                                             <div class="message-header d-flex justify-content-between align-items-start">
                                                 <div>
                                                     <strong>{{ $creatorName }}</strong>
-                                                    <small class="message-time" style="margin-left: 1rem;">{{ $ticket->created_at->format('M d, Y h:i A') }}</small>
+                                                    <small class="message-time" style="margin-left: 1rem;">{{ \App\Helpers\TimezoneHelper::format($ticket->created_at, 'M d, Y h:i A') }}</small>
                                                 </div>
                                             </div>
                                             <div class="message-body">
@@ -1029,7 +1032,7 @@
                                                         <div class="message-header d-flex justify-content-between align-items-start">
                                                             <div>
                                                                 <strong>{{ $commentAuthorName }}</strong>
-                                                                <small class="message-time" style="margin-left: 1rem;">{{ $comment->created_at->format('M d, Y h:i A') }}</small>
+                                                                <small class="message-time" style="margin-left: 1rem;">{{ \App\Helpers\TimezoneHelper::format($comment->created_at, 'M d, Y h:i A') }}</small>
                                                             </div>
                                                         </div>
                                                         <div class="message-body">
@@ -1059,7 +1062,7 @@
                                                         <div class="message-header d-flex justify-content-between align-items-start">
                                                             <div>
                                                                 <strong>{{ $closerName }}</strong>
-                                                                <small class="message-time" style="margin-left: 1rem;">{{ $ticket->closed_at ? $ticket->closed_at->format('M d, Y h:i A') : $ticket->updated_at->format('M d, Y h:i A') }}</small>
+                                                                <small class="message-time" style="margin-left: 1rem;">{{ $ticket->closed_at ? \App\Helpers\TimezoneHelper::format($ticket->closed_at, 'M d, Y h:i A') : \App\Helpers\TimezoneHelper::format($ticket->updated_at, 'M d, Y h:i A') }}</small>
                                                                 @if($isReopened)
                                                                     <span class="badge bg-secondary ms-2">Previously Closed</span>
                                                                 @else
@@ -1124,7 +1127,7 @@
                                                     $allAttachments[] = [
                                                         'path' => $attachment,
                                                         'source' => 'Ticket',
-                                                        'date' => $ticket->created_at->format('M d, Y h:i A'),
+                                                        'date' => \App\Helpers\TimezoneHelper::format($ticket->created_at, 'M d, Y h:i A'),
                                                     ];
                                                 }
                                             }
@@ -1137,7 +1140,7 @@
                                                             $allAttachments[] = [
                                                                 'path' => $attachment,
                                                                 'source' => 'Comment by ' . ($comment->user ? $comment->user->name : 'Unknown'),
-                                                                'date' => $comment->created_at->format('M d, Y h:i A'),
+                                                                'date' => \App\Helpers\TimezoneHelper::format($comment->created_at, 'M d, Y h:i A'),
                                                             ];
                                                         }
                                                     }
@@ -1896,13 +1899,71 @@
             var staffByDepartmentRoute = null;
             @endif
 
+            // Initialize staff select with current assignment and department
+            @if($isSuperAdmin)
+            var currentAssignedTo = '{{ $ticket->assigned_to ?? '' }}';
+            var currentAssignedName = '{{ $ticket->assignedTo ? $ticket->assignedTo->first_name . " " . $ticket->assignedTo->last_name : "" }}';
+            var currentDepartment = '{{ $ticket->department ?? '' }}';
+            var staffSelect = $('#staffSelect');
+            var departmentSelect = $('#departmentSelect');
+
+            // Set current department
+            if (currentDepartment) {
+                departmentSelect.val(currentDepartment);
+                
+                // Load staff for current department
+                if (currentDepartment && staffByDepartmentRoute) {
+                    $.ajax({
+                        url: staffByDepartmentRoute,
+                        type: 'GET',
+                        data: { department_id: currentDepartment.trim() },
+                        success: function(response) {
+                            staffSelect.empty();
+                            staffSelect.append('<option value="">Select Staff Member</option>');
+                            
+                            var currentAssignmentFound = false;
+                            
+                            if (response.staff && response.staff.length > 0) {
+                                response.staff.forEach(function(staff) {
+                                    var selected = staff.id == currentAssignedTo ? 'selected' : '';
+                                    if (staff.id == currentAssignedTo) {
+                                        currentAssignmentFound = true;
+                                    }
+                                    staffSelect.append('<option value="' + staff.id + '" ' + selected + '>' + staff.first_name + ' ' + staff.last_name + '</option>');
+                                });
+                            } else {
+                                staffSelect.append('<option value="">No staff members found</option>');
+                            }
+                            
+                            // If current assigned staff is not in the current department, still show them as selected
+                            if (currentAssignedTo && !currentAssignmentFound && currentAssignedName) {
+                                staffSelect.append('<option value="' + currentAssignedTo + '" selected>' + currentAssignedName + ' (Current Assignment)</option>');
+                            }
+                        },
+                        error: function(xhr) {
+                            console.error('Error loading staff on page load:', xhr);
+                            staffSelect.empty();
+                            staffSelect.append('<option value="">Error loading staff</option>');
+                            
+                            // Still show current assignment on error
+                            if (currentAssignedTo && currentAssignedName) {
+                                staffSelect.append('<option value="' + currentAssignedTo + '" selected>' + currentAssignedName + ' (Current Assignment)</option>');
+                            }
+                        }
+                    });
+                }
+            }
+            @endif
+
             $('#departmentSelect').on('change', function() {
                 var departmentId = $(this).val();
                 var staffSelect = $('#staffSelect');
                 var currentAssignedTo = '{{ $ticket->assigned_to ?? '' }}';
+                var currentAssignedName = '{{ $ticket->assignedTo ? $ticket->assignedTo->first_name . " " . $ticket->assignedTo->last_name : "" }}';
 
                 console.log('Department changed:', departmentId);
                 console.log('Route URL:', staffByDepartmentRoute);
+                console.log('Current assigned to:', currentAssignedTo);
 
                 // Show loading state
                 staffSelect.html('<option value="">Loading...</option>');
@@ -1916,14 +1977,25 @@
                             console.log('Staff response:', response);
                             staffSelect.empty();
                             staffSelect.append('<option value="">Select Staff Member</option>');
+                            
+                            var currentAssignmentFound = false;
+                            
                             if (response.staff && response.staff.length > 0) {
                                 response.staff.forEach(function(staff) {
                                     console.log(staff);
                                     var selected = staff.id == currentAssignedTo ? 'selected' : '';
+                                    if (staff.id == currentAssignedTo) {
+                                        currentAssignmentFound = true;
+                                    }
                                     staffSelect.append('<option value="' + staff.id + '" ' + selected + '>' + staff.first_name + ' ' + staff.last_name + '</option>');
                                 });
                             } else {
                                 staffSelect.append('<option value="">No staff members found</option>');
+                            }
+                            
+                            // If current assigned staff is not in the new department, still show them as selected
+                            if (currentAssignedTo && !currentAssignmentFound && currentAssignedName) {
+                                staffSelect.append('<option value="' + currentAssignedTo + '" selected>' + currentAssignedName + ' (Current Assignment)</option>');
                             }
                         },
                         error: function(xhr) {
@@ -1932,15 +2004,23 @@
                             console.error('Response text:', xhr.responseText);
                             staffSelect.empty();
                             staffSelect.append('<option value="">Error loading staff</option>');
+                            
+                            // Still show current assignment on error
+                            if (currentAssignedTo && currentAssignedName) {
+                                staffSelect.append('<option value="' + currentAssignedTo + '" selected>' + currentAssignedName + ' (Current Assignment)</option>');
+                            }
                         }
                     });
                 } else {
                     // Reset to all staff members
                     staffSelect.empty();
                     staffSelect.append('<option value="">Select Staff Member</option>');
-                    @foreach($staffMembers as $staff)
-                        staffSelect.append('<option value="{{ $staff->id }}">{{ $staff->first_name }} {{ $staff->last_name }}</option>');
-                    @endforeach
+                    @if(isset($staffMembers) && $staffMembers)
+                        @foreach($staffMembers as $staff)
+                            var selected = '{{ $staff->id }}' == currentAssignedTo ? 'selected' : '';
+                            staffSelect.append('<option value="{{ $staff->id }}" ' + selected + '>{{ $staff->first_name }} {{ $staff->last_name }}</option>');
+                        @endforeach
+                    @endif
                 }
             });
 

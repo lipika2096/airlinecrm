@@ -14,6 +14,7 @@ class WalletController extends Controller
     public function index()
     {
         $agents = User::whereHas('wallets')
+            ->whereNull('deleted_at')
             ->with(['wallets' => function ($query) {
                 $query->select('id', 'agent_id', 'wallet', 'available_balance', 'razorpay_id', 'status', 'parent_id', 'description', 'date');
             }])
@@ -23,7 +24,8 @@ class WalletController extends Controller
                 return $agent;
             });
 
-        $eligibleAgents = User::where('role_id', 2)->where('created_by', $user->id)->get();
+        $user = auth('admin')->check() ? auth('admin')->user() : auth()->user();
+        $eligibleAgents = User::where('role_id', 2)->where('created_by', $user->id)->whereNull('deleted_at')->get();
 
         return view('admin.wallet', compact('agents', 'eligibleAgents'));
     }

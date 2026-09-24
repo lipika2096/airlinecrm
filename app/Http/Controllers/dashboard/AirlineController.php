@@ -118,13 +118,13 @@ class AirlineController extends Controller
         $airlines = Airline::all();
         $aircrafts = Aircraft::where('deleted_at', null)->orWhere('deleted_at', 'null')->where('airline_id', $id)->get();
         $fleets = Fleet::where('deleted_at', null)->orWhere('deleted_at', 'null')->where('airline_id', $id)->get();
-        $staff = User::where('role_id', 2)->where('created_by', $currentUserId)->get();
+        $staff = User::where('role_id', 2)->where('created_by', $currentUserId)->whereNull('deleted_at')->get();
         $library = AirlineLibrary::where('deleted_at', null)->orWhere('deleted_at', 'null')->where('airline_id', $id)->get();
         $approvedStaffs = ApprovedStaff::where('status', 1)->where('airline_id', $id)->get();
         $slas = SLA::where('deleted_at', null)->orWhere('deleted_at', 'null')->where('airline_id', $id)->get();
         $headOffices = HeadOfficeContactDetail::where('airline_id', $id)->where('deleted_at', NULL)->get();
         $headOfficesDeleted = HeadOfficeContactDetail::where('airline_id', $id)->where('deleted_at', '!=', NULL)->get();
-        $Staffs = User::where('status', 'active')->get();
+        $Staffs = User::where('status', 'active')->whereNull('deleted_at')->get();
         $agreements = Agreement::where('deleted_at', null)->orWhere('deleted_at', 'null')->with(['agent', 'airline'])->get();
         $fareType = FareType::get();
         $duty = Duty::where('status', 1)->get();

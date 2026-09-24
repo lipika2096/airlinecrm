@@ -6,6 +6,7 @@
     $user = auth()->guard('admin')->check() ? auth()->guard('admin')->user() : auth()->guard('employee')->user();
     $isAdmin = auth()->guard('admin')->check();
     $userDetails = $isAdmin ? ($customer->adminDetail ?? null) : null;
+    $systemTimezone = \App\Helpers\TimezoneHelper::getSystemTimezone();
 @endphp
 
 <!DOCTYPE html>
@@ -370,7 +371,7 @@
                                         </div>
                                     @endif
                                     
-                                    <form action="{{ route('profile.timezone') }}" method="POST">
+                                    <form action="{{ route('admin.profile.timezone') }}" method="POST">
                                         @csrf
                                         
                                         <div class="row">
@@ -398,7 +399,7 @@
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label class="form-label">Created At</label>
-                                                    <input type="text" class="form-control" value="{{ $customer->created_at ? Carbon::parse($customer->created_at)->format('M d, Y') : '-' }}" readonly>
+                                                    <input type="text" class="form-control" value="{{ \App\Helpers\TimezoneHelper::autoFormat($customer->created_at, 'M d, Y') }}" readonly>
                                                 </div>
                                             </div>
                                         </div>
@@ -407,13 +408,13 @@
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label class="form-label">Timezone</label>
-                                                    <select class="form-control" name="timezone" required>
-                                                        <option value="">Select Timezone</option>
+                                                    <select class="form-control" name="timezone">
+                                                        <option value="" {{ empty($customer->timezone) ? 'selected' : '' }}>Use System Default ({{ $systemTimezone }})</option>
                                                         @foreach(\App\Helpers\TimezoneHelper::getAvailableTimezones() as $value => $label)
                                                             <option value="{{ $value }}" {{ $customer->timezone == $value ? 'selected' : '' }}>{{ $label }}</option>
                                                         @endforeach
                                                     </select>
-                                                    <small class="text-muted">Select your timezone to see times in your local time</small>
+                                                    <small class="text-muted">Current system time: {{ \App\Helpers\TimezoneHelper::nowInUserTimezone()->format('M d, Y H:i:s') }}</small>
                                                 </div>
                                             </div>
                                         </div>

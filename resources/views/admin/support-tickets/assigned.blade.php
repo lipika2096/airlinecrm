@@ -136,7 +136,7 @@
                                                     </td>
                                                     @endif
                                                     <td>{{ $ticket->creator ? $ticket->creator->first_name . ' ' . $ticket->creator->last_name : 'Unknown' }}</td>
-                                                    <td>{{ $ticket->created_at->format('M d, Y') }}</td>
+                                                    <td>{{ \App\Helpers\TimezoneHelper::format($ticket->created_at, 'M d, Y') }}</td>
                                                     <td>
                                                         <a href="{{ route($showRouteBase, $ticket->id) }}" class="btn btn-sm btn-outline-primary">
                                                             <i class="fa fa-eye"></i> View
