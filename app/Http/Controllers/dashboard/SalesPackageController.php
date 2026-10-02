@@ -27,18 +27,20 @@ class SalesPackageController extends Controller
     {
         $request->validate([
             'package_name' => 'required|string|max:255',
-            'rate' => 'required|numeric|min:0',
+            'rate' => 'nullable|numeric|min:0',
             'monthly_rate' => 'nullable|numeric|min:0',
             'annual_rate' => 'nullable|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0|max:100',
             'modules' => 'required|array',
             'description' => 'nullable|string',
         ]);
 
         SalesPackage::create([
             'package_name' => $request->package_name,
-            'rate' => $request->rate,
+            'rate' => $request->rate ?? 0,
             'monthly_rate' => $request->monthly_rate,
             'annual_rate' => $request->annual_rate,
+            'discount' => $request->discount ?? 0,
             'modules' => $request->modules,
             'description' => $request->description,
             'is_active' => true,
@@ -59,9 +61,10 @@ class SalesPackageController extends Controller
     {
         $request->validate([
             'package_name' => 'required|string|max:255',
-            'rate' => 'required|numeric|min:0',
+            'rate' => 'nullable|numeric|min:0',
             'monthly_rate' => 'nullable|numeric|min:0',
             'annual_rate' => 'nullable|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0|max:100',
             'modules' => 'required|array',
             'description' => 'nullable|string',
         ]);
@@ -69,9 +72,10 @@ class SalesPackageController extends Controller
         $package = SalesPackage::find($id);
         $package->update([
             'package_name' => $request->package_name,
-            'rate' => $request->rate,
+            'rate' => $request->rate ?? 0,
             'monthly_rate' => $request->monthly_rate,
             'annual_rate' => $request->annual_rate,
+            'discount' => $request->discount ?? 0,
             'modules' => $request->modules,
             'description' => $request->description,
         ]);

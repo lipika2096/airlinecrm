@@ -17,6 +17,7 @@ class SalesPackage extends Model
         'rate' => 'decimal:2',
         'monthly_rate' => 'decimal:2',
         'annual_rate' => 'decimal:2',
+        'discount' => 'decimal:2',
         'is_active' => 'boolean',
     ];
 

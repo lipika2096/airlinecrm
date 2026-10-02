@@ -29,11 +29,10 @@
                                     <thead>
                                         <tr>
                                             <th>Package Name</th>
-                                            <th>Rate</th>
-                                            <th>Monthly Rate</th>
-                                            <th>Annual Rate</th>
+                                            <th>Monthly Price</th>
+                                            <th>Annual</th>
+                                            <th>Discount</th>
                                             <th>Modules</th>
-                                            <th>Description</th>
                                             <th>Status</th>
                                             <th class="text-end">Actions</th>
                                         </tr>
@@ -42,11 +41,10 @@
                                         @foreach($packages as $package)
                                             <tr>
                                                 <td>{{ $package->package_name }}</td>
-                                                <td>${{ number_format($package->rate, 2) }}</td>
                                                 <td>{{ $package->monthly_rate ? '$' . number_format($package->monthly_rate, 2) : '-' }}</td>
                                                 <td>{{ $package->annual_rate ? '$' . number_format($package->annual_rate, 2) : '-' }}</td>
+                                                <td>{{ $package->discount ? $package->discount . '%' : '-' }}</td>
                                                 <td>{{ $package->modules_list }}</td>
-                                                <td>{{ Str::limit($package->description, 50) ?? '-' }}</td>
                                                 <td>
                                                     @if($package->is_active)
                                                         <span class="badge bg-success">Active</span>

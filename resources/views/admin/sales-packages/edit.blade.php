@@ -32,16 +32,16 @@
                                         <input type="text" class="form-control" name="package_name" required value="{{ $package->package_name }}" placeholder="Enter Package Name">
                                     </div>
                                     <div class="form-group col-md-4">
-                                        <label>Rate <span class="text-danger">*</span></label>
-                                        <input type="number" step="0.01" class="form-control" name="rate" required value="{{ $package->rate }}" placeholder="Enter Rate">
-                                    </div>
-                                    <div class="form-group col-md-4">
                                         <label>Monthly Rate</label>
                                         <input type="number" step="0.01" class="form-control" name="monthly_rate" value="{{ $package->monthly_rate }}" placeholder="Enter Monthly Rate">
                                     </div>
                                     <div class="form-group col-md-4">
                                         <label>Annual Rate</label>
                                         <input type="number" step="0.01" class="form-control" name="annual_rate" value="{{ $package->annual_rate }}" placeholder="Enter Annual Rate">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>Discount (%)</label>
+                                        <input type="number" step="0.01" min="0" max="100" class="form-control" name="discount" value="{{ $package->discount ?? 0 }}" placeholder="Enter Discount">
                                     </div>
                                     <div class="form-group col-md-12">
                                         <label>Modules (Permissions) <span class="text-danger">*</span></label>
