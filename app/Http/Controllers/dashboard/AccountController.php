@@ -966,7 +966,7 @@ class AccountController extends Controller
                         'country' => $validated['b2b_country'],
                         'remarks' => $validated['b2b_remarks'],
                         'responsible_person' => $validated['b2b_responsible'],
-                        'status' => 'Active',
+                        'status' => 'active',
                         'created_by' => $currentUserId,
                         'created_by_type' => $userType,
                     ]);
