@@ -12,10 +12,12 @@ class DatabaseSeeder extends Seeder
             //AdminSeeder::class,
             //UpdateCreatedBySeeder::class,
             //RolePermissionSeeder::class,
+            //DepartmentModuleSeeder::class,
             //TicketStatusSeeder::class,
             //StaffRoleSeeder::class
             //SupportTicketCommentsSeeder::class
-            ProductSeeder::class
+            //ProductSeeder::class
+            ModulePricingSeeder::class
 
         ]);
 

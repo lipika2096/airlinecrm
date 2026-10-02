@@ -34,6 +34,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\FareType;
 use App\Rules\UniqueEmailAcrossTables;
 use App\Rules\UniqueEmailAcrossTablesExcept;
+use App\Models\ModulePermission;
+use Spatie\Permission\Models\Permission;
 
 class EmployeeController extends Controller
 {
@@ -166,8 +168,74 @@ class EmployeeController extends Controller
 
     public function PemployeeProfile($id)
     {
-        $employees = User::find($id);
-        return view('admin.view-profile', compact('employees'));
+        $employees = User::where('id', $id)->whereNull('deleted_at')->first();
+
+        // Debug: Check if employee exists
+        if (!$employees) {
+            \Log::error('Employee not found with ID: ' . $id);
+            abort(404, 'Employee not found');
+        }
+
+        // Load module permissions for this employee - handle both string and integer employee_id
+        $modulePermissions = ModulePermission::where(function($query) use ($id) {
+            $query->where('employee_id', $id)
+                  ->orWhere('employee_id', (string)$id);
+        })
+        ->get()
+        ->map(function ($permission) {
+            return [
+                'module_name' => $permission->module_name,
+                'has_access' => (bool) $permission->has_access,
+                'can_view' => (bool) $permission->can_view,
+                'can_create' => (bool) $permission->can_create,
+                'can_edit' => (bool) $permission->can_edit,
+                'can_delete' => (bool) $permission->can_delete,
+                'permissions' => $permission->permissions
+            ];
+        })
+        ->keyBy('module_name')
+        ->toArray();
+
+
+        // Get available modules from permissions table
+        $allPermissions = Permission::where('guard_name', 'web')->get();
+        $availableModules = [];
+
+        // Get employee's departments
+        $employeeDepartments = $employees->department_names;
+
+        // Get modules assigned to employee's departments
+        $departmentModules = [];
+        if (!empty($employeeDepartments)) {
+            $departmentModules = \App\Models\DepartmentModule::whereIn('department_name', $employeeDepartments)
+                ->where('is_active', true)
+                ->pluck('module_name')
+                ->toArray();
+        }
+
+        foreach ($allPermissions as $permission) {
+            // Extract main module name (before the first dot)
+            $moduleName = explode('.', $permission->name)[0];
+
+            // Only add if it's not already in the array and it's a main module
+            // AND it's assigned to the employee's department (or if no departments assigned, show all)
+            if (!array_key_exists($moduleName, $availableModules) && !str_contains($permission->name, '.')) {
+                // If employee has departments, only show modules assigned to those departments
+                if (!empty($departmentModules)) {
+                    if (in_array($moduleName, $departmentModules)) {
+                        $availableModules[$moduleName] = ucfirst(str_replace('-', ' ', $moduleName));
+                    }
+                } else {
+                    // If no departments assigned, show all modules (fallback behavior)
+                    $availableModules[$moduleName] = ucfirst(str_replace('-', ' ', $moduleName));
+                }
+            }
+        }
+
+        // Sort modules alphabetically
+        asort($availableModules);
+
+        return view('admin.view-profile', compact('employees', 'modulePermissions', 'availableModules', 'allPermissions'));
     }
 
     public function viewUserProfile()
@@ -189,7 +257,7 @@ class EmployeeController extends Controller
         }
         
         // Build query based on user type
-        $query = User::with('userDepartments')->where('role_id', 2);
+        $query = User::with('userDepartments')->where('role_id', 2)->whereNull('deleted_at');
         
         // For non-superadmin users, only show employees they created
         if ($userType !== 'superadmin') {
@@ -318,7 +386,7 @@ class EmployeeController extends Controller
         // }
 
         // Create a new employee
-        $employee =  User::find($id);
+        $employee =  User::where('id', $id)->whereNull('deleted_at')->first();
         $employee->update([
             'first_name' => $request->input('first_name'),
             'last_name' => $request->input('last_name'),
@@ -452,7 +520,7 @@ class EmployeeController extends Controller
             $userType = 'staff';
             
             // Check if this staff was created by a superadmin
-            $currentUser = User::find($currentUserId);
+            $currentUser = User::where('id', $currentUserId)->whereNull('deleted_at')->first();
             if ($currentUser && $currentUser->created_by) {
                 $creator = Admin::find($currentUser->created_by);
                 if ($creator && $creator->hasRole('SuperAdmin')) {
@@ -463,7 +531,7 @@ class EmployeeController extends Controller
         }
         
         // Build query based on user type
-        $query = User::with(['client', 'userDepartments'])->where('role_id', 2);
+        $query = User::with(['client', 'userDepartments'])->where('role_id', 2)->whereNull('deleted_at');
         
         // Apply filtering based on user type
         if ($userType === 'superadmin') {
@@ -475,7 +543,7 @@ class EmployeeController extends Controller
         } elseif ($userType === 'staff') {
             // Staff: if created by superadmin, show all staff created by that superadmin
             // Otherwise, show only staff they created
-            $currentUserDetail = User::find(auth()->user()->id);
+            $currentUserDetail = User::where('id', auth()->user()->id)->whereNull('deleted_at')->first();
             //dd($superadminId);
             if ($currentUserDetail->created_by == $superadminId) {
                 $query->where('created_by', $superadminId)->where('deleted_at', NULL)->orWhere('created_by', $currentUserId);
@@ -507,7 +575,7 @@ class EmployeeController extends Controller
         }
 
         // Build department employees query with same scoping
-        $deptQuery = User::with('userDepartments')->where('role_id', 2);
+        $deptQuery = User::with('userDepartments')->where('role_id', 2)->whereNull('deleted_at');
         
         // Apply same filtering logic as main query
         if ($userType === 'superadmin') {
@@ -519,7 +587,7 @@ class EmployeeController extends Controller
         } elseif ($userType === 'staff') {
             // Staff: if created by superadmin, show all staff created by that superadmin
             // Otherwise, show only staff they created
-            $currentUserDetail = User::find(auth()->user()->id);
+            $currentUserDetail = User::where('id', auth()->user()->id)->whereNull('deleted_at')->first();
             if ($currentUserDetail->created_by == $superadminId) {
                 $deptQuery->where('created_by', $superadminId)->where('deleted_at', NULL)->orwhere('created_by', $currentUserId);
             } else {
@@ -527,19 +595,41 @@ class EmployeeController extends Controller
             }
         }
         
-        $departmentEmployees = $deptQuery->get()
-            ->map(function($employee) {
-                $deptNames = $employee->department_names;
-                // Ensure it's always an array
-                if (!is_array($deptNames)) {
-                    $deptNames = !empty($deptNames) ? [$deptNames] : [];
+        // Get all employees with their departments
+        $allEmployees = $deptQuery->get();
+        
+        // Build a collection where each employee appears under each of their departments
+        $departmentEmployees = collect();
+        
+        foreach ($allEmployees as $employee) {
+            $deptNames = $employee->department_names;
+            // Ensure it's always an array
+            if (!is_array($deptNames)) {
+                $deptNames = !empty($deptNames) ? [$deptNames] : [];
+            }
+            $employee->department_names = $deptNames;
+            
+            // If employee has departments, add them to each department group
+            if (!empty($deptNames) && is_array($deptNames)) {
+                foreach ($deptNames as $deptName) {
+                    $departmentEmployees->push([
+                        'department' => $deptName,
+                        'employee' => $employee
+                    ]);
                 }
-                $employee->department_names = $deptNames;
-                return $employee;
-            })
-            ->groupBy(function($item) {
-                // Group by primary department (first department if multiple)
-                return $item->department ?? 'No Department';
+            } else {
+                // If no departments, add to 'No Department' group
+                $departmentEmployees->push([
+                    'department' => $employee->department ?? 'No Department',
+                    'employee' => $employee
+                ]);
+            }
+        }
+        
+        // Group by department
+        $departmentEmployees = $departmentEmployees->groupBy('department')
+            ->map(function($group) {
+                return $group->pluck('employee');
             });
 
         return view('admin.employees', compact('employees', 'department', 'designation', 'departmentEmployees'));
@@ -562,6 +652,7 @@ class EmployeeController extends Controller
         // Generate next employee ID for preview
         $year = date('Y');
         $lastEmployee = User::where('unique_id', 'like', 'EMP-' . $year . '%')
+                           ->whereNull('deleted_at')
                            ->orderBy('id', 'desc')
                            ->first();
         
@@ -623,7 +714,7 @@ class EmployeeController extends Controller
 
         $airlineDetails = AirlineDetail::where('deleted_at', null)->orWhere('deleted_at', 'null')->get();
         $duty = Duty::where('status', 1)->get();
-        $Staffs = User::where('status', 'active')->get();
+        $Staffs = User::where('status', 'active')->whereNull('deleted_at')->get();
         $approvedStaffs = ApprovedStaff::where('status', 1)->where('airline_id', $id)->get();
         $usedAnnualLeave = EmployeeLeave::where('employee_id', $id)->where('status', 3)->where('leave_type', 'Annual Leave')
             ->sum('no_of_days');
@@ -634,7 +725,7 @@ class EmployeeController extends Controller
             ->first(['clients.*', 'users.*']);
         $allEmployee = Client::join('users', 'users.clientid', '=', 'clients.client_id')
             ->get(['clients.*', 'users.*']);
-        $employees = User::find($id);
+        $employees = User::where('id', $id)->whereNull('deleted_at')->first();
 
         $currentDate = \Carbon\Carbon::now()->format('l, j.n.Y');
 
@@ -646,7 +737,7 @@ class EmployeeController extends Controller
             });
 
         $tl = EmployeeLeave::where('employee_id', $id)->sum('no_of_days');
-        $eel = User::where('id', $id)->first();
+        $eel = User::where('id', $id)->whereNull('deleted_at')->first();
 
         $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
             ->whereDate('to', '>=', now()->toDateString())->count();
@@ -664,8 +755,8 @@ class EmployeeController extends Controller
             ->get();
 
         $approvedLeaves = EmployeeLeave::where('status', 3)->count();
-        $total_min_hrs = User::where('id', $id)->first();
-        $total_max_hrs = User::where('id', $id)->first();
+        $total_min_hrs = User::where('id', $id)->whereNull('deleted_at')->first();
+        $total_max_hrs = User::where('id', $id)->whereNull('deleted_at')->first();
         $total_overtime = (float)$total_max_hrs->max_hrs - (float)$total_min_hrs->max_hrs;
 
 
@@ -686,7 +777,7 @@ class EmployeeController extends Controller
         ->where('employee_leaves.status', 3)
         ->select('employee_leaves.*', 'leave_types.color')
         ->get();;
-        $userData = User::where('id', $id)->first();
+        $userData = User::where('id', $id)->whereNull('deleted_at')->first();
         $annualLeave = $userData->leave_count ?? 0;
         $absencePerMonth = EmployeeLeave::where('employee_id', $id)
             ->where('status', 3) // Approved status
@@ -696,11 +787,12 @@ class EmployeeController extends Controller
 
         $remainingLeave = $annualLeave - $usedAnnualLeave;
         $total_holidays = $usedAnnualLeave +  $remainingLeave;
+        $userGetId = auth('admin')->user()->id ?? auth()->user()->id;
 
         $leavetypes = LeaveType::where('status', 1)->get();
         $staffReadSign = StaffReadSign::where('staff_id', $id)->get();
         $employee_leaves_view = EmployeeLeave::where('employee_id', $id)->latest()->get();
-        $users = User::where('department', '!=', null)->where('created_by', auth('admin')->user()->id)->get()->groupBy('department');
+        $users = User::where('department', '!=', null)->where('created_by', $userGetId)->whereNull('deleted_at')->get()->groupBy('department');
 
         // If this is an AJAX request
         if ($request->ajax()) {
@@ -711,13 +803,13 @@ class EmployeeController extends Controller
 
             if ($type === 'coworker') {
                 // Filter data based on coworker (employee ID)
-                $filteredData = User::where('id', $value)->get();
+                $filteredData = User::where('id', $value)->whereNull('deleted_at')->get();
             } elseif ($type === 'team') {
                 // Filter data based on team (department)
-                $filteredData = User::where('department', $value)->get();
+                $filteredData = User::where('department', $value)->whereNull('deleted_at')->get();
             } elseif ($type === 'browse_list') {
                 // Filter data based on browse list (user ID)
-                $filteredData = User::where('id', $value)->get();
+                $filteredData = User::where('id', $value)->whereNull('deleted_at')->get();
             }
 
             // Prepare filtered employee leave data for calendar display
@@ -770,7 +862,74 @@ class EmployeeController extends Controller
         if ($departments->isEmpty()) {
             return response()->json(['error' => 'No departments found'], 404);
         }
+
+        
+        // Load module permissions for this employee - handle both string and integer employee_id
+        $modulePermissions = ModulePermission::where(function($query) use ($id) {
+            $query->where('employee_id', $id)
+                  ->orWhere('employee_id', (string)$id);
+        })
+        ->get()
+        ->map(function ($permission) {
+            return [
+                'module_name' => $permission->module_name,
+                'has_access' => (bool) $permission->has_access,
+                'can_view' => (bool) $permission->can_view,
+                'can_create' => (bool) $permission->can_create,
+                'can_edit' => (bool) $permission->can_edit,
+                'can_delete' => (bool) $permission->can_delete,
+                'permissions' => $permission->permissions
+            ];
+        })
+        ->keyBy('module_name')
+        ->toArray();
+        //dd($modulePermissions);
+
+        // Get available modules from permissions table
+        $allPermissions = Permission::where('guard_name', 'web')->get();
+        $availableModules = [];
+
+        // Get employee's departments
+        $employeeDepartments = $employees->department_names;
+
+        // Get modules assigned to employee's departments
+        $departmentModules = [];
+        if (!empty($employeeDepartments)) {
+            $departmentModules = \App\Models\DepartmentModule::whereIn('department_name', $employeeDepartments)
+                ->where('is_active', true)
+                ->pluck('module_name')
+                ->toArray();
+        }
+
+        foreach ($allPermissions as $permission) {
+            // Extract main module name (before the first dot)
+            $moduleName = explode('.', $permission->name)[0];
+
+            // Only add if it's not already in the array and it's a main module
+            // AND it's assigned to the employee's department (or if no departments assigned, show all)
+            if (!array_key_exists($moduleName, $availableModules) && !str_contains($permission->name, '.')) {
+                // If employee has departments, only show modules assigned to those departments
+                if (!empty($departmentModules)) {
+                    if (in_array($moduleName, $departmentModules)) {
+                        $availableModules[$moduleName] = ucfirst(str_replace('-', ' ', $moduleName));
+                    }
+                } else {
+                    // If no departments assigned, show all modules (fallback behavior)
+                    $availableModules[$moduleName] = ucfirst(str_replace('-', ' ', $moduleName));
+                }
+            }
+        }
+
+        // Sort modules alphabetically
+        asort($availableModules);
+
+        // Pass all permissions to view for submodule configuration
+        $allPermissionsArray = $allPermissions->toArray();
+        
         return view('admin.view-profile', compact(
+            'availableModules',
+            'modulePermissions',
+            'allPermissions',
             'departments',
             'approvedStaffs',
             'Staffs',
@@ -1021,7 +1180,7 @@ class EmployeeController extends Controller
         ]);
 
         // Find the employee
-        $employee = User::find($id);
+        $employee = User::where('id', $id)->whereNull('deleted_at')->first();
         
         if (!$employee) {
             // Determine appropriate redirect route based on user type
@@ -1117,7 +1276,7 @@ class EmployeeController extends Controller
     {
         try {
             // Find the user based on the provided ID
-            $user = User::findOrFail($id);
+            $user = User::where('id', $id)->whereNull('deleted_at')->firstOrFail();
 
             // Check if user has permission to delete this employee
             $currentUserId = null;
@@ -1133,9 +1292,9 @@ class EmployeeController extends Controller
                 $userType = 'staff';
                 
                 // Check if this staff was created by a superadmin
-                $currentUser = User::find($currentUserId);
+                $currentUser = User::where('id', $currentUserId)->whereNull('deleted_at')->first();
                 if ($currentUser && $currentUser->created_by) {
-                    $creator = User::find($currentUser->created_by);
+                    $creator = User::where('id', $currentUser->created_by)->whereNull('deleted_at')->first();
                     if ($creator && $creator->hasRole('SuperAdmin')) {
                         $createdBySuperadmin = true;
                         $superadminId = $creator->id;
@@ -1323,7 +1482,7 @@ class EmployeeController extends Controller
         $noofpresentemployeestoday = $total_employee - $employees_on_leave_today;
         $leavetypes = LeaveType::where('status', 1)->get();
         $departments = Department::get();
-        $users = User::where('department', '!=', null)->where('users.created_by', auth('admin')->user()->id)->get()->groupBy('department');
+        $users = User::where('department', '!=', null)->where('users.created_by', auth('admin')->user()->id)->whereNull('deleted_at')->get()->groupBy('department');
 
         // If this is an AJAX request
         if ($request->ajax()) {
@@ -1334,13 +1493,13 @@ class EmployeeController extends Controller
 
             if ($type === 'coworker') {
                 // Filter data based on coworker (employee ID)
-                $filteredData = User::where('id', $value)->where('users.created_by', auth('admin')->user()->id)->get();
+                $filteredData = User::where('id', $value)->where('users.created_by', auth('admin')->user()->id)->whereNull('deleted_at')->get();
             } elseif ($type === 'team') {
                 // Filter data based on team (department)
-                $filteredData = User::where('department', $value)->where('users.created_by', auth('admin')->user()->id)->get();
+                $filteredData = User::where('department', $value)->where('users.created_by', auth('admin')->user()->id)->whereNull('deleted_at')->get();
             } elseif ($type === 'browse_list') {
                 // Filter data based on browse list (user ID)
-                $filteredData = User::where('id', $value)->where('users.created_by', auth('admin')->user()->id)->get();
+                $filteredData = User::where('id', $value)->where('users.created_by', auth('admin')->user()->id)->whereNull('deleted_at')->get();
             }
 
             // Prepare filtered employee leave data for calendar display
@@ -1441,7 +1600,7 @@ class EmployeeController extends Controller
     {
 
         $leavetypes = LeaveType::where('status', 1)->get();
-        $total_employee = User::where('users.created_by', auth('admin')->user()->id)->count();
+        $total_employee = User::where('users.created_by', auth('admin')->user()->id)->whereNull('deleted_at')->count();
         $employees = Client::join('users', 'users.clientid', '=', 'clients.client_id')->where('users.created_by', auth('admin')->user()->id)
             ->get(['clients.*', 'users.*']);
         $total_leaves = EmployeeLeave::whereDate('from', '<=', now()->toDateString())
@@ -1798,7 +1957,7 @@ class EmployeeController extends Controller
         } else {
             $department = Department::latest()->get();
             // Get list of staff members for dropdown
-            $staffList = User::where('role_id', 2)->where('created_by', $user->id)->get();
+            $staffList = User::where('role_id', 2)->where('created_by', $user->id)->whereNull('deleted_at')->get();
         }
         return view('admin.departments', compact('department', 'staffList')); // Example view path, adjust as per your structure
     }
@@ -1883,7 +2042,7 @@ class EmployeeController extends Controller
             $department = Department::latest()->get();
             $designation = Designation::latest()->get();
             // Get list of staff members for dropdown
-            $staffList = User::where('role_id', 2)->where('created_by', $user->id)->get();
+            $staffList = User::where('role_id', 2)->where('created_by', $user->id)->whereNull('deleted_at')->get();
         }
         // Add your logic for designations view
         return view('admin.designations', compact('designation', 'department', 'staffList')); // Example view path, adjust as per your structure
@@ -2043,7 +2202,7 @@ class EmployeeController extends Controller
 
     public function getDepartments()
     {
-        $departments = User::whereNotNull('department')->where('users.created_by', auth('admin')->user()->id)
+        $departments = User::whereNotNull('department')->where('users.created_by', auth('admin')->user()->id)->whereNull('deleted_at')
             ->select('department')
             ->distinct()
             ->pluck('department');
@@ -2052,7 +2211,7 @@ class EmployeeController extends Controller
     }
     public function getEmployeesByUsers($user_id)
     {
-        $users = User::where('id', $user_id)->where('users.created_by', auth('admin')->user()->id)->get();
+        $users = User::where('id', $user_id)->where('users.created_by', auth('admin')->user()->id)->whereNull('deleted_at')->get();
 
         foreach ($users as $user) {
             $employeeLeaves = DB::table('employee_leaves')
@@ -2085,7 +2244,7 @@ class EmployeeController extends Controller
 
     public function getEmployeesByDepartment($department)
     {
-        $users = User::where('department', $department)->where('users.created_by', auth('admin')->user()->id)->get();
+        $users = User::where('department', $department)->where('users.created_by', auth('admin')->user()->id)->whereNull('deleted_at')->get();
 
         foreach ($users as $user) {
             $employeeLeaves = DB::table('employee_leaves')
@@ -2117,5 +2276,155 @@ class EmployeeController extends Controller
         }
 
         return response()->json(['users' => $users]);
+    }
+
+    /**
+     * Update module access for an employee
+     */
+    public function updateModuleAccess(Request $request)
+    {
+        try {
+            $request->validate([
+                'employee_id' => 'required|exists:users,id',
+                'module' => 'sometimes|string',
+                'module_name' => 'sometimes|string',
+                'access' => 'sometimes|boolean',
+                'has_access' => 'sometimes|boolean',
+                'can_view' => 'sometimes|boolean',
+                'can_create' => 'sometimes|boolean',
+                'can_edit' => 'sometimes|boolean',
+                'can_delete' => 'sometimes|boolean',
+                'permissions' => 'sometimes|array'
+            ]);
+
+            $userId = $request->input('employee_id');
+            $moduleName = $request->input('module') ?? $request->input('module_name');
+            $hasAccess = $request->input('access') ?? $request->input('has_access', false);
+            $submodulePermissions = $request->input('permissions', []);
+
+            // Build permissions array
+            $permissions = [
+                'can_view' => $request->input('can_view', false),
+                'can_create' => $request->input('can_create', false),
+                'can_edit' => $request->input('can_edit', false),
+                'can_delete' => $request->input('can_delete', false)
+            ];
+
+            // Find or create the module permission record
+            $modulePermission = ModulePermission::updateOrCreate(
+                [
+                    'employee_id' => $userId,
+                    'module_name' => $moduleName
+                ],
+                [
+                    'has_access' => $hasAccess,
+                    'can_view' => $permissions['can_view'],
+                    'can_create' => $permissions['can_create'],
+                    'can_edit' => $permissions['can_edit'],
+                    'can_delete' => $permissions['can_delete'],
+                    'permissions' => $permissions
+                ]
+            );
+
+            // Handle submodule permissions separately if provided
+            if (!empty($submodulePermissions)) {
+                foreach ($submodulePermissions as $submoduleKey => $submoduleData) {
+                    ModulePermission::updateOrCreate(
+                        [
+                            'employee_id' => $userId,
+                            'module_name' => $submoduleKey
+                        ],
+                        [
+                            'has_access' => ($submoduleData['can_view'] ?? false) || ($submoduleData['can_create'] ?? false) || ($submoduleData['can_edit'] ?? false) || ($submoduleData['can_delete'] ?? false),
+                            'can_view' => $submoduleData['can_view'] ?? false,
+                            'can_create' => $submoduleData['can_create'] ?? false,
+                            'can_edit' => $submoduleData['can_edit'] ?? false,
+                            'can_delete' => $submoduleData['can_delete'] ?? false,
+                            'permissions' => $submoduleData
+                        ]
+                    );
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Module access updated successfully',
+                'data' => $modulePermission
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating module access: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get module permissions for an employee
+     */
+    public function getEmployeeModulePermissions($employeeId)
+    {
+        try {
+            $permissions = ModulePermission::where('employee_id', $employeeId)
+                ->get()
+                ->map(function ($permission) {
+                    $data = [
+                        'module_name' => $permission->module_name,
+                        'has_access' => (bool) $permission->has_access,
+                        'can_view' => (bool) $permission->can_view,
+                        'can_create' => (bool) $permission->can_create,
+                        'can_edit' => (bool) $permission->can_edit,
+                        'can_delete' => (bool) $permission->can_delete,
+                    ];
+
+                    // Add nested permissions if they exist in the JSON field
+                    if ($permission->permissions && is_array($permission->permissions)) {
+                        foreach ($permission->permissions as $key => $submoduleData) {
+                            $data[$key] = $submoduleData;
+                        }
+                    }
+
+                    return $data;
+                })
+                ->keyBy('module_name');
+
+            return response()->json([
+                'success' => true,
+                'data' => $permissions
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching module permissions: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get available modules list
+     */
+    public function getAvailableModules()
+    {
+        // Get main modules from permissions table (those without dots)
+        $allPermissions = Permission::where('guard_name', 'web')->get();
+        $mainModules = [];
+        
+        foreach ($allPermissions as $permission) {
+            // Extract main module name (before the first dot)
+            $moduleName = explode('.', $permission->name)[0];
+            
+            // Only add if it's not already in the array and it's a main module
+            if (!in_array($moduleName, $mainModules) && !str_contains($permission->name, '.')) {
+                $mainModules[$moduleName] = ucfirst(str_replace('-', ' ', $moduleName));
+            }
+        }
+        
+        // Sort modules alphabetically
+        asort($mainModules);
+
+        return response()->json([
+            'success' => true,
+            'data' => $mainModules
+        ]);
     }
 }

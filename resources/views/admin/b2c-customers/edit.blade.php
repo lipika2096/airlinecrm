@@ -116,7 +116,7 @@
                         <div class="card-body">
                             <form action="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2c-customers.update', $customer->id) : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2c-customers.update', $customer->id) : route('staff.b2c-customers.update', $customer->id)) }}" method="POST">
                                 @csrf
-                                @method('PATCH')
+                                @method('PUT')
                                 
                                 <!-- Tabs -->
                                 <ul class="nav nav-tabs mb-4" id="customerTabs" role="tablist">

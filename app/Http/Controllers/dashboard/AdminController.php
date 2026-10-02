@@ -410,4 +410,49 @@ class AdminController extends Controller
         return redirect()->route('admin.login'); // Redirect to the login page
     }
 
+    public function cleanupPermissions(Request $request)
+    {
+        // Only allow SuperAdmin to access this function
+        if (!Auth::guard('admin')->user()->hasRole('SuperAdmin')) {
+            return redirect()->back()->with('error', 'Unauthorized access.');
+        }
+
+        try {
+            // Get all permissions
+            $permissions = Permission::all();
+
+            // Patterns to remove
+            $patterns = [
+                '/\.view$/', '/\.create$/', '/\.edit$/', '/\.delete$/',
+                '/-view$/', '/-create$/', '/-edit$/', '/-delete$/',
+                '/\.allocate$/', '/\.generate$/', '/\.assign$/', '/\.add-comment$/', '/\.update-status$/'
+            ];
+
+            $count = 0;
+            $deletedPermissions = [];
+
+            foreach ($permissions as $permission) {
+                $name = $permission->name;
+                $shouldDelete = false;
+
+                foreach ($patterns as $pattern) {
+                    if (preg_match($pattern, $name)) {
+                        $shouldDelete = true;
+                        break;
+                    }
+                }
+
+                if ($shouldDelete) {
+                    $permission->delete();
+                    $count++;
+                    $deletedPermissions[] = $name;
+                }
+            }
+
+            return redirect()->back()->with('success', "Cleanup completed successfully! Total permissions deleted: {$count}");
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to cleanup permissions: ' . $e->getMessage());
+        }
+    }
+
 }

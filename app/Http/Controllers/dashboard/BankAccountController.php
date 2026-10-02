@@ -11,7 +11,8 @@ class BankAccountController extends Controller
 {
     public function index()
     {
-        $bankAccounts = BankAccount::where('created_by', auth('admin')->user()->id)->get();
+        $user = auth('admin')->user()->id ?? auth()->user()->id;
+        $bankAccounts = BankAccount::where('created_by', $user)->get();
         return view('admin.bank-accounts.index', compact('bankAccounts'));
     }
 
@@ -44,10 +45,10 @@ class BankAccountController extends Controller
             'current_balance' => $request->opening_balance,
             'notes' => $request->notes,
             'is_active' => true,
-            'created_by' => auth('admin')->user()->id,
+            'created_by' => auth('admin')->user()->id ?? auth()->user()->id,
         ]);
 
-        return redirect()->route('admin.bank-accounts.index')->with('success', 'Bank account created successfully.');
+        return redirect()->back()->with('success', 'Bank account created successfully.');
     }
 
     public function edit($id)

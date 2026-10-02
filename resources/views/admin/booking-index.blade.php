@@ -46,12 +46,12 @@
         .btn-view-invoice {
             background: #6c757d;
             border-color: #6c757d;
-            color: #fff;
+            color: #fff !important;
         }
         .btn-view-details {
             background: #007bff;
             border-color: #007bff;
-            color: #fff;
+            color: #fff !important;
         }
         .customer-type-badge {
             padding: 3px 8px;
@@ -83,11 +83,7 @@
                 <div class="col">
                     <h3 class="page-title">Bookings</h3>
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.accounts.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.accounts.index') : route('admin.accounts.index')) }}">
-                                Accounts
-                            </a>
-                        </li>
+                        <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Dashboard</a></li>
                         <li class="breadcrumb-item active">Bookings</li>
                     </ul>
                 </div>
@@ -116,7 +112,7 @@
                                 <th>Type</th>
                                 <th>Total (€)</th>
                                 <th>Profit (€)</th>
-                                <th>Status</th>
+                                <th>Payment Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -153,9 +149,9 @@
                                         <div class="btn-group btn-group-sm">
                                             <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.invoice', $booking->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.invoice', $booking->id) : route('admin.booking.invoice', $booking->id)) }}" 
                                                class="btn btn-view-invoice" title="View Invoice">
-                                                <i class="fa fa-file-invoice"></i>
+                                                <i class="fa fa-file-text-o"></i>
                                             </a>
-                                            <a href="#" class="btn btn-view-details" title="View Details">
+                                            <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.edit', $booking->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.edit', $booking->id) : route('admin.booking.edit', $booking->id)) }}" class="btn btn-view-details" title="View Details">
                                                 <i class="fa fa-eye"></i>
                                             </a>
                                         </div>

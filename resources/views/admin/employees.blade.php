@@ -34,8 +34,10 @@
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
-                        <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.add-staff') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.add-staff') : route('admin.add-staff')) }}" class="btn add-btn"><i
-                                class="fa fa-plus"></i> Add Employee</a>
+                        @canCreate('hr.add-staff')
+                            <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.add-staff') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.add-staff') : route('admin.add-staff')) }}" class="btn add-btn"><i
+                                    class="fa fa-plus"></i> Add Employee</a>
+                        @endcanCreate
                         {{-- <div class="view-icons">
                                     <a href="employees.php" class="grid-view btn btn-link active"><i class="fa fa-th"></i></a>
                                     <a href="employees-list.php" class="list-view btn btn-link"><i class="fa fa-bars"></i></a>
@@ -78,11 +80,9 @@
                                             <th>Staff Name</th>
                                             <!-- <th>Company Name</th> -->
                                             <th>Department</th>
-                                            <th>Position</th>
+                                            <th>Role</th>
                                             <th>Staff No</th>
                                             <th>DOJ</th>
-                                            <th>Min Hrs</th>
-                                            <th>Max Hrs</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -121,21 +121,27 @@
                                                 <td>{{ $data->position }}</td>
                                                 <td>{{ $data->unique_id }}</td>
                                                 <td>{{ $data->joining_date }}</td>
-                                                <td>{{ $data->min_hrs }}</td>
-                                                <td>{{ $data->max_hrs }}</td>
+                                                <!-- <td>{{ $data->min_hrs }}</td>
+                                                <td>{{ $data->max_hrs }}</td> -->
                                                 <td>
                                                     <div class="action-icons" style="display: flex; flex-direction: row;">
-                                                        <a class="action-icon"
-                                                            href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.view-staff', ['id' => $data->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.view-staff', ['id' => $data->id]) : route('admin.view-staff', ['id' => $data->id])) }}">
-                                                            <i class="fa fa-eye m-r-5"></i>
-                                                        </a>
-                                                        <a class="action-icon" href="#" data-bs-toggle="modal"
-                                                            data-bs-target="#edit_employee_{{ $data->id }}"><i
-                                                                class="fa fa-pencil m-r-5"></i></a>
-                                                        <a class="action-icon delete-btn" data-id="{{ $data->id }}"
-                                                            style="margin-right: 10px;">
-                                                            <i class="fa fa-trash"></i>
-                                                        </a>
+                                                        @canView('hr.staff-list')
+                                                            <a class="action-icon"
+                                                                href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.view-staff', ['id' => $data->id]) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.view-staff', ['id' => $data->id]) : route('admin.view-staff', ['id' => $data->id])) }}">
+                                                                <i class="fa fa-eye m-r-5"></i>
+                                                            </a>
+                                                        @endcanView
+                                                        @canEdit('hr.staff-list')
+                                                            <a class="action-icon" href="#" data-bs-toggle="modal"
+                                                                data-bs-target="#edit_employee_{{ $data->id }}"><i
+                                                                    class="fa fa-pencil m-r-5"></i></a>
+                                                        @endcanEdit
+                                                        @canDelete('hr.staff-list')
+                                                            <a class="action-icon delete-btn" data-id="{{ $data->id }}"
+                                                                style="margin-right: 10px;">
+                                                                <i class="fa fa-trash"></i>
+                                                            </a>
+                                                        @endcanDelete
 
                                                     </div>
                                                 </td>
@@ -427,7 +433,11 @@
                                                                 </td>
                                                                 <td style="color:#ed5b24;"><a
                                                                         href="{{ route('admin.view-staff', ['id' => $employee->id]) }}">{{ $employee->first_name }}
-                                                                        {{ $employee->last_name }}</a></td>
+                                                                        {{ $employee->last_name }}</a>
+                                                                    <small class="text-muted d-block" style="font-size: 11px;">
+                                                                        Departments: {{ is_array($employee->department_names) ? implode(', ', $employee->department_names) : ($employee->department ?? 'None') }}
+                                                                    </small>
+                                                                </td>
                                                                 <!-- <td>
                                                                     @if (!empty($employee->client->client_company_name))
                                                                         {{ $employee->client->client_company_name }}

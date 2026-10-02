@@ -219,12 +219,16 @@
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
-                        <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2b-partners.reports') : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2b-partners.reports') : route('staff.b2b-partners.reports')) }}" class="btn btn-primary me-2">
-                            <i class="fa fa-chart-bar me-2"></i> Reports
-                        </a>
-                        <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2b-partners.create') : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2b-partners.create') : route('staff.b2b-partners.create')) }}" class="btn add-btn">
-                            <i class="fa fa-plus me-2"></i> Add Partner
-                        </a>
+                        <!-- @canView('travel-agent.reports') -->
+                            <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2b-partners.reports') : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2b-partners.reports') : route('staff.b2b-partners.reports')) }}" class="btn btn-primary me-2">
+                                <i class="fa fa-chart-bar me-2"></i> Reports
+                            </a>
+                        <!-- @endcanView -->
+                        @canCreate('b2b-partners.b2b-partners-list')
+                            <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2b-partners.create') : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2b-partners.create') : route('staff.b2b-partners.create')) }}" class="btn add-btn">
+                                <i class="fa fa-plus me-2"></i> Add Partner
+                            </a>
+                        @endcanCreate
                     </div>
                 </div>
             </div>
@@ -294,15 +298,21 @@
                                                 </td>
                                                 <td>
                                                     <div class="action-icons">
-                                                        <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2b-partners.show', $partner->id) : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2b-partners.show', $partner->id) : route('staff.b2b-partners.show', $partner->id)) }}" class="action-icon" title="View">
-                                                            <i class="fa fa-eye"></i>
-                                                        </a>
-                                                        <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2b-partners.edit', $partner->id) : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2b-partners.edit', $partner->id) : route('staff.b2b-partners.edit', $partner->id)) }}" class="action-icon" title="Edit">
-                                                            <i class="fa fa-edit"></i>
-                                                        </a>
-                                                        <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_partner{{ $partner->id }}" title="Delete">
-                                                            <i class="fa fa-trash"></i>
-                                                        </a>
+                                                        @canView('b2b-partners.b2b-partners-list')
+                                                            <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2b-partners.show', $partner->id) : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2b-partners.show', $partner->id) : route('staff.b2b-partners.show', $partner->id)) }}" class="action-icon" title="View">
+                                                                <i class="fa fa-eye"></i>
+                                                            </a>
+                                                        @endcanView
+                                                        @canEdit('b2b-partners.b2b-partners-list')
+                                                            <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2b-partners.edit', $partner->id) : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2b-partners.edit', $partner->id) : route('staff.b2b-partners.edit', $partner->id)) }}" class="action-icon" title="Edit">
+                                                                <i class="fa fa-edit"></i>
+                                                            </a>
+                                                        @endcanEdit
+                                                        @canDelete('b2b-partners.b2b-partners-list')
+                                                            <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_partner{{ $partner->id }}" title="Delete">
+                                                                <i class="fa fa-trash"></i>
+                                                            </a>
+                                                        @endcanDelete
                                                     </div>
                                                 </td>
                                             </tr>

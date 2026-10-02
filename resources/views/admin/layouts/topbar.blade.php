@@ -5,12 +5,27 @@
     <!-- Logo -->
     <div class="header-left">
          <a href="{{ \App\Helpers\RouteHelper::getDashboardRoute() }}" class="logo">
-            <img src="{{asset('public/assets/img/logo2.png')}}" alt="">
+            <img src="{{asset('public/assets/img/logo2.png')}}" alt="CRM SAAS Logo" class="responsive-logo">
         </a>
     </div>
     <!-- /Logo -->
 
     <style>
+        .responsive-logo {
+            max-width: 100%;
+            height: auto;
+            width: 180px;
+        }
+        @media (max-width: 768px) {
+            .responsive-logo {
+                width: 140px;
+            }
+        }
+        @media (max-width: 480px) {
+            .responsive-logo {
+                width: 120px;
+            }
+        }
         .notification-header {
             display: flex;
             justify-content: space-between;

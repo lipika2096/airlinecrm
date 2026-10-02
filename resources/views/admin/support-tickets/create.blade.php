@@ -215,6 +215,56 @@
         .attachment-preview-item .remove-file:hover {
             background: #c82333;
         }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 15px;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .custom-control-inline {
+                display: block;
+                margin: 5px 0;
+                float: none !important;
+            }
+
+            .submit-section {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .submit-section .btn {
+                width: 100%;
+            }
+
+            .attachment-preview-item {
+                width: 80px;
+            }
+
+            .attachment-preview-item img {
+                max-width: 60px;
+                max-height: 60px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .card-body {
+                padding: 10px;
+            }
+
+            .form-control {
+                font-size: 14px;
+            }
+
+            label {
+                font-size: 13px;
+            }
+        }
     </style>
     
     <!-- Summernote CSS -->

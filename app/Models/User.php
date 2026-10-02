@@ -124,4 +124,30 @@ class User extends Authenticatable
             }
         }
     }
+    
+    public function modulePermissions()
+    {
+        return $this->hasMany(ModulePermission::class);
+    }
+
+    /**
+     * Get available modules based on user's departments
+     */
+    public function getAvailableModules()
+    {
+        $departmentNames = $this->department_names;
+
+        if (empty($departmentNames)) {
+            return [];
+        }
+
+        // Get modules assigned to any of the user's departments
+        $modules = DepartmentModule::whereIn('department_name', $departmentNames)
+            ->where('is_active', true)
+            ->pluck('module_name')
+            ->unique()
+            ->toArray();
+
+        return $modules;
+    }
 }

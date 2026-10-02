@@ -148,7 +148,7 @@
                                 <i class="fa fa-list"></i> View All Tickets
                             </a>
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive-responsive">
                             <table class="table table-hover" style="margin: 0;">
                                 <thead>
                                     <tr style="background: #f8f9fa;">
@@ -237,6 +237,7 @@
                                     @endif
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -356,5 +357,179 @@
             }
         });
     </script>
+
+    <style>
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px !important;
+            }
+
+            .d-flex.justify-content-between {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .stat-card {
+                padding: 15px !important;
+            }
+
+            .stat-card h3 {
+                font-size: 24px !important;
+            }
+
+            .table-card {
+                padding: 15px !important;
+            }
+
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            table thead th {
+                padding: 8px 6px;
+                font-size: 11px;
+            }
+
+            table tbody td {
+                padding: 8px 6px;
+                font-size: 12px;
+            }
+
+            .badge {
+                font-size: 10px;
+                padding: 4px 6px;
+            }
+
+            .btn-sm {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+
+            .chart-card {
+                padding: 15px !important;
+            }
+
+            .chart-card h4 {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stat-card h3 {
+                font-size: 20px !important;
+            }
+
+            .stat-card p {
+                font-size: 12px;
+            }
+
+            .table-card h4 {
+                font-size: 16px;
+            }
+
+            .btn-primary {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            table {
+                font-size: 11px;
+            }
+
+            .btn-outline-primary {
+                width: 100%;
+            }
+        }
+
+        /* Table Responsive Container for Zoom */
+        .table-responsive-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+        }
+
+        .table-responsive-responsive table {
+            min-width: 900px;
+            width: 100%;
+        }
+
+        /* Zoom level specific table fixes */
+        @media screen and (max-width: 1400px) {
+            .table-responsive-responsive table {
+                min-width: 800px;
+            }
+        }
+
+        @media screen and (max-width: 1200px) {
+            .table-responsive-responsive table {
+                min-width: 700px;
+            }
+
+            table thead th,
+            table tbody td {
+                padding: 10px 8px;
+                font-size: 13px;
+            }
+        }
+
+        @media screen and (max-width: 992px) {
+            .table-responsive-responsive table {
+                min-width: 600px;
+            }
+
+            table thead th,
+            table tbody td {
+                padding: 8px 6px;
+                font-size: 12px;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .table-responsive-responsive table {
+                min-width: 500px;
+            }
+
+            table thead th,
+            table tbody td {
+                padding: 6px 4px;
+                font-size: 11px;
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            .table-responsive-responsive table {
+                min-width: 400px;
+            }
+
+            table thead th,
+            table tbody td {
+                padding: 4px 3px;
+                font-size: 10px;
+            }
+        }
+
+        /* Custom scrollbar for table */
+        .table-responsive-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-responsive-responsive::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-responsive-responsive::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .table-responsive-responsive::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
 
 @endsection

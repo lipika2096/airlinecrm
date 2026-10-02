@@ -107,6 +107,7 @@ class B2BPartnerController extends Controller
                 'tsa_status' => $validated['tsa_status'] ?? null,
                 'created_by' => $currentUserId,
                 'created_by_type' => $userType,
+                'updated_by' => $currentUserId,
             ]);
 
             // Log activity (try-catch to prevent blocking main operation)

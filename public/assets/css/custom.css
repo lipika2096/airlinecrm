@@ -242,4 +242,105 @@ th {
     background-color: #0056b3;
     border-color: #0056b3;
 }
+
+/* Enhanced Table Responsive for Zoom */
+.table-responsive-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.table-responsive-responsive table {
+    min-width: 1000px;
+    width: 100%;
+}
+
+/* Custom scrollbar for table containers */
+.table-responsive-responsive::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.table-responsive-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.table-responsive-responsive::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.table-responsive-responsive::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Zoom level specific table fixes */
+@media screen and (max-width: 1400px) {
+    .table-responsive-responsive table {
+        min-width: 900px;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .table-responsive-responsive table {
+        min-width: 800px;
+    }
+
+    .table-responsive-responsive table thead th,
+    .table-responsive-responsive table tbody td {
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .table-responsive-responsive table {
+        min-width: 700px;
+    }
+
+    .table-responsive-responsive table thead th,
+    .table-responsive-responsive table tbody td {
+        padding: 8px 6px;
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .table-responsive-responsive table {
+        min-width: 600px;
+    }
+
+    .table-responsive-responsive table thead th,
+    .table-responsive-responsive table tbody td {
+        padding: 6px 4px;
+        font-size: 11px;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .table-responsive-responsive table {
+        min-width: 500px;
+    }
+
+    .table-responsive-responsive table thead th,
+    .table-responsive-responsive table tbody td {
+        padding: 5px 3px;
+        font-size: 10px;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .table-responsive-responsive table {
+        min-width: 400px;
+    }
+
+    .table-responsive-responsive table thead th,
+    .table-responsive-responsive table tbody td {
+        padding: 4px 2px;
+        font-size: 9px;
+    }
+}
     

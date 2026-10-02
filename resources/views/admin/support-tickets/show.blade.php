@@ -151,11 +151,32 @@
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label>Department</label>
-                                            <select class="form-control"  id="departmentSelect">
-                                                <option value="">Select Department</option>
+                                            @php
+                                                // Always prioritize staff's department if ticket has assigned staff
+                                                $defaultDepartment = $ticket->department;
+                                                if ($ticket->assignedTo && !empty($ticket->assignedTo->department_names)) {
+                                                    $defaultDepartment = trim($ticket->assignedTo->department_names[0] ?? $ticket->department);
+                                                }
+                                                if ($defaultDepartment) {
+                                                    $defaultDepartment = trim($defaultDepartment);
+                                                }
+                                                // Debug output
+                                                // \Log::info('Department debug', [
+                                                //     'ticket_department' => $ticket->department,
+                                                //     'assigned_to' => $ticket->assigned_to,
+                                                //     'staff_department_names' => $ticket->assignedTo ? $ticket->assignedTo->department_names : null,
+                                                //     'default_department' => $defaultDepartment
+                                                // ]);
+                                            @endphp
+                                            <select class="form-control"  id="departmentSelect" name="department">
                                                 @foreach($departments as $department)
-                                                <option value="{{ trim($department) }}" {{ $ticket->department == trim($department) ? 'selected' : '' }}>{{ trim($department) }}</option>
+                                                @php
+                                                    $deptValue = trim($department);
+                                                    $isSelected = ($defaultDepartment && $deptValue === $defaultDepartment) ? 'selected="selected"' : '';
+                                                @endphp
+                                                <option value="{{ $deptValue }}" {{ $isSelected }}>{{ $deptValue }}</option>
                                                 @endforeach
+                                                <option value="" disabled>Select Department</option>
                                             </select>
                                         </div>
                                     </div>
@@ -164,7 +185,7 @@
                                             <label>Assign To</label>
                                             <select class="form-control" name="assigned_to" id="staffSelect">
                                                 <option value="" disabled>Select Staff Member</option>
-                                                @if($ticket->assigned_to && $ticket->assignedTo)
+                                                @if($ticket->assigned_to && $ticket->assignedTo && !$isAssignedStaffDeleted)
                                                     <option value="{{ $ticket->assigned_to }}" selected data-is-current="true">{{ $ticket->assignedTo->first_name }} {{ $ticket->assignedTo->last_name }}</option>
                                                 @endif
                                             </select>
@@ -202,6 +223,7 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <input type="hidden" value="{{$ticket->department}}" name="category">
                                     <div class="col-md-2">
                                         <button type="submit" class="btn btn-primary btn-block" style="margin-top: -60px !important;">Update</button>
                                     </div>
@@ -296,7 +318,7 @@
                                             </div>
                                             <div class="message-body">
                                                 <div>{!! $ticket->description !!}</div>
-                                                @if($ticket->attachments && !empty(json_decode($ticket->attachments)))
+                                                @if($ticket->attachments && !empty(json_decode($ticket->attachments, true)))
                                                     @php
                                                         $ticketAttachments = json_decode($ticket->attachments, true);
                                                     @endphp
@@ -559,7 +581,7 @@
                                                     </div>
                                                     <div class="note-body">
                                                         <p>{{ nl2br($note->note) }}</p>
-                                                        @if($note->attachments && !empty(json_decode($note->attachments)))
+                                                        @if($note->attachments && !empty(json_decode($note->attachments, true)))
                                                             <div class="attachments mt-2">
                                                                 <strong>Attachments:</strong><br>
                                                                 @php $attachments = is_array($note->attachments) ? $note->attachments : json_decode($note->attachments, true); @endphp
@@ -642,7 +664,7 @@
                                         @php
                                             $allAttachments = [];
                                             // Add ticket attachments
-                                            if($ticket->attachments && !empty(json_decode($ticket->attachments))) {
+                                            if($ticket->attachments && !empty(json_decode($ticket->attachments, true))) {
                                                 $ticketAttachments = json_decode($ticket->attachments, true);
                                                 foreach($ticketAttachments as $attachment) {
                                                     // Handle both old string format and new array format
@@ -717,10 +739,10 @@
                                                     <div class="attachment-item mb-3 pb-3 border-bottom {{ $index % 2 === 0 ? 'note-light mb-3' : 'note-dark mb-3' }}">
                                                         <div class="attachment-header d-flex justify-content-between align-items-center">
                                                             <div class="attachment-info">
-                                                                <strong><i class="fa fa-paperclip"></i> {{ $attachment['name'] ?? (is_array($attachment['path']) ? basename($attachment['path']['path'] ?? $attachment['path']) : basename($attachment['path'])) }}</strong>
+                                                                <strong><i class="fa fa-paperclip"></i> {{ $attachment['name'] }}</strong>
                                                                 <small class="text-muted d-block mt-1">{{ $attachment['date'] }}</small>
                                                             </div>
-                                                            <a href="{{ asset('storage/app/public/' . (is_array($attachment['path']) ? $attachment['path']['path'] ?? $attachment['path'] : $attachment['path'])) }}" target="_blank" class="btn btn-sm btn-outline-primary flex-shrink-0">
+                                                            <a href="{{ asset('storage/app/public/' . $attachment['path']) }}" target="_blank" class="btn btn-sm btn-outline-primary flex-shrink-0">
                                                                 <i class="fa fa-download"></i> Download
                                                             </a>
                                                         </div>
@@ -998,7 +1020,7 @@
                                             </div>
                                             <div class="message-body">
                                                 <div>{!! $ticket->description !!}</div>
-                                                @if($ticket->attachments && !empty(json_decode($ticket->attachments)))
+                                                @if($ticket->attachments && !empty(json_decode($ticket->attachments, true)))
                                                     @php
                                                         $ticketAttachments = json_decode($ticket->attachments, true);
                                                     @endphp
@@ -1122,10 +1144,20 @@
                                         @php
                                             $allAttachments = [];
                                             // Add ticket attachments
-                                            if($ticket->attachments && !empty(json_decode($ticket->attachments))) {
-                                                foreach(json_decode($ticket->attachments) as $attachment) {
+                                            if($ticket->attachments && !empty(json_decode($ticket->attachments, true))) {
+                                                $ticketAttachments = json_decode($ticket->attachments, true);
+                                                foreach($ticketAttachments as $attachment) {
+                                                    // Handle both old string format and new array format
+                                                    if(is_array($attachment)) {
+                                                        $path = $attachment['path'];
+                                                        $name = isset($attachment['original_name']) ? $attachment['original_name'] : basename($path);
+                                                    } else {
+                                                        $path = $attachment;
+                                                        $name = basename($path);
+                                                    }
                                                     $allAttachments[] = [
-                                                        'path' => $attachment,
+                                                        'path' => $path,
+                                                        'name' => $name,
                                                         'source' => 'Ticket',
                                                         'date' => \App\Helpers\TimezoneHelper::format($ticket->created_at, 'M d, Y h:i A'),
                                                     ];
@@ -1137,10 +1169,43 @@
                                                     $commentAttachments = is_array($comment->attachments) ? $comment->attachments : json_decode($comment->attachments, true);
                                                     if($commentAttachments && !empty($commentAttachments)) {
                                                         foreach($commentAttachments as $attachment) {
+                                                            // Handle both old string format and new array format
+                                                            if(is_array($attachment)) {
+                                                                $path = $attachment['path'];
+                                                                $name = isset($attachment['original_name']) ? $attachment['original_name'] : basename($path);
+                                                            } else {
+                                                                $path = $attachment;
+                                                                $name = basename($path);
+                                                            }
                                                             $allAttachments[] = [
-                                                                'path' => $attachment,
+                                                                'path' => $path,
+                                                                'name' => $name,
                                                                 'source' => 'Comment by ' . ($comment->user ? $comment->user->name : 'Unknown'),
                                                                 'date' => \App\Helpers\TimezoneHelper::format($comment->created_at, 'M d, Y h:i A'),
+                                                            ];
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            // Add internal note attachments
+                                            foreach($internalNotes as $note) {
+                                                if($note->attachments && !empty($note->attachments)) {
+                                                    $noteAttachments = is_array($note->attachments) ? $note->attachments : json_decode($note->attachments, true);
+                                                    if($noteAttachments && !empty($noteAttachments)) {
+                                                        foreach($noteAttachments as $attachment) {
+                                                            // Handle both old string format and new array format
+                                                            if(is_array($attachment)) {
+                                                                $path = $attachment['path'];
+                                                                $name = isset($attachment['original_name']) ? $attachment['original_name'] : basename($path);
+                                                            } else {
+                                                                $path = $attachment;
+                                                                $name = basename($path);
+                                                            }
+                                                            $allAttachments[] = [
+                                                                'path' => $path,
+                                                                'name' => $name,
+                                                                'source' => 'Internal Note by ' . ($note->user ? $note->user->name : 'Unknown'),
+                                                                'date' => \App\Helpers\TimezoneHelper::format($note->created_at, 'M d, Y h:i A'),
                                                             ];
                                                         }
                                                     }
@@ -1154,10 +1219,10 @@
                                                     <div class="attachment-item mb-3 pb-3 border-bottom {{ $index % 2 === 0 ? 'note-light mb-3' : 'note-dark mb-3' }}">
                                                         <div class="attachment-header d-flex justify-content-between align-items-center">
                                                             <div class="attachment-info">
-                                                                <strong><i class="fa fa-paperclip"></i> {{ $attachment['name'] ?? (is_array($attachment['path']) ? basename($attachment['path']['path'] ?? $attachment['path']) : basename($attachment['path'])) }}</strong>
+                                                                <strong><i class="fa fa-paperclip"></i> {{ $attachment['name'] }}</strong>
                                                                 <small class="text-muted d-block mt-1">{{ $attachment['date'] }}</small>
                                                             </div>
-                                                            <a href="{{ asset('storage/app/public/' . (is_array($attachment['path']) ? $attachment['path']['path'] ?? $attachment['path'] : $attachment['path'])) }}" target="_blank" class="btn btn-sm btn-outline-primary flex-shrink-0">
+                                                            <a href="{{ asset('storage/app/public/' . $attachment['path']) }}" target="_blank" class="btn btn-sm btn-outline-primary flex-shrink-0">
                                                                 <i class="fa fa-download"></i> Download
                                                             </a>
                                                         </div>
@@ -1880,6 +1945,99 @@
         .attachment-body p {
             margin-bottom: 0;
         }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .ticket-header-card .row {
+                flex-direction: column;
+            }
+
+            .ticket-header-card .col-md-4 {
+                margin-bottom: 15px;
+            }
+
+            /* Action bar responsive */
+            .card.mt-3 .row {
+                flex-direction: column;
+            }
+
+            .card.mt-3 .col-md-3,
+            .card.mt-3 .col-md-2 {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .card.mt-3 button {
+                width: 100%;
+                margin-top: 10px !important;
+            }
+
+            /* Tabs responsive */
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+
+            .nav-tabs .nav-item {
+                flex: 1 1 auto;
+                text-align: center;
+            }
+
+            .nav-tabs .nav-link {
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+
+            /* Tables responsive */
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* Conversation section */
+            .conversation-section {
+                padding: 10px;
+            }
+
+            .message-item {
+                padding: 10px;
+            }
+
+            /* Attachments */
+            .attachment-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .attachment-header {
+                width: 100%;
+            }
+
+            .attachment-item .btn {
+                margin-top: 10px;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .ticket-header-card h4 {
+                font-size: 18px;
+            }
+
+            .badge {
+                font-size: 10px;
+                padding: 4px 8px;
+            }
+
+            .nav-tabs .nav-link {
+                font-size: 11px;
+                padding: 6px 8px;
+            }
+
+            .btn {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
     <script>
@@ -1904,19 +2062,48 @@
             var currentAssignedTo = '{{ $ticket->assigned_to ?? '' }}';
             var currentAssignedName = '{{ $ticket->assignedTo ? $ticket->assignedTo->first_name . " " . $ticket->assignedTo->last_name : "" }}';
             var currentDepartment = '{{ $ticket->department ?? '' }}';
+            @php
+                // Get the default department from assigned staff if ticket department is not set
+                $staffDepartment = '';
+                if ($ticket->assignedTo && !empty($ticket->assignedTo->department_names)) {
+                    $staffDepartment = trim($ticket->assignedTo->department_names[0] ?? '');
+                }
+            @endphp
+            var staffDepartment = '{{ $staffDepartment }}';
             var staffSelect = $('#staffSelect');
             var departmentSelect = $('#departmentSelect');
 
-            // Set current department
-            if (currentDepartment) {
-                departmentSelect.val(currentDepartment);
+            // Always use staff's department if ticket has assigned staff, otherwise use ticket's department
+            var departmentToLoad = staffDepartment || currentDepartment;
+
+            console.log('Initializing with - Current Department:', currentDepartment, 'Staff Department:', staffDepartment, 'Department to Load:', departmentToLoad);
+
+            // Set current department using a more reliable method
+            if (departmentToLoad) {
+                // Use setTimeout to ensure the select element is fully rendered
+                setTimeout(function() {
+                    // First, try to find and select the option by text
+                    departmentSelect.find('option').filter(function() {
+                        return $(this).text().trim() === departmentToLoad.trim();
+                    }).prop('selected', true);
+                    
+                    // If that didn't work, try by value
+                    if (departmentSelect.val() !== departmentToLoad) {
+                        departmentSelect.val(departmentToLoad);
+                    }
+                    
+                    // Trigger change event to ensure consistency
+                    departmentSelect.trigger('change');
+                    
+                    console.log('Department set to:', departmentSelect.val());
+                }, 100);
                 
                 // Load staff for current department
-                if (currentDepartment && staffByDepartmentRoute) {
+                if (departmentToLoad && staffByDepartmentRoute) {
                     $.ajax({
                         url: staffByDepartmentRoute,
                         type: 'GET',
-                        data: { department_id: currentDepartment.trim() },
+                        data: { department_id: departmentToLoad.trim() },
                         success: function(response) {
                             staffSelect.empty();
                             staffSelect.append('<option value="">Select Staff Member</option>');
@@ -1934,26 +2121,45 @@
                             } else {
                                 staffSelect.append('<option value="">No staff members found</option>');
                             }
-                            
+
                             // If current assigned staff is not in the current department, still show them as selected
+                            // But only if they are not deleted
+                            @if(!isset($isAssignedStaffDeleted) || !$isAssignedStaffDeleted)
                             if (currentAssignedTo && !currentAssignmentFound && currentAssignedName) {
                                 staffSelect.append('<option value="' + currentAssignedTo + '" selected>' + currentAssignedName + ' (Current Assignment)</option>');
                             }
+                            @endif
                         },
                         error: function(xhr) {
                             console.error('Error loading staff on page load:', xhr);
                             staffSelect.empty();
                             staffSelect.append('<option value="">Error loading staff</option>');
-                            
+
                             // Still show current assignment on error
+                            // But only if they are not deleted
+                            @if(!isset($isAssignedStaffDeleted) || !$isAssignedStaffDeleted)
                             if (currentAssignedTo && currentAssignedName) {
                                 staffSelect.append('<option value="' + currentAssignedTo + '" selected>' + currentAssignedName + ' (Current Assignment)</option>');
                             }
+                            @endif
                         }
                     });
                 }
             }
             @endif
+
+            // Auto-update department when staff is selected
+            $('#staffSelect').on('change', function() {
+                var selectedStaffId = $(this).val();
+                var departmentSelect = $('#departmentSelect');
+                
+                if (selectedStaffId) {
+                    // Find the selected staff option to get their department
+                    // Note: We need to fetch staff details to get their department
+                    // For now, we'll trigger the department change event if needed
+                    console.log('Staff selected:', selectedStaffId);
+                }
+            });
 
             $('#departmentSelect').on('change', function() {
                 var departmentId = $(this).val();
@@ -1994,9 +2200,12 @@
                             }
                             
                             // If current assigned staff is not in the new department, still show them as selected
+                            // But only if they are not deleted
+                            @if(!isset($isAssignedStaffDeleted) || !$isAssignedStaffDeleted)
                             if (currentAssignedTo && !currentAssignmentFound && currentAssignedName) {
                                 staffSelect.append('<option value="' + currentAssignedTo + '" selected>' + currentAssignedName + ' (Current Assignment)</option>');
                             }
+                            @endif
                         },
                         error: function(xhr) {
                             console.error('Error loading staff:', xhr);
@@ -2004,11 +2213,14 @@
                             console.error('Response text:', xhr.responseText);
                             staffSelect.empty();
                             staffSelect.append('<option value="">Error loading staff</option>');
-                            
+
                             // Still show current assignment on error
+                            // But only if they are not deleted
+                            @if(!isset($isAssignedStaffDeleted) || !$isAssignedStaffDeleted)
                             if (currentAssignedTo && currentAssignedName) {
                                 staffSelect.append('<option value="' + currentAssignedTo + '" selected>' + currentAssignedName + ' (Current Assignment)</option>');
                             }
+                            @endif
                         }
                     });
                 } else {

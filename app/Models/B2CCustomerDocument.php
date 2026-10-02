@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class B2CCustomerDocument extends Model
 {
@@ -20,6 +21,7 @@ class B2CCustomerDocument extends Model
         'file_name',
         'description',
         'created_by',
+        'created_by_type',
     ];
 
     public function customer()
@@ -29,6 +31,9 @@ class B2CCustomerDocument extends Model
 
     public function createdBy()
     {
+        if ($this->created_by_type === 'staff') {
+            return $this->belongsTo(User::class, 'created_by');
+        }
         return $this->belongsTo(Admin::class, 'created_by');
     }
 }

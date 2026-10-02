@@ -29,4 +29,9 @@ class Employee extends Authenticatable
     {
         return $this->hasMany(EmployeeSalary::class, 'employee_id', 'id');
     }
+  
+  public function modulePermissions()
+    {
+        return $this->hasMany(ModulePermission::class);
+    }
 }

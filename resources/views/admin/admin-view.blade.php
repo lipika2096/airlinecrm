@@ -138,7 +138,12 @@
             if (packageId) {
                 // Fetch package data via AJAX
                 fetch(`./superadmin/sales-packages/${packageId}`)
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         
                         console.log(data);

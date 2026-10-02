@@ -210,9 +210,11 @@
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
-                        <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2c-customers.create') : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2c-customers.create') : route('staff.b2c-customers.create')) }}" class="btn add-btn">
-                            <i class="fa fa-plus me-2"></i> Add Customer
-                        </a>
+                        @canCreate('b2c-customers.b2c-customers-list')
+                            <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2c-customers.create') : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2c-customers.create') : route('staff.b2c-customers.create')) }}" class="btn add-btn">
+                                <i class="fa fa-plus me-2"></i> Add Customer
+                            </a>
+                        @endcanCreate
                     </div>
                 </div>
             </div>
@@ -280,15 +282,21 @@
                                                 </td>
                                                 <td>
                                                     <div class="action-icons">
-                                                                                        <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2c-customers.show', $customer->id) : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2c-customers.show', $customer->id) : route('staff.b2c-customers.show', $customer->id)) }}" class="action-icon" title="View">
-                                                            <i class="fa fa-eye"></i>
-                                                        </a>
-                                                        <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2c-customers.edit', $customer->id) : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2c-customers.edit', $customer->id) : route('staff.b2c-customers.edit', $customer->id)) }}" class="action-icon" title="Edit">
-                                                            <i class="fa fa-edit"></i>
-                                                        </a>
-                                                        <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_customer{{ $customer->id }}" title="Delete">
-                                                            <i class="fa fa-trash"></i>
-                                                        </a>
+                                                        @canView('b2c-customers.b2c-customers-list')
+                                                            <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2c-customers.show', $customer->id) : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2c-customers.show', $customer->id) : route('staff.b2c-customers.show', $customer->id)) }}" class="action-icon" title="View">
+                                                                <i class="fa fa-eye"></i>
+                                                            </a>
+                                                        @endcanView
+                                                        @canEdit('b2c-customers.b2c-customers-list')
+                                                            <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2c-customers.edit', $customer->id) : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2c-customers.edit', $customer->id) : route('staff.b2c-customers.edit', $customer->id)) }}" class="action-icon" title="Edit">
+                                                                <i class="fa fa-edit"></i>
+                                                            </a>
+                                                        @endcanEdit
+                                                        @canDelete('b2c-customers.b2c-customers-list')
+                                                            <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_customer{{ $customer->id }}" title="Delete">
+                                                                <i class="fa fa-trash"></i>
+                                                            </a>
+                                                        @endcanDelete
                                                     </div>
                                                 </td>
                                             </tr>

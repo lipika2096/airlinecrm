@@ -70,8 +70,22 @@ class B2CCustomerController extends Controller
             'special_requests' => 'nullable|string',
         ]);
 
-        $validated['created_by'] = auth('admin')->id();
-        $validated['updated_by'] = auth('admin')->id();
+        // Determine the current user type and ID
+        $currentUserId = null;
+        $userType = 'superadmin';
+
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+
+        $validated['created_by'] = $currentUserId;
+        $validated['created_by_type'] = $userType;
+        $validated['updated_by'] = $currentUserId;
+        $validated['updated_by_type'] = $userType;
 
         $customer = B2CCustomer::create($validated);
 
@@ -115,7 +129,20 @@ class B2CCustomerController extends Controller
             'special_requests' => 'nullable|string',
         ]);
 
-        $validated['updated_by'] = auth('admin')->id();
+        // Determine the current user type and ID
+        $currentUserId = null;
+        $userType = 'superadmin';
+
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+
+        $validated['updated_by'] = $currentUserId;
+        $validated['updated_by_type'] = $userType;
 
         $customer->update($validated);
 
@@ -156,9 +183,23 @@ class B2CCustomerController extends Controller
             'frequent_flyer_number' => 'nullable|string|max:50',
         ]);
 
+        // Determine the current user type and ID
+        $currentUserId = null;
+        $userType = 'superadmin';
+
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+
         $validated['b2c_customer_id'] = $customerId;
-        $validated['created_by'] = auth('admin')->id();
-        $validated['updated_by'] = auth('admin')->id();
+        $validated['created_by'] = $currentUserId;
+        $validated['created_by_type'] = $userType;
+        $validated['updated_by'] = $currentUserId;
+        $validated['updated_by_type'] = $userType;
 
         B2CPassenger::create($validated);
 
@@ -189,7 +230,20 @@ class B2CCustomerController extends Controller
             'frequent_flyer_number' => 'nullable|string|max:50',
         ]);
 
-        $validated['updated_by'] = auth('admin')->id();
+        // Determine the current user type and ID
+        $currentUserId = null;
+        $userType = 'superadmin';
+
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+
+        $validated['updated_by'] = $currentUserId;
+        $validated['updated_by_type'] = $userType;
 
         $passenger->update($validated);
 
@@ -215,8 +269,21 @@ class B2CCustomerController extends Controller
             'note' => 'required|string',
         ]);
 
+        // Determine the current user type and ID
+        $currentUserId = null;
+        $userType = 'superadmin';
+
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+
         $validated['b2c_customer_id'] = $customerId;
-        $validated['created_by'] = auth('admin')->id();
+        $validated['created_by'] = $currentUserId;
+        $validated['created_by_type'] = $userType;
 
         B2CCustomerNote::create($validated);
 
@@ -248,13 +315,26 @@ class B2CCustomerController extends Controller
             $file = $request->file('file');
             $fileName = time() . '_' . $file->getClientOriginalName();
             $filePath = $file->storeAs('b2c-customer-documents', $fileName, 'public');
-            
+
             $validated['file_path'] = $filePath;
             $validated['file_name'] = $fileName;
         }
 
+        // Determine the current user type and ID
+        $currentUserId = null;
+        $userType = 'superadmin';
+
+        if (auth('admin')->check()) {
+            $currentUserId = auth('admin')->user()->id;
+            $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+        } elseif (auth()->check()) {
+            $currentUserId = auth()->user()->id;
+            $userType = 'staff';
+        }
+
         $validated['b2c_customer_id'] = $customerId;
-        $validated['created_by'] = auth('admin')->id();
+        $validated['created_by'] = $currentUserId;
+        $validated['created_by_type'] = $userType;
 
         B2CCustomerDocument::create($validated);
 

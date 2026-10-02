@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Admin;
 
 class Booking extends Model
 {
@@ -27,7 +29,9 @@ class Booking extends Model
         'profit',
         'status',
         'created_by',
+        'created_by_type',
         'updated_by',
+        'updated_by_type',
         'invoice_number',
         'invoice_date',
         'invoice_due_date',
@@ -112,11 +116,57 @@ class Booking extends Model
 
     public function createdBy()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        if ($this->created_by_type === 'staff') {
+            return $this->belongsTo(User::class, 'created_by');
+        }
+        return $this->belongsTo(Admin::class, 'created_by');
     }
 
     public function updatedBy()
     {
-        return $this->belongsTo(User::class, 'updated_by');
+        if ($this->updated_by_type === 'staff') {
+            return $this->belongsTo(User::class, 'updated_by');
+        }
+        return $this->belongsTo(Admin::class, 'updated_by');
+    }
+
+    /**
+     * Generate the next sequential booking number with thread safety
+     */
+    public static function generateNextBookingNumber()
+    {
+        // Use a more robust approach with retry logic for high concurrency
+        $maxRetries = 5;
+        $attempt = 0;
+
+        while ($attempt < $maxRetries) {
+            // Get the last booking number by ordering by booking_no itself
+            $lastBooking = self::whereNotNull('booking_no')
+                ->orderBy('booking_no', 'desc')
+                ->first();
+
+            if ($lastBooking && $lastBooking->booking_no) {
+                // Extract the numeric part from the last booking number
+                $lastNumber = intval(preg_replace('/[^0-9]/', '', $lastBooking->booking_no));
+                $nextNumber = $lastNumber + 1;
+            } else {
+                // Start from 1 if no bookings exist
+                $nextNumber = 1;
+            }
+
+            // Format as BK000000 (6 digits)
+            $bookingNo = 'BK' . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+
+            // Check if this booking number already exists (handle race conditions)
+            if (!self::where('booking_no', $bookingNo)->exists()) {
+                return $bookingNo;
+            }
+
+            // If it exists, try again with next number
+            $attempt++;
+        }
+
+        // Fallback: use timestamp-based if all retries fail
+        return 'BK' . str_pad(time() % 1000000, 6, '0', STR_PAD_LEFT);
     }
 }

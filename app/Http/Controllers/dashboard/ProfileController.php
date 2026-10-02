@@ -15,10 +15,10 @@ class ProfileController extends Controller
     public function employeeProfile()
     {
         // Add your logic for employee profile view
-        $user = User::find(auth()->user()->id);
+        $user = User::where('id', auth()->user()->id)->whereNull('deleted_at')->first();
         
-        $employee = User::where('email', $user->email)->first();
-        $profile = User::where('id', $user->id)->first();
+        $employee = User::where('email', $user->email)->whereNull('deleted_at')->first();
+        $profile = User::where('id', $user->id)->whereNull('deleted_at')->first();
         return view('admin.client-profile', compact('profile')); // Example view path, adjust as per your structure
     }
 
@@ -82,14 +82,25 @@ class ProfileController extends Controller
         }
         
         $request->validate([
-            'timezone' => 'required|string',
+            'timezone' => 'nullable|string',
         ]);
 
-        // Update timezone
-        $user->timezone = $request->timezone;
-        $user->save();
-
-        return redirect()->back()->with('timezone_success', 'Timezone updated successfully!');
+        // Update timezone - if empty, set to null to use system default
+        $user->timezone = empty($request->timezone) ? null : $request->timezone;
+        
+        try {
+            $user->save();
+            
+            // Refresh the user to get the updated timezone
+            $user->refresh();
+            
+            // Set the new timezone for the current session
+            \App\Helpers\TimezoneHelper::setAppTimezone();
+            
+            return redirect()->back()->with('timezone_success', 'Timezone updated successfully! Current timezone: ' . ($user->timezone ?? 'System Default'));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('timezone_error', 'Failed to update timezone: ' . $e->getMessage());
+        }
     }
 
 

@@ -1036,6 +1036,13 @@ class SupportTicketController extends Controller
         // Check if user can rate (ticket creator and ticket is closed)
         $canRate = !$isSuperAdmin && $ticket->status === 'closed' && $ticket->created_by === $user->id && !$ticket->rating;
 
+        // Check if currently assigned staff is deleted
+        $isAssignedStaffDeleted = false;
+        if ($ticket->assigned_to && $ticket->assignedTo) {
+            $assignedStaff = User::find($ticket->assigned_to);
+            $isAssignedStaffDeleted = !$assignedStaff || $assignedStaff->deleted_at !== null;
+        }
+
         // Get active tab from session or default to details
         $activeTab = session('active_tab', 'details');
 
@@ -1047,7 +1054,7 @@ class SupportTicketController extends Controller
             ->where('company_name', '!=', '')
             ->get();
 
-        return view('admin.support-tickets.show', compact('ticket', 'comments', 'allComments', 'internalNotes', 'isSuperAdmin', 'isStaff', 'staffMembers', 'slaDue', 'isOverdue', 'canRate', 'activeTab', 'ticketStatuses', 'departments', 'companies'));
+        return view('admin.support-tickets.show', compact('ticket', 'comments', 'allComments', 'internalNotes', 'isSuperAdmin', 'isStaff', 'staffMembers', 'slaDue', 'isOverdue', 'canRate', 'activeTab', 'ticketStatuses', 'departments', 'companies', 'isAssignedStaffDeleted'));
     }
 
     public function myCreatedTickets(Request $request)
@@ -1209,6 +1216,7 @@ class SupportTicketController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
+        //dd($request->category);
         // Determine user type and permissions
         $isStaff = RouteHelper::isStaff();
         $isSuperAdmin = RouteHelper::isSuperAdmin();
@@ -1246,7 +1254,7 @@ class SupportTicketController extends Controller
             'assigned_to' => 'nullable|exists:users,id',
             'priority' => 'nullable|string|max:255',
             'department' => 'nullable|string|max:255',
-            'category' => 'nullable|string|in:technical_support,billing,booking,account,other',
+            'category' => 'nullable|string',
             'rating' => 'nullable|integer|min:1|max:5',
             'rating_comment' => 'nullable|string|max:1000',
         ];
@@ -1307,6 +1315,14 @@ class SupportTicketController extends Controller
 
         if ($request->has('assigned_to')) {
             $ticket->assigned_to = $request->assigned_to;
+            
+            // Automatically set department based on assigned staff if not explicitly provided
+            if ($request->assigned_to && !$request->has('department')) {
+                $assignedStaff = \App\Models\User::whereNull('deleted_at')->where('id',$request->assigned_to);
+                if ($assignedStaff && !empty($assignedStaff->department)) {
+                    $ticket->department = $assignedStaff->department[0];
+                }
+            }
         }
 
         // Update priority if provided

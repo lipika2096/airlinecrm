@@ -32,7 +32,9 @@
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
-                        <a href="{{ $createRoute }}" class="btn add-btn"><i class="fa fa-plus"></i> {{ \App\Helpers\RouteHelper::isSuperAdmin() ? 'New Ticket' : 'Create Ticket' }}</a>
+                        @canCreate('support-tickets.dashboard')
+                            <a href="{{ $createRoute }}" class="btn add-btn"><i class="fa fa-plus"></i> {{ \App\Helpers\RouteHelper::isSuperAdmin() ? 'New Ticket' : 'Create Ticket' }}</a>
+                        @endcanCreate
                     </div>  
                 </div>
             </div>
@@ -436,7 +438,8 @@
                     @if($isSuperAdmin)
                     <div class="card" style="border: none; box-shadow: none;">
                         <div class="card-body" style="padding: 0;">
-                            <table class="table table-modern-tickets">
+                            <div class="table-responsive-responsive">
+                                <table class="table table-modern-tickets">
                                 <thead>
                                     <tr>
                                         <th>Sr.no.</th>
@@ -547,9 +550,13 @@
                                                         </button>
                                                         @endif
                                                     @elseif($isStaff)
+                                                    
+                                                    @canView('support_tickets.dashboard')
+                                                        
                                                         <a href="{{ route('staff.support-tickets.show', $ticket->id) }}" class="btn btn-sm btn-view-ticket">
                                                             <i class="fa fa-eye"></i> View
                                                         </a>
+                                                        @endcanView
                                                         @if($ticket->status !== 'closed')
                                                         <button type="button" class="btn btn-sm btn-transfer-ticket" data-bs-toggle="modal" data-bs-target="#transferTicketModal" data-ticket-id="{{ $ticket->id }}" data-current-assigned="{{ $ticket->assigned_to ?? '' }}" data-current-department="{{ $ticket->department ?? '' }}">
                                                             <i class="fa fa-exchange"></i> Transfer
@@ -570,6 +577,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            </div>
                             @if($tickets->isEmpty())
                             <div class="text-center py-5">
                                 <p class="text-muted">No tickets found.</p>
@@ -1479,58 +1487,227 @@
             .quick-stats {
                 grid-template-columns: repeat(2, 1fr);
             }
-            
+
             .welcome-section .welcome-title {
                 font-size: 20px;
             }
-            
+
             .filter-tabs-modern {
                 flex-direction: column;
             }
-            
+
             .filter-tab {
                 justify-content: center;
             }
-            
+
             .table-responsive {
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
             }
-            
+
             .table-user-friendly {
                 min-width: 600px;
             }
-            
+
             .table-user-friendly thead th {
                 padding: 12px 10px;
                 font-size: 11px;
             }
-            
+
             .table-user-friendly tbody td {
                 padding: 12px 10px;
                 font-size: 13px;
             }
-            
+
             .ticket-id-modern {
                 font-size: 11px;
                 padding: 4px 8px;
             }
-            
+
             .subject-link {
                 font-size: 13px;
             }
-            
+
             .category-badge,
             .priority-badge,
             .status-badge {
                 font-size: 10px;
                 padding: 4px 8px;
             }
-            
+
             .btn-action-view {
                 padding: 6px 12px;
                 font-size: 11px;
             }
+
+            /* Action buttons responsive fix */
+            .dropdown-action {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+                justify-content: flex-end;
+            }
+
+            .btn-view-ticket,
+            .btn-assign-ticket,
+            .btn-transfer-ticket {
+                padding: 4px 8px;
+                font-size: 11px;
+                white-space: nowrap;
+            }
+
+            .table-modern-tickets .dropdown-action {
+                min-width: 200px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dropdown-action {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-view-ticket,
+            .btn-assign-ticket,
+            .btn-transfer-ticket {
+                width: 100%;
+                margin: 2px 0 !important;
+            }
+
+            .table-modern-tickets .dropdown-action {
+                min-width: 120px;
+            }
+        }
+
+        /* Table Responsive Container for Zoom */
+        .table-responsive-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+        }
+
+        .table-responsive-responsive table {
+            min-width: 1000px;
+            width: 100%;
+        }
+
+        /* Zoom level specific table fixes */
+        @media screen and (max-width: 1400px) {
+            .table-responsive-responsive table {
+                min-width: 900px;
+            }
+        }
+
+        @media screen and (max-width: 1200px) {
+            .table-responsive-responsive table {
+                min-width: 800px;
+            }
+
+            .table-modern-tickets th,
+            .table-modern-tickets td {
+                padding: 10px 8px;
+                font-size: 13px;
+            }
+        }
+
+        @media screen and (max-width: 992px) {
+            .table-responsive-responsive table {
+                min-width: 700px;
+            }
+
+            .table-modern-tickets th,
+            .table-modern-tickets td {
+                padding: 8px 6px;
+                font-size: 12px;
+            }
+
+            .ticket-id-badge,
+            .department-badge {
+                font-size: 11px;
+                padding: 4px 6px;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .table-responsive-responsive table {
+                min-width: 600px;
+            }
+
+            .table-modern-tickets th,
+            .table-modern-tickets td {
+                padding: 6px 4px;
+                font-size: 11px;
+            }
+
+            .ticket-id-badge,
+            .department-badge {
+                font-size: 10px;
+                padding: 3px 5px;
+            }
+
+            .badge {
+                font-size: 9px;
+                padding: 3px 5px;
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            .table-responsive-responsive table {
+                min-width: 500px;
+            }
+
+            .table-modern-tickets th,
+            .table-modern-tickets td {
+                padding: 4px 3px;
+                font-size: 10px;
+            }
+
+            .ticket-subject-link {
+                font-size: 10px;
+                max-width: 100px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                display: block;
+            }
+        }
+
+        /* High zoom level fixes */
+        @media screen and (max-width: 400px) {
+            .table-responsive-responsive table {
+                min-width: 400px;
+            }
+
+            .table-modern-tickets th,
+            .table-modern-tickets td {
+                padding: 3px 2px;
+                font-size: 9px;
+            }
+
+            .btn-sm {
+                padding: 2px 4px;
+                font-size: 9px;
+            }
+        }
+
+        /* Custom scrollbar for table */
+        .table-responsive-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-responsive-responsive::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-responsive-responsive::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .table-responsive-responsive::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
     </style>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -1905,8 +2082,15 @@
                     actionUrl = actionUrl.replace(':ticketId', ticketId);
                     document.getElementById('staffAssignForm').action = actionUrl;
 
+                    // Populate staff dropdown with filtered staff (excluding deleted)
+                    const staffAssignSelect = document.getElementById('staffAssignSelect');
+                    staffAssignSelect.innerHTML = '<option value="">Select Staff Member</option>';
+                    @foreach($staffMembers as $staff)
+                        staffAssignSelect.innerHTML += '<option value="{{ $staff->id }}">{{ $staff->first_name }} {{ $staff->last_name }}</option>';
+                    @endforeach
+
                     // Set current value
-                    document.getElementById('staffAssignSelect').value = currentAssigned;
+                    staffAssignSelect.value = currentAssigned;
                 });
             }
 

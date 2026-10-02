@@ -10,6 +10,52 @@ use Carbon\Carbon;
         .fw-bold {
             120px;
         }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .slider.round {
+            border-radius: 24px;
+        }
+        .slider.round:before {
+            border-radius: 50%;
+        }
     </style>
     <!-- Page Content -->
     <div class="content container-fluid">
@@ -32,6 +78,8 @@ use Carbon\Carbon;
                             <ul class="nav nav-tabs nav-tabs-bottom">
                                 <li class="nav-item"><a href="#general" data-bs-toggle="tab"
                                         class="nav-link active">General</a>
+                                </li>
+                                <li class="nav-item"><a href="#access" data-bs-toggle="tab" class="nav-link">Access</a>
                                 </li>
                                 <li class="nav-item"><a href="#leaves" data-bs-toggle="tab" class="nav-link">My
                                         Overview</a>
@@ -63,106 +111,165 @@ use Carbon\Carbon;
         <div class="tab-content" style="margin-top:-30px;">
             <div id="general" class="pro-overview tab-pane fade show active">
                 <div class="row">
-                    <div class="col-md-12">
-                        <div class="card mt-3" style="padding: 3pc;margin-right: 33px;">
-                            <div class="row">
-                                <div class="col-7">
-                                    <table class="table table-bordered table-striped">
-
-                                        <tbody>
-                                            <tr>
-                                                <td class="fw-bold">Employee ID</td>
-                                                <td>{{ $employees->unique_id }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">First Name</td>
-                                                <td>{{ $employees->first_name }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Last Name</td>
-                                                <td>{{ $employees->last_name }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Email</td>
-                                                <td>{{ $employees->email }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">DOB </td>
-                                                <td>{{ $employees->dob }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">DOJ</td>
-                                                <td>{{ $employees->joining_date }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Branch</td>
-                                                <td>{{ $employees->branch }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Department</td>
-                                                <td>{{ $employees->department }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Position</td>
-                                                <td>{{ $employees->position }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Work Type</td>
-                                                <td>{{ $employees->work_type }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Phone</td>
-                                                <td>{{ $employees->phone }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Mobile(Personal)</td>
-                                                <td>{{ $employees->personal_phone }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Mobile(Company)</td>
-                                                <td>{{ $employees->company_mobile }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Company</td>
-                                                <td>{{ $employees->client_company_name }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Min Hrs</td>
-                                                <td>{{ $employees->min_hrs }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Max Hrs</td>
-                                                <td>{{ $employees->max_hrs }}</td>
-                                            </tr>
-
-                                            <tr>
-                                                <td class="fw-bold">Date of Resignation</td>
-                                                <td>{{ $employees->date_of_resignation }}</td>
-                                            </tr>
-
-                                        </tbody>
-                                    </table>
+                    <div class="col-md-6">
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h5 class="card-title">Basic Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="col-form-label">First Name</label>
+                                    <div class="form-control-static">{{ $employees->first_name }}</div>
                                 </div>
-
-                                <div class="col-5" style="padding-left:90px;">
-                                    @if (!empty($employees->avatar_filename))
-                                    <img src="{{ asset('staff/storage/avatars/' . $employees->avatar_directory . '/' . $employees->avatar_filename) }}"
-                                        alt="" width="60%"
-                                        style="width: 150px;border-radius: 85px;margin-top:20px;height: 150px!important;"
-                                        class="ms-5">
-                                    @else
-                                    <img src="{{ asset('public/assets/img/user.jpg/') }}" alt="" width="60%"
-                                        style="width: 150px;border-radius: 85px;margin-top:20px;height: 150px!important;"
-                                        class="ms-5">
-                                    @endif
+                                <div class="form-group">
+                                    <label class="col-form-label">Last Name</label>
+                                    <div class="form-control-static">{{ $employees->last_name }}</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-form-label">Email</label>
+                                    <div class="form-control-static">{{ $employees->email }}</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-form-label">Phone</label>
+                                    <div class="form-control-static">{{ $employees->phone ?? '-' }}</div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
 
+                    <div class="col-md-6">
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h5 class="card-title">Additional Info</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="col-form-label">Work Type</label>
+                                    <div class="form-control-static">{{ $employees->work_type ?? '-' }}</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-form-label">Mobile</label>
+                                    <div class="form-control-static">{{ $employees->personal_phone ?? '-' }}</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-form-label">Branch</label>
+                                    <div class="form-control-static">{{ $employees->branch ?? '-' }}</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-form-label">Date of Resignation</label>
+                                    <div class="form-control-static">{{ $employees->date_of_resignation ?? '-' }}</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div id="access" class="pro-overview tab-pane fade show">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h5 class="card-title">Module Access</h5>
+                            </div>
+                            <div class="card-body">
+                                @if(!empty($employees->department_names))
+                                    <div class="alert alert-info">
+                                        <i class="fa fa-info-circle"></i>
+                                        Showing modules assigned to department(s): <strong>{{ implode(', ', $employees->department_names) }}</strong>
+                                    </div>
+                                @endif
+
+                                <div class="table-responsive">
+                                    <table class="table table-striped custom-table mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Module</th>
+                                                <th>Department</th>
+                                                <th>Access</th>
+                                                <th>Submodules</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if(count($availableModules) > 0)
+                                                @foreach($availableModules as $moduleKey => $moduleName)
+                                                <tr>
+                                                    <td>{{ $moduleName }}</td>
+                                                    <td>{{ implode(', ', $employees->department_names) ?? '-' }}</td>
+                                                    <td>
+                                                        <label class="toggle-switch">
+                                                            <input type="checkbox" class="module-access-toggle" data-module="{{ $moduleKey }}" data-employee="{{ $employees->id }}" id="toggle-{{ str_replace('-', '_', $moduleKey) }}" {{ isset($modulePermissions[$moduleKey]['has_access']) && $modulePermissions[$moduleKey]['has_access'] ? 'checked' : '' }}>
+                                                            <span class="slider round"></span>
+                                                        </label>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-info submodule-btn" data-module="{{ $moduleKey }}" data-employee="{{ $employees->id }}">
+                                                            <i class="fa fa-cog"></i> Sub Modules
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            @else
+                                                <tr>
+                                                    <td colspan="4" class="text-center">
+                                                        <div class="alert alert-warning">
+                                                            <i class="fa fa-exclamation-triangle"></i>
+                                                            No modules assigned to this staff member's department(s).
+                                                            <br>Please contact administrator to assign modules to department: <strong>{{ implode(', ', $employees->department_names) }}</strong>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submodule Configuration Modal -->
+            <div id="submoduleModal" class="modal custom-modal fade" role="dialog">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Configure Submodule Access</h5>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <h6 id="modalModuleName" class="text-primary font-weight-bold"></h6>
+                                <p class="text-muted">Configure access for individual submodules and their actions</p>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Submodule</th>
+                                            <th class="text-center">View</th>
+                                            <th class="text-center">Create</th>
+                                            <th class="text-center">Edit</th>
+                                            <th class="text-center">Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="submoduleTableBody">
+                                        <!-- Submodules will be loaded dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="saveSubmodulePermissions">Save Permissions</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="leaves" class="pro-overview tab-pane fade show ">
+
                 <!-- Page Content -->
                 <div class="content container-fluid">
 
@@ -1788,7 +1895,7 @@ use Carbon\Carbon;
 
                                 // Fetch departments on page load
                                 $.ajax({
-                                    url: baseUrl + '/admin/get-departments',
+                                    url: baseUrl + '/superadmin/get-departments',
                                     method: 'GET',
                                     success: function(response) {
                                         let html = '';
@@ -2644,6 +2751,333 @@ use Carbon\Carbon;
                         if (activeTab) {
                             form.action += activeTab.getAttribute('href');
                         }
+                    });
+                });
+
+                // Module Access Toggle functionality
+                document.querySelectorAll('.module-access-toggle').forEach(function(toggle) {
+                    toggle.addEventListener('change', function() {
+                        const moduleId = this.dataset.module;
+                        const employeeId = this.dataset.employee;
+                        const hasAccess = this.checked;
+
+                        // Get sub-module permissions
+                        const canView = document.getElementById('view-' + moduleId.replace(/-/g, '_'))?.checked || false;
+                        const canCreate = document.getElementById('create-' + moduleId.replace(/-/g, '_'))?.checked || false;
+                        const canEdit = document.getElementById('edit-' + moduleId.replace(/-/g, '_'))?.checked || false;
+                        const canDelete = document.getElementById('delete-' + moduleId.replace(/-/g, '_'))?.checked || false;
+
+                        // Determine the correct route based on user type
+                        const updateModuleAccessRoute = '{{ \App\Helpers\RouteHelper::isCustomer() ? route("customer.update.module.access") : (\App\Helpers\RouteHelper::isStaff() ? route("staff.update.module.access") : route("admin.update.module.access")) }}';
+
+                        // Use the Laravel route
+                        fetch(updateModuleAccessRoute, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                employee_id: employeeId,
+                                module: moduleId,
+                                access: hasAccess ? 1 : 0,
+                                can_view: canView ? 1 : 0,
+                                can_create: canCreate ? 1 : 0,
+                                can_edit: canEdit ? 1 : 0,
+                                can_delete: canDelete ? 1 : 0
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                console.log('Module access updated successfully');
+                            } else {
+                                // Revert toggle on error
+                                this.checked = !hasAccess;
+                                console.error('Error updating module access:', data.message);
+                            }
+                        })
+                        .catch(error => {
+                            // Revert toggle on error
+                            this.checked = !hasAccess;
+                            console.error('Error updating module access:', error);
+                        });
+                    });
+                });
+
+                // Sub-module Toggle functionality
+                document.querySelectorAll('.submodule-toggle').forEach(function(toggle) {
+                    toggle.addEventListener('change', function() {
+                        const moduleId = this.dataset.module;
+                        const employeeId = this.dataset.employee;
+                        const permission = this.dataset.permission;
+                        const hasPermission = this.checked;
+
+                        // Determine the correct route based on user type
+                        const updateModuleAccessRoute = '{{ \App\Helpers\RouteHelper::isCustomer() ? route("customer.update.module.access") : (\App\Helpers\RouteHelper::isStaff() ? route("staff.update.module.access") : route("admin.update.module.access")) }}';
+
+                        // Get current module access state
+                        const moduleToggle = document.getElementById('toggle-' + moduleId.replace(/-/g, '_'));
+                        const hasAccess = moduleToggle?.checked || false;
+
+                        // Get all sub-module permissions
+                        const canView = document.getElementById('view-' + moduleId.replace(/-/g, '_'))?.checked || false;
+                        const canCreate = document.getElementById('create-' + moduleId.replace(/-/g, '_'))?.checked || false;
+                        const canEdit = document.getElementById('edit-' + moduleId.replace(/-/g, '_'))?.checked || false;
+                        const canDelete = document.getElementById('delete-' + moduleId.replace(/-/g, '_'))?.checked || false;
+
+                        // Use the Laravel route
+                        fetch(updateModuleAccessRoute, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                employee_id: employeeId,
+                                module: moduleId,
+                                access: hasAccess ? 1 : 0,
+                                can_view: canView ? 1 : 0,
+                                can_create: canCreate ? 1 : 0,
+                                can_edit: canEdit ? 1 : 0,
+                                can_delete: canDelete ? 1 : 0
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                console.log('Sub-module permission updated successfully');
+                            } else {
+                                // Revert toggle on error
+                                this.checked = !hasPermission;
+                                console.error('Error updating sub-module permission:', data.message);
+                            }
+                        })
+                        .catch(error => {
+                            // Revert toggle on error
+                            this.checked = !hasPermission;
+                            console.error('Error updating sub-module permission:', error);
+                        });
+                    });
+                });
+
+                // Load existing module permissions on page load
+                function loadModulePermissions() {
+                    // Use the module permissions passed from the controller
+                    const modulePermissions = @json($modulePermissions ?? []);
+                    const availableModules = @json($availableModules ?? []);
+
+                    console.log('Loading module permissions:', modulePermissions); // Debug log
+                    console.log('Available modules:', availableModules); // Debug log
+                    console.log('Employee ID:', {{ $employees->id }}); // Debug log
+
+                    // Update toggle states based on existing permissions
+                    Object.keys(availableModules).forEach(function(moduleName) {
+                        // The ID uses underscores instead of hyphens for HTML compatibility
+                        const safeModuleName = moduleName.replace(/-/g, '_');
+                        const toggle = document.getElementById('toggle-' + safeModuleName);
+                        console.log('Processing module:', moduleName, 'Safe name:', safeModuleName, 'Toggle found:', !!toggle); // Debug log
+
+                        if (toggle) {
+                            // Get permission data for this module
+                            const permission = modulePermissions[moduleName];
+                            console.log('Permission data for', moduleName, ':', permission); // Debug log
+
+                            if (permission) {
+                                // Handle both old boolean format and new object format
+                                if (typeof permission === 'boolean') {
+                                    toggle.checked = permission;
+                                } else if (typeof permission === 'object') {
+                                    // Handle has_access - convert string '1' to boolean
+                                    toggle.checked = permission.has_access === true || permission.has_access === '1' || permission.has_access === 1;
+                                    console.log('Setting toggle for', moduleName, 'to', toggle.checked); // Debug log
+
+                                    // Set sub-module toggles - handle empty strings and various formats
+                                    const viewToggle = document.getElementById('view-' + safeModuleName);
+                                    const createToggle = document.getElementById('create-' + safeModuleName);
+                                    const editToggle = document.getElementById('edit-' + safeModuleName);
+                                    const deleteToggle = document.getElementById('delete-' + safeModuleName);
+
+                                    if (viewToggle) viewToggle.checked = permission.can_view === true || permission.can_view === '1' || permission.can_view === 1;
+                                    if (createToggle) createToggle.checked = permission.can_create === true || permission.can_create === '1' || permission.can_create === 1;
+                                    if (editToggle) editToggle.checked = permission.can_edit === true || permission.can_edit === '1' || permission.can_edit === 1;
+                                    if (deleteToggle) deleteToggle.checked = permission.can_delete === true || permission.can_delete === '1' || permission.can_delete === 1;
+                                }
+                            } else {
+                                // No permission data exists for this module, set toggle to unchecked
+                                toggle.checked = false;
+                            }
+                        }
+                    });
+                }
+
+                // Load permissions when the page loads
+                loadModulePermissions();
+
+                // Submodule Configuration Modal functionality
+                let currentModule = null;
+                let currentEmployeeId = null;
+                let submodulePermissions = {};
+
+                document.querySelectorAll('.submodule-btn').forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        currentModule = this.dataset.module;
+                        currentEmployeeId = this.dataset.employee;
+                        
+                        // Set modal title
+                        const moduleName = this.closest('tr').querySelector('td:first-child').textContent;
+                        document.getElementById('modalModuleName').textContent = moduleName;
+                        
+                        // Load submodules for this module
+                        loadSubmodules(currentModule, currentEmployeeId);
+                        
+                        // Show modal
+                        const modal = new bootstrap.Modal(document.getElementById('submoduleModal'));
+                        modal.show();
+                    });
+                });
+
+                function loadSubmodules(moduleKey, employeeId) {
+                    // Get submodules for the current module from the available permissions
+                    const allPermissions = @json($allPermissions ?? []);
+                    const moduleSubmodules = allPermissions.filter(perm => 
+                        perm.name.startsWith(moduleKey + '.') && perm.name.includes('.')
+                    ).map(perm => {
+                        const parts = perm.name.split('.');
+                        return {
+                            key: parts[1],
+                            name: parts[1].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+                        };
+                    });
+
+                    // Get existing permissions for this module
+                    const updateModuleAccessRoute = "{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.employee.module.permissions', $employees->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.employee.module.permissions', $employees->id) : route('admin.employee.module.permissions', $employees->id)) }}";
+                    
+                    fetch(updateModuleAccessRoute)
+                        .then(response => response.json())
+                        .then(permissionData => {
+                            if (permissionData.success) {
+                                submodulePermissions = permissionData.data;
+                                renderSubmoduleTable(moduleSubmodules, submodulePermissions);
+                            }
+                        })
+                        .catch(error => console.error('Error loading permissions:', error));
+                }
+
+                function renderSubmoduleTable(submodules, permissions) {
+                    const tbody = document.getElementById('submoduleTableBody');
+                    tbody.innerHTML = '';
+
+                    if (submodules.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No submodules available for this module</td></tr>';
+                        return;
+                    }
+
+                    submodules.forEach(submodule => {
+                        const permissionKey = currentModule + '.' + submodule.key;
+                        // Check if permissions exist either as direct keys or nested in the permissions object
+                        let existingPermission = permissions[permissionKey] || {};
+
+                        // If the permission exists in the main module's permissions JSON field
+                        if (permissions[currentModule] && permissions[currentModule].permissions) {
+                            const nestedPermissions = permissions[currentModule].permissions;
+                            if (nestedPermissions[permissionKey]) {
+                                existingPermission = nestedPermissions[permissionKey];
+                            }
+                        }
+
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${submodule.name}</td>
+                            <td class="text-center">
+                                <input type="checkbox" class="submodule-action-toggle"
+                                    data-submodule="${submodule.key}"
+                                    data-action="view"
+                                    ${existingPermission.can_view ? 'checked' : ''}>
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" class="submodule-action-toggle"
+                                    data-submodule="${submodule.key}"
+                                    data-action="create"
+                                    ${existingPermission.can_create ? 'checked' : ''}>
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" class="submodule-action-toggle"
+                                    data-submodule="${submodule.key}"
+                                    data-action="edit"
+                                    ${existingPermission.can_edit ? 'checked' : ''}>
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" class="submodule-action-toggle"
+                                    data-submodule="${submodule.key}"
+                                    data-action="delete"
+                                    ${existingPermission.can_delete ? 'checked' : ''}>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+
+                // Save submodule permissions
+                document.getElementById('saveSubmodulePermissions').addEventListener('click', function() {
+                    const permissionsData = {};
+
+                    document.querySelectorAll('.submodule-action-toggle').forEach(function(checkbox) {
+                        const submodule = checkbox.dataset.submodule;
+                        const action = checkbox.dataset.action;
+                        const permissionKey = currentModule + '.' + submodule;
+
+                        if (!permissionsData[permissionKey]) {
+                            permissionsData[permissionKey] = {
+                                has_access: true,
+                                can_view: false,
+                                can_create: false,
+                                can_edit: false,
+                                can_delete: false
+                            };
+                        }
+
+                        if (checkbox.checked) {
+                            permissionsData[permissionKey]['can_' + action] = true;
+                        }
+                    });
+
+                    // Send update request
+                    const updateModuleAccessRoute = '{{ \App\Helpers\RouteHelper::isCustomer() ? route("customer.update.module.access") : (\App\Helpers\RouteHelper::isStaff() ? route("staff.update.module.access") : route("admin.update.module.access")) }}';
+
+                    fetch(updateModuleAccessRoute, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            employee_id: currentEmployeeId,
+                            module_name: currentModule,
+                            has_access: true,
+                            can_view: true,
+                            can_create: true,
+                            can_edit: true,
+                            can_delete: true,
+                            permissions: permissionsData
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Close modal
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('submoduleModal'));
+                            modal.hide();
+
+                            // Reload the page to show updated permissions
+                            location.reload();
+                        } else {
+                            alert('Error saving permissions: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error saving permissions:', error);
+                        alert('Error saving permissions');
                     });
                 });
             });

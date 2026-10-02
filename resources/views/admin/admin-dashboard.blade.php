@@ -52,7 +52,7 @@
                                 <h3 style="margin: 5px 0 0 0; color: #333; font-weight: 700; font-size: 28px;">{{ $pendingInvoices ?? 0 }}</h3>
                             </div>
                             <div class="icon" style="background: rgba(255, 152, 0, 0.1); padding: 15px; border-radius: 50%;">
-                                <i class="fa fa-file-invoice" style="color: #ff9800; font-size: 20px;"></i>
+                                <i class="fa fa-file-text-o" style="color: #ff9800; font-size: 20px;"></i>
                             </div>
                         </div>
                     </div>

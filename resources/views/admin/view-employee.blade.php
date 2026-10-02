@@ -56,8 +56,8 @@
                                     <th>Position</th>
                                     <th>Staff No</th>
                                     <th>DOJ</th>
-                                    <th>Min Hrs</th>
-                                    <th>Max Hrs</th>
+                                    <!-- <th>Min Hrs</th>
+                                    <th>Max Hrs</th> -->
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -86,8 +86,8 @@
                                         <td>{{ $data->position }}</td>
                                         <td>{{ $data->unique_id }}</td>
                                         <td>{{ $data->joining_date }}</td>
-                                        <td>{{ $data->min_hrs }}</td>
-                                        <td>{{ $data->max_hrs }}</td>
+                                        <!-- <td>{{ $data->min_hrs }}</td>
+                                        <td>{{ $data->max_hrs }}</td> -->
                                         <td>
                                             <a href="{{ route('admin.view-staff', ['id' => $data->id]) }}"
                                              ><i class="fa fa-eye"></i></a>

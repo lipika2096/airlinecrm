@@ -201,7 +201,7 @@
                                             <i class="fa fa-share"></i> Allocate
                                         </button>
                                         <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#createExpenseModal">
-                                            <i class="fa fa-file-invoice-dollar"></i> Create Expense
+                                            <i class="fa fa-file-text-o-dollar"></i> Create Expense
                                         </button>
                                         <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#supplierPaymentModal">
                                             <i class="fa fa-money-bill-wave"></i> Create Supplier Payment

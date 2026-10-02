@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\User;
 
 class B2CPassenger extends Model
 {
@@ -25,7 +26,9 @@ class B2CPassenger extends Model
         'nationality',
         'frequent_flyer_number',
         'created_by',
+        'created_by_type',
         'updated_by',
+        'updated_by_type',
     ];
 
     protected $casts = [
@@ -44,11 +47,17 @@ class B2CPassenger extends Model
 
     public function createdBy()
     {
+        if ($this->created_by_type === 'staff') {
+            return $this->belongsTo(User::class, 'created_by');
+        }
         return $this->belongsTo(Admin::class, 'created_by');
     }
 
     public function updatedBy()
     {
+        if ($this->updated_by_type === 'staff') {
+            return $this->belongsTo(User::class, 'updated_by');
+        }
         return $this->belongsTo(Admin::class, 'updated_by');
     }
 }

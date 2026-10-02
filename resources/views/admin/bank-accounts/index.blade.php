@@ -13,9 +13,11 @@
                         </ul>
                     </div>
                     <div class="col-auto text-end">
-                        <a href="{{ route('admin.bank-accounts.create') }}" class="btn btn-primary">
+                        @canCreate('accounts.bank-accounts')
+                        <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.bank-accounts.create') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.bank-accounts.create') : route('admin.bank-accounts.create')) }}" class="btn btn-primary">
                             <i class="fa fa-plus"></i> Add Bank Account
                         </a>
+                        @endcanCreate
                     </div>
                 </div>
             </div>
@@ -59,19 +61,27 @@
                                                     @endif
                                                 </td>
                                                 <td class="text-end">
-                                                    <a href="{{ route('admin.bank-accounts.edit', $bankAccount->id) }}" class="btn btn-sm btn-primary">
+                                                    
+                                                    @canEdit('accounts.bank-accounts')
+                                                    <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.bank-accounts.edit', $bankAccount->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.bank-accounts.edit', $bankAccount->id) : route('admin.bank-accounts.edit', $bankAccount->id)) }}" class="btn btn-sm btn-primary">
                                                         <i class="fa fa-edit"></i>
                                                     </a>
-                                                    <a href="{{ route('admin.bank-accounts.toggle-status', $bankAccount->id) }}" class="btn btn-sm {{ $bankAccount->is_active ? 'btn-warning' : 'btn-success' }}">
+                                                    @endcanEdit                                   
+                                                    @canView('accounts.bank-accounts')
+
+                                                    <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.bank-accounts.toggle-status', $bankAccount->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.bank-accounts.toggle-status', $bankAccount->id) : route('admin.bank-accounts.toggle-status', $bankAccount->id)) }}" class="btn btn-sm {{ $bankAccount->is_active ? 'btn-warning' : 'btn-success' }}">
                                                         <i class="fa {{ $bankAccount->is_active ? 'fa-ban' : 'fa-check' }}"></i>
                                                     </a>
-                                                    <form action="{{ route('admin.bank-accounts.destroy', $bankAccount->id) }}" method="POST" style="display: inline;">
+                                                    @endcanView
+                                                    @canDelete('accounts.bank-accounts')
+                                                    <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.bank-accounts.destroy', $bankAccount->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.bank-accounts.destroy', $bankAccount->id) : route('admin.bank-accounts.destroy', $bankAccount->id)) }}" method="POST" style="display: inline;">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this bank account?')">
                                                             <i class="fa fa-trash"></i>
                                                         </button>
                                                     </form>
+                                                    @endcanDelete
                                                 </td>
                                             </tr>
                                         @endforeach

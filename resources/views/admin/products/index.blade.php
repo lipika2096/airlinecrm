@@ -35,9 +35,11 @@
                         </ul>
                     </div>
                     <div class="col-auto float-end ms-auto">
-                        <a href="{{ route('admin.products.create') }}" class="btn add-btn mt-3">
-                            <i class="fa fa-plus"></i> Add Product
-                        </a>
+                        @canCreate('system-admin.products-services')
+                            <a href="{{ route('admin.products.create') }}" class="btn add-btn mt-3">
+                                <i class="fa fa-plus"></i> Add Product
+                            </a>
+                        @endcanCreate
                     </div>
                 </div>
             </div>
@@ -74,12 +76,16 @@
                                                 </td>
                                                 <td>
                                                     <div class="action-icons">
-                                                        <a href="{{ route('admin.products.edit', $product->id) }}" class="action-icon" style="margin-right: 10px;">
-                                                            <i class="fa fa-edit"></i>
-                                                        </a>
-                                                        <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_product{{ $product->id }}">
-                                                            <i class="fa fa-trash m-r-5"></i>
-                                                        </a>
+                                                        @canEdit('system-admin.products-services')
+                                                            <a href="{{ route('admin.products.edit', $product->id) }}" class="action-icon" style="margin-right: 10px;">
+                                                                <i class="fa fa-edit"></i>
+                                                            </a>
+                                                        @endcanEdit
+                                                        @canDelete('system-admin.products-services')
+                                                            <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_product{{ $product->id }}">
+                                                                <i class="fa fa-trash m-r-5"></i>
+                                                            </a>
+                                                        @endcanDelete
                                                     </div>
                                                 </td>
                                             </tr>

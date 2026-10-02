@@ -3,6 +3,7 @@
 
 @php
     use Carbon\Carbon;
+    $systemTimezone = \App\Helpers\TimezoneHelper::getSystemTimezone();
 @endphp
     <title>Employee Profile</title>
 
@@ -1011,14 +1012,14 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Timezone <span class="text-danger">*</span></label>
+                                        <label>Timezone</label>
                                         <select class="select form-control" name="timezone">
-                                            <option value="">Select Timezone</option>
+                                            <option value="" {{ !isset($employee) || empty($employee->timezone) ? 'selected' : '' }}>Use System Default ({{ $systemTimezone }})</option>
                                             @foreach(\App\Helpers\TimezoneHelper::getAvailableTimezones() as $value => $label)
                                                 <option value="{{ $value }}" {{ isset($employee) && $employee->timezone == $value ? 'selected' : '' }}>{{ $label }}</option>
                                             @endforeach
                                         </select>
-                                        <small class="text-muted">Select your timezone to see times in your local time</small>
+                                        <small class="text-muted">Current system time: {{ \App\Helpers\TimezoneHelper::nowInUserTimezone()->format('M d, Y H:i:s') }}</small>
                                     </div>
                                 </div>
                             </div>

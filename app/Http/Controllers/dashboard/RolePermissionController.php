@@ -16,7 +16,24 @@ class RolePermissionController extends Controller {
             $query->where('name', 'superAdmin');})->latest()->get();
         $publishedPermissions = Permission::where('status', 'published')->get();
         $unpublishedPermissions = Permission::where('status', 'unpublished')->get();
-        return view( 'admin.roles-permissions', compact( 'roles', 'publishedPermissions', 'unpublishedPermissions', 'customers' ) );
+
+        // Group published permissions by module (menu)
+        $groupedPublishedPermissions = $publishedPermissions->groupBy(function ($permission) {
+            if (strpos($permission->name, '.') !== false) {
+                return explode('.', $permission->name)[0];
+            }
+            return $permission->name;
+        });
+
+        // Group unpublished permissions by module (menu)
+        $groupedUnpublishedPermissions = $unpublishedPermissions->groupBy(function ($permission) {
+            if (strpos($permission->name, '.') !== false) {
+                return explode('.', $permission->name)[0];
+            }
+            return $permission->name;
+        });
+
+        return view( 'admin.roles-permissions', compact( 'roles', 'publishedPermissions', 'unpublishedPermissions', 'customers', 'groupedPublishedPermissions', 'groupedUnpublishedPermissions' ) );
     }
     public function store(Request $request)
     {

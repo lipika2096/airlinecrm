@@ -107,11 +107,7 @@
                 <div class="col">
                     <h3 class="page-title">Booking / Reservation</h3>
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.accounts.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.accounts.index') : route('admin.accounts.index')) }}">
-                                Accounts
-                            </a>
-                        </li>
+                        <li class="breadcrumb-item"><a href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.dashboard') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.dashboard') : route('admin.dashboard')) }}">Dashboard</a></li>
                         <li class="breadcrumb-item active">Booking / Reservation</li>
                     </ul>
                 </div>
@@ -120,26 +116,33 @@
         <!-- /Page Header -->
 
         <!-- Booking Form -->
-        <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.store') : route('admin.booking.store')) }}" method="POST">
-            @csrf
+        @if(isset($booking))
+            <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.update', $booking->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.update', $booking->id) : route('admin.booking.update', $booking->id)) }}" method="POST">
+                @method('PUT')
+                @csrf
+        @else
+            <form action="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.store') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.store') : route('admin.booking.store')) }}" method="POST">
+                @csrf
+        @endif
             <div class="booking-form-card">
                 <h4>Booking Details</h4>
 
                 <div class="row form-group">
                     <div class="col-md-3">
                         <label class="form-label">Booking No <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="booking_no" value="{{ $bookingNo ?? 'BK000126' }}" readonly>
+                        <input type="text" class="form-control" name="booking_no" value="{{ $bookingNo ?? ($booking->booking_no ?? '') }}" readonly>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Booking Date <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control" name="booking_date" required>
+                        <input type="date" class="form-control" name="booking_date" value="{{ isset($booking) && $booking->booking_date ? \Carbon\Carbon::parse($booking->booking_date)->format('Y-m-d') : '' }}" required>
                     </div>
-                    
+
                 <div class="col-md-3">
                     <label class="form-label">Customer Type</label>
                     <select class="form-control" name="customer_type">
-                        <option value="b2b">B2B</option>
-                        <option value="b2c">B2C</option>
+                        <option value="" >Select Customer Type</option>
+                        <option value="b2b" @if(isset($booking) && $booking->customer_type === 'b2b') selected @endif>B2B</option>
+                        <option value="b2c" @if(isset($booking) && $booking->customer_type === 'b2c') selected @endif>B2C</option>
                     </select>
                 </div>
             </div>
@@ -195,6 +198,7 @@
             <div class="tab-content mt-3">
                 <!-- Customer Tab -->
                 <div class="tab-pane fade show active" id="customer" role="tabpanel">
+                    <input type="hidden" name="customer_type" id="form_customer_type" value="">
                     <!-- B2C Form -->
                     <div id="b2c-form" class="customer-form" style="display: none;">
                         <div class="booking-form-card">
@@ -202,63 +206,63 @@
                             <div class="row form-group">
                                 <div class="col-md-4">
                                     <label class="form-label">First Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="b2c_first_name" id="b2c_first_name" placeholder="First Name">
+                                    <input type="text" class="form-control" name="b2c_first_name" id="b2c_first_name" placeholder="First Name" value="{{ $booking->b2c_first_name ?? '' }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Last Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="b2c_last_name" id="b2c_last_name" placeholder="Last Name">
+                                    <input type="text" class="form-control" name="b2c_last_name" id="b2c_last_name" placeholder="Last Name" value="{{ $booking->b2c_last_name ?? '' }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Email <span class="text-danger">*</span></label>
-                                    <input type="email" class="form-control" name="b2c_email" id="b2c_email" placeholder="Email">
+                                    <input type="email" class="form-control" name="b2c_email" id="b2c_email" placeholder="Email" value="{{ $booking->b2c_email ?? '' }}">
                                 </div>
                             </div>
                             <div class="row form-group">
                                 <div class="col-md-4">
                                     <label class="form-label">Phone <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="b2c_phone" id="b2c_phone" placeholder="Phone">
+                                    <input type="text" class="form-control" name="b2c_phone" id="b2c_phone" placeholder="Phone" value="{{ $booking->b2c_phone ?? '' }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Street</label>
-                                    <input type="text" class="form-control" name="b2c_street" id="b2c_street" placeholder="Street">
+                                    <input type="text" class="form-control" name="b2c_street" id="b2c_street" placeholder="Street" value="{{ $booking->b2c_street ?? '' }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">House No.</label>
-                                    <input type="text" class="form-control" name="b2c_house_no" id="b2c_house_no" placeholder="House No.">
+                                    <input type="text" class="form-control" name="b2c_house_no" id="b2c_house_no" placeholder="House No." value="{{ $booking->b2c_house_no ?? '' }}">
                                 </div>
                             </div>
                             <div class="row form-group">
                                 <div class="col-md-4">
                                     <label class="form-label">City</label>
-                                    <input type="text" class="form-control" name="b2c_city" id="b2c_city" placeholder="City">
+                                    <input type="text" class="form-control" name="b2c_city" id="b2c_city" placeholder="City" value="{{ $booking->b2c_city ?? '' }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Pincode</label>
-                                    <input type="text" class="form-control" name="b2c_pincode" id="b2c_pincode" placeholder="Pincode">
+                                    <input type="text" class="form-control" name="b2c_pincode" id="b2c_pincode" placeholder="Pincode" value="{{ $booking->b2c_pincode ?? '' }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">State</label>
-                                    <input type="text" class="form-control" name="b2c_state" id="b2c_state" placeholder="State">
+                                    <input type="text" class="form-control" name="b2c_state" id="b2c_state" placeholder="State" value="{{ $booking->b2c_state ?? '' }}">
                                 </div>
                             </div>
                             <div class="row form-group">
                                 <div class="col-md-4">
                                     <label class="form-label">Country</label>
-                                    <input type="text" class="form-control" name="b2c_country" id="b2c_country" placeholder="Country">
+                                    <input type="text" class="form-control" name="b2c_country" id="b2c_country" placeholder="Country" value="{{ $booking->b2c_country ?? '' }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Language</label>
-                                    <input type="text" class="form-control" name="b2c_language" id="b2c_language" placeholder="Language">
+                                    <input type="text" class="form-control" name="b2c_language" id="b2c_language" placeholder="Language" value="{{ $booking->b2c_language ?? '' }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Responsible</label>
-                                    <input type="text" class="form-control" name="b2c_responsible" id="b2c_responsible" placeholder="Responsible">
+                                    <input type="text" class="form-control" name="b2c_responsible" id="b2c_responsible" placeholder="Responsible" value="{{ $booking->b2c_responsible ?? (\App\Helpers\RouteHelper::isStaff() ?auth()->user()->first_name .' '.auth()->user()->last_name : auth('admin')->user()->name) }}">
                                 </div>
                             </div>
                             <div class="row form-group">
                                 <div class="col-md-12">
                                     <label class="form-label">Remarks</label>
-                                    <textarea class="form-control" name="b2c_remarks" id="b2c_remarks" rows="3" placeholder="Remarks"></textarea>
+                                    <textarea class="form-control" name="b2c_remarks" id="b2c_remarks" rows="3" placeholder="Remarks">{{ $booking->b2c_remarks ?? '' }}</textarea>
                                 </div>
                             </div>
                             <div class="mt-3">
@@ -276,63 +280,63 @@
                             <div class="row form-group">
                                 <div class="col-md-4">
                                     <label class="form-label">Company Group <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="b2b_group" id="b2b_group" placeholder="Company Group">
+                                    <input type="text" class="form-control" name="b2b_group" id="b2b_group" placeholder="Company Group" value="{{ $booking->b2b_group ?? '' }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Company Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="b2b_company_name" id="b2b_company_name" placeholder="Company Name">
+                                    <input type="text" class="form-control" name="b2b_company_name" id="b2b_company_name" placeholder="Company Name" value="{{ $booking->b2b_company_name ?? '' }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Email <span class="text-danger">*</span></label>
-                                    <input type="email" class="form-control" name="b2b_email" id="b2b_email" placeholder="Email">
+                                    <input type="email" class="form-control" name="b2b_email" id="b2b_email" placeholder="Email" value="{{ $booking->b2b_email ?? '' }}">
                                 </div>
                             </div>
                             <div class="row form-group">
                                 <div class="col-md-4">
                                     <label class="form-label">Phone <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="b2b_phone" id="b2b_phone" placeholder="Phone">
+                                    <input type="text" class="form-control" name="b2b_phone" id="b2b_phone" placeholder="Phone" value="{{ $booking->b2b_phone ?? '' }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Street</label>
-                                    <input type="text" class="form-control" name="b2b_street" id="b2b_street" placeholder="Street">
+                                    <input type="text" class="form-control" name="b2b_street" id="b2b_street" placeholder="Street" value="{{ $booking->b2b_street ?? '' }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">House No.</label>
-                                    <input type="text" class="form-control" name="b2b_house_no" id="b2b_house_no" placeholder="House No.">
+                                    <input type="text" class="form-control" name="b2b_house_no" id="b2b_house_no" placeholder="House No." value="{{ $booking->b2b_house_no ?? '' }}">
                                 </div>
                             </div>
                             <div class="row form-group">
                                 <div class="col-md-4">
                                     <label class="form-label">City</label>
-                                    <input type="text" class="form-control" name="b2b_city" id="b2b_city" placeholder="City">
+                                    <input type="text" class="form-control" name="b2b_city" id="b2b_city" placeholder="City" value="{{ $booking->b2b_city ?? '' }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Pincode</label>
-                                    <input type="text" class="form-control" name="b2b_pincode" id="b2b_pincode" placeholder="Pincode">
+                                    <input type="text" class="form-control" name="b2b_pincode" id="b2b_pincode" placeholder="Pincode" value="{{ $booking->b2b_pincode ?? '' }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">State</label>
-                                    <input type="text" class="form-control" name="b2b_state" id="b2b_state" placeholder="State">
+                                    <input type="text" class="form-control" name="b2b_state" id="b2b_state" placeholder="State" value="{{ $booking->b2b_state ?? '' }}">
                                 </div>
                             </div>
                             <div class="row form-group">
                                 <div class="col-md-4">
                                     <label class="form-label">Country</label>
-                                    <input type="text" class="form-control" name="b2b_country" id="b2b_country" placeholder="Country">
+                                    <input type="text" class="form-control" name="b2b_country" id="b2b_country" placeholder="Country" value="{{ $booking->b2b_country ?? '' }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Language</label>
-                                    <input type="text" class="form-control" name="b2b_language" id="b2b_language" placeholder="Language">
+                                    <input type="text" class="form-control" name="b2b_language" id="b2b_language" placeholder="Language" value="{{ $booking->b2b_language ?? '' }}">
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Responsible</label>
-                                    <input type="text" class="form-control" name="b2b_responsible" id="b2b_responsible" placeholder="Responsible">
+                                    <input type="text" class="form-control" name="b2b_responsible" id="b2b_responsible" placeholder="Responsible" value="{{ $booking->b2b_responsible ?? (\App\Helpers\RouteHelper::isStaff() ?auth()->user()->first_name .' '.auth()->user()->last_name : auth('admin')->user()->name) }}">
                                 </div>
                             </div>
                             <div class="row form-group">
                                 <div class="col-md-12">
                                     <label class="form-label">Remarks</label>
-                                    <textarea class="form-control" name="b2b_remarks" id="b2b_remarks" rows="3" placeholder="Remarks"></textarea>
+                                    <textarea class="form-control" name="b2b_remarks" id="b2b_remarks" rows="3" placeholder="Remarks">{{ $booking->b2b_remarks ?? '' }}</textarea>
                                 </div>
                             </div>
                             <div class="mt-3">
@@ -489,6 +493,104 @@
                     </div>
                 </div>
 
+                
+                <!-- Documents Tab -->
+                <div class="tab-pane fade" id="documents" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Document Type</th>
+                                    <th>Document Name</th>
+                                    <th>Upload</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <select class="form-control" name="document_type[]">
+                                            <option value="ticket">Ticket</option>
+                                            <option value="invoice">Invoice</option>
+                                            <option value="passport">Passport Copy</option>
+                                            <option value="visa">Visa</option>
+                                            <option value="insurance">Insurance</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" name="document_name[]" placeholder="Document Name">
+                                    </td>
+                                    <td>
+                                        <input type="file" class="form-control" name="document_file[]">
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm remove-document">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-sm mt-2" id="addDocument">
+                        <i class="fa fa-plus"></i> Add Document
+                    </button>
+
+                    <!-- Tab Save Button -->
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-save btn-sm tab-save-btn" data-tab="documents">
+                            <i class="fa fa-save"></i> Save Documents
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Invoice Tab -->
+                <div class="tab-pane fade" id="invoice" role="tabpanel">
+                    <div class="row form-group">
+                        <div class="col-md-6">
+                            <label class="form-label">Invoice Number</label>
+                            <input type="text" class="form-control" name="invoice_number" placeholder="INV-000001">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Invoice Date</label>
+                            <input type="date" class="form-control" name="invoice_date">
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-6">
+                            <label class="form-label">Due Date</label>
+                            <input type="date" class="form-control" name="invoice_due_date">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tax Rate (%)</label>
+                            <input type="number" class="form-control" name="invoice_tax_rate" placeholder="0" step="0.01">
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <label class="form-label">Invoice Notes</label>
+                            <textarea class="form-control" name="invoice_notes" rows="3" placeholder="Additional invoice notes or terms..."></textarea>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-6">
+                            <label class="form-label">Billing Address</label>
+                            <textarea class="form-control" name="billing_address" rows="3" placeholder="Enter billing address..."></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Shipping Address</label>
+                            <textarea class="form-control" name="shipping_address" rows="3" placeholder="Enter shipping address..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Tab Save Button -->
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-save btn-sm tab-save-btn" data-tab="invoice">
+                            <i class="fa fa-save"></i> Save Invoice
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Payments Tab -->
                 <div class="tab-pane fade" id="payments" role="tabpanel">
                     <div class="table-responsive">
@@ -550,55 +652,6 @@
                     </div>
                 </div>
 
-                <!-- Documents Tab -->
-                <div class="tab-pane fade" id="documents" role="tabpanel">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Document Type</th>
-                                    <th>Document Name</th>
-                                    <th>Upload</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <select class="form-control" name="document_type[]">
-                                            <option value="ticket">Ticket</option>
-                                            <option value="invoice">Invoice</option>
-                                            <option value="passport">Passport Copy</option>
-                                            <option value="visa">Visa</option>
-                                            <option value="insurance">Insurance</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control" name="document_name[]" placeholder="Document Name">
-                                    </td>
-                                    <td>
-                                        <input type="file" class="form-control" name="document_file[]">
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-danger btn-sm remove-document">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <button type="button" class="btn btn-primary btn-sm mt-2" id="addDocument">
-                        <i class="fa fa-plus"></i> Add Document
-                    </button>
-
-                    <!-- Tab Save Button -->
-                    <div class="mt-3">
-                        <button type="button" class="btn btn-save btn-sm tab-save-btn" data-tab="documents">
-                            <i class="fa fa-save"></i> Save Documents
-                        </button>
-                    </div>
-                </div>
 
                 <!-- Notes Tab -->
                 <div class="tab-pane fade" id="notes" role="tabpanel">
@@ -615,52 +668,7 @@
                     </div>
                 </div>
 
-                <!-- Invoice Tab -->
-                <div class="tab-pane fade" id="invoice" role="tabpanel">
-                    <div class="row form-group">
-                        <div class="col-md-6">
-                            <label class="form-label">Invoice Number</label>
-                            <input type="text" class="form-control" name="invoice_number" placeholder="INV-000001">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Invoice Date</label>
-                            <input type="date" class="form-control" name="invoice_date">
-                        </div>
-                    </div>
-                    <div class="row form-group">
-                        <div class="col-md-6">
-                            <label class="form-label">Due Date</label>
-                            <input type="date" class="form-control" name="invoice_due_date">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Tax Rate (%)</label>
-                            <input type="number" class="form-control" name="invoice_tax_rate" placeholder="0" step="0.01">
-                        </div>
-                    </div>
-                    <div class="row form-group">
-                        <div class="col-md-12">
-                            <label class="form-label">Invoice Notes</label>
-                            <textarea class="form-control" name="invoice_notes" rows="3" placeholder="Additional invoice notes or terms..."></textarea>
-                        </div>
-                    </div>
-                    <div class="row form-group">
-                        <div class="col-md-6">
-                            <label class="form-label">Billing Address</label>
-                            <textarea class="form-control" name="billing_address" rows="3" placeholder="Enter billing address..."></textarea>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Shipping Address</label>
-                            <textarea class="form-control" name="shipping_address" rows="3" placeholder="Enter shipping address..."></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Tab Save Button -->
-                    <div class="mt-3">
-                        <button type="button" class="btn btn-save btn-sm tab-save-btn" data-tab="invoice">
-                            <i class="fa fa-save"></i> Save Invoice
-                        </button>
-                    </div>
-                </div>
+                
             </div>
 
             <!-- Action Buttons -->
@@ -675,7 +683,7 @@
                     <i class="fa fa-check"></i> Confirm Booking
                 </button>
                 <button type="submit" class="btn btn-invoice" name="generate_invoice" value="1">
-                    <i class="fa fa-file-invoice"></i> Generate Invoice
+                    <i class="fa fa-file-text-o"></i> Generate Invoice
                 </button>
             </div>
         </div>
@@ -690,23 +698,52 @@
     // Customer Type Change Handler
     document.querySelector('select[name="customer_type"]').addEventListener('change', function() {
         const customerType = this.value;
-        const b2cForm = document.getElementById('b2c-form');
-        const b2bForm = document.getElementById('b2b-form');
-        const noFormMessage = document.getElementById('no-customer-form');
 
-        // Hide all forms initially
-        b2cForm.style.display = 'none';
-        b2bForm.style.display = 'none';
-        noFormMessage.style.display = 'none';
-
-        // Show appropriate form based on customer type
-        if (customerType === 'b2c') {
-            b2cForm.style.display = 'block';
-        } else if (customerType === 'b2b') {
-            b2bForm.style.display = 'block';
-        } else {
-            noFormMessage.style.display = 'block';
+        // Update the hidden field in the nested form
+        const hiddenCustomerType = document.getElementById('form_customer_type');
+        if (hiddenCustomerType) {
+            hiddenCustomerType.value = customerType;
         }
+
+        @if(isset($booking))
+            // When editing, don't clear form values - just show/hide the appropriate form
+            const b2cForm = document.getElementById('b2c-form');
+            const b2bForm = document.getElementById('b2b-form');
+            const noFormMessage = document.getElementById('no-customer-form');
+
+            // Hide all forms initially
+            b2cForm.style.display = 'none';
+            b2bForm.style.display = 'none';
+            noFormMessage.style.display = 'none';
+
+            // Show appropriate form based on customer type
+            if (customerType === 'b2c') {
+                b2cForm.style.display = 'block';
+            } else if (customerType === 'b2b') {
+                b2bForm.style.display = 'block';
+            } else {
+                noFormMessage.style.display = 'block';
+            }
+        @else
+            // When creating new booking, clear forms as before
+            const b2cForm = document.getElementById('b2c-form');
+            const b2bForm = document.getElementById('b2b-form');
+            const noFormMessage = document.getElementById('no-customer-form');
+
+            // Hide all forms initially
+            b2cForm.style.display = 'none';
+            b2bForm.style.display = 'none';
+            noFormMessage.style.display = 'none';
+
+            // Show appropriate form based on customer type
+            if (customerType === 'b2c') {
+                b2cForm.style.display = 'block';
+            } else if (customerType === 'b2b') {
+                b2bForm.style.display = 'block';
+            } else {
+                noFormMessage.style.display = 'block';
+            }
+        @endif
     });
 
     // Customer Search Functionality
@@ -729,24 +766,50 @@
         let searchUrl;
         if (customerType === 'b2b') {
             @if(\App\Helpers\RouteHelper::isCustomer())
-                searchUrl = `{{ route('customer.b2b-partners.search') }}?q=${encodeURIComponent(searchTerm)}`;
+                searchUrl = `{{ url('/customer/b2b-partners/search') }}?q=${encodeURIComponent(searchTerm)}`;
             @elseif(\App\Helpers\RouteHelper::isStaff())
-                searchUrl = `{{ route('staff.b2b-partners.search') }}?q=${encodeURIComponent(searchTerm)}`;
+                searchUrl = `{{ url('/staff/b2b-partners/search') }}?q=${encodeURIComponent(searchTerm)}`;
             @else
-                searchUrl = `{{ route('admin.b2b-partners.search') }}?q=${encodeURIComponent(searchTerm)}`;
+                searchUrl = `{{ url('/superadmin/b2b-partners/search') }}?q=${encodeURIComponent(searchTerm)}`;
             @endif
         } else {
             @if(\App\Helpers\RouteHelper::isCustomer())
-                searchUrl = `{{ route('customer.b2c-customers.search') }}?q=${encodeURIComponent(searchTerm)}`;
+                searchUrl = `{{ url('/customer/b2c-customers/search') }}?q=${encodeURIComponent(searchTerm)}`;
             @elseif(\App\Helpers\RouteHelper::isStaff())
-                searchUrl = `{{ route('staff.b2c-customers.search') }}?q=${encodeURIComponent(searchTerm)}`;
+                searchUrl = `{{ url('/staff/b2c-customers/search') }}?q=${encodeURIComponent(searchTerm)}`;
             @else
-                searchUrl = `{{ route('admin.b2c-customers.search') }}?q=${encodeURIComponent(searchTerm)}`;
+                searchUrl = `{{ url('/superadmin/b2c-customers/search') }}?q=${encodeURIComponent(searchTerm)}`;
             @endif
         }
 
-        fetch(searchUrl)
-            .then(response => response.json())
+        console.log('Search URL:', searchUrl);
+        console.log('Customer Type:', customerType);
+        console.log('Search Term:', searchTerm);
+
+        fetch(searchUrl, {
+        })
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response type:', response.headers.get('content-type'));
+
+                if (!response.ok) {
+                    // Clone the response to read the text for debugging
+                    response.clone().text().then(text => {
+                        console.error('Server returned error:', text);
+                    });
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    return response.text().then(text => {
+                        console.error('Non-JSON response:', text);
+                        throw new Error('Server returned non-JSON response');
+                    });
+                }
+
+                return response.json();
+            })
             .then(data => {
                 // Clear previous results
                 resultsList.innerHTML = '';
@@ -755,8 +818,8 @@
                     resultsList.innerHTML = '<div class="list-group-item text-muted">No customers found</div>';
                 } else {
                     data.forEach(customer => {
-                        const displayName = customerType === 'b2b' 
-                            ? customer.partner_name || customer.name 
+                        const displayName = customerType === 'b2b'
+                            ? customer.partner_name || customer.name
                             : (customer.first_name + ' ' + customer.last_name);
 
                         const item = document.createElement('a');
@@ -783,7 +846,7 @@
             })
             .catch(error => {
                 console.error('Error searching customers:', error);
-                resultsList.innerHTML = '<div class="list-group-item text-danger">Error searching customers. Please try again.</div>';
+                resultsList.innerHTML = `<div class="list-group-item text-danger">Error searching customers: ${error.message}. Please try again.</div>`;
                 searchResults.style.display = 'block';
             })
             .finally(() => {
@@ -794,6 +857,11 @@
 
     // Auto-fill customer form based on search result
     function autofillCustomerForm(customer, customerType) {
+        // Don't auto-fill if we're editing an existing booking
+        @if(isset($booking))
+            return;
+        @endif
+
         // Set customer type dropdown
         const customerTypeSelect = document.querySelector('select[name="customer_type"]');
         customerTypeSelect.value = customerType;
@@ -814,7 +882,7 @@
                     break;
                 }
             }
-            
+
             if (!optionExists) {
                 const newOption = document.createElement('option');
                 newOption.value = customer.id;
@@ -886,7 +954,37 @@
 
     // Initialize customer form visibility on page load
     document.addEventListener('DOMContentLoaded', function() {
+        @if(!isset($booking))
+            // When creating new booking, explicitly set dropdown to empty
+            document.querySelector('select[name="customer_type"]').value = '';
+
+            // Clear hidden customer fields
+            const selectedCustomerId = document.getElementById('selected_customer_id');
+            const selectedCustomerType = document.getElementById('selected_customer_type');
+            const formCustomerType = document.getElementById('form_customer_type');
+
+            if (selectedCustomerId) selectedCustomerId.value = '';
+            if (selectedCustomerType) selectedCustomerType.value = '';
+            if (formCustomerType) formCustomerType.value = '';
+
+            // Clear all form fields except booking_no (auto-generated)
+            document.querySelectorAll('input, textarea').forEach(input => {
+                if (input.name !== 'booking_no' && input.name !== 'booking_date') {
+                    input.value = '';
+                }
+            });
+
+            console.log('Cleared form for new booking');
+        @endif
+
         const customerType = document.querySelector('select[name="customer_type"]').value;
+
+        // Initialize the hidden field in the nested form
+        const hiddenCustomerType = document.getElementById('form_customer_type');
+        if (hiddenCustomerType) {
+            hiddenCustomerType.value = customerType;
+        }
+
         const b2cForm = document.getElementById('b2c-form');
         const b2bForm = document.getElementById('b2b-form');
         const noFormMessage = document.getElementById('no-customer-form');
@@ -904,6 +1002,50 @@
         } else {
             noFormMessage.style.display = 'block';
         }
+
+        // When editing, trigger the customer type change event to show the correct form
+        @if(isset($booking))
+            const changeEvent = new Event('change');
+            document.querySelector('select[name="customer_type"]').dispatchEvent(changeEvent);
+
+            // Force visible values to ensure they display correctly
+            setTimeout(function() {
+                // Manually set values from HTML attributes to ensure they display
+                const b2bFields = ['b2b_group', 'b2b_company_name', 'b2b_email', 'b2b_phone', 'b2b_street', 'b2b_house_no', 'b2b_city', 'b2b_pincode', 'b2b_state', 'b2b_country', 'b2b_language', 'b2b_responsible'];
+                const b2cFields = ['b2c_first_name', 'b2c_last_name', 'b2c_email', 'b2c_phone', 'b2c_street', 'b2c_house_no', 'b2c_city', 'b2c_pincode', 'b2c_state', 'b2c_country', 'b2c_language', 'b2c_responsible'];
+
+                b2bFields.forEach(function(fieldId) {
+                    const element = document.getElementById(fieldId);
+                    if (element && element.hasAttribute('value')) {
+                        element.value = element.getAttribute('value');
+                    }
+                });
+
+                b2cFields.forEach(function(fieldId) {
+                    const element = document.getElementById(fieldId);
+                    if (element && element.hasAttribute('value')) {
+                        element.value = element.getAttribute('value');
+                    }
+                });
+
+                // Trigger input events to force browser to display values
+                const inputs = document.querySelectorAll('input[type="text"], input[type="email"], textarea');
+                inputs.forEach(function(input) {
+                    if (input.value) {
+                        input.dispatchEvent(new Event('input'));
+                    }
+                });
+            }, 100);
+        @endif
+
+        // When editing, preserve existing form values during customer type changes
+        @if(isset($booking))
+            const customerTypeSelect = document.querySelector('select[name="customer_type"]');
+            customerTypeSelect.addEventListener('change', function() {
+                // When editing, don't clear the form - just show/hide the appropriate form
+                // The values are already set by the server-side rendering
+            });
+        @endif
     });
 
     // Add Service Row
@@ -1240,44 +1382,51 @@
 
     // Load saved data on page load
     window.addEventListener('load', function() {
-        const savedData = localStorage.getItem('bookingFormData');
-        if (savedData) {
-            try {
-                const formDataObj = JSON.parse(savedData);
+        @if(!isset($booking))
+            // When creating new booking, clear all saved data
+            localStorage.removeItem('bookingFormData');
+            console.log('Cleared saved form data for new booking');
+        @else
+            // When editing, load saved data if available
+            const savedData = localStorage.getItem('bookingFormData');
+            if (savedData) {
+                try {
+                    const formDataObj = JSON.parse(savedData);
 
-                // Handle migration from old passenger_name to new first_name/last_name
-                if (formDataObj['passenger_name'] && !formDataObj['passenger_first_name']) {
-                    formDataObj['passenger_first_name'] = formDataObj['passenger_name'];
-                    delete formDataObj['passenger_name'];
-                }
+                    // Handle migration from old passenger_name to new first_name/last_name
+                    if (formDataObj['passenger_name'] && !formDataObj['passenger_first_name']) {
+                        formDataObj['passenger_first_name'] = formDataObj['passenger_name'];
+                        delete formDataObj['passenger_name'];
+                    }
 
-                Object.keys(formDataObj).forEach(key => {
-                    const values = Array.isArray(formDataObj[key]) ? formDataObj[key] : [formDataObj[key]];
-                    const inputs = document.querySelectorAll(`[name="${key}"]`);
-                    inputs.forEach((input, index) => {
-                        if (values[index] !== undefined) {
-                            if (input.type === 'checkbox' || input.type === 'radio') {
-                                input.checked = values[index];
-                            } else {
-                                input.value = values[index];
+                    Object.keys(formDataObj).forEach(key => {
+                        const values = Array.isArray(formDataObj[key]) ? formDataObj[key] : [formDataObj[key]];
+                        const inputs = document.querySelectorAll(`[name="${key}"]`);
+                        inputs.forEach((input, index) => {
+                            if (values[index] !== undefined) {
+                                if (input.type === 'checkbox' || input.type === 'radio') {
+                                    input.checked = values[index];
+                                } else {
+                                    input.value = values[index];
+                                }
                             }
+                        });
+                    });
+
+                    // Trigger gender auto-fill for loaded title values
+                    document.querySelectorAll('.passenger-title').forEach(titleSelect => {
+                        if (titleSelect.value) {
+                            // Trigger change event to auto-fill gender
+                            titleSelect.dispatchEvent(new Event('change'));
                         }
                     });
-                });
 
-                // Trigger gender auto-fill for loaded title values
-                document.querySelectorAll('.passenger-title').forEach(titleSelect => {
-                    if (titleSelect.value) {
-                        // Trigger change event to auto-fill gender
-                        titleSelect.dispatchEvent(new Event('change'));
-                    }
-                });
-
-                console.log('Loaded saved form data');
-            } catch (e) {
-                console.error('Error loading saved data:', e);
+                    console.log('Loaded saved form data');
+                } catch (e) {
+                    console.error('Error loading saved data:', e);
+                }
             }
-        }
+        @endif
     });
 
     // Clear saved data on form submission
@@ -1290,22 +1439,160 @@
         button.addEventListener('click', function() {
             const tabName = this.getAttribute('data-tab');
 
-            // Trigger auto-save
-            autoSave();
+            // Special handling for customer tab - call save-customer endpoint
+            if (tabName === 'customer') {
+                // Get customer type from the hidden field
+                const customerType = document.getElementById('form_customer_type').value;
 
-            // Show save confirmation
-            const originalText = this.innerHTML;
-            this.innerHTML = '<i class="fa fa-check"></i> Saved!';
-            this.classList.remove('btn-save');
-            this.classList.add('btn-success');
+                if (!customerType) {
+                    alert('Please select a customer type (B2B or B2C) first.');
+                    return;
+                }
 
-            setTimeout(() => {
-                this.innerHTML = originalText;
-                this.classList.remove('btn-success');
-                this.classList.add('btn-save');
-            }, 2000);
+                // Create FormData manually from the visible form
+                const formData = new FormData();
 
-            console.log(`Saved data for ${tabName} tab at:`, new Date().toLocaleTimeString());
+                // Add customer_type
+                formData.append('customer_type', customerType);
+
+                // Add booking_no and booking_date
+                formData.append('booking_no', document.querySelector('input[name="booking_no"]').value);
+                formData.append('booking_date', document.querySelector('input[name="booking_date"]').value);
+
+                // Collect data from B2C or B2B form based on customer type
+                if (customerType === 'b2c') {
+                    formData.append('b2c_first_name', document.getElementById('b2c_first_name').value);
+                    formData.append('b2c_last_name', document.getElementById('b2c_last_name').value);
+                    formData.append('b2c_email', document.getElementById('b2c_email').value);
+                    formData.append('b2c_phone', document.getElementById('b2c_phone').value);
+                    formData.append('b2c_street', document.getElementById('b2c_street').value);
+                    formData.append('b2c_house_no', document.getElementById('b2c_house_no').value);
+                    formData.append('b2c_city', document.getElementById('b2c_city').value);
+                    formData.append('b2c_pincode', document.getElementById('b2c_pincode').value);
+                    formData.append('b2c_state', document.getElementById('b2c_state').value);
+                    formData.append('b2c_country', document.getElementById('b2c_country').value);
+                    formData.append('b2c_language', document.getElementById('b2c_language').value);
+                    formData.append('b2c_responsible', document.getElementById('b2c_responsible').value);
+                    formData.append('b2c_remarks', document.getElementById('b2c_remarks').value);
+                } else if (customerType === 'b2b') {
+                    formData.append('b2b_group', document.getElementById('b2b_group').value);
+                    formData.append('b2b_company_name', document.getElementById('b2b_company_name').value);
+                    formData.append('b2b_email', document.getElementById('b2b_email').value);
+                    formData.append('b2b_phone', document.getElementById('b2b_phone').value);
+                    formData.append('b2b_street', document.getElementById('b2b_street').value);
+                    formData.append('b2b_house_no', document.getElementById('b2b_house_no').value);
+                    formData.append('b2b_city', document.getElementById('b2b_city').value);
+                    formData.append('b2b_pincode', document.getElementById('b2b_pincode').value);
+                    formData.append('b2b_state', document.getElementById('b2b_state').value);
+                    formData.append('b2b_country', document.getElementById('b2b_country').value);
+                    formData.append('b2b_language', document.getElementById('b2b_language').value);
+                    formData.append('b2b_responsible', document.getElementById('b2b_responsible').value);
+                    formData.append('b2b_remarks', document.getElementById('b2b_remarks').value);
+                }
+
+                console.log('FormData contents:');
+                for (let pair of formData.entries()) {
+                    console.log(pair[0], pair[1]);
+                }
+
+                // Determine the correct route based on user type
+                let saveUrl;
+                @if(\App\Helpers\RouteHelper::isCustomer())
+                    saveUrl = '{{ route('customer.booking.save-customer') }}';
+                @elseif(\App\Helpers\RouteHelper::isStaff())
+                    saveUrl = '{{ route('staff.booking.save-customer') }}';
+                @else
+                    saveUrl = '{{ route('admin.booking.save-customer') }}';
+                @endif
+
+                console.log('Save URL:', saveUrl);
+
+                // Show loading state
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving...';
+                this.disabled = true;
+
+                fetch(saveUrl, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    return response.json().then(data => {
+                        if (!response.ok) {
+                            throw new Error(data.message || data.error || 'Server error');
+                        }
+                        return data;
+                    });
+                })
+                .then(data => {
+                    if (data.success) {
+                        this.innerHTML = '<i class="fa fa-check"></i> Saved!';
+                        this.classList.remove('btn-save');
+                        this.classList.add('btn-success');
+
+                        // Set the hidden customer ID fields
+                        if (data.customer_id) {
+                            document.getElementById('selected_customer_id').value = data.customer_id;
+                            document.getElementById('selected_customer_type').value = customerType;
+                        }
+
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                            this.classList.remove('btn-success');
+                            this.classList.add('btn-save');
+                            this.disabled = false;
+                        }, 2000);
+                    } else {
+                        this.innerHTML = '<i class="fa fa-times"></i> Error';
+                        this.classList.remove('btn-save');
+                        this.classList.add('btn-danger');
+                        alert('Error: ' + (data.message || 'Unknown error'));
+
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                            this.classList.remove('btn-danger');
+                            this.classList.add('btn-save');
+                            this.disabled = false;
+                        }, 2000);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    this.innerHTML = '<i class="fa fa-times"></i> Error';
+                    this.classList.remove('btn-save');
+                    this.classList.add('btn-danger');
+                    alert('Error saving customer details: ' + error.message);
+
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.classList.remove('btn-danger');
+                        this.classList.add('btn-save');
+                        this.disabled = false;
+                    }, 2000);
+                });
+            } else {
+                // For other tabs, use auto-save
+                autoSave();
+
+                // Show save confirmation
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fa fa-check"></i> Saved!';
+                this.classList.remove('btn-save');
+                this.classList.add('btn-success');
+
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.classList.remove('btn-success');
+                    this.classList.add('btn-save');
+                }, 2000);
+
+                console.log(`Saved data for ${tabName} tab at:`, new Date().toLocaleTimeString());
+            }
         });
     });
 </script>

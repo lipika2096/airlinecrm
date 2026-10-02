@@ -92,11 +92,17 @@ class B2BPartner extends Model
 
     public function createdBy()
     {
+        if ($this->created_by_type === 'staff') {
+            return $this->belongsTo(\App\Models\User::class, 'created_by');
+        }
         return $this->belongsTo(Admin::class, 'created_by');
     }
 
     public function updatedBy()
     {
+        if ($this->created_by_type === 'staff') {
+            return $this->belongsTo(\App\Models\User::class, 'updated_by');
+        }
         return $this->belongsTo(Admin::class, 'updated_by');
     }
 }
