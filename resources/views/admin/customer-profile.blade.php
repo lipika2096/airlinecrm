@@ -1366,48 +1366,100 @@
                                     
                                     <!-- Current Package Info (Always Visible) -->
                                     <div id="current-package-info">
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <div class="form-group">
-                                                    <label class="col-form-label">Current Package</label>
-                                                    <input class="form-control" type="text" 
-                                                        value="{{ $customer->adminDetail->salesPackage->package_name ?? 'No package assigned' }}" readonly>
+                                        @if($customer->adminDetail->subscription_modules && is_array($customer->adminDetail->subscription_modules))
+                                            <!-- Module-based Subscription -->
+                                            <div class="alert alert-info">
+                                                <strong>Module-based Subscription</strong>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Billing Frequency</label>
+                                                        <input class="form-control" type="text"
+                                                            value="{{ ucfirst($customer->adminDetail->subscription_type ?? '-') }}" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Monthly Charge</label>
+                                                        <input class="form-control" type="text"
+                                                            value="{{ $customer->adminDetail->monthly_charge ? '$' . number_format($customer->adminDetail->monthly_charge, 2) : '-' }}" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Annual Charge (with discount)</label>
+                                                        <input class="form-control" type="text"
+                                                            value="{{ $customer->adminDetail->annual_charge ? '$' . number_format($customer->adminDetail->annual_charge, 2) : '-' }}" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Setup Fee</label>
+                                                        <input class="form-control" type="text"
+                                                            value="{{ $customer->adminDetail->setup_fee ? '$' . number_format($customer->adminDetail->setup_fee, 2) : '-' }}" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Subscribed Modules</label>
+                                                        @if($customer->adminDetail->subscription_modules)
+                                                            @php
+                                                                $moduleIds = $customer->adminDetail->subscription_modules;
+                                                                $modules = \Spatie\Permission\Models\Permission::whereIn('id', $moduleIds)->get();
+                                                            @endphp
+                                                            <textarea class="form-control" rows="3" readonly>{{ $modules->pluck('name')->implode(', ') }}</textarea>
+                                                        @else
+                                                            <input class="form-control" type="text" value="-" readonly>
+                                                        @endif
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col-sm-6">
-                                                <div class="form-group">
-                                                    <label class="col-form-label">Current Subscription Charge</label>
-                                                    <input class="form-control" type="text" 
-                                                        value="{{ $customer->adminDetail->subscription_charge ? '$' . number_format($customer->adminDetail->subscription_charge, 2) : '-' }}" readonly>
+                                        @else
+                                            <!-- Package-based Subscription -->
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Current Package</label>
+                                                        <input class="form-control" type="text"
+                                                            value="{{ $customer->adminDetail->salesPackage->package_name ?? 'No package assigned' }}" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Current Subscription Charge</label>
+                                                        <input class="form-control" type="text"
+                                                            value="{{ $customer->adminDetail->subscription_charge ? '$' . number_format($customer->adminDetail->subscription_charge, 2) : '-' }}" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Payment Type</label>
+                                                        <input class="form-control" type="text"
+                                                            value="{{ ucfirst($customer->adminDetail->payment_type ?? 'base') }} Rate" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Package Activation Date</label>
+                                                        <input class="form-control" type="text"
+                                                            value="{{ $customer->adminDetail->package_activation_date_formatted }}" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Current Package Modules</label>
+                                                        <input class="form-control" type="text"
+                                                            value="{{ $customer->adminDetail->salesPackage->modules_list ?? '-' }}" readonly>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col-sm-6">
-                                                <div class="form-group">
-                                                    <label class="col-form-label">Payment Type</label>
-                                                    <input class="form-control" type="text" 
-                                                        value="{{ ucfirst($customer->adminDetail->payment_type ?? 'base') }} Rate" readonly>
-                                                </div>
+                                            <div class="submit-section">
+                                                <button type="button" class="btn btn-primary" id="edit-plan-btn">
+                                                    <i class="fa fa-edit"></i> Change Plan
+                                                </button>
                                             </div>
-                                            <div class="col-sm-6">
-                                                <div class="form-group">
-                                                    <label class="col-form-label">Package Activation Date</label>
-                                                    <input class="form-control" type="text" 
-                                                        value="{{ $customer->adminDetail->package_activation_date_formatted }}" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-12">
-                                                <div class="form-group">
-                                                    <label class="col-form-label">Current Package Modules</label>
-                                                    <input class="form-control" type="text" 
-                                                        value="{{ $customer->adminDetail->salesPackage->modules_list ?? '-' }}" readonly>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="submit-section">
-                                            <button type="button" class="btn btn-primary" id="edit-plan-btn">
-                                                <i class="fa fa-edit"></i> Change Plan
-                                            </button>
-                                        </div>
+                                        @endif
                                     </div>
 
                                     <!-- Edit Package Form (Hidden by Default) -->

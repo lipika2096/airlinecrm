@@ -243,6 +243,8 @@
                                     (Company) </a></li>
                             <li><a class="" href="{{ route('admin.subscribed.companies') }}"> Subscribed
                                     Companies</a></li>
+                            <li><a class="" href="{{ route('admin.customer.subscriptions') }}"> Customer Subscriptions
+                                    </a></li>
                         </ul>
                     </li>
                 </ul>

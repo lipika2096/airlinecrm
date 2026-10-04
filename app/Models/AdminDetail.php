@@ -13,15 +13,14 @@ class AdminDetail extends Model
 
     protected $guarded = ['id'];
     
-    protected $fillable = [
-        'admin_id',
-        'company_name',
-        'subscription_type',
-        'package_activation_date',
-    ];
 
     protected $casts = [
         'package_activation_date' => 'date',
+        'subscription_modules' => 'array',
+        'monthly_charge' => 'decimal:2',
+        'annual_charge' => 'decimal:2',
+        'setup_fee' => 'decimal:2',
+        'permissions' => 'array',
     ];
 
     protected $appends = ['package_activation_date_formatted'];

@@ -11,13 +11,13 @@ class DatabaseSeeder extends Seeder
         $this->call([
             //AdminSeeder::class,
             //UpdateCreatedBySeeder::class,
-            //RolePermissionSeeder::class,
+            RolePermissionSeeder::class,
             //DepartmentModuleSeeder::class,
             //TicketStatusSeeder::class,
             //StaffRoleSeeder::class
             //SupportTicketCommentsSeeder::class
             //ProductSeeder::class
-            ModulePricingSeeder::class
+            //ModulePricingSeeder::class
 
         ]);
 

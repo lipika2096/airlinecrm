@@ -54,8 +54,6 @@ class RolePermissionSeeder extends Seeder
             ],
             'accounts' => [
                 'account',
-                'bookings',
-                'new-booking',
                 'add-account',
                 'view-accounts',
                 'customer-ledger',

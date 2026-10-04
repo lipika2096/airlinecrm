@@ -167,6 +167,12 @@ Route::name('admin.')->middleware(['admin'])->group(function () {
     Route::get('roles-permissions', [ModuleController::class, 'index'])->name('roles-permissions.index');
     Route::post('modules/update', [ModuleController::class, 'update'])->name('modules.update');
     Route::post('modules/toggle-status', [ModuleController::class, 'toggleStatus'])->name('modules.toggle-status');
+    Route::get('modules/{moduleId}/submodules', [ModuleController::class, 'getSubmodules'])->name('modules.submodules');
+    Route::get('modules/{moduleId}/permissions', [ModuleController::class, 'getModulePermissions'])->name('modules.get.permissions');
+    Route::post('modules/save-permissions', [ModuleController::class, 'saveModulePermissions'])->name('modules.save.permissions');
+    Route::post('submodules', [ModuleController::class, 'storeSubmodule'])->name('submodules.store');
+    Route::put('submodules/{id}', [ModuleController::class, 'updateSubmodule'])->name('submodules.update');
+    Route::delete('submodules/{id}', [ModuleController::class, 'deleteSubmodule'])->name('submodules.delete');
     Route::get('/roles/{role}/permissions', [RolePermissionController::class, 'getRolePermissions'])->name('roles.getPermissions');
     Route::put('/roles/update', [RolePermissionController::class, 'update'])->name('roles.update');
     Route::post('/roles', [RolePermissionController::class, 'store'])->name('roles.store');
@@ -227,6 +233,12 @@ Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(functi
     Route::post('/update-module-access', [EmployeeController::class, 'updateModuleAccess'])->name('update.module.access');
     Route::get('/employee-module-permissions/{id}', [EmployeeController::class, 'getEmployeeModulePermissions'])->name('employee.module.permissions');
     Route::get('/available-modules', [EmployeeController::class, 'getAvailableModules'])->name('available.modules');
+
+    // Submodule management routes
+    Route::get('modules/{moduleId}/submodules', [ModuleController::class, 'getSubmodules'])->name('modules.submodules');
+    Route::post('submodules', [ModuleController::class, 'storeSubmodule'])->name('submodules.store');
+    Route::put('submodules/{id}', [ModuleController::class, 'updateSubmodule'])->name('submodules.update');
+    Route::delete('submodules/{id}', [ModuleController::class, 'deleteSubmodule'])->name('submodules.delete');
 
     // B2C Customers routes
     Route::get('b2c-customers', [B2CCustomerController::class, 'index'])->name('b2c-customers.index');
@@ -699,7 +711,17 @@ Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(functi
     Route::delete('sales-packages/destroy/{id}', [SalesPackageController::class, 'destroy'])->name('sales-packages.destroy');
     Route::get('sales-packages/toggle-status/{id}', [SalesPackageController::class, 'toggleStatus'])->name('sales-packages.toggle-status');
     Route::get('sales-packages/{id}', [SalesPackageController::class, 'getPackage'])->name('sales-packages.get');
-    
+    Route::get('sales-packages/{packageId}/permissions', [SalesPackageController::class, 'getPackagePermissions'])->name('sales-packages.get.permissions');
+    Route::post('sales-packages/save-permissions', [SalesPackageController::class, 'savePackagePermissions'])->name('sales-packages.save.permissions');
+    Route::get('subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions.index');
+    Route::post('subscriptions/update', [SubscriptionController::class, 'update'])->name('subscriptions.update');
+    Route::get('customer-subscriptions', [SubscriptionController::class, 'customerSubscriptions'])->name('customer.subscriptions');
+    Route::post('customer-subscriptions/store', [SubscriptionController::class, 'storeCustomerSubscription'])->name('customer.subscriptions.store');
+    Route::get('customer-subscriptions/get-permissions', [SubscriptionController::class, 'getSubscriptionPermissions'])->name('customer.subscriptions.get.permissions');
+    Route::post('customer-subscriptions/save-permissions', [SubscriptionController::class, 'saveSubscriptionPermissions'])->name('customer.subscriptions.save.permissions');
+    Route::get('customer-module-permissions/{id}', [SubscriptionController::class, 'getCustomerModulePermissions'])->name('module.permissions');
+    Route::post('customer-update-module-access', [SubscriptionController::class, 'updateCustomerModuleAccess'])->name('update.module.access');
+
     // Bank Accounts routes
     Route::get('bank-accounts', [BankAccountController::class, 'index'])->name('bank-accounts.index');
     Route::get('bank-accounts/create', [BankAccountController::class, 'create'])->name('bank-accounts.create');
@@ -786,9 +808,8 @@ Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(functi
     Route::get('admin-profile', [ProfileController::class, 'adminProfile'])->name('admin-profile');
     Route::post('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::post('profile/timezone', [ProfileController::class, 'updateTimezone'])->name('profile.timezone');
-    Route::get('subscriptions', [SubscriptionController::class, 'subscriptionsAdmin'])->name('subscriptions');
-    Route::get('subscriptions-company', [SubscriptionController::class, 'subscriptionsCompany'])->name('subscriptions.company');
-    Route::get('subscribed-companies', [SubscriptionController::class, 'subscribedCompanies'])->name('subscribed.companies');
+    Route::get('subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions.index');
+    Route::post('subscriptions/update', [SubscriptionController::class, 'update'])->name('subscriptions.update');
     Route::get('roles-permissions', [ModuleController::class, 'index'])->name('roles-permissions.index');
     Route::post('modules/update', [ModuleController::class, 'update'])->name('modules.update');
     Route::post('modules/toggle-status', [ModuleController::class, 'toggleStatus'])->name('modules.toggle-status');
@@ -923,6 +944,8 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
     Route::get('profile', [ProfileController::class, 'clientProfile'])->name('profile');
     Route::post('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::post('profile/timezone', [ProfileController::class, 'updateTimezone'])->name('profile.timezone');
+    Route::get('subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions.index');
+    Route::post('subscriptions/update', [SubscriptionController::class, 'update'])->name('subscriptions.update');
 
     // B2B Partners routes for customers
     Route::get('b2b-partners', [B2BPartnerController::class, 'index'])->name('b2b-partners');
@@ -1431,7 +1454,17 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
     Route::delete('sales-packages/destroy/{id}', [SalesPackageController::class, 'destroy'])->name('sales-packages.destroy');
     Route::get('sales-packages/toggle-status/{id}', [SalesPackageController::class, 'toggleStatus'])->name('sales-packages.toggle-status');
     Route::get('sales-packages/{id}', [SalesPackageController::class, 'getPackage'])->name('sales-packages.get');
-    
+    Route::get('sales-packages/{packageId}/permissions', [SalesPackageController::class, 'getPackagePermissions'])->name('sales-packages.get.permissions');
+    Route::post('sales-packages/save-permissions', [SalesPackageController::class, 'savePackagePermissions'])->name('sales-packages.save.permissions');
+    Route::get('subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions.index');
+    Route::post('subscriptions/update', [SubscriptionController::class, 'update'])->name('subscriptions.update');
+    Route::get('customer-subscriptions', [SubscriptionController::class, 'customerSubscriptions'])->name('customer.subscriptions');
+    Route::post('customer-subscriptions/store', [SubscriptionController::class, 'storeCustomerSubscription'])->name('customer.subscriptions.store');
+    Route::get('customer-subscriptions/get-permissions', [SubscriptionController::class, 'getSubscriptionPermissions'])->name('customer.subscriptions.get.permissions');
+    Route::post('customer-subscriptions/save-permissions', [SubscriptionController::class, 'saveSubscriptionPermissions'])->name('customer.subscriptions.save.permissions');
+    Route::get('customer-module-permissions/{id}', [SubscriptionController::class, 'getCustomerModulePermissions'])->name('module.permissions');
+    Route::post('customer-update-module-access', [SubscriptionController::class, 'updateCustomerModuleAccess'])->name('update.module.access');
+
     // Bank Accounts routes
     Route::get('bank-accounts', [BankAccountController::class, 'index'])->name('bank-accounts.index');
     Route::get('bank-accounts/create', [BankAccountController::class, 'create'])->name('bank-accounts.create');
@@ -1517,9 +1550,8 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
     Route::get('admin-profile', [ProfileController::class, 'adminProfile'])->name('admin-profile');
     Route::post('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::post('profile/timezone', [ProfileController::class, 'updateTimezone'])->name('profile.timezone');
-    Route::get('subscriptions', [SubscriptionController::class, 'subscriptionsAdmin'])->name('subscriptions');
-    Route::get('subscriptions-company', [SubscriptionController::class, 'subscriptionsCompany'])->name('subscriptions.company');
-    Route::get('subscribed-companies', [SubscriptionController::class, 'subscribedCompanies'])->name('subscribed.companies');
+    Route::get('subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions.index');
+    Route::post('subscriptions/update', [SubscriptionController::class, 'update'])->name('subscriptions.update');
     Route::get('roles-permissions', [ModuleController::class, 'index'])->name('roles-permissions.index');
     Route::post('modules/update', [ModuleController::class, 'update'])->name('modules.update');
     Route::post('modules/toggle-status', [ModuleController::class, 'toggleStatus'])->name('modules.toggle-status');
@@ -2159,7 +2191,17 @@ Route::prefix('staff')->name('staff.')->middleware(['staff'])->group(function ()
     Route::delete('sales-packages/destroy/{id}', [SalesPackageController::class, 'destroy'])->name('sales-packages.destroy');
     Route::get('sales-packages/toggle-status/{id}', [SalesPackageController::class, 'toggleStatus'])->name('sales-packages.toggle-status');
     Route::get('sales-packages/{id}', [SalesPackageController::class, 'getPackage'])->name('sales-packages.get');
-    
+    Route::get('sales-packages/{packageId}/permissions', [SalesPackageController::class, 'getPackagePermissions'])->name('sales-packages.get.permissions');
+    Route::post('sales-packages/save-permissions', [SalesPackageController::class, 'savePackagePermissions'])->name('sales-packages.save.permissions');
+    Route::get('subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions.index');
+    Route::post('subscriptions/update', [SubscriptionController::class, 'update'])->name('subscriptions.update');
+    Route::get('customer-subscriptions', [SubscriptionController::class, 'customerSubscriptions'])->name('customer.subscriptions');
+    Route::post('customer-subscriptions/store', [SubscriptionController::class, 'storeCustomerSubscription'])->name('customer.subscriptions.store');
+    Route::get('customer-subscriptions/get-permissions', [SubscriptionController::class, 'getSubscriptionPermissions'])->name('customer.subscriptions.get.permissions');
+    Route::post('customer-subscriptions/save-permissions', [SubscriptionController::class, 'saveSubscriptionPermissions'])->name('customer.subscriptions.save.permissions');
+    Route::get('customer-module-permissions/{id}', [SubscriptionController::class, 'getCustomerModulePermissions'])->name('module.permissions');
+    Route::post('customer-update-module-access', [SubscriptionController::class, 'updateCustomerModuleAccess'])->name('update.module.access');
+
     // Bank Accounts routes
     Route::get('bank-accounts', [BankAccountController::class, 'index'])->name('bank-accounts.index');
     Route::get('bank-accounts/create', [BankAccountController::class, 'create'])->name('bank-accounts.create');
@@ -2246,9 +2288,8 @@ Route::prefix('staff')->name('staff.')->middleware(['staff'])->group(function ()
     Route::get('admin-profile', [ProfileController::class, 'adminProfile'])->name('admin-profile');
     Route::post('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::post('profile/timezone', [ProfileController::class, 'updateTimezone'])->name('profile.timezone');
-    Route::get('subscriptions', [SubscriptionController::class, 'subscriptionsAdmin'])->name('subscriptions');
-    Route::get('subscriptions-company', [SubscriptionController::class, 'subscriptionsCompany'])->name('subscriptions.company');
-    Route::get('subscribed-companies', [SubscriptionController::class, 'subscribedCompanies'])->name('subscribed.companies');
+    Route::get('subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions.index');
+    Route::post('subscriptions/update', [SubscriptionController::class, 'update'])->name('subscriptions.update');
     Route::get('roles-permissions', [ModuleController::class, 'index'])->name('roles-permissions.index');
     Route::post('modules/update', [ModuleController::class, 'update'])->name('modules.update');
     Route::post('modules/toggle-status', [ModuleController::class, 'toggleStatus'])->name('modules.toggle-status');
