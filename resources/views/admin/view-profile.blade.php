@@ -2428,7 +2428,7 @@ use Carbon\Carbon;
                                                             value="  ">
 
                                                         <input class="form-control" type="hidden" name="created_by"
-                                                            value="{{auth('admin')->user()->name}}">
+                                                            value="{{auth('admin')->user()->name ?? auth()->user()->first_name. ' '. auth()->user()->last_name}}">
                                                     </div>
                                                     <th class="fw-bold">
                                                         {{ $air->airline->airline_name }}</th>
@@ -2768,7 +2768,7 @@ use Carbon\Carbon;
                         const canDelete = document.getElementById('delete-' + moduleId.replace(/-/g, '_'))?.checked || false;
 
                         // Determine the correct route based on user type
-                        const updateModuleAccessRoute = '{{ \App\Helpers\RouteHelper::isCustomer() ? route("customer.update.module.access") : (\App\Helpers\RouteHelper::isStaff() ? route("staff.update.module.access") : route("admin.update.module.access")) }}';
+                        const updateModuleAccessRoute = '{{ \App\Helpers\RouteHelper::isCustomer() ? route("customer.employee.update.module.access") : (\App\Helpers\RouteHelper::isStaff() ? route("staff.employee.update.module.access") : route("admin.employee.update.module.access")) }}';
 
                         // Use the Laravel route
                         fetch(updateModuleAccessRoute, {
@@ -2814,7 +2814,7 @@ use Carbon\Carbon;
                         const hasPermission = this.checked;
 
                         // Determine the correct route based on user type
-                        const updateModuleAccessRoute = '{{ \App\Helpers\RouteHelper::isCustomer() ? route("customer.update.module.access") : (\App\Helpers\RouteHelper::isStaff() ? route("staff.update.module.access") : route("admin.update.module.access")) }}';
+                        const updateModuleAccessRoute = '{{ \App\Helpers\RouteHelper::isCustomer() ? route("customer.employee.update.module.access") : (\App\Helpers\RouteHelper::isStaff() ? route("staff.employee.update.module.access") : route("admin.employee.update.module.access")) }}';
 
                         // Get current module access state
                         const moduleToggle = document.getElementById('toggle-' + moduleId.replace(/-/g, '_'));
@@ -3043,7 +3043,7 @@ use Carbon\Carbon;
                     });
 
                     // Send update request
-                    const updateModuleAccessRoute = '{{ \App\Helpers\RouteHelper::isCustomer() ? route("customer.update.module.access") : (\App\Helpers\RouteHelper::isStaff() ? route("staff.update.module.access") : route("admin.update.module.access")) }}';
+                    const updateModuleAccessRoute = '{{ \App\Helpers\RouteHelper::isCustomer() ? route("customer.employee.update.module.access") : (\App\Helpers\RouteHelper::isStaff() ? route("staff.employee.update.module.access") : route("admin.employee.update.module.access")) }}';
 
                     fetch(updateModuleAccessRoute, {
                         method: 'POST',
