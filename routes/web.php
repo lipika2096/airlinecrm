@@ -31,6 +31,7 @@ use App\Http\Controllers\dashboard\{
     AgentController,
     GroupController,
     SalesLeadController,
+    SupplierController,
     AirTicketController,
     FareConditionController,
     CommissionController,
@@ -39,6 +40,7 @@ use App\Http\Controllers\dashboard\{
     HoldController,
     WalletController,
     SupportTicketController,
+    SupportTicketReportController,
     TicketStatusController,
     DashboardSupportTicketController,
     WalletRequestController,
@@ -230,7 +232,7 @@ Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(functi
     Route::get('booking/invoice/{id}', [AccountController::class, 'generateInvoice'])->name('booking.invoice');
 
     // Module access routes for SuperAdmin
-    Route::post('/update-module-access', [EmployeeController::class, 'updateModuleAccess'])->name('update.module.access');
+    Route::post('/update-module-access', [EmployeeController::class, 'updateModuleAccess'])->name('employee.update.module.access');
     Route::get('/employee-module-permissions/{id}', [EmployeeController::class, 'getEmployeeModulePermissions'])->name('employee.module.permissions');
     Route::get('/available-modules', [EmployeeController::class, 'getAvailableModules'])->name('available.modules');
 
@@ -466,6 +468,32 @@ Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(functi
     Route::get('products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
     Route::put('products/{id}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
+
+    // Suppliers routes
+    Route::get('suppliers', [SupplierController::class, 'index'])->name('suppliers');
+    Route::get('suppliers/create', [SupplierController::class, 'create'])->name('suppliers.create');
+    Route::post('suppliers/store', [SupplierController::class, 'store'])->name('suppliers.store');
+    Route::get('suppliers/{id}', [SupplierController::class, 'show'])->name('suppliers.show');
+    Route::get('suppliers/{id}/edit', [SupplierController::class, 'edit'])->name('suppliers.edit');
+    Route::patch('suppliers/update/{id}', [SupplierController::class, 'update'])->name('suppliers.update');
+    Route::delete('suppliers/delete/{id}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
+
+    // Supplier Contact routes
+    Route::post('suppliers/{supplierId}/contacts', [SupplierController::class, 'storeContact'])->name('suppliers.contacts.store');
+    Route::patch('suppliers/{supplierId}/contacts/{contactId}', [SupplierController::class, 'updateContact'])->name('suppliers.contacts.update');
+    Route::delete('suppliers/{supplierId}/contacts/{contactId}', [SupplierController::class, 'destroyContact'])->name('suppliers.contacts.destroy');
+
+    // Supplier Account routes
+    Route::post('suppliers/{supplierId}/accounts', [SupplierController::class, 'storeAccount'])->name('suppliers.accounts.store');
+    Route::patch('suppliers/{supplierId}/accounts/{accountId}', [SupplierController::class, 'updateAccount'])->name('suppliers.accounts.update');
+    Route::delete('suppliers/{supplierId}/accounts/{accountId}', [SupplierController::class, 'destroyAccount'])->name('suppliers.accounts.destroy');
+
+    // Supplier Ledger routes
+    Route::get('suppliers/{supplierId}/ledger/data', [SupplierController::class, 'getLedgerData'])->name('suppliers.ledger.data');
+    Route::post('suppliers/{supplierId}/ledger', [SupplierController::class, 'storeLedgerTransaction'])->name('suppliers.ledger.store');
+    Route::patch('suppliers/{supplierId}/ledger/{transactionId}', [SupplierController::class, 'updateLedgerTransaction'])->name('suppliers.ledger.update');
+    Route::delete('suppliers/{supplierId}/ledger/{transactionId}', [SupplierController::class, 'destroyLedgerTransaction'])->name('suppliers.ledger.destroy');
+
     Route::patch('airlines/specialfares/update/{id}', [AirlineController::class, 'specialfaresUpdate'])->name('airline.specialfares.update');
     Route::get('deleted/airlines', [AirlineController::class, 'deletedAirline'])->name('deleted.airlines');
     Route::post('airlines/SLA/store', [AirlineController::class, 'slaStore'])->name('airline.sla.store');
@@ -550,6 +578,11 @@ Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(functi
     Route::get('support-tickets', [SupportTicketController::class, 'dashboardStatistics'])->name('support-tickets.dashboard');
 
     Route::get('support-tickets/all', [SupportTicketController::class, 'index'])->name('support-tickets.index');
+
+    // Support Tickets Report routes
+    Route::get('reports/support-tickets', [SupportTicketReportController::class, 'index'])->name('reports.support-tickets');
+    Route::post('reports/support-tickets/generate', [SupportTicketReportController::class, 'generateReport'])->name('reports.support-tickets.generate');
+    Route::get('reports/support-tickets/download', [SupportTicketReportController::class, 'downloadReport'])->name('reports.support-tickets.download');
     Route::get('support-tickets/create', [SupportTicketController::class, 'create'])->name('support-tickets.create');
     Route::post('support-tickets', [SupportTicketController::class, 'store'])->name('support-tickets.store');
     Route::get('support-tickets/{id}', [SupportTicketController::class, 'show'])->name('support-tickets.show');
@@ -900,7 +933,7 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
     Route::get('customers/search', [CustomerController::class, 'search'])->name('customers.search');
 
     // Module access routes for customers
-    Route::post('/update-module-access', [EmployeeController::class, 'updateModuleAccess'])->name('update.module.access');
+    Route::post('/update-module-access', [EmployeeController::class, 'updateModuleAccess'])->name('employee.update.module.access');
     Route::get('/employee-module-permissions/{id}', [EmployeeController::class, 'getEmployeeModulePermissions'])->name('employee.module.permissions');
     Route::get('/available-modules', [EmployeeController::class, 'getAvailableModules'])->name('available.modules');
 
@@ -1586,7 +1619,7 @@ Route::prefix('staff')->name('staff.')->middleware(['staff'])->group(function ()
     Route::get('dashboard', [DashboardController::class, 'staffDashboard'])->name('dashboard');
 
     // Module access routes for staff
-    Route::post('/update-module-access', [EmployeeController::class, 'updateModuleAccess'])->name('update.module.access');
+    Route::post('/update-module-access', [EmployeeController::class, 'updateModuleAccess'])->name('employee.update.module.access');
     Route::get('/employee-module-permissions/{id}', [EmployeeController::class, 'getEmployeeModulePermissions'])->name('employee.module.permissions');
     Route::get('/available-modules', [EmployeeController::class, 'getAvailableModules'])->name('available.modules');
 

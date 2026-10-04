@@ -13,6 +13,14 @@
                     </li>
                     <li><a class="{{ request()->routeIs('admin.support-tickets.dashboard') ? 'active' : '' }}" href="{{ route('admin.support-tickets.dashboard') }}"><i class="la la-life-ring"></i> <span> Support Tickets</span></a>
                     </li>
+                    <li class="submenu">
+                        <a href="#" class="{{ request()->routeIs('admin.reports.*') ? 'active' : '' }}"><i class="la la-bar-chart"></i> <span> Reports</span> <span class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            <li>
+                                <a class="{{ request()->routeIs('admin.reports.support-tickets') ? 'active' : '' }}" href="{{ route('admin.reports.support-tickets') }}">Support Tickets Report</a>
+                            </li>
+                        </ul>
+                    </li>
                 @elseif(\App\Helpers\RouteHelper::isCustomer() && auth('admin')->check() && auth('admin')->user()?->getDirectPermissions()->contains('name', 'support-tickets'))
                     <li><a class="{{ request()->routeIs('customer.support-tickets.index') ? 'active' : '' }}" href="{{ route('customer.support-tickets.index') }}"><i class="la la-life-ring"></i> <span> Support Tickets</span></a>
                     </li>
@@ -331,6 +339,7 @@
                             </li>
                         </ul>
                     </li>
+                    <li><a class="{{ request()->routeIs('customer.subscriptions.index') ? 'active' : '' }}" href="{{ route('customer.subscriptions.index') }}"><i class="la la-cog"></i> <span>Subscriptions</span></a></li>
                     <!-- <li class="submenu">
                         <a href="javascript:void(0);"><i class="la la-user"></i> <span>B2C Customers</span> <span
                                 class="menu-arrow"></span></a>
@@ -407,6 +416,19 @@
                         <a class="{{ request()->routeIs('admin.roles-permissions.index') ? 'active' : '' }}" href="{{ route('admin.roles-permissions.index') }}"><i class="la la-cog"></i> <span>Manage Modules</span></a>
                     </li>
                     <li><a class="{{ request()->routeIs('admin.sales-packages.index') ? 'active' : '' }}" href="{{ route('admin.sales-packages.index') }}"><i class="la la-cog"></i> <span>Sales Packages</span></a></li>
+                    <li class="submenu">
+                        <a href="#" class="{{ request()->routeIs('admin.subscriptions.*', 'admin.customer.subscriptions') ? 'active' : '' }}"><i class="la la-hand-o-up"></i> <span> Subscriptions </span> <span class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            <li><a class="{{ request()->routeIs('admin.subscriptions.index') ? 'active' : '' }}" href="{{ route('admin.subscriptions.index') }}"> Subscription Rules</a></li>
+                            <li><a class="{{ request()->routeIs('admin.customer.subscriptions') ? 'active' : '' }}" href="{{ route('admin.customer.subscriptions') }}"> Customer Subscriptions</a></li>
+                        </ul>
+                    </li>
+                    <li class="submenu">
+                        <a href="#" class="{{ request()->routeIs('admin.reports.*') ? 'active' : '' }}"><i class="la la-bar-chart"></i> <span> Reports </span> <span class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            <li><a class="{{ request()->routeIs('admin.reports.support-tickets') ? 'active' : '' }}" href="{{ route('admin.reports.support-tickets') }}"> Support Tickets Report</a></li>
+                        </ul>
+                    </li>
                  @elseif(\App\Helpers\RouteHelper::isStaff())
                     @canAccessModule('roles-permissions')
                         @canAccessSubmodule('roles-permissions.manage-modules')
@@ -420,9 +442,24 @@
                             <li><a class="{{ request()->routeIs('staff.sales-packages.index') ? 'active' : '' }}" href="{{ route('staff.sales-packages.index') }}"><i class="la la-cog"></i> <span>Sales Packages</span></a></li>
                         @endcanAccessSubmodule
                     @endcanAccessModule
+                    @canAccessModule('subscriptions')
+                        @canAccessSubmodule('subscriptions.manage-subscriptions')
+                            <li><a class="{{ request()->routeIs('staff.subscriptions.index') ? 'active' : '' }}" href="{{ route('staff.subscriptions.index') }}"><i class="la la-cog"></i> <span>Subscriptions</span></a></li>
+                        @endcanAccessSubmodule
+                    @endcanAccessModule
                     @canAccessModule('accounts')
                         @canAccessSubmodule('accounts.bank-accounts')
                             <li><a class="{{ request()->routeIs('staff.bank-accounts.index') ? 'active' : '' }}" href="{{ route('staff.bank-accounts.index') }}"><i class="la la-bank"></i> <span>Bank Accounts</span></a></li>
+                        @endcanAccessSubmodule
+                    @endcanAccessModule
+                    @canAccessModule('reports')
+                        @canAccessSubmodule('reports.support-tickets')
+                            <li class="submenu">
+                                <a href="#" class="{{ request()->routeIs('staff.reports.*') ? 'active' : '' }}"><i class="la la-bar-chart"></i> <span> Reports </span> <span class="menu-arrow"></span></a>
+                                <ul style="display: none;">
+                                    <li><a class="{{ request()->routeIs('staff.reports.support-tickets') ? 'active' : '' }}" href="{{ route('staff.reports.support-tickets') }}"> Support Tickets Report</a></li>
+                                </ul>
+                            </li>
                         @endcanAccessSubmodule
                     @endcanAccessModule
                 @endif
@@ -605,7 +642,7 @@
                 @endif
                 
                 @if(auth('admin')->check() && auth('admin')->user()?->getDirectPermissions()->contains('name', 'airline'))
-                
+
                     <li class="submenu">
                         <a href="#" class=""><i class="la la-fighter-jet"></i> <span> Airline</span>
                             <span class="menu-arrow"></span></a>
@@ -638,6 +675,12 @@
                             </ul>
                         </li>
                     @endcanAccessModule
+                @endif
+
+                @if(auth('admin')->check() && auth('admin')->user()->hasRole('SuperAdmin'))
+                    <li>
+                        <a class="{{ request()->routeIs('admin.suppliers') ? 'active' : '' }}" href="{{ route('admin.suppliers') }}"><i class="la la-truck"></i> <span>Supplier</span></a>
+                    </li>
                 @endif
                 @if(auth('admin')->check() && auth('admin')->user()?->getDirectPermissions()->contains('name', 'sales-marketing'))
                     <li class="submenu">
@@ -719,8 +762,6 @@
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
                             <li><a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.accounts.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.accounts.index') : route('admin.accounts.index')) }}">Account</a></li>
-                            <li><a class="{{ request()->routeIs('admin.booking.index', 'customer.booking.index', 'staff.booking.index') ? 'active' : '' }}" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.index') : route('admin.booking.index')) }}">Bookings</a></li>
-                            <li><a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.create') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.create') : route('admin.booking.create')) }}">New Booking</a></li>
                             <li><a class="{{ request()->routeIs('customer.accounts.view') ? 'active' : '' }}" href="{{route('customer.accounts.view')}}">Add account</a></li>
                             <li><a class="{{ request()->routeIs('customer.accounts.all') ? 'active' : '' }}" href="{{route('customer.accounts.all')}}">View accounts </a></li>
                             <li><a class="{{ request()->routeIs('customer.ledger') ? 'active' : '' }}" href="{{route('customer.ledger')}}">Customer Ledger</a></li>
@@ -732,8 +773,6 @@
                                 class="menu-arrow"></span></a>
                         <ul style="display: none;">
                             <li><a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.accounts.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.accounts.index') : route('admin.accounts.index')) }}">Account</a></li>
-                            <li><a class="{{ request()->routeIs('admin.booking.index', 'customer.booking.index', 'staff.booking.index') ? 'active' : '' }}" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.index') : route('admin.booking.index')) }}">Bookings</a></li>
-                            <li><a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.create') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.create') : route('admin.booking.create')) }}">New Booking</a></li>
                             <li><a class="{{ request()->routeIs('admin.bank-accounts.index') ? 'active' : '' }}" href="{{ route('admin.bank-accounts.index') }}">My Bank Accounts</a>
                             </li>
                             <li><a class="{{ request()->routeIs('admin.customer.accounts.view') ? 'active' : '' }}" href="{{route('admin.customer.accounts.view')}}">Add account</a></li>
@@ -741,7 +780,6 @@
                             <li><a class="{{ request()->routeIs('admin.payment-pool') ? 'active' : '' }}" href="{{route('admin.payment-pool')}}">Add Payment to Pool </a></li>
                             <li><a class="{{ request()->routeIs('admin.customer.ledger') ? 'active' : '' }}" href="{{route('admin.customer.ledger')}}">Customer Ledger</a></li>
                             <li><a class="{{ request()->routeIs('admin.general-ledger') ? 'active' : '' }}" href="{{route('admin.general-ledger')}}">General Ledger</a></li>
-                            <li><a class="{{ request()->routeIs('admin.supplier-ledger') ? 'active' : '' }}" href="{{route('admin.supplier-ledger')}}">Supplier Ledger</a></li>
                             <li><a class="{{ request()->routeIs('admin.expense-entry') ? 'active' : '' }}" href="{{route('admin.expense-entry')}}">Expense Entry</a></li>
                         </ul>
                     </li>
@@ -770,10 +808,6 @@
 
                                 @canAccessSubmodule('accounts.general-ledger')
                                     <li><a class="{{ request()->routeIs('staff.general-ledger') ? 'active' : '' }}" href="{{route('staff.general-ledger')}}">General Ledger</a></li>
-                                @endcanAccessSubmodule
-
-                                @canAccessSubmodule('accounts.supplier-ledger')
-                                    <li><a class="{{ request()->routeIs('staff.supplier-ledger') ? 'active' : '' }}" href="{{route('staff.supplier-ledger')}}">Supplier Ledger</a></li>
                                 @endcanAccessSubmodule
 
                                 @canAccessSubmodule('accounts.expense-entry')

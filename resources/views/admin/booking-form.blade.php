@@ -256,7 +256,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Responsible</label>
-                                    <input type="text" class="form-control" name="b2c_responsible" id="b2c_responsible" placeholder="Responsible" value="{{ $booking->b2c_responsible ?? (\App\Helpers\RouteHelper::isStaff() ?auth()->user()->first_name .' '.auth()->user()->last_name : auth('admin')->user()->name) }}">
+                                    <input type="text" readonly class="form-control" name="b2c_responsible" id="b2c_responsible" placeholder="Responsible" value="{{ $booking->b2c_responsible ?? (\App\Helpers\RouteHelper::isStaff() ?auth()->user()->first_name .' '.auth()->user()->last_name : auth('admin')->user()->name) }}">
                                 </div>
                             </div>
                             <div class="row form-group">
@@ -330,7 +330,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Responsible</label>
-                                    <input type="text" class="form-control" name="b2b_responsible" id="b2b_responsible" placeholder="Responsible" value="{{ $booking->b2b_responsible ?? (\App\Helpers\RouteHelper::isStaff() ?auth()->user()->first_name .' '.auth()->user()->last_name : auth('admin')->user()->name) }}">
+                                    <input type="text" readonly class="form-control" name="b2b_responsible" id="b2b_responsible" placeholder="Responsible" value="{{ $booking->b2b_responsible ?? (\App\Helpers\RouteHelper::isStaff() ?auth()->user()->first_name .' '.auth()->user()->last_name : auth('admin')->user()->name) }}">
                                 </div>
                             </div>
                             <div class="row form-group">
