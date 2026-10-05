@@ -163,18 +163,42 @@ Route::get('/publish-pagination', function () {
 
 });
 
+Route::get('/clear-cache', function () {
+
+    Artisan::call('cache:clear');
+    $output = Artisan::output();
+
+    Artisan::call('config:clear');
+    $output .= Artisan::output();
+
+    Artisan::call('route:clear');
+    $output .= Artisan::output();
+
+    Artisan::call('view:clear');
+    $output .= Artisan::output();
+
+    Artisan::call('config:cache');
+    $output .= Artisan::output();
+
+    // Artisan::call('route:cache');
+    // $output .= Artisan::output();
+
+    return nl2br($output);
+
+});
+
 Route::get('drop-existing',[AccountController::class, 'dropBookingTables']);
 
 Route::name('admin.')->middleware(['admin'])->group(function () {
     Route::get('roles-permissions', [ModuleController::class, 'index'])->name('roles-permissions.index');
     Route::post('modules/update', [ModuleController::class, 'update'])->name('modules.update');
     Route::post('modules/toggle-status', [ModuleController::class, 'toggleStatus'])->name('modules.toggle-status');
-    Route::get('modules/{moduleId}/submodules', [ModuleController::class, 'getSubmodules'])->name('modules.submodules');
+    //Route::get('modules/{moduleId}/submodules', [ModuleController::class, 'getSubmodules'])->name('modules.submodules');
     Route::get('modules/{moduleId}/permissions', [ModuleController::class, 'getModulePermissions'])->name('modules.get.permissions');
     Route::post('modules/save-permissions', [ModuleController::class, 'saveModulePermissions'])->name('modules.save.permissions');
-    Route::post('submodules', [ModuleController::class, 'storeSubmodule'])->name('submodules.store');
-    Route::put('submodules/{id}', [ModuleController::class, 'updateSubmodule'])->name('submodules.update');
-    Route::delete('submodules/{id}', [ModuleController::class, 'deleteSubmodule'])->name('submodules.delete');
+    //Route::post('submodules', [ModuleController::class, 'storeSubmodule'])->name('submodules.store');
+    //Route::put('submodules/{id}', [ModuleController::class, 'updateSubmodule'])->name('submodules.update');
+    //Route::delete('submodules/{id}', [ModuleController::class, 'deleteSubmodule'])->name('submodules.delete');
     Route::get('/roles/{role}/permissions', [RolePermissionController::class, 'getRolePermissions'])->name('roles.getPermissions');
     Route::put('/roles/update', [RolePermissionController::class, 'update'])->name('roles.update');
     Route::post('/roles', [RolePermissionController::class, 'store'])->name('roles.store');
@@ -1603,6 +1627,51 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
     Route::put('commissions/{commission}', [CommissionController::class, 'update'])->name('commissions.update');
     Route::delete('commissions/{commission}', [CommissionController::class, 'destroy'])->name('commissions.destroy');
 
+    // System Admin routes for customers
+    Route::get('departments', [EmployeeController::class, 'departments'])->name('departments');
+    Route::post('departments/store', [EmployeeController::class, 'storeDepartment'])->name('departments.store');
+    Route::patch('departments/edit/{id}', [EmployeeController::class, 'editDepartment'])->name('departments.edit');
+    Route::get('designations', [EmployeeController::class, 'designations'])->name('designations');
+    Route::post('designations/store', [EmployeeController::class, 'storeDesignation'])->name('designations.store');
+    Route::patch('designations/edit/{id}', [EmployeeController::class, 'editDesignation'])->name('designations.edit');
+    Route::get('department-modules', [DepartmentModuleController::class, 'index'])->name('department-modules.index');
+    Route::post('department-modules/store', [DepartmentModuleController::class, 'store'])->name('department-modules.store');
+    Route::post('department-modules/destroy', [DepartmentModuleController::class, 'destroy'])->name('department-modules.destroy');
+    Route::post('department-modules/toggle', [DepartmentModuleController::class, 'toggle'])->name('department-modules.toggle');
+    Route::get('categories/view', [CategoryController::class, 'category'])->name('categories.view');
+    Route::post('categories/store', [CategoryController::class, 'store'])->name('categories.store');
+    Route::put('categories/update/{id}', [CategoryController::class, 'update'])->name('categories.update');
+    Route::delete('categories/delete/{id}', [CategoryController::class, 'destroy'])->name('categories.delete');
+    Route::post('/update-category-status', [CategoryController::class, 'updateStatus'])->name('category.updateStatus');
+    Route::get('duties', [DutyController::class, 'duties'])->name('duties');
+    Route::post('duties/store', [DutyController::class, 'storeDuty'])->name('duties.store');
+    Route::put('duties/update/{id}', [DutyController::class, 'updateDuty'])->name('duties.update');
+    Route::post('/update-duty-status', [DutyController::class, 'updateStatus'])->name('duties.updateStatus');
+    Route::get('events/status', [EventStatusController::class, 'index'])->name('events.status');
+    Route::post('events/status/store', [EventStatusController::class, 'store'])->name('events.status.store');
+    Route::patch('events/status/update/{id}', [EventStatusController::class, 'update'])->name('events.status.update');
+    Route::delete('events/status/delete/{id}', [EventStatusController::class, 'delete'])->name('events.status.delete');
+    Route::get('ticket-status', [TicketStatusController::class, 'index'])->name('ticket-status.index');
+    Route::get('ticket-status/create', [TicketStatusController::class, 'create'])->name('ticket-status.create');
+    Route::post('ticket-status', [TicketStatusController::class, 'store'])->name('ticket-status.store');
+    Route::get('ticket-status/{ticketStatus}/edit', [TicketStatusController::class, 'edit'])->name('ticket-status.edit');
+    Route::patch('ticket-status/{ticketStatus}', [TicketStatusController::class, 'update'])->name('ticket-status.update');
+    Route::delete('ticket-status/{ticketStatus}', [TicketStatusController::class, 'destroy'])->name('ticket-status.destroy');
+    Route::get('leave-type', [LeaveTypeController::class, 'leaveType'])->name('leave-type');
+    Route::post('leave-type/store', [LeaveTypeController::class, 'storeLeaveType'])->name('leave-type.store');
+    Route::put('leave-type/update/{id}', [LeaveTypeController::class, 'updateLeaveType'])->name('leave-type.update');
+    Route::delete('leave-type/delete/{id}', [LeaveTypeController::class, 'deleteLeaveType'])->name('leave-type.delete');
+    Route::post('/update-leavetype-status', [LeaveTypeController::class, 'updateStatus'])->name('leave-type.updateStatus');
+    Route::get('faretypes', [FareTypeController::class, 'index'])->name('faretypes');
+    Route::post('faretypes/store', [FareTypeController::class, 'store'])->name('faretypes.store');
+    Route::put('faretypes/update/{id}', [FareTypeController::class, 'update'])->name('faretypes.update');
+    Route::delete('faretypes/delete/{id}', [FareTypeController::class, 'delete'])->name('faretypes.delete');
+    Route::get('discounts', [DiscountController::class, 'index'])->name('discounts');
+    Route::post('discounts/store', [DiscountController::class, 'discountStore'])->name('discounts.store');
+    Route::put('discounts/update/{id}', [DiscountController::class, 'discountUpdate'])->name('discounts.update');
+    Route::delete('discounts/delete/{id}', [DiscountController::class, 'discountDelete'])->name('discounts.delete');
+
+
 
     });
 
@@ -2364,6 +2433,50 @@ Route::prefix('staff')->name('staff.')->middleware(['staff'])->group(function ()
     Route::post('admin/update-customer-permission', [CustomerController::class, 'updatePermission'])->name('update.customer.permission');
 
     Route::get('/toggle-status/{id}', [AdminController::class, 'toggleStatus'])->name('toggle.status');
+
+    // System Admin routes for customers
+    Route::get('departments', [EmployeeController::class, 'departments'])->name('departments');
+    Route::post('departments/store', [EmployeeController::class, 'storeDepartment'])->name('departments.store');
+    Route::patch('departments/edit/{id}', [EmployeeController::class, 'editDepartment'])->name('departments.edit');
+    Route::get('designations', [EmployeeController::class, 'designations'])->name('designations');
+    Route::post('designations/store', [EmployeeController::class, 'storeDesignation'])->name('designations.store');
+    Route::patch('designations/edit/{id}', [EmployeeController::class, 'editDesignation'])->name('designations.edit');
+    Route::get('department-modules', [DepartmentModuleController::class, 'index'])->name('department-modules.index');
+    Route::post('department-modules/store', [DepartmentModuleController::class, 'store'])->name('department-modules.store');
+    Route::post('department-modules/destroy', [DepartmentModuleController::class, 'destroy'])->name('department-modules.destroy');
+    Route::post('department-modules/toggle', [DepartmentModuleController::class, 'toggle'])->name('department-modules.toggle');
+    Route::get('categories/view', [CategoryController::class, 'category'])->name('categories.view');
+    Route::post('categories/store', [CategoryController::class, 'store'])->name('categories.store');
+    Route::put('categories/update/{id}', [CategoryController::class, 'update'])->name('categories.update');
+    Route::delete('categories/delete/{id}', [CategoryController::class, 'destroy'])->name('categories.delete');
+    Route::post('/update-category-status', [CategoryController::class, 'updateStatus'])->name('category.updateStatus');
+    Route::get('duties', [DutyController::class, 'duties'])->name('duties');
+    Route::post('duties/store', [DutyController::class, 'storeDuty'])->name('duties.store');
+    Route::put('duties/update/{id}', [DutyController::class, 'updateDuty'])->name('duties.update');
+    Route::post('/update-duty-status', [DutyController::class, 'updateStatus'])->name('duties.updateStatus');
+    Route::get('events/status', [EventStatusController::class, 'index'])->name('events.status');
+    Route::post('events/status/store', [EventStatusController::class, 'store'])->name('events.status.store');
+    Route::patch('events/status/update/{id}', [EventStatusController::class, 'update'])->name('events.status.update');
+    Route::delete('events/status/delete/{id}', [EventStatusController::class, 'delete'])->name('events.status.delete');
+    Route::get('ticket-status', [TicketStatusController::class, 'index'])->name('ticket-status.index');
+    Route::get('ticket-status/create', [TicketStatusController::class, 'create'])->name('ticket-status.create');
+    Route::post('ticket-status', [TicketStatusController::class, 'store'])->name('ticket-status.store');
+    Route::get('ticket-status/{ticketStatus}/edit', [TicketStatusController::class, 'edit'])->name('ticket-status.edit');
+    Route::patch('ticket-status/{ticketStatus}', [TicketStatusController::class, 'update'])->name('ticket-status.update');
+    Route::delete('ticket-status/{ticketStatus}', [TicketStatusController::class, 'destroy'])->name('ticket-status.destroy');
+    Route::get('leave-type', [LeaveTypeController::class, 'leaveType'])->name('leave-type');
+    Route::post('leave-type/store', [LeaveTypeController::class, 'storeLeaveType'])->name('leave-type.store');
+    Route::put('leave-type/update/{id}', [LeaveTypeController::class, 'updateLeaveType'])->name('leave-type.update');
+    Route::delete('leave-type/delete/{id}', [LeaveTypeController::class, 'deleteLeaveType'])->name('leave-type.delete');
+    Route::post('/update-leavetype-status', [LeaveTypeController::class, 'updateStatus'])->name('leave-type.updateStatus');
+    Route::get('faretypes', [FareTypeController::class, 'index'])->name('faretypes');
+    Route::post('faretypes/store', [FareTypeController::class, 'store'])->name('faretypes.store');
+    Route::put('faretypes/update/{id}', [FareTypeController::class, 'update'])->name('faretypes.update');
+    Route::delete('faretypes/delete/{id}', [FareTypeController::class, 'delete'])->name('faretypes.delete');
+    Route::get('discounts', [DiscountController::class, 'index'])->name('discounts');
+    Route::post('discounts/store', [DiscountController::class, 'discountStore'])->name('discounts.store');
+    Route::put('discounts/update/{id}', [DiscountController::class, 'discountUpdate'])->name('discounts.update');
+    Route::delete('discounts/delete/{id}', [DiscountController::class, 'discountDelete'])->name('discounts.delete');
 
 
 });

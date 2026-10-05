@@ -574,6 +574,23 @@
                             </ul>
                         </li>
                     @endcanAccessModule
+                @elseif(\App\Helpers\RouteHelper::isCustomer())
+                    <li class="submenu">
+                        <a href="javascript:void(0);"><i class="la la-cube"></i> <span>System Admin</span> <span
+                                class="menu-arrow"></span></a>
+                        <ul style="display: none;">
+                            <li><a class="{{ request()->routeIs('customer.departments') ? 'active' : '' }}" href="{{route('customer.departments')}}">Add Departments</a></li>
+                            <li><a class="{{ request()->routeIs('customer.designations') ? 'active' : '' }}" href="{{route('customer.designations')}}">Add Designations</a></li>
+                            <li><a class="{{ request()->routeIs('customer.department-modules.index') ? 'active' : '' }}" href="{{route('customer.department-modules.index')}}">Department Modules</a></li>
+                            <li><a class="{{ request()->routeIs('customer.categories.view') ? 'active' : '' }}" href="{{route('customer.categories.view')}}">Add Category</a></li>
+                            <li><a class="{{ request()->routeIs('customer.duties') ? 'active' : '' }}" href="{{route('customer.duties')}}">Add Duties</a></li>
+                            <li><a class="{{ request()->routeIs('customer.events.status') ? 'active' : '' }}" href="{{ route('customer.events.status') }}">Add Status</a></li>
+                            <li><a class="{{ request()->routeIs('customer.ticket-status.index') ? 'active' : '' }}" href="{{ route('customer.ticket-status.index') }}">Add Ticket Status</a></li>
+                            <li><a class="{{ request()->routeIs('customer.leave-type') ? 'active' : '' }}" href="{{ route('customer.leave-type') }}">Add Leave Types</a></li>
+                            <li><a class="{{ request()->routeIs('customer.faretypes') ? 'active' : '' }}" href="{{route('customer.faretypes')}}">Add Fare Types</a></li>
+                            <li><a class="{{ request()->routeIs('customer.discounts') ? 'active' : '' }}" href="{{route('customer.discounts')}}">Add Discounts</a></li>
+                        </ul>
+                    </li>
                 @endif
                 @if(auth('admin')->check() && auth('admin')->user()?->getDirectPermissions()->contains('name', 'travel-agent'))
 

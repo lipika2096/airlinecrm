@@ -1300,14 +1300,25 @@
     const backBtn = document.getElementById('backBtn');
     const nextBtn = document.getElementById('nextBtn');
     const confirmBookingBtn = document.getElementById('confirmBookingBtn');
-    let currentTab = 0;
+
+    function getActiveTabIndex() {
+        let activeIndex = 0;
+        tabs.forEach((tab, index) => {
+            if (tab.classList.contains('active')) {
+                activeIndex = index;
+            }
+        });
+        return activeIndex;
+    }
 
     function updateTabButtons() {
+        const activeIndex = getActiveTabIndex();
+
         // Disable back button on first tab
-        backBtn.disabled = currentTab === 0;
+        backBtn.disabled = activeIndex === 0;
 
         // Show confirm booking button and hide next button on last tab
-        if (currentTab === tabs.length - 1) {
+        if (activeIndex === tabs.length - 1) {
             nextBtn.style.display = 'none';
             confirmBookingBtn.style.display = 'inline-block';
         } else {
@@ -1327,22 +1338,30 @@
         tabs[index].classList.add('active');
         tabContents[index].classList.add('show', 'active');
 
-        currentTab = index;
         updateTabButtons();
     }
 
     // Back button click handler
     backBtn.addEventListener('click', function() {
-        if (currentTab > 0) {
-            switchTab(currentTab - 1);
+        const activeIndex = getActiveTabIndex();
+        if (activeIndex > 0) {
+            switchTab(activeIndex - 1);
         }
     });
 
     // Next button click handler
     nextBtn.addEventListener('click', function() {
-        if (currentTab < tabs.length - 1) {
-            switchTab(currentTab + 1);
+        const activeIndex = getActiveTabIndex();
+        if (activeIndex < tabs.length - 1) {
+            switchTab(activeIndex + 1);
         }
+    });
+
+    // Update buttons when tabs are clicked directly (Bootstrap tab event)
+    document.querySelectorAll('#bookingTabs .nav-link').forEach(tab => {
+        tab.addEventListener('shown.bs.tab', function() {
+            updateTabButtons();
+        });
     });
 
     // Initialize tab buttons
