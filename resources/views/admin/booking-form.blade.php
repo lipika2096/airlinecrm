@@ -134,7 +134,7 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Booking Date <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control" name="booking_date" value="{{ isset($booking) && $booking->booking_date ? \Carbon\Carbon::parse($booking->booking_date)->format('Y-m-d') : '' }}" required>
+                        <input type="date" class="form-control" name="booking_date" value="{{ isset($booking) && $booking->booking_date ? \Carbon\Carbon::parse($booking->booking_date)->format('Y-m-d') : \Carbon\Carbon::now()->format('Y-m-d') }}" required>
                     </div>
 
                 <div class="col-md-3">
@@ -905,7 +905,7 @@
             document.getElementById('b2c_state').value = '';
             document.getElementById('b2c_country').value = customer.country || '';
             document.getElementById('b2c_language').value = '';
-            document.getElementById('b2c_responsible').value = '';
+            // Don't overwrite responsible field - it should remain as the logged-in user
             document.getElementById('b2c_remarks').value = customer.special_requests || '';
         } else if (customerType === 'b2b') {
             document.getElementById('b2b_group').value = customer.partner_type || '';
@@ -919,7 +919,7 @@
             document.getElementById('b2b_state').value = '';
             document.getElementById('b2b_country').value = customer.country || '';
             document.getElementById('b2b_language').value = '';
-            document.getElementById('b2b_responsible').value = customer.responsible_person || '';
+            // Don't overwrite responsible field - it should remain as the logged-in user
             document.getElementById('b2b_remarks').value = customer.remarks || '';
         }
 
@@ -967,12 +967,26 @@
             if (selectedCustomerType) selectedCustomerType.value = '';
             if (formCustomerType) formCustomerType.value = '';
 
-            // Clear all form fields except booking_no (auto-generated)
+            // Clear all form fields except booking_no (auto-generated), booking_date (has default), and responsible fields
             document.querySelectorAll('input, textarea').forEach(input => {
-                if (input.name !== 'booking_no' && input.name !== 'booking_date') {
+                if (input.name !== 'booking_no' && input.name !== 'booking_date' && input.name !== 'b2c_responsible' && input.name !== 'b2b_responsible') {
                     input.value = '';
                 }
             });
+
+            // Set responsible fields and booking_date with values from HTML attributes
+            const b2cResponsible = document.getElementById('b2c_responsible');
+            const b2bResponsible = document.getElementById('b2b_responsible');
+            const bookingDate = document.querySelector('input[name="booking_date"]');
+            if (b2cResponsible && b2cResponsible.hasAttribute('value')) {
+                b2cResponsible.value = b2cResponsible.getAttribute('value');
+            }
+            if (b2bResponsible && b2bResponsible.hasAttribute('value')) {
+                b2bResponsible.value = b2bResponsible.getAttribute('value');
+            }
+            if (bookingDate && bookingDate.hasAttribute('value')) {
+                bookingDate.value = bookingDate.getAttribute('value');
+            }
 
             console.log('Cleared form for new booking');
         @endif
