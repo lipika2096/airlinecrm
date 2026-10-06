@@ -423,6 +423,16 @@
                                                             </label>
                                                         </div>
                                                     @endforeach
+                                                    <div class="form-check mt-2">
+                                                        <input class="form-check-input" type="checkbox" name="products[]" value="other" id="product_other" onchange="toggleCustomProductInput()">
+                                                        <label class="form-check-label" for="product_other">
+                                                            Other (specify below)
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group mt-2" id="custom_product_container" style="display: none;">
+                                                        <label class="form-label">Custom Product/Service Name</label>
+                                                        <input type="text" name="custom_product" class="form-control" id="custom_product" placeholder="Enter custom product/service name">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -438,7 +448,7 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label>Responsible Person</label>
+                                                    <label>Account Owner</label>
                                                     <input type="text" name="responsible_person" class="form-control" value="{{ old('responsible_person') }}">
                                                 </div>
                                             </div>
@@ -588,6 +598,21 @@
             `;
             container.appendChild(newRow);
             contactRowCount++;
+        }
+
+        function toggleCustomProductInput() {
+            const otherCheckbox = document.getElementById('product_other');
+            const customProductContainer = document.getElementById('custom_product_container');
+            const customProductInput = document.getElementById('custom_product');
+
+            if (otherCheckbox.checked) {
+                customProductContainer.style.display = 'block';
+                customProductInput.required = true;
+            } else {
+                customProductContainer.style.display = 'none';
+                customProductInput.required = false;
+                customProductInput.value = '';
+            }
         }
 
         $(document).ready(function() {

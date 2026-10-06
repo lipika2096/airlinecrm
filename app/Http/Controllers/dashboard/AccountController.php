@@ -532,6 +532,74 @@ class AccountController extends Controller
 
     }
 
+    public function pendingBookings()
+    {
+        try{
+            // Determine the current user type and ID for data scoping
+            $currentUserId = null;
+            $userType = 'superadmin'; // default
+
+            if (auth('admin')->check()) {
+                $currentUserId = auth('admin')->user()->id;
+                $userType = auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer';
+            } elseif (auth()->check()) {
+                $currentUserId = auth()->user()->id;
+                $userType = 'staff';
+            }
+
+            // Get bookings based on user type - only pending/incomplete bookings
+            $query = Booking::with(['services', 'passengers', 'payments'])
+                ->where(function($q) {
+                    // Filter for bookings that are not fully completed
+                    // Adjust the status values based on your actual booking statuses
+                    $q->where('status', '!=', 'completed')
+                      ->orWhere('status', '!=', 'confirmed')
+                      ->orWhereNull('status');
+                });
+
+            if ($userType === 'superadmin') {
+                // SuperAdmin can see all pending bookings
+                $bookings = $query->orderBy('created_at', 'desc')->get();
+                return view('admin.booking-pending', compact('bookings', 'userType'));
+            } elseif ($userType === 'customer') {
+                // Customers can only see their own pending bookings
+                $bookings = $query->where('customer_id', $currentUserId)->orderBy('created_at', 'desc')->get();
+                return view('admin.booking-pending', compact('bookings', 'userType'));
+            } elseif ($userType === 'staff') {
+                // Staff can see pending bookings they created or created by their superadmin
+                $staffUser = \App\Models\User::find($currentUserId);
+                $superadminCreatorId = $staffUser ? $staffUser->created_by : null;
+
+                $bookings = $query->where(function($q) use ($currentUserId, $superadminCreatorId) {
+                    // Bookings created by this staff member
+                    $q->where(function($subQuery) use ($currentUserId) {
+                        $subQuery->where('created_by', $currentUserId)
+                                  ->where('created_by_type', 'staff');
+                    });
+                    // OR bookings created by the superadmin who created this staff member
+                    if ($superadminCreatorId) {
+                        $q->orWhere(function($subQuery) use ($superadminCreatorId) {
+                            $subQuery->where('created_by', $superadminCreatorId)
+                                      ->where('created_by_type', 'superadmin');
+                        });
+                    }
+                })->orderBy('created_at', 'desc')->get();
+
+                return view('admin.booking-pending', compact('bookings', 'userType'));
+            }
+        } catch (\Exception $e) {
+            // Log error
+            \Log::error('Failed to fetch pending bookings: ' . $e->getMessage());
+            if (auth('admin')->check() && auth('admin')->user()->hasRole('SuperAdmin')) {
+                return redirect()->route('admin.booking.index')->with('error', 'Failed to fetch pending bookings: ' . $e->getMessage());
+            } elseif (auth('admin')->check() && !auth('admin')->user()->hasRole('SuperAdmin')) {
+                return redirect()->route('customer.booking.index')->with('error', 'Failed to fetch pending bookings: ' . $e->getMessage());
+            } elseif (auth()->check()) {
+                return redirect()->route('staff.booking.index')->with('error', 'Failed to fetch pending bookings: ' . $e->getMessage());
+            }
+        }
+    }
+
     public function storeBooking(Request $request)
     {
         try{

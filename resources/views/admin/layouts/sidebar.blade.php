@@ -734,7 +734,8 @@
                         <ul style="display: none;">
                             <li><a class="{{ request()->routeIs('admin.booking.index', 'customer.booking.index', 'staff.booking.index') ? 'active' : '' }}" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.index') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.index') : route('admin.booking.index')) }}">Manage Reservations</a></li>
                             <li><a class="" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.create') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.create') : route('admin.booking.create')) }}">New Reservations</a></li>
-                            
+                            <li><a class="{{ request()->routeIs('admin.booking.pending', 'customer.booking.pending', 'staff.booking.pending') ? 'active' : '' }}" href="{{ \App\Helpers\RouteHelper::isCustomer() ? route('customer.booking.pending') : (\App\Helpers\RouteHelper::isStaff() ? route('staff.booking.pending') : route('admin.booking.pending')) }}">Pending Reservations</a></li>
+
                             <!-- <li><a class="{{ request()->routeIs('admin.air-tickets') ? 'active' : '' }}" href="{{ route('admin.air-tickets') }}">Manage Reservations</a></li>
                             <li><a class="{{ request()->routeIs('admin.reservation.newsale') ? 'active' : '' }}" href="{{ route('admin.reservation.newsale') }}">New Sale</a></li>
                             <li><a class="{{ request()->routeIs('admin.comingSoon') ? 'active' : '' }}" href="{{url('/admin/coming-soon')}}">Modify Booking</a></li>
@@ -755,6 +756,10 @@
 
                                 @canAccessSubmodule('reservations.new-reservations')
                                     <li><a class="" href="{{ route('staff.booking.create') }}">New Reservations</a></li>
+                                @endcanAccessSubmodule
+
+                                @canAccessSubmodule('reservations.manage-reservations')
+                                    <li><a class="{{ request()->routeIs('staff.booking.pending') ? 'active' : '' }}" href="{{ route('staff.booking.pending') }}">Pending Reservations</a></li>
                                 @endcanAccessSubmodule
                             </ul>
                         </li>

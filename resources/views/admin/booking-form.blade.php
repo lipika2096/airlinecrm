@@ -96,6 +96,9 @@
         .booking-details-save {
             margin-top: 15px;
         }
+        .hidden-column {
+            display: none !important;
+        }
     </style>
 
     <!-- Page Content -->
@@ -573,13 +576,34 @@
                         </div>
                     </div>
                     <div class="row form-group">
-                        <div class="col-md-6">
-                            <label class="form-label">Billing Address</label>
-                            <textarea class="form-control" name="billing_address" rows="3" placeholder="Enter billing address..."></textarea>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Address Selection</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="show_billing" checked onchange="toggleAddressColumn('billing')">
+                                <label class="form-check-label" for="show_billing">
+                                    Show Billing Address
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="show_shipping" checked onchange="toggleAddressColumn('shipping')">
+                                <label class="form-check-label" for="show_shipping">
+                                    Show Shipping Address
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="same_as_billing" onchange="syncBillingToShipping()">
+                                <label class="form-check-label" for="same_as_billing">
+                                    Same as Billing Address
+                                </label>
+                            </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6" id="billing_address_column">
+                            <label class="form-label">Billing Address</label>
+                            <textarea class="form-control" name="billing_address" id="billing_address" rows="3" placeholder="Enter billing address..." oninput="if(document.getElementById('same_as_billing').checked) syncBillingToShipping()"></textarea>
+                        </div>
+                        <div class="col-md-6" id="shipping_address_column">
                             <label class="form-label">Shipping Address</label>
-                            <textarea class="form-control" name="shipping_address" rows="3" placeholder="Enter shipping address..."></textarea>
+                            <textarea class="form-control" name="shipping_address" id="shipping_address" rows="3" placeholder="Enter shipping address..."></textarea>
                         </div>
                     </div>
 
@@ -1628,6 +1652,68 @@
             }
         });
     });
+
+    // Toggle address column visibility
+    function toggleAddressColumn(type) {
+        const column = document.getElementById(type + '_address_column');
+        const checkbox = document.getElementById('show_' + type);
+
+        if (column && checkbox) {
+            if (checkbox.checked) {
+                column.classList.remove('hidden-column');
+            } else {
+                column.classList.add('hidden-column');
+            }
+        }
+    }
+
+    // Sync billing address to shipping address
+    function syncBillingToShipping() {
+        const billingAddress = document.getElementById('billing_address');
+        const shippingAddress = document.getElementById('shipping_address');
+        const sameCheckbox = document.getElementById('same_as_billing');
+        const billingColumn = document.getElementById('billing_address_column');
+        const shippingColumn = document.getElementById('shipping_address_column');
+        const showBilling = document.getElementById('show_billing');
+        const showShipping = document.getElementById('show_shipping');
+
+        if (billingAddress && shippingAddress && sameCheckbox) {
+            if (sameCheckbox.checked) {
+                // Show both columns
+                if (billingColumn) billingColumn.classList.remove('hidden-column');
+                if (shippingColumn) shippingColumn.classList.remove('hidden-column');
+                if (showBilling) showBilling.checked = true;
+                if (showShipping) showShipping.checked = true;
+
+                // Auto-copy and disable shipping
+                shippingAddress.value = billingAddress.value;
+                shippingAddress.disabled = true;
+            } else {
+                shippingAddress.disabled = false;
+            }
+        }
+    }
+
+    // Initialize address selection on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded - initializing address selection');
+        // Wait a bit to ensure all elements are loaded
+        setTimeout(function() {
+            handleAddressSelection();
+        }, 100);
+    });
+
+    // Also initialize when invoice tab is shown
+    const invoiceTab = document.getElementById('invoice-tab');
+    if (invoiceTab) {
+        invoiceTab.addEventListener('shown.bs.tab', function() {
+            // Initialize checkbox states
+            const showBilling = document.getElementById('show_billing');
+            const showShipping = document.getElementById('show_shipping');
+            if (showBilling) toggleAddressColumn('billing');
+            if (showShipping) toggleAddressColumn('shipping');
+        });
+    }
 </script>
 
 @endsection

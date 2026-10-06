@@ -1378,6 +1378,8 @@ class EmployeeController extends Controller
         // Determine current user ID and type
         $currentUserId = null;
         $userType = 'superadmin'; // default
+        $createdBySuperadmin = false;
+        $superadminId = null;
 
         if (auth('admin')->check()) {
             $currentUserId = auth('admin')->user()->id;
@@ -1385,15 +1387,42 @@ class EmployeeController extends Controller
         } elseif (auth()->check()) {
             $currentUserId = auth()->user()->id;
             $userType = 'staff';
+
+            // Check if this staff was created by a superadmin
+            $currentUser = User::where('id', $currentUserId)->whereNull('deleted_at')->first();
+            if ($currentUser && $currentUser->created_by) {
+                $creator = Admin::find($currentUser->created_by);
+                if ($creator && $creator->hasRole('SuperAdmin')) {
+                    $createdBySuperadmin = true;
+                    $superadminId = $creator->id;
+                }
+            }
         }
 
         // Reuse the existing logic to fetch employees
         $employeesQuery = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-            ->where('users.role_id', 2);
+            ->where('users.role_id', 2)
+            ->whereNull('users.deleted_at');
 
         // Filter by created_by based on user type
-        if ($userType !== 'superadmin') {
+        if ($userType === 'superadmin') {
+            // Superadmin sees all staff members they created
             $employeesQuery->where('users.created_by', $currentUserId);
+        } elseif ($userType === 'customer') {
+            // Customer sees only staff members they created
+            $employeesQuery->where('users.created_by', $currentUserId);
+        } elseif ($userType === 'staff') {
+            // Staff: if created by superadmin, show all staff created by that superadmin
+            // Otherwise, show only staff they created
+            $currentUserDetail = User::where('id', auth()->user()->id)->whereNull('deleted_at')->first();
+            if ($currentUserDetail->created_by == $superadminId) {
+                $employeesQuery->where(function($q) use ($superadminId, $currentUserId) {
+                    $q->where('users.created_by', $superadminId)
+                      ->orWhere('users.created_by', $currentUserId);
+                })->whereNull('users.deleted_at');
+            } else {
+                $employeesQuery->where('users.created_by', $currentUserId)->whereNull('users.deleted_at');
+            }
         }
 
         $employees = $employeesQuery->get(['clients.*', 'users.*']);
@@ -1403,10 +1432,28 @@ class EmployeeController extends Controller
 
         // Count total employees with same filtering logic
         $totalEmployeeQuery = Client::join('users', 'users.clientid', '=', 'clients.client_id')
-            ->where('users.role_id', 2);
+            ->where('users.role_id', 2)
+            ->whereNull('users.deleted_at');
 
-        if ($userType !== 'superadmin') {
+        // Apply same filtering logic as main query
+        if ($userType === 'superadmin') {
+            // Superadmin sees all staff members they created
             $totalEmployeeQuery->where('users.created_by', $currentUserId);
+        } elseif ($userType === 'customer') {
+            // Customer sees only staff members they created
+            $totalEmployeeQuery->where('users.created_by', $currentUserId);
+        } elseif ($userType === 'staff') {
+            // Staff: if created by superadmin, show all staff created by that superadmin
+            // Otherwise, show only staff they created
+            $currentUserDetail = User::where('id', auth()->user()->id)->whereNull('deleted_at')->first();
+            if ($currentUserDetail->created_by == $superadminId) {
+                $totalEmployeeQuery->where(function($query) use ($superadminId, $currentUserId) {
+                    $query->where('users.created_by', $superadminId)
+                          ->orWhere('users.created_by', $currentUserId);
+                })->whereNull('users.deleted_at');
+            } else {
+                $totalEmployeeQuery->where('users.created_by', $currentUserId)->whereNull('users.deleted_at');
+            }
         }
 
         $total_employee = $totalEmployeeQuery->count();

@@ -248,6 +248,7 @@ Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(functi
     // Booking routes for SuperAdmin
     Route::get('booking', [AccountController::class, 'bookingIndex'])->name('booking.index');
     Route::get('booking/create', [AccountController::class, 'createBooking'])->name('booking.create');
+    Route::get('booking/pending', [AccountController::class, 'pendingBookings'])->name('booking.pending');
     Route::get('booking/edit/{id}', [AccountController::class, 'editBooking'])->name('booking.edit');
     Route::post('booking/store', [AccountController::class, 'storeBooking'])->name('booking.store');
     Route::put('booking/update/{id}', [AccountController::class, 'updateBooking'])->name('booking.update');
@@ -699,6 +700,7 @@ Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(functi
     Route::get('accounts', [AccountController::class, 'index'])->name('accounts.index');
     Route::get('booking', [AccountController::class, 'bookingIndex'])->name('booking.index');
     Route::get('booking/create', [AccountController::class, 'createBooking'])->name('booking.create');
+    Route::get('booking/pending', [AccountController::class, 'pendingBookings'])->name('booking.pending');
     Route::get('booking/edit/{id}', [AccountController::class, 'editBooking'])->name('booking.edit');
     Route::post('booking/store', [AccountController::class, 'storeBooking'])->name('booking.store');
     Route::put('booking/update/{id}', [AccountController::class, 'updateBooking'])->name('booking.update');
@@ -991,6 +993,7 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
     Route::get('accounts', [AccountController::class, 'index'])->name('accounts.index');
     Route::get('booking', [AccountController::class, 'bookingIndex'])->name('booking.index');
     Route::get('booking/create', [AccountController::class, 'createBooking'])->name('booking.create');
+    Route::get('booking/pending', [AccountController::class, 'pendingBookings'])->name('booking.pending');
     Route::get('booking/edit/{id}', [AccountController::class, 'editBooking'])->name('booking.edit');
     Route::post('booking/store', [AccountController::class, 'storeBooking'])->name('booking.store');
     Route::put('booking/update/{id}', [AccountController::class, 'updateBooking'])->name('booking.update');
@@ -2227,6 +2230,7 @@ Route::prefix('staff')->name('staff.')->middleware(['staff'])->group(function ()
     Route::get('accounts', [AccountController::class, 'index'])->name('accounts.index');
     Route::get('booking', [AccountController::class, 'bookingIndex'])->name('booking.index');
     Route::get('booking/create', [AccountController::class, 'createBooking'])->name('booking.create');
+    Route::get('booking/pending', [AccountController::class, 'pendingBookings'])->name('booking.pending');
     Route::get('booking/edit/{id}', [AccountController::class, 'editBooking'])->name('booking.edit');
     Route::post('booking/store', [AccountController::class, 'storeBooking'])->name('booking.store');
     Route::put('booking/update/{id}', [AccountController::class, 'updateBooking'])->name('booking.update');

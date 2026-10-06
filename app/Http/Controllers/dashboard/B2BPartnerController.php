@@ -85,6 +85,7 @@ class B2BPartnerController extends Controller
                 'airline_responsibility' => 'nullable|string|max:255',
                 'product_responsibility' => 'nullable|string|max:255',
                 'tsa_status' => 'nullable|in:Activated,Deactivated',
+                'custom_product' => 'nullable|string|max:255|required_if:products,other',
             ]);
 
             $partnerCode = 'B' . str_pad(B2BPartner::count() + 1, 3, '0', STR_PAD_LEFT);
@@ -153,14 +154,44 @@ class B2BPartnerController extends Controller
 
             if ($request->has('products') && is_array($request->products)) {
                 foreach ($request->products as $productId) {
-                    $product = Product::find($productId);
-                    if ($product) {
-                        B2BPartnerProduct::create([
-                            'b2b_partner_id' => $partner->id,
-                            'product_id' => $productId,
-                            'product_name' => $product->product_name,
-                            'created_by' => $currentUserId,
-                        ]);
+                    if ($productId === 'other') {
+                        // Handle custom product
+                        if (!empty($validated['custom_product'])) {
+                            // Check if product already exists
+                            $existingProduct = Product::where('product_name', $validated['custom_product'])->first();
+                            if (!$existingProduct) {
+                                // Create new product
+                                $newProduct = Product::create([
+                                    'product_name' => $validated['custom_product'],
+                                    'description' => 'Custom product created from B2B partner',
+                                    'status' => 'Active',
+                                    'created_by' => $currentUserId,
+                                    'updated_by' => $currentUserId,
+                                ]);
+                                $productId = $newProduct->id;
+                                $productName = $newProduct->product_name;
+                            } else {
+                                $productId = $existingProduct->id;
+                                $productName = $existingProduct->product_name;
+                            }
+
+                            B2BPartnerProduct::create([
+                                'b2b_partner_id' => $partner->id,
+                                'product_id' => $productId,
+                                'product_name' => $productName,
+                                'created_by' => $currentUserId,
+                            ]);
+                        }
+                    } else {
+                        $product = Product::find($productId);
+                        if ($product) {
+                            B2BPartnerProduct::create([
+                                'b2b_partner_id' => $partner->id,
+                                'product_id' => $productId,
+                                'product_name' => $product->product_name,
+                                'created_by' => $currentUserId,
+                            ]);
+                        }
                     }
                 }
             }
@@ -259,6 +290,7 @@ class B2BPartnerController extends Controller
                 'airline_responsibility' => 'nullable|string|max:255',
                 'product_responsibility' => 'nullable|string|max:255',
                 'tsa_status' => 'nullable|in:Activated,Deactivated',
+                'custom_product' => 'nullable|string|max:255|required_if:products,other',
             ]);
 
             $oldValues = $partner->toArray();
@@ -328,14 +360,44 @@ class B2BPartnerController extends Controller
             if ($request->has('products') && is_array($request->products)) {
                 B2BPartnerProduct::where('b2b_partner_id', $partner->id)->delete();
                 foreach ($request->products as $productId) {
-                    $product = Product::find($productId);
-                    if ($product) {
-                        B2BPartnerProduct::create([
-                            'b2b_partner_id' => $partner->id,
-                            'product_id' => $productId,
-                            'product_name' => $product->product_name,
-                            'created_by' => $currentUserId,
-                        ]);
+                    if ($productId === 'other') {
+                        // Handle custom product
+                        if (!empty($validated['custom_product'])) {
+                            // Check if product already exists
+                            $existingProduct = Product::where('product_name', $validated['custom_product'])->first();
+                            if (!$existingProduct) {
+                                // Create new product
+                                $newProduct = Product::create([
+                                    'product_name' => $validated['custom_product'],
+                                    'description' => 'Custom product created from B2B partner',
+                                    'status' => 'Active',
+                                    'created_by' => $currentUserId,
+                                    'updated_by' => $currentUserId,
+                                ]);
+                                $productId = $newProduct->id;
+                                $productName = $newProduct->product_name;
+                            } else {
+                                $productId = $existingProduct->id;
+                                $productName = $existingProduct->product_name;
+                            }
+
+                            B2BPartnerProduct::create([
+                                'b2b_partner_id' => $partner->id,
+                                'product_id' => $productId,
+                                'product_name' => $productName,
+                                'created_by' => $currentUserId,
+                            ]);
+                        }
+                    } else {
+                        $product = Product::find($productId);
+                        if ($product) {
+                            B2BPartnerProduct::create([
+                                'b2b_partner_id' => $partner->id,
+                                'product_id' => $productId,
+                                'product_name' => $product->product_name,
+                                'created_by' => $currentUserId,
+                            ]);
+                        }
                     }
                 }
             }
