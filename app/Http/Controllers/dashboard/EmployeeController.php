@@ -536,23 +536,26 @@ class EmployeeController extends Controller
         // Apply filtering based on user type
         if ($userType === 'superadmin') {
             // Superadmin sees all staff members
-            $query->where('created_by', $currentUserId)->where('deleted_at', NULL);
+            $query->where('created_by', $currentUserId);
         } elseif ($userType === 'customer') {
             // Customer sees only staff members they created
-            $query->where('created_by', $currentUserId)->where('deleted_at', NULL);
+            $query->where('created_by', $currentUserId);
         } elseif ($userType === 'staff') {
             // Staff: if created by superadmin, show all staff created by that superadmin
             // Otherwise, show only staff they created
             $currentUserDetail = User::where('id', auth()->user()->id)->whereNull('deleted_at')->first();
             //dd($superadminId);
             if ($currentUserDetail->created_by == $superadminId) {
-                $query->where('created_by', $superadminId)->where('deleted_at', NULL)->orWhere('created_by', $currentUserId);
+                $query->where(function($q) use ($superadminId, $currentUserId) {
+                    $q->where('created_by', $superadminId)
+                      ->orWhere('created_by', $currentUserId);
+                })->whereNull('deleted_at');
             } else {
-                $query->where('created_by', $currentUserId)->where('deleted_at', NULL);
+                $query->where('created_by', $currentUserId)->whereNull('deleted_at');
             }
         }
         
-        $employees = $query->where('deleted_at', NULL)->get();
+        $employees = $query->get();
 
         // Load department names for each employee from both sources
         foreach ($employees as $employee) {
@@ -580,18 +583,21 @@ class EmployeeController extends Controller
         // Apply same filtering logic as main query
         if ($userType === 'superadmin') {
             // Superadmin sees all staff members
-            $deptQuery->where('deleted_at', NULL);
+            $deptQuery->where('created_by', $currentUserId);
         } elseif ($userType === 'customer') {
             // Customer sees only staff members they created
-            $deptQuery->where('created_by', $currentUserId)->where('deleted_at', NULL);
+            $deptQuery->where('created_by', $currentUserId);
         } elseif ($userType === 'staff') {
             // Staff: if created by superadmin, show all staff created by that superadmin
             // Otherwise, show only staff they created
             $currentUserDetail = User::where('id', auth()->user()->id)->whereNull('deleted_at')->first();
             if ($currentUserDetail->created_by == $superadminId) {
-                $deptQuery->where('created_by', $superadminId)->where('deleted_at', NULL)->orwhere('created_by', $currentUserId);
+                $deptQuery->where(function($query) use ($superadminId, $currentUserId) {
+                    $query->where('created_by', $superadminId)
+                          ->orWhere('created_by', $currentUserId);
+                })->whereNull('deleted_at');
             } else {
-                $deptQuery->where('created_by', $currentUserId)->where('deleted_at', NULL);
+                $deptQuery->where('created_by', $currentUserId)->whereNull('deleted_at');
             }
         }
         

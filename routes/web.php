@@ -1058,6 +1058,9 @@ Route::prefix('customer')->name('customer.')->middleware(['customer'])->group(fu
     Route::post('support-tickets/{id}/comment', [SupportTicketController::class, 'addComment'])->name('support-tickets.add-comment');
     Route::post('support-tickets/{id}/rating', [SupportTicketController::class, 'submitRating'])->name('support-tickets.submit-rating');
 
+    // Get staff by department for customers
+    Route::get('get-staff-by-department', [SupportTicketController::class, 'getStaffByDepartment'])->name('get-staff-by-department');
+
     // Employee management routes for customers
     Route::get('employees', [EmployeeController::class, 'allEmployees'])->name('employees');
     Route::get('add-staff', [EmployeeController::class, 'addStaff'])->name('add-staff');

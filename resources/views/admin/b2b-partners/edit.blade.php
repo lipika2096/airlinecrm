@@ -432,6 +432,17 @@
                                                             </label>
                                                         </div>
                                                     @endforeach
+                                                    <div class="form-check mt-2">
+                                                        <input class="form-check-input" type="checkbox" name="products[]" value="other" id="product_other" onchange="toggleCustomProductInput()">
+                                                        <label class="form-check-label" for="product_other">
+                                                            Other (specify below)
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group mt-2" id="custom_product_container" style="display: none;">
+                                                        <label class="form-label">Custom Product/Service Name</label>
+                                                        <input type="text" name="custom_product" class="form-control" id="custom_product" placeholder="Enter custom product/service name">
+                                                        <small class="text-muted">This will be saved to the products table</small>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

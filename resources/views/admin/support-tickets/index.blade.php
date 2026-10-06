@@ -442,11 +442,12 @@
                                 <table class="table table-modern-tickets">
                                 <thead>
                                     <tr>
-                                        <th>Sr.no.</th>
+                                        <!-- <th>Sr.no.</th> -->
                                         <th>TICKET ID</th>
                                         <th>COMPANY</th>
                                         <th>SUBJECT</th>
                                         <th>CATEGORY</th>
+                                        <th>CREATED BY</th>
                                         @if(\App\Helpers\RouteHelper::isSuperAdmin() || (\App\Helpers\RouteHelper::isStaff() && auth()->user()?->created_by == \App\Models\Admin::role('SuperAdmin')->first()?->id))
                                         <th>PRIORITY</th>
                                         @endif
@@ -460,15 +461,30 @@
                                 <tbody>
                                     @foreach ($tickets as $ticket)
                                         <tr>
-                                            <td>{{$ticket->id}}</td>
-                                            <td><span class="ticket-id-badge">#{{ $ticket->ticket_number }}</span></td>
+                                            <!-- <td>{{$ticket->id}}</td> -->
+                                            <td><span class="ticket-id-badge">{{ $ticket->ticket_number }}</span></td>
                                             <td>{{ $ticket->company_name ?? 'Superadmin' }}</td>
-                                            <td><a href="{{ route('admin.support-tickets.show', $ticket->id) }}" class="ticket-subject-link">{{ Str::limit($ticket->subject, 50) }}</a></td>
+                                            <td class="subject-cell" style="max-width: 150px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word; word-break: break-word;"><a href="{{ route('admin.support-tickets.show', $ticket->id) }}" class="ticket-subject-link">{{ Str::limit($ticket->subject, 50) }}</a></td>
                                             <td>
                                                 @if($ticket->department)
                                                     <span class="department-badge">{{ ucfirst(str_replace('_', ' ', $ticket->department)) }}</span>
                                                 @else
                                                     <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($ticket->creator)
+                                                    @if($ticket->creator_type == 'staff')
+                                                        <span class="creator-badge staff">{{ $ticket->creator->first_name }} {{ $ticket->creator->last_name }}</span>
+                                                    @elseif($ticket->creator_type == 'customer')
+                                                        <span class="creator-badge customer">{{ $ticket->creator->name }}</span>
+                                                    @elseif($ticket->creator_type == 'superadmin')
+                                                        <span class="creator-badge superadmin">Super Admin</span>
+                                                    @else
+                                                        <span class="creator-badge staff">{{ $ticket->creator_name }}</span>
+                                                    @endif
+                                                @else
+                                                    <span class="creator-badge staff">{{ $ticket->company_name ?? 'Unknown' }}</span>
                                                 @endif
                                             </td>
                                             @if(\App\Helpers\RouteHelper::isSuperAdmin() || (\App\Helpers\RouteHelper::isStaff() && auth()->user()?->created_by == \App\Models\Admin::role('SuperAdmin')->first()?->id))
@@ -526,51 +542,61 @@
                                             @endif
                                             <td>{{ $ticket->assignedTo ? $ticket->assignedTo->first_name . ' ' . $ticket->assignedTo->last_name : 'Unassigned' }}</td>
                                             <td class="text-end">
-                                                <div class="dropdown-action">
-                                                    @if($isSuperAdmin)
-                                                        <a href="{{ \App\Helpers\RouteHelper::isCustomer() ?  route('customer.support-tickets.show', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ?  route('staff.support-tickets.show', $ticket->id)  :  route('admin.support-tickets.show', $ticket->id) ) }}" class="btn btn-sm btn-view-ticket">
-                                                            <i class="fa fa-eye"></i> View
-                                                        </a>
-                                                        @if($ticket->status !== 'closed' && ( ($ticket->assigned_to === null || $ticket->assigned_to === $currentUserId)))
-                                                        <button type="button" class="btn btn-sm btn-assign-ticket" data-bs-toggle="modal" data-bs-target="#assignTicketModal" data-ticket-id="{{ $ticket->id }}" data-current-assigned="{{ $ticket->assigned_to ?? '' }}">
-                                                            <i class="fa fa-user-plus"></i> Assign
-                                                        </button>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fa fa-ellipsis-v"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                        @if($isSuperAdmin)
+                                                            <li>
+                                                                <a class="dropdown-item" href="{{ \App\Helpers\RouteHelper::isCustomer() ?  route('customer.support-tickets.show', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ?  route('staff.support-tickets.show', $ticket->id)  :  route('admin.support-tickets.show', $ticket->id) ) }}">
+                                                                    <i class="fa fa-eye me-2"></i> View
+                                                                </a>
+                                                            </li>
+                                                            @if($ticket->status !== 'closed' && ( ($ticket->assigned_to === null || $ticket->assigned_to === $currentUserId)))
+                                                            <li>
+                                                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#assignTicketModal" data-ticket-id="{{ $ticket->id }}" data-current-assigned="{{ $ticket->assigned_to ?? '' }}">
+                                                                    <i class="fa fa-user-plus me-2"></i> Assign
+                                                                </button>
+                                                            </li>
+                                                            @endif
+                                                            @if($ticket->status !== 'closed')
+                                                            <li>
+                                                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#superAdminTransferModal" data-ticket-id="{{ $ticket->id }}" data-current-assigned="{{ $ticket->assigned_to ?? '' }}" data-current-department="{{ $ticket->department ?? '' }}" data-current-category="{{ $ticket->department ?? '' }}">
+                                                                    <i class="fa fa-exchange me-2"></i> Transfer
+                                                                </button>
+                                                            </li>
+                                                            @endif
+                                                        @elseif($isStaff)
+                                                            @canView('support_tickets.dashboard')
+                                                            <li>
+                                                                <a class="dropdown-item" href="{{ route('staff.support-tickets.show', $ticket->id) }}">
+                                                                    <i class="fa fa-eye me-2"></i> View
+                                                                </a>
+                                                            </li>
+                                                            @endcanView
+                                                            @if($ticket->status !== 'closed')
+                                                            <li>
+                                                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#transferTicketModal" data-ticket-id="{{ $ticket->id }}" data-current-assigned="{{ $ticket->assigned_to ?? '' }}" data-current-department="{{ $ticket->department ?? '' }}">
+                                                                    <i class="fa fa-exchange me-2"></i> Transfer
+                                                                </button>
+                                                            </li>
+                                                            @endif
                                                         @else
-                                                        <button type="button" class="btn btn-sm btn-assign-ticket" disabled>
-                                                            <i class="fa fa-user-plus"></i> Assign
-                                                        </button>
+                                                            <li>
+                                                                <a class="dropdown-item" href="{{ route('customer.support-tickets.show', $ticket->id) }}">
+                                                                    <i class="fa fa-eye me-2"></i> View
+                                                                </a>
+                                                            </li>
+                                                            @if($ticket->status !== 'closed')
+                                                            <li>
+                                                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#customerTransferModal" data-ticket-id="{{ $ticket->id }}" data-current-assigned="{{ $ticket->assigned_to ?? '' }}" data-current-department="{{ '' }}" data-current-category="{{ $ticket->department ?? '' }}">
+                                                                    <i class="fa fa-exchange me-2"></i> Transfer
+                                                                </button>
+                                                            </li>
+                                                            @endif
                                                         @endif
-                                                        @if($ticket->status !== 'closed')
-                                                        <button type="button" class="btn btn-sm btn-transfer-ticket" data-bs-toggle="modal" data-bs-target="#superAdminTransferModal" data-ticket-id="{{ $ticket->id }}" data-current-assigned="{{ $ticket->assigned_to ?? '' }}" data-current-department="{{ $ticket->department ?? '' }}" data-current-category="{{ $ticket->department ?? '' }}">
-                                                            <i class="fa fa-exchange"></i> Transfer
-                                                        </button>
-                                                        @else
-                                                        <button type="button" class="btn btn-sm btn-transfer-ticket" disabled>
-                                                            <i class="fa fa-exchange"></i> Transfer
-                                                        </button>
-                                                        @endif
-                                                    @elseif($isStaff)
-                                                    
-                                                    @canView('support_tickets.dashboard')
-                                                        
-                                                        <a href="{{ route('staff.support-tickets.show', $ticket->id) }}" class="btn btn-sm btn-view-ticket">
-                                                            <i class="fa fa-eye"></i> View
-                                                        </a>
-                                                        @endcanView
-                                                        @if($ticket->status !== 'closed')
-                                                        <button type="button" class="btn btn-sm btn-transfer-ticket" data-bs-toggle="modal" data-bs-target="#transferTicketModal" data-ticket-id="{{ $ticket->id }}" data-current-assigned="{{ $ticket->assigned_to ?? '' }}" data-current-department="{{ $ticket->department ?? '' }}">
-                                                            <i class="fa fa-exchange"></i> Transfer
-                                                        </button>
-                                                        @else
-                                                        <button type="button" class="btn btn-sm btn-transfer-ticket" disabled>
-                                                            <i class="fa fa-exchange"></i> Transfer
-                                                        </button>
-                                                        @endif
-                                                    @else
-                                                        <a href="{{ route('customer.support-tickets.show', $ticket->id) }}" class="btn btn-sm btn-view-ticket">
-                                                            <i class="fa fa-eye"></i> View
-                                                        </a>
-                                                    @endif
+                                                    </ul>
                                                 </div>
                                             </td>
                                         </tr>
@@ -590,6 +616,7 @@
                             <div class="modal-content">
                                 <form method="POST"  id="assignTicketForm" action="">
                                     @csrf
+                                    @method('patch')
                                 
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="assignTicketModalLabel">
@@ -737,10 +764,11 @@
                                 <table class="table table-modern-tickets">
                                     <thead>
                                         <tr>
-                                            <th>Sr.no.</th>
+                                            <!-- <th>Sr.no.</th> -->
                                             <th>Ticket ID</th>
                                             <th>Subject</th>
                                             <th>Category</th>
+                                            <th>Created By</th>
                                             @if($isStaff)<th>Priority</th>@endif
                                             @if($isStaff)<th>Status</th>@endif
                                             <th>Last Updated</th>
@@ -749,11 +777,12 @@
                                     </thead>
                                     <tbody>
                                         @forelse($tickets as $ticket)
-                                        <tr>                           <td>{{$ticket->id}}</td>
+                                        <tr>                           
+                                            <!-- <td>{{$ticket->id}}</td> -->
                                             <td>
-                                                #{{ $ticket->ticket_number }}
+                                            {{ $ticket->ticket_number }}
                                             </td>
-                                            <td>
+                                            <td class="subject-cell" style="max-width: 150px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word; word-break: break-word;">
                                                 <a href="{{ route($showRouteBase, $ticket->id) }}" class="subject-link">
                                                     {{ Str::limit($ticket->subject, 50) }}
                                                 </a>
@@ -763,6 +792,21 @@
                                                     <i class="fa fa-folder"></i>
                                                     {{ ucfirst(str_replace('_', ' ', $ticket->department ?? 'General')) }}
                                                 </span>
+                                            </td>
+                                            <td>
+                                                @if($ticket->creator)
+                                                    @if($ticket->creator_type == 'staff')
+                                                        <span class="creator-badge staff">{{ $ticket->creator->first_name }} {{ $ticket->creator->last_name }}</span>
+                                                    @elseif($ticket->creator_type == 'customer')
+                                                        <span class="creator-badge customer">{{ $ticket->creator->name }}</span>
+                                                    @elseif($ticket->creator_type == 'superadmin')
+                                                        <span class="creator-badge superadmin">Super Admin</span>
+                                                    @else
+                                                        <span class="creator-badge staff">{{ $ticket->creator_name }}</span>
+                                                    @endif
+                                                @else
+                                                    <span class="creator-badge staff">{{ $ticket->company_name ?? 'Unknown' }}</span>
+                                                @endif
                                             </td>
                                             @if($isStaff)
                                             <td>
@@ -824,34 +868,47 @@
                                                 </span>
                                             </td>
                                             <td class="text-end">
-                                                <a href="{{ route($showRouteBase, $ticket->id) }}" class="btn btn-sm btn-view-ticket">
-                                                    <i class="fa fa-eye"></i> View
-                                                </a>
-                                                @if($isStaff)
-                                                    @if($ticket->status !== 'closed' && ( ($ticket->assigned_to === null || $ticket->assigned_to === $currentUserId)))
-                                                    <button type="button" class="btn btn-sm btn-assign-ticket" data-bs-toggle="modal" data-bs-target="#staffAssignModal" data-ticket-id="{{ $ticket->id }}" data-current-assigned="{{ $ticket->assigned_to ?? '' }}">
-                                                        <i class="fa fa-user-plus"></i> Assign
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fa fa-ellipsis-v"></i>
                                                     </button>
-                                                    @else
-                                                    <button type="button" class="btn btn-sm btn-assign-ticket" disabled>
-                                                        <i class="fa fa-user-plus"></i> Assign
-                                                    </button>
-                                                    @endif
-                                                    @if($ticket->status !== 'closed')
-                                                    <button type="button" class="btn btn-sm btn-transfer-ticket" data-bs-toggle="modal" data-bs-target="#transferTicketModal" data-ticket-id="{{ $ticket->id }}" data-current-assigned="{{ $ticket->assigned_to ?? '' }}" data-current-department="{{ $ticket->department ?? '' }}" data-current-category="{{ $ticket->department ?? '' }}">
-                                                        <i class="fa fa-exchange"></i> Transfer
-                                                    </button>
-                                                    @else
-                                                    <button type="button" class="btn btn-sm btn-transfer-ticket" disabled>
-                                                        <i class="fa fa-exchange"></i> Transfer
-                                                    </button>
-                                                    @endif
-                                                @endif
+                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                        <li>
+                                                            <a class="dropdown-item" href="{{ route($showRouteBase, $ticket->id) }}">
+                                                                <i class="fa fa-eye me-2"></i> View
+                                                            </a>
+                                                        </li>
+                                                        @if($isStaff)
+                                                            @if($ticket->status !== 'closed' && ( ($ticket->assigned_to === null || $ticket->assigned_to === $currentUserId)))
+                                                            <li>
+                                                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#staffAssignModal" data-ticket-id="{{ $ticket->id }}" data-current-assigned="{{ $ticket->assigned_to ?? '' }}">
+                                                                    <i class="fa fa-user-plus me-2"></i> Assign
+                                                                </button>
+                                                            </li>
+                                                            @endif
+                                                            @if($ticket->status !== 'closed')
+                                                            <li>
+                                                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#transferTicketModal" data-ticket-id="{{ $ticket->id }}" data-current-assigned="{{ $ticket->assigned_to ?? '' }}" data-current-department="{{ $ticket->department ?? '' }}" data-current-category="{{ $ticket->department ?? '' }}">
+                                                                    <i class="fa fa-exchange me-2"></i> Transfer
+                                                                </button>
+                                                            </li>
+                                                            @endif
+                                                        @elseif(\App\Helpers\RouteHelper::isCustomer())
+                                                            @if($ticket->status !== 'closed')
+                                                            <li>
+                                                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#customerTransferModal" data-ticket-id="{{ $ticket->id }}" data-current-assigned="{{ $ticket->assigned_to ?? '' }}" data-current-department="{{'' }}" data-current-category="{{ $ticket->department ?? '' }}">
+                                                                    <i class="fa fa-exchange me-2"></i> Transfer
+                                                                </button>
+                                                            </li>
+                                                            @endif
+                                                        @endif
+                                                    </ul>
+                                                </div>
                                             </td>
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="9" class="text-center">
+                                            <td colspan="{{ $isStaff ? 9 : 8 }}" class="text-center">
                                                 <div class="empty-state-table">
                                                     <div class="empty-state-icon">
                                                         <i class="fa fa-ticket"></i>
@@ -935,39 +992,24 @@
                                     </div>
                                     <div class="modal-body">
                                         <div class="row">
-                                            {{-- Support Ticket Category --}}
+                                            {{-- Support Ticket Category (Read-only for staff) --}}
                                             <div class="col-md-4">
                                                 <div class="form-group">
                                                     <label for="transferCategoryStaffSelect">
                                                         Ticket Category
                                                     </label>
-                                                    <select class="form-control" name="category" id="transferCategoryStaffSelect">
-                                                        <option value="">
-                                                            Select Category
-                                                        </option>
-                                                        <option value="technical_support">Technical Support</option>
-                                                        <option value="billing">Billing</option>
-                                                        <option value="booking">Booking</option>
-                                                        <option value="account">Account</option>
-                                                    </select>
+                                                    <input type="text" class="form-control" id="transferCategoryStaffDisplay" readonly>
+                                                    <input type="hidden" name="category" id="transferCategoryStaffSelect">
                                                 </div>
                                             </div>
-                                            {{-- Department --}}
+                                            {{-- Department (Read-only for staff) --}}
                                             <div class="col-md-4">
                                                 <div class="form-group">
                                                     <label for="transferDepartmentStaffSelect">
                                                         Department
                                                     </label>
-                                                    <select class="form-control" name="department" id="transferDepartmentStaffSelect">
-                                                        <option value="">
-                                                            Select Department
-                                                        </option>
-                                                        @foreach($staffdepartments as $department)
-                                                            <option value="{{ $department }}">
-                                                                {{ $department }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
+                                                    <input type="text" class="form-control" id="transferDepartmentStaffDisplay" readonly>
+                                                    <input type="hidden" name="department" id="transferDepartmentStaffSelect">
                                                 </div>
                                             </div>
                                             {{-- Assign To --}}
@@ -998,7 +1040,83 @@
                             </div>
                         </div>
                     </div>
-            
+
+                    <!-- Customer Transfer Modal -->
+                    @if(\App\Helpers\RouteHelper::isCustomer())
+                    <div class="modal fade" id="customerTransferModal" tabindex="-1" role="dialog" aria-labelledby="customerTransferModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <form method="POST" id="customerTransferForm" action="">
+                                    @csrf
+                                    @method('patch')
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="customerTransferModalLabel">
+                                            Transfer Ticket
+                                        </h5>
+                                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            {{-- Support Ticket Category (Read-only for customers) --}}
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="customerTransferCategoryDisplay">
+                                                        Ticket Category
+                                                    </label>
+                                                    <input type="text" class="form-control" id="customerTransferCategoryDisplay" readonly>
+                                                    <input type="hidden" name="category" id="customerTransferCategory">
+                                                </div>
+                                            </div>
+                                            {{-- Department --}}
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="customerTransferDepartmentSelect">
+                                                        Department
+                                                    </label>
+                                                    <select class="form-control" name="department" id="customerTransferDepartmentSelect">
+                                                        <option value="">
+                                                            Select Department
+                                                        </option>
+                                                        @foreach($staffdepartments as $department)
+                                                            <option value="{{ $department }}">
+                                                                {{ $department }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            {{-- Transfer To --}}
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="customerTransferStaffSelect">
+                                                        Transfer To
+                                                    </label>
+                                                    <select class="form-control" name="assigned_to" id="customerTransferStaffSelect" required>
+                                                        <option value="">
+                                                            Select Staff Member
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            Cancel
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i>
+                                            Transfer
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
             @if(!$isSuperAdmin)
             <!-- Pagination for Non-SuperAdmin -->
             <div class="row">
@@ -1315,6 +1433,30 @@
             background: #e3f2fd;
             color: #1976d2;
         }
+
+        /* Creator Badge */
+        .creator-badge {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .creator-badge.staff {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .creator-badge.customer {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .creator-badge.superadmin {
+            background: #fce4ec;
+            color: #c2185b;
+        }
         
         .status-badge.status-in_progress {
             background: #fff3e0;
@@ -1389,50 +1531,50 @@
             background-color: #f8f9fa;
         }
 
-        /* Transfer Button Styling */
-        .btn-transfer-ticket {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 6px 12px;
+        /* Action Dropdown Button */
+        .btn-light.dropdown-toggle {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: #495057;
+            padding: 6px 10px;
             border-radius: 4px;
-            font-size: 12px;
-            margin-left: 5px;
             transition: all 0.3s ease;
         }
 
-        .btn-transfer-ticket:hover {
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        .btn-light.dropdown-toggle:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
         }
 
-        .btn-transfer-ticket:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
+        .btn-light.dropdown-toggle::after {
+            display: none;
         }
 
-        /* Action Button */
-        .btn-action-view {
-            //background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: black;
-            text-decoration: none;
+        /* Dropdown Menu Styling */
+        .dropdown-menu {
+            min-width: 150px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .dropdown-item {
             padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
+            font-size: 13px;
+            color: #495057;
+            transition: all 0.2s ease;
         }
-        
-        .btn-action-view:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+            color: #667eea;
         }
-        
+
+        .dropdown-item i {
+            width: 16px;
+            text-align: center;
+        }
+
         /* Empty State in Table */
         .empty-state-table {
             padding: 40px 20px;
@@ -1528,6 +1670,30 @@
                 font-size: 13px;
             }
 
+            .subject-cell {
+                max-width: 300px;
+                word-wrap: break-word !important;
+                white-space: normal !important;
+                overflow-wrap: break-word !important;
+                word-break: break-word !important;
+            }
+
+            .table-modern-tickets td.subject-cell {
+                max-width: 300px;
+                word-wrap: break-word !important;
+                white-space: normal !important;
+                overflow-wrap: break-word !important;
+                word-break: break-word !important;
+            }
+
+            .table-modern-tickets td {
+                white-space: normal !important;
+            }
+
+            .table-modern-tickets {
+                table-layout: fixed;
+            }
+
             .category-badge,
             .priority-badge,
             .status-badge {
@@ -1535,47 +1701,29 @@
                 padding: 4px 8px;
             }
 
-            .btn-action-view {
-                padding: 6px 12px;
-                font-size: 11px;
-            }
-
             /* Action buttons responsive fix */
-            .dropdown-action {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 5px;
-                justify-content: flex-end;
+            .dropdown {
+                display: inline-block;
             }
 
-            .btn-view-ticket,
-            .btn-assign-ticket,
-            .btn-transfer-ticket {
+            .dropdown-toggle {
                 padding: 4px 8px;
-                font-size: 11px;
-                white-space: nowrap;
+                font-size: 12px;
             }
 
-            .table-modern-tickets .dropdown-action {
-                min-width: 200px;
+            .table-modern-tickets .dropdown {
+                min-width: 50px;
             }
         }
 
         @media (max-width: 576px) {
-            .dropdown-action {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .btn-view-ticket,
-            .btn-assign-ticket,
-            .btn-transfer-ticket {
+            .dropdown-toggle {
                 width: 100%;
                 margin: 2px 0 !important;
             }
 
-            .table-modern-tickets .dropdown-action {
-                min-width: 120px;
+            .table-modern-tickets .dropdown {
+                min-width: 50px;
             }
         }
 
@@ -1722,6 +1870,10 @@
             var staffByDepartmentRoute = '{{ route('staff.get-staff-by-department') }}';
             var updateStatusRoute = '{{ route('staff.support-tickets.update-status', ':ticketId') }}';
             var updateMethod = 'POST';
+            @elseif(\App\Helpers\RouteHelper::isCustomer())
+            var staffByDepartmentRoute = '{{ route('customer.get-staff-by-department') }}';
+            var updateStatusRoute = '{{ route('customer.support-tickets.update-status', ':ticketId') }}';
+            var updateMethod = 'PATCH';
             @else
             var staffByDepartmentRoute = null;
             var updateStatusRoute = null;
@@ -2049,6 +2201,47 @@
                 });
             }
 
+            // Handle assign ticket form submission via AJAX
+            $('#assignTicketForm').on('submit', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var url = form.attr('action');
+                var formData = form.serialize();
+
+                // Show loading state
+                form.find('button[type="submit"]').prop('disabled', true).text('Assigning...');
+
+                $.ajax({
+                    url: url,
+                    type: 'PATCH',
+                    data: formData,
+                    success: function(response) {
+                        alert('Ticket assigned successfully!');
+                        $('#assignTicketModal').modal('hide');
+                        // Reload page to show updated data
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        console.error('Error assigning ticket:', xhr);
+                        var errorMessage = 'Unknown error';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        } else if (xhr.responseText) {
+                            try {
+                                var errorData = JSON.parse(xhr.responseText);
+                                errorMessage = errorData.message || errorData.error || errorMessage;
+                            } catch (e) {
+                                errorMessage = xhr.responseText.substring(0, 200);
+                            }
+                        }
+                        alert('Error assigning ticket: ' + errorMessage);
+                    },
+                    complete: function() {
+                        form.find('button[type="submit"]').prop('disabled', false).html('<i class="fas fa-user-plus"></i> Assign Ticket');
+                    }
+                });
+            });
+
             // Handle SuperAdmin transfer ticket modal
             const superAdminTransferModal = document.getElementById('superAdminTransferModal');
             if (superAdminTransferModal) {
@@ -2108,12 +2301,165 @@
                     actionUrl = actionUrl.replace(':ticketId', ticketId);
                     document.getElementById('transferTicketForm').action = actionUrl;
 
-                    // Set current values
+                    // Set current values (read-only for staff)
                     document.getElementById('transferCategoryStaffSelect').value = currentCategory;
+                    document.getElementById('transferCategoryStaffDisplay').value = currentCategory ? currentCategory.replace('_', ' ').toUpperCase() : '';
                     document.getElementById('transferDepartmentStaffSelect').value = currentDepartment;
+                    document.getElementById('transferDepartmentStaffDisplay').value = currentDepartment ? currentDepartment.toUpperCase() : '';
                     document.getElementById('transferStaffSelect2').value = currentAssigned;
                 });
             }
+
+            // Handle customer transfer ticket modal
+            const customerTransferModal = document.getElementById('customerTransferModal');
+            if (customerTransferModal) {
+                customerTransferModal.addEventListener('show.bs.modal', function (event) {
+                    const button = event.relatedTarget;
+                    const ticketId = button.getAttribute('data-ticket-id');
+                    const currentCategory = button.getAttribute('data-current-category') || '';
+                    const currentDepartment = button.getAttribute('data-current-department') || '';
+                    const currentAssigned = button.getAttribute('data-current-assigned') || '';
+
+                    let actionUrl = "{{ route('customer.support-tickets.update-status', ':ticketId') }}";
+                    actionUrl = actionUrl.replace(':ticketId', ticketId);
+                    document.getElementById('customerTransferForm').action = actionUrl;
+
+                    // Set current values (read-only for customers)
+                    // Format category for display
+                    const formattedCategory = currentCategory ? currentCategory.replace(/_/g, ' ').toUpperCase() : '';
+                    document.getElementById('customerTransferCategoryDisplay').value = formattedCategory;
+                    document.getElementById('customerTransferCategory').value = currentCategory;
+                    document.getElementById('customerTransferDepartmentSelect').value = currentDepartment;
+
+                    // Load staff members based on the ticket's department
+                    const customerTransferStaffSelect = document.getElementById('customerTransferStaffSelect');
+                    customerTransferStaffSelect.innerHTML = '<option value="">Loading...</option>';
+
+                    if (currentDepartment && staffByDepartmentRoute) {
+                        $.ajax({
+                            url: staffByDepartmentRoute,
+                            type: 'GET',
+                            data: { department_id: currentDepartment.trim() },
+                            success: function(response) {
+                                console.log('Staff response for customer transfer:', response);
+                                customerTransferStaffSelect.innerHTML = '<option value="">Select Staff Member</option>';
+                                if (response.staff && response.staff.length > 0) {
+                                    response.staff.forEach(function(staff) {
+                                        var selected = staff.id == currentAssigned ? 'selected' : '';
+                                        customerTransferStaffSelect.innerHTML += '<option value="' + staff.id + '" ' + selected + '>' + staff.first_name + ' ' + staff.last_name + '</option>';
+                                    });
+                                } else {
+                                    customerTransferStaffSelect.innerHTML += '<option value="">No staff members found</option>';
+                                }
+                            },
+                            error: function(xhr) {
+                                console.error('Error loading staff for customer transfer:', xhr);
+                                console.error('Response status:', xhr.status);
+                                console.error('Response text:', xhr.responseText);
+                                customerTransferStaffSelect.innerHTML = '<option value="">Error loading staff</option>';
+                            }
+                        });
+                    } else {
+                        // Reset to all staff members if no department
+                        customerTransferStaffSelect.innerHTML = '<option value="">Select Staff Member</option>';
+                        @foreach($staffMembers as $staff)
+                            customerTransferStaffSelect.innerHTML += '<option value="{{ $staff->id }}">{{ $staff->first_name }} {{ $staff->last_name }}</option>';
+                        @endforeach
+                        customerTransferStaffSelect.value = currentAssigned;
+                    }
+                });
+            }
+
+            @if(\App\Helpers\RouteHelper::isCustomer())
+            // Handle customer transfer department change
+            $('#customerTransferDepartmentSelect').on('change', function() {
+                var departmentId = $(this).val();
+                var customerTransferStaffSelect = $('#customerTransferStaffSelect');
+                var currentAssignedTo = '';
+
+                console.log('Customer Transfer Department changed:', departmentId);
+                console.log('Route URL:', staffByDepartmentRoute);
+
+                // Show loading state
+                customerTransferStaffSelect.html('<option value="">Loading...</option>');
+                if (departmentId && staffByDepartmentRoute) {
+                    // Fetch staff members by department via AJAX
+                    $.ajax({
+                        url: staffByDepartmentRoute,
+                        type: 'GET',
+                        data: { department_id: departmentId.trim() },
+                        success: function(response) {
+                            console.log('Staff response for customer transfer:', response);
+                            customerTransferStaffSelect.empty();
+                            customerTransferStaffSelect.append('<option value="">Select Staff Member</option>');
+                            if (response.staff && response.staff.length > 0) {
+                                response.staff.forEach(function(staff) {
+                                    var selected = staff.id == currentAssignedTo ? 'selected' : '';
+                                    customerTransferStaffSelect.append('<option value="' + staff.id + '" ' + selected + '>' + staff.first_name + ' ' + staff.last_name + '</option>');
+                                });
+                            } else {
+                                customerTransferStaffSelect.append('<option value="">No staff members found</option>');
+                            }
+                        },
+                        error: function(xhr) {
+                            console.error('Error loading staff for customer transfer:', xhr);
+                            console.error('Response status:', xhr.status);
+                            console.error('Response text:', xhr.responseText);
+                            customerTransferStaffSelect.empty();
+                            customerTransferStaffSelect.append('<option value="">Error loading staff</option>');
+                        }
+                    });
+                } else {
+                    // Reset to all staff members
+                    customerTransferStaffSelect.empty();
+                    customerTransferStaffSelect.append('<option value="">Select Staff Member</option>');
+                    @foreach($staffMembers as $staff)
+                        customerTransferStaffSelect.append('<option value="{{ $staff->id }}">{{ $staff->first_name }} {{ $staff->last_name }}</option>');
+                    @endforeach
+                }
+            });
+            @endif
+
+            // Handle customer transfer form submission via AJAX
+            $('#customerTransferForm').on('submit', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var url = form.attr('action');
+                var formData = form.serialize();
+
+                // Show loading state
+                form.find('button[type="submit"]').prop('disabled', true).text('Transferring...');
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        alert('Ticket transferred successfully!');
+                        $('#customerTransferModal').modal('hide');
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        console.error('Error transferring ticket:', xhr);
+                        var errorMessage = 'An error occurred while transferring the ticket.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        } else if (xhr.responseText) {
+                            try {
+                                var errorData = JSON.parse(xhr.responseText);
+                                errorMessage = errorData.message || errorData.error || errorMessage;
+                            } catch (e) {
+                                errorMessage = xhr.responseText.substring(0, 200);
+                            }
+                        }
+                        alert('Error transferring ticket: ' + errorMessage);
+                        form.find('button[type="submit"]').prop('disabled', false).text('Transfer');
+                    }
+                });
+            });
 
             // Handle SuperAdmin transfer form submission via AJAX
             $('#superAdminTransferForm').on('submit', function(e) {

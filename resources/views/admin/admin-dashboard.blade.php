@@ -167,7 +167,7 @@
                                         @if($recentTickets && $recentTickets->count() > 0)
                                             @foreach($recentTickets as $ticket)
                                                 <tr style="border-bottom: 1px solid #eee;">
-                                                    <td style="padding: 15px; color: #333; font-weight: 500;">#{{ $ticket->ticket_number ?? $ticket->id }}</td>
+                                                    <td style="padding: 15px; color: #333; font-weight: 500;">{{ $ticket->ticket_number ?? $ticket->id }}</td>
                                                     <td style="padding: 15px; color: #666;">{{ $ticket->subject }}</td>
                                                     <td style="padding: 15px; color: #666;">{{ ucfirst(str_replace('_', ' ', $ticket->department ?? 'General')) }}</td>
                                                     <td style="padding: 15px;">

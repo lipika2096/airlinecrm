@@ -61,24 +61,31 @@ class SupportTicketController extends Controller
             $query = SupportTicket::with(['creator', 'assignedTo', 'relatedUser'])
                 ->when($isStaff, function ($query) use ($user) {
                     // For staff users, show tickets assigned to them or created by them
-                    // Also show tickets created by the admin (customer) who created this staff member
+                    // Do NOT show tickets created by the admin (customer) who created this staff member
                     return $query->where(function($q) use ($user) {
                         $q->where('assigned_to', $user->id)
                           ->orWhere('created_by', $user->id)
-                          ->orWhere(function($subQuery) use ($user) {
-                              // If ticket was created by an admin (customer), show it to staff created by that admin
-                              $subQuery->whereExists(function($existsQuery) use ($user) {
-                                  $existsQuery->select(\DB::raw(1))
-                                      ->from('admins')
-                                      ->whereColumn('support_tickets.created_by', 'admins.id')
-                                      ->where('admins.id', $user->created_by);
-                              });
+                          ->whereNotIn('created_by', function($query) use ($user) {
+                              // Exclude tickets created by the admin (customer) who created this staff member
+                              $query->select('admins.id')
+                                  ->from('admins')
+                                  ->where('admins.id', $user->created_by);
                           });
                     });
                 })
                 ->when(!$isSuperAdmin && !$isStaff, function ($query) use ($user) {
-                    // For non-SuperAdmin admin users (customers), use existing logic
-                    return $query->forUser($user->id);
+                    // For non-SuperAdmin admin users (customers), show:
+                    // 1. Tickets created by them
+                    // 2. Tickets created by their staff members
+                    return $query->where(function($q) use ($user) {
+                        $q->where('created_by', $user->id)
+                          ->orWhereIn('created_by', function($query) use ($user) {
+                              // Include tickets created by staff members created by this customer
+                              $query->select('users.id')
+                                  ->from('users')
+                                  ->where('users.created_by', $user->id);
+                          });
+                    });
                 });
 
             // SuperAdmin filters
@@ -119,8 +126,7 @@ class SupportTicketController extends Controller
                         $superAdminId = Admin::role('SuperAdmin')->first();
 
                             $query->where(function($q) use ($superAdminId) {
-                                $q->whereNull('assigned_to')
-                                  ->orWhere('assigned_to', $superAdminId->id)->orWhere('assigned_to', 2);
+                                $q->whereNull('assigned_to');
                             });
                             break;
                         case 'all':
@@ -235,19 +241,34 @@ class SupportTicketController extends Controller
             if (!$isSuperAdmin) {
                 if ($isStaff) {
                     // For staff users, count tickets assigned to them or created by them
+                    // Do NOT count tickets created by the admin (customer) who created this staff member
                     $userTickets = SupportTicket::where(function($q) use ($user) {
                         $q->where('assigned_to', $user->id)
-                          ->orWhere('created_by', $user->id);
+                          ->orWhere('created_by', $user->id)
+                          ->whereNotIn('created_by', function($query) use ($user) {
+                              // Exclude tickets created by the admin (customer) who created this staff member
+                              $query->select('admins.id')
+                                  ->from('admins')
+                                  ->where('admins.id', $user->created_by);
+                          });
                     });
                 } else {
-                    // For customers, use existing logic
-                    $userTickets = SupportTicket::forUser($user->id);
+                    // For customers, count tickets created by them or by their staff members
+                    $userTickets = SupportTicket::where(function($q) use ($user) {
+                        $q->where('created_by', $user->id)
+                          ->orWhereIn('created_by', function($query) use ($user) {
+                              // Include tickets created by staff members created by this customer
+                              $query->select('users.id')
+                                  ->from('users')
+                                  ->where('users.created_by', $user->id);
+                          });
+                    });
                 }
-                
+
                 $counts = [
                     'all' => $userTickets->count(),
                 ];
-                
+
                 // Add counts for each status from database
                 foreach($ticketStatuses as $status) {
                     // Count tickets by exact status
@@ -277,8 +298,7 @@ class SupportTicketController extends Controller
                 $counts['critical'] = (clone $allTickets)->where('priority', 'critical')->count();
                 $counts['closed'] = (clone $allTickets)->where('status', $closedStatusSlug)->count();
                 $counts['unassigned'] = (clone $allTickets)->where(function($query) {
-                    $query->whereNull('assigned_to')
-                          ->orWhere('assigned_to', 2);
+                    $query->whereNull('assigned_to');
                 })->count();
                 
                 // Add counts for each status from database
@@ -328,15 +348,41 @@ class SupportTicketController extends Controller
                 $resolvedTickets = SupportTicket::where('status', $resolvedStatusSlug)->count();
                 $closedTickets = SupportTicket::where('status', $closedStatusSlug)->count();
             } else {
-                // Regular staff and customers see only their tickets
-                $newTickets = SupportTicket::where('created_by',$user->id)->orWhere('assigned_to', $user->id)->count();
-                $openTickets = SupportTicket::where('created_by',$user->id)->orWhere('assigned_to', $user->id)->where('status', $openStatusSlug)->count();
-                $pendingTickets = SupportTicket::where('created_by',$user->id)->orWhere('assigned_to', $user->id)->where('status', $inProgressStatusSlug)->count();
-                $overdueTickets = SupportTicket::where('created_by',$user->id)->orWhere('assigned_to', $user->id)->whereNotIn('status', [$resolvedStatusSlug, $closedStatusSlug])
+                // Regular staff and customers see only their tickets based on user type
+                if ($isStaff) {
+                    // Staff: show tickets assigned to them or created by them
+                    // Do NOT show tickets created by the admin (customer) who created this staff member
+                    $baseQuery = SupportTicket::where(function($query) use ($user) {
+                        $query->where('assigned_to', $user->id)
+                          ->orWhere('created_by', $user->id)
+                          ->whereNotIn('created_by', function($query) use ($user) {
+                              // Exclude tickets created by the admin (customer) who created this staff member
+                              $query->select('admins.id')
+                                  ->from('admins')
+                                  ->where('admins.id', $user->created_by);
+                          });
+                    });
+                } else {
+                    // Customer: show tickets created by them or by their staff members
+                    $baseQuery = SupportTicket::where(function($q) use ($user) {
+                        $q->where('created_by', $user->id)
+                          ->orWhereIn('created_by', function($query) use ($user) {
+                              // Include tickets created by staff members created by this customer
+                              $query->select('users.id')
+                                  ->from('users')
+                                  ->where('users.created_by', $user->id);
+                          });
+                    });
+                }
+
+                $newTickets = (clone $baseQuery)->count();
+                $openTickets = (clone $baseQuery)->where('status', $openStatusSlug)->count();
+                $pendingTickets = (clone $baseQuery)->where('status', $inProgressStatusSlug)->count();
+                $overdueTickets = (clone $baseQuery)->whereNotIn('status', [$resolvedStatusSlug, $closedStatusSlug])
                     ->where('created_at', '<', now()->subHours(24))
                     ->count();
-                $resolvedTickets = SupportTicket::where('created_by',$user->id)->orWhere('assigned_to', $user->id)->where('status', $resolvedStatusSlug)->count();
-                $closedTickets = SupportTicket::where('created_by',$user->id)->orWhere('assigned_to', $user->id)->where('status', $closedStatusSlug)->count();
+                $resolvedTickets = (clone $baseQuery)->where('status', $resolvedStatusSlug)->count();
+                $closedTickets = (clone $baseQuery)->where('status', $closedStatusSlug)->count();
             }
             // Calculate average response time (in minutes)
             $avgFirstResponse = $this->calculateAverageFirstResponse();
@@ -358,11 +404,38 @@ class SupportTicketController extends Controller
                     ->limit(5)
                     ->get();
             } else {
-                // Regular staff and customers see only their recent tickets
-                $recentTickets = SupportTicket::where('created_by',$user->id)->orWhere('assigned_to', $user->id)->with(['creator', 'assignedTo'])
-                    ->latest()
-                    ->limit(5)
-                    ->get();
+                // Regular staff and customers see only their recent tickets based on user type
+                if ($isStaff) {
+                    // Staff: show tickets assigned to them or created by them
+                    // Do NOT show tickets created by the admin (customer) who created this staff member
+                    $recentTickets = SupportTicket::where(function($query) use ($user) {
+                        $query->where('assigned_to', $user->id)
+                          ->orWhere('created_by', $user->id)
+                          ->whereNotIn('created_by', function($query) use ($user) {
+                              // Exclude tickets created by the admin (customer) who created this staff member
+                              $query->select('admins.id')
+                                  ->from('admins')
+                                  ->where('admins.id', $user->created_by);
+                          });
+                    })->with(['creator', 'assignedTo'])
+                        ->latest()
+                        ->limit(5)
+                        ->get();
+                } else {
+                    // Customer: show tickets created by them or by their staff members
+                    $recentTickets = SupportTicket::where(function($q) use ($user) {
+                        $q->where('created_by', $user->id)
+                          ->orWhereIn('created_by', function($query) use ($user) {
+                              // Include tickets created by staff members created by this customer
+                              $query->select('users.id')
+                                  ->from('users')
+                                  ->where('users.created_by', $user->id);
+                          });
+                    })->with(['creator', 'assignedTo'])
+                        ->latest()
+                        ->limit(5)
+                        ->get();
+                }
             }
             
             // Get all ticket statuses for display
@@ -412,14 +485,31 @@ class SupportTicketController extends Controller
         $query = SupportTicket::with(['creator', 'assignedTo', 'relatedUser'])
             ->when($isStaff, function ($query) use ($user) {
                 // For staff users, show tickets assigned to them or created by them
+                // Do NOT show tickets created by the admin (customer) who created this staff member
                 return $query->where(function($q) use ($user) {
                     $q->where('assigned_to', $user->id)
-                      ->orWhere('created_by', $user->id);
+                      ->orWhere('created_by', $user->id)
+                      ->whereNotIn('created_by', function($query) use ($user) {
+                          // Exclude tickets created by the admin (customer) who created this staff member
+                          $query->select('admins.id')
+                              ->from('admins')
+                              ->where('admins.id', $user->created_by);
+                      });
                 });
             })
             ->when(!$isSuperAdmin && !$isStaff, function ($query) use ($user) {
-                // For non-SuperAdmin admin users (customers), use existing logic
-                return $query->forUser($user->id);
+                // For non-SuperAdmin admin users (customers), show:
+                // 1. Tickets created by them
+                // 2. Tickets created by their staff members
+                return $query->where(function($q) use ($user) {
+                    $q->where('created_by', $user->id)
+                      ->orWhereIn('created_by', function($query) use ($user) {
+                          // Include tickets created by staff members created by this customer
+                          $query->select('users.id')
+                              ->from('users')
+                              ->where('users.created_by', $user->id);
+                      });
+                });
             });
 
         // SuperAdmin filters
@@ -458,9 +548,7 @@ class SupportTicketController extends Controller
                         break;
                     case 'unassigned':
                         $query->where(function($q) use ($superAdminId) {
-                            $q->whereNull('assigned_to')
-                              ->orWhere('assigned_to', $superAdminId)
-                              ->orWhere('assigned_to', 2);
+                            $q->whereNull('assigned_to');
                         });
                         break;
                     case 'all':
@@ -650,8 +738,7 @@ class SupportTicketController extends Controller
             $counts['critical'] = (clone $allTickets)->where('priority', 'critical')->count();
             $counts['closed'] = (clone $allTickets)->where('status', $closedStatusSlug)->count();
             $counts['unassigned'] = (clone $allTickets)->where(function($query) {
-                $query->whereNull('assigned_to')
-                      ->orWhere('assigned_to', auth('admin')->user()->id);
+                $query->whereNull('assigned_to');
             })->count();
             
             // Add counts for each status from database
@@ -802,17 +889,18 @@ class SupportTicketController extends Controller
             $request->merge(['assigned_to' => null]);
         }
 
-        $ticketNumber = 'TKT-' . strtoupper(Str::random(8));
+        // Generate temporary ticket number (will be updated after creation)
+        $ticketNumber = 'TEMP-' . strtoupper(Str::random(6));
 
         // Assign the ticket to the specified user or default to SuperAdmin for staff
-        if ($isStaff) {
-            // For regular staff users, default to SuperAdmin
-            $superAdmin = Admin::role('SuperAdmin')->first();
-            $assignedTo = $superAdmin ? $superAdmin->id : null;
-        } else {
+        // if ($isStaff) {
+        //     // For regular staff users, default to SuperAdmin
+        //     $superAdmin = Admin::role('SuperAdmin')->first();
+        //     $assignedTo = $superAdmin ? $superAdmin->id : null;
+        // } else {
             // For admin users (including superadmin-created staff), use the specified assignment or leave unassigned
             $assignedTo = $request->assigned_to;
-        }
+        //}
 
         // Handle file attachments - handle both single and multiple files
         $attachmentPaths = [];
@@ -855,6 +943,30 @@ class SupportTicketController extends Controller
             $companyName = $currentUser->adminDetail->company_name;
         }
 
+        // Determine created_by_type
+        $createdByType = null;
+        if ($isSuperAdmin) {
+            $createdByType = 'superadmin';
+        } elseif ($isStaff) {
+            $createdByType = 'staff';
+        } else {
+            $createdByType = 'customer';
+        }
+
+        // Get assigned_to_name if assigned
+        $assignedToName = null;
+        if ($assignedTo) {
+            $assignedAdmin = Admin::find($assignedTo);
+            if ($assignedAdmin && $assignedAdmin->hasRole('SuperAdmin')) {
+                $assignedToName = 'Super Admin';
+            } else {
+                $assignedUser = User::find($assignedTo);
+                if ($assignedUser) {
+                    $assignedToName = $assignedUser->first_name . ' ' . $assignedUser->last_name;
+                }
+            }
+        }
+
         $ticket = SupportTicket::create([
             'ticket_number' => $ticketNumber,
             'department' => $request->department,
@@ -863,12 +975,19 @@ class SupportTicketController extends Controller
             'priority' => $request->priority ?? 'medium',
             'status' => 'open',
             'created_by' => $currentUser->id,
+            'created_by_type' => $createdByType,
             'assigned_to' => $assignedTo,
+            'assigned_to_name' => $assignedToName,
             'related_user_id' => $request->related_user_id,
             'booking_reference' => $request->booking_reference,
             'attachments' => json_encode($attachmentPaths),
             'company_name' => $companyName,
         ]);
+
+        // Generate ticket number using ticket ID
+        $ticketNumber = $ticket->id . '-' . strtoupper(Str::random(6));
+        $ticket->ticket_number = $ticketNumber;
+        $ticket->save();
 
         // Notify assigned staff if ticket is assigned
         if ($assignedTo) {
@@ -934,24 +1053,32 @@ class SupportTicketController extends Controller
 
         $ticket = SupportTicket::with(['creator', 'assignedTo', 'relatedUser', 'comments.user', 'internalNotes.user'])
             ->when($isStaff, function ($query) use ($user) {
-                // For staff users, only show tickets assigned to them, created by them, or created by their customer
+                // For staff users, show tickets assigned to them or created by them
+                // Do NOT show tickets created by the admin (customer) who created this staff member
                 return $query->where(function($q) use ($user) {
                     $q->where('assigned_to', $user->id)
                       ->orWhere('created_by', $user->id)
-                      ->orWhere(function($subQuery) use ($user) {
-                          // If ticket was created by an admin (customer), show it to staff created by that admin
-                          $subQuery->whereExists(function($existsQuery) use ($user) {
-                              $existsQuery->select(\DB::raw(1))
-                                  ->from('admins')
-                                  ->whereColumn('support_tickets.created_by', 'admins.id')
-                                  ->where('admins.id', $user->created_by);
-                          });
+                      ->whereNotIn('created_by', function($query) use ($user) {
+                          // Exclude tickets created by the admin (customer) who created this staff member
+                          $query->select('admins.id')
+                              ->from('admins')
+                              ->where('admins.id', $user->created_by);
                       });
                 });
             })
             ->when(!$isSuperAdmin && !$isStaff, function ($query) use ($user) {
-                // For non-SuperAdmin admin users (customers), use existing logic
-                return $query->forUser($user->id);
+                // For non-SuperAdmin admin users (customers), show:
+                // 1. Tickets created by them
+                // 2. Tickets created by their staff members
+                return $query->where(function($q) use ($user) {
+                    $q->where('created_by', $user->id)
+                      ->orWhereIn('created_by', function($query) use ($user) {
+                          // Include tickets created by staff members created by this customer
+                          $query->select('users.id')
+                              ->from('users')
+                              ->where('users.created_by', $user->id);
+                      });
+                });
             })
             ->findOrFail($id);
 
@@ -1197,15 +1324,26 @@ class SupportTicketController extends Controller
             ]);
         }
 
-        // Get staff members (role_id=2) who have this department in their user_departments
+        // Check if current user is a customer
+        $isCustomer = RouteHelper::isCustomer();
+        $currentUserId = auth('admin')->user()?->id;
+
+        // Build query for staff members (role_id=2) who have this department in their user_departments
         // Also filter out deleted staff and only show active staff
-        $staff = User::where('role_id', 2)
+        $query = User::where('role_id', 2)
             ->where('status', 'active')
             ->whereNull('deleted_at')
             ->whereHas('userDepartments', function($query) use ($departmentName) {
                 $query->where('department_name', $departmentName);
-            })
-            ->get();
+            });
+
+        // If customer, filter to only show staff created by this customer
+        if ($isCustomer && $currentUserId) {
+            $query->where('created_by', $currentUserId);
+            \Log::info('Filtering staff for customer ID: ' . $currentUserId);
+        }
+
+        $staff = $query->get();
 
         \Log::info('Found staff count: ' . $staff->count());
 
@@ -1280,10 +1418,34 @@ class SupportTicketController extends Controller
         }
         // Superadmin-created staff (now treated as superadmin) can update any ticket
         
-        // Customers should not be able to update ticket status (only view)
+        // Customers can transfer tickets (assign staff) but cannot change status directly
         if (\App\Helpers\RouteHelper::isCustomer()) {
-            return redirect()->back()
-                ->with('error', 'You do not have permission to update ticket status.');
+            // Allow customers to assign/transfer tickets but not change status
+            if ($request->has('status') && $request->status !== $ticket->status) {
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'You do not have permission to update ticket status.'
+                    ], 403);
+                }
+                return redirect()->back()
+                    ->with('error', 'You do not have permission to update ticket status.');
+            }
+            // Allow assignment/transfer for customers
+            // Additional check: customer can only transfer to their own staff
+            if ($request->has('assigned_to') && $request->assigned_to) {
+                $staffUser = User::find($request->assigned_to);
+                if (!$staffUser || $staffUser->created_by != $userId) {
+                    if ($request->ajax() || $request->wantsJson()) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'You can only transfer tickets to your own staff members.'
+                        ], 403);
+                    }
+                    return redirect()->back()
+                        ->with('error', 'You can only transfer tickets to your own staff members.');
+                }
+            }
         }
 
         // Prevent closing unassigned tickets
@@ -1315,9 +1477,11 @@ class SupportTicketController extends Controller
 
         if ($request->has('assigned_to')) {
             $ticket->assigned_to = $request->assigned_to;
-            
-            // Automatically set department based on assigned staff if not explicitly provided
-            if ($request->assigned_to && !$request->has('department')) {
+
+            // Only automatically set department based on assigned staff if:
+            // 1. Department is not explicitly provided AND
+            // 2. Category is not being set (to avoid conflicts during transfer operations)
+            if ($request->assigned_to && !$request->has('department') && !$request->has('category')) {
                 $assignedStaff = \App\Models\User::whereNull('deleted_at')->where('id',$request->assigned_to);
                 if ($assignedStaff && !empty($assignedStaff->department)) {
                     $ticket->department = $assignedStaff->department[0];
@@ -1334,13 +1498,19 @@ class SupportTicketController extends Controller
         if ($request->has('category') && $request->category !== '') {
             $ticket->department = $request->category;
         }
+        else{
+            $ticket->department = $ticket->department;
+        }
         // Update department if provided (this is the staff department)
         if ($request->has('department') && $request->department !== '') {
             // Note: department and category both use the same field in database
             // Category takes precedence for support ticket classification
             if (!$request->has('category') || $request->category === '') {
-                $ticket->department = $request->department;
+                
+                $ticket->department = $ticket->department;
             }
+                        //dd($ticket->department);
+
         }
 
         // Handle status changes and timestamps

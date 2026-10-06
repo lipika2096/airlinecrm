@@ -19,6 +19,11 @@
                     <h2 style="margin: 0; color: #333; font-weight: 600;">Support Ticket Dashboard</h2>
                     <p style="margin: 5px 0 0 0; color: #666;">{{ Carbon::now()->format('l, d F Y') }}</p>
                 </div>
+                @if(\App\Helpers\RouteHelper::isSuperAdmin() || (\App\Helpers\RouteHelper::isStaff() && auth()->user()?->created_by == \App\Models\Admin::role('SuperAdmin')->first()?->id))
+                <a href="{{ \App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.create') : route('admin.support-tickets.create') }}" class="btn btn-primary" style="background: #6a1b9a; border: none; border-radius: 6px; padding: 10px 20px;">
+                    <i class="fa fa-plus"></i> Create Ticket
+                </a>
+                @endif
                 <!-- <div class="date-range-picker" style="background: white; padding: 10px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                     <i class="fa fa-calendar" style="margin-right: 10px; color: #6a1b9a;"></i>
                     <span style="color: #333; font-weight: 500;">{{ now()->subDays(6)->format('d M') }} - {{ now()->format('d M Y') }}</span>
@@ -152,7 +157,7 @@
                             <table class="table table-hover" style="margin: 0;">
                                 <thead>
                                     <tr style="background: #f8f9fa;">
-                                        <th style="border: none; padding: 12px; font-weight: 600; color: #333;">Sr. no.</th>
+                                        <!-- <th style="border: none; padding: 12px; font-weight: 600; color: #333;">Sr. no.</th> -->
                                         <th style="border: none; padding: 12px; font-weight: 600; color: #333;">Ticket #</th>
                                         <th style="border: none; padding: 12px; font-weight: 600; color: #333;">Company</th>
                                         <th style="border: none; padding: 12px; font-weight: 600; color: #333;">Subject</th>
@@ -171,11 +176,11 @@
                                     @if($recentTickets->count() > 0)
                                         @foreach($recentTickets as $ticket)
                                             <tr style="border-bottom: 1px solid #e9ecef;">
-                                                <td style="padding: 12px; vertical-align: middle;">
+                                                <!-- <td style="padding: 12px; vertical-align: middle;">
                                                     <a href="{{ route('admin.support-tickets.show', $ticket->id) }}" style="color: #6a1b9a; text-decoration: none; font-weight: 500;">
                                                         {{ $ticket->id }}
                                                     </a>
-                                                </td>
+                                                </td> -->
                                                 <td style="padding: 12px; vertical-align: middle;">
                                                     <a href="{{ route('admin.support-tickets.show', $ticket->id) }}" style="color: #6a1b9a; text-decoration: none; font-weight: 500;">
                                                         {{ $ticket->ticket_number }}

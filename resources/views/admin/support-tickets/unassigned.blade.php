@@ -81,7 +81,7 @@
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Sr. no. </th>
+                                            <!-- <th>Sr. no. </th> -->
                                             <th>Ticket #</th>
                                             <th>Subject</th>
                                             <th>Category</th>
@@ -100,7 +100,7 @@
                                         @if($tickets->count() > 0)
                                             @foreach($tickets as $ticket)
                                                 <tr>
-                                                    <td> {{$ticket->id}} </td>
+                                                    <!-- <td> {{$ticket->id}} </td> -->
                                                     <td>
                                                         <a href="{{ route($showRouteBase, $ticket->id) }}">
                                                             {{ $ticket->ticket_number }}
