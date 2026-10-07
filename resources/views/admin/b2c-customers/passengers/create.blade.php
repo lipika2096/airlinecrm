@@ -70,6 +70,19 @@
                 color: #ff9b44;
                 font-weight: 500;
             }
+            .invalid-feedback {
+                display: block;
+                color: #dc3545;
+                font-size: 0.875rem;
+                margin-top: 0.25rem;
+            }
+            .is-invalid {
+                border-color: #dc3545 !important;
+            }
+            .is-invalid:focus {
+                border-color: #dc3545 !important;
+                box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
+            }
         </style>
         <!-- Page Content -->
         <div class="content container-fluid">
@@ -96,51 +109,86 @@
                         <div class="card-body">
                             <form action="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2c-customers.passengers.store', $customer->id) : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2c-customers.passengers.store', $customer->id) : route('staff.b2c-customers.passengers.store', $customer->id)) }}" method="POST">
                                 @csrf
-                                
+
+                                @if ($errors->any())
+                                    <div class="alert alert-danger">
+                                        <strong>Whoops!</strong> There were some problems with your input.<br><br>
+                                        <ul>
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+
                                 <div class="row">
                                     <div class="form-group col-sm-3">
                                         <label class="form-label">Passenger Type</label>
-                                        <select class="form-control" name="passenger_type" required>
+                                        <select class="form-control @error('passenger_type') is-invalid @enderror" name="passenger_type" required>
                                             <option value="">Select Type</option>
-                                            <option value="adult">Adult</option>
-                                            <option value="child">Child</option>
-                                            <option value="infant">Infant</option>
+                                            <option value="adult" {{ old('passenger_type') == 'adult' ? 'selected' : '' }}>Adult</option>
+                                            <option value="child" {{ old('passenger_type') == 'child' ? 'selected' : '' }}>Child</option>
+                                            <option value="infant" {{ old('passenger_type') == 'infant' ? 'selected' : '' }}>Infant</option>
                                         </select>
+                                        @error('passenger_type')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div class="form-group col-sm-3">
                                         <label class="form-label">Title</label>
-                                        <select class="form-control" name="title">
+                                        <select class="form-control @error('title') is-invalid @enderror" name="title">
                                             <option value="">Select</option>
-                                            <option value="Mr">Mr</option>
-                                            <option value="Mrs">Mrs</option>
-                                            <option value="Miss">Miss</option>
-                                            <option value="Dr">Dr</option>
-                                            <option value="Master">Master</option>
+                                            <option value="Mr" {{ old('title') == 'Mr' ? 'selected' : '' }}>Mr</option>
+                                            <option value="Mrs" {{ old('title') == 'Mrs' ? 'selected' : '' }}>Mrs</option>
+                                            <option value="Miss" {{ old('title') == 'Miss' ? 'selected' : '' }}>Miss</option>
+                                            <option value="Dr" {{ old('title') == 'Dr' ? 'selected' : '' }}>Dr</option>
+                                            <option value="Master" {{ old('title') == 'Master' ? 'selected' : '' }}>Master</option>
                                         </select>
+                                        @error('title')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div class="form-group col-sm-3">
                                         <label class="form-label">First Name</label>
-                                        <input class="form-control" name="first_name" type="text" required placeholder="Enter First Name">
+                                        <input class="form-control @error('first_name') is-invalid @enderror" name="first_name" type="text" required placeholder="Enter First Name" value="{{ old('first_name') }}">
+                                        @error('first_name')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div class="form-group col-sm-3">
                                         <label class="form-label">Last Name</label>
-                                        <input class="form-control" name="last_name" type="text" required placeholder="Enter Last Name">
+                                        <input class="form-control @error('last_name') is-invalid @enderror" name="last_name" type="text" required placeholder="Enter Last Name" value="{{ old('last_name') }}">
+                                        @error('last_name')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div class="form-group col-sm-3">
                                         <label class="form-label">Date of Birth</label>
-                                        <input class="form-control" name="date_of_birth" type="date" required>
+                                        <input class="form-control @error('date_of_birth') is-invalid @enderror" name="date_of_birth" type="date" required value="{{ old('date_of_birth') }}">
+                                        @error('date_of_birth')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div class="form-group col-sm-3">
                                         <label class="form-label">Passport Number</label>
-                                        <input class="form-control" name="passport_number" type="text" placeholder="Enter Passport Number">
+                                        <input class="form-control @error('passport_number') is-invalid @enderror" name="passport_number" type="text" placeholder="Enter Passport Number" value="{{ old('passport_number') }}">
+                                        @error('passport_number')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div class="form-group col-sm-3">
                                         <label class="form-label">Nationality</label>
-                                        <input class="form-control" name="nationality" type="text" placeholder="Enter Nationality">
+                                        <input class="form-control @error('nationality') is-invalid @enderror" name="nationality" type="text" placeholder="Enter Nationality" value="{{ old('nationality') }}">
+                                        @error('nationality')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div class="form-group col-sm-3">
                                         <label class="form-label">Frequent Flyer Number</label>
-                                        <input class="form-control" name="frequent_flyer_number" type="text" placeholder="Enter Frequent Flyer Number">
+                                        <input class="form-control @error('frequent_flyer_number') is-invalid @enderror" name="frequent_flyer_number" type="text" placeholder="Enter Frequent Flyer Number" value="{{ old('frequent_flyer_number') }}">
+                                        @error('frequent_flyer_number')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
 

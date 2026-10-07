@@ -194,16 +194,29 @@ class B2CCustomerController extends Controller
     {
         $customer = B2CCustomer::findOrFail($customerId);
 
-        $validated = $request->validate([
+        $validator = validator($request->all(), [
             'passenger_type' => 'required|in:adult,child,infant',
             'title' => 'nullable|string|max:10',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'date_of_birth' => 'required|date',
-            'passport_number' => 'nullable|string|max:50',
-            'nationality' => 'nullable|string|max:100',
+            'date_of_birth' => 'required|date|before_or_equal:today',
+            'passport_number' => 'nullable|string|max:50|regex:/^[A-Za-z0-9]+$/',
+            'nationality' => 'nullable|string|max:100|regex:/^[A-Za-z\s\-]+$/',
             'frequent_flyer_number' => 'nullable|string|max:50',
+        ], [
+            'date_of_birth.before_or_equal' => 'The date of birth cannot be in the future.',
+            'passport_number.regex' => 'The passport number must contain only letters and numbers.',
+            'nationality.regex' => 'The nationality must contain only letters, spaces, and hyphens.',
         ]);
+
+        if ($validator->fails()) {
+            $routePrefix = RouteHelper::isSuperAdmin() ? 'admin.' : (RouteHelper::isCustomer() ? 'customer.' : 'staff.');
+            return redirect()->route($routePrefix . 'b2c-customers.passengers.create', $customerId)
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $validated = $validator->validated();
 
         // Determine the current user type and ID
         $currentUserId = null;
@@ -241,16 +254,29 @@ class B2CCustomerController extends Controller
     {
         $passenger = B2CPassenger::findOrFail($passengerId);
 
-        $validated = $request->validate([
+        $validator = validator($request->all(), [
             'passenger_type' => 'required|in:adult,child,infant',
             'title' => 'nullable|string|max:10',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'date_of_birth' => 'required|date',
-            'passport_number' => 'nullable|string|max:50',
-            'nationality' => 'nullable|string|max:100',
+            'date_of_birth' => 'required|date|before_or_equal:today',
+            'passport_number' => 'nullable|string|max:50|regex:/^[A-Za-z0-9]+$/',
+            'nationality' => 'nullable|string|max:100|regex:/^[A-Za-z\s\-]+$/',
             'frequent_flyer_number' => 'nullable|string|max:50',
+        ], [
+            'date_of_birth.before_or_equal' => 'The date of birth cannot be in the future.',
+            'passport_number.regex' => 'The passport number must contain only letters and numbers.',
+            'nationality.regex' => 'The nationality must contain only letters, spaces, and hyphens.',
         ]);
+
+        if ($validator->fails()) {
+            $routePrefix = RouteHelper::isSuperAdmin() ? 'admin.' : (RouteHelper::isCustomer() ? 'customer.' : 'staff.');
+            return redirect()->route($routePrefix . 'b2c-customers.passengers.edit', [$customerId, $passengerId])
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $validated = $validator->validated();
 
         // Determine the current user type and ID
         $currentUserId = null;

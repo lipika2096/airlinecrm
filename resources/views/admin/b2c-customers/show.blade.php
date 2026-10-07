@@ -290,7 +290,7 @@
                                                     <tr>
                                                         <td>{{ $booking->booking_no }}</td>
                                                         <td>{{ $booking->booking_date ? $booking->booking_date->format('d/m/Y') : '-' }}</td>
-                                                        <td>${{ number_format($booking->total_cost, 2) }}</td>
+                                                        <td>€{{ number_format($booking->total_cost, 2) }}</td>
                                                         <td>
                                                             <span class="badge bg-{{ $booking->status == 'confirmed' ? 'success' : ($booking->status == 'pending' ? 'warning' : 'danger') }}">
                                                                 {{ ucfirst($booking->status) }}
@@ -298,7 +298,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="action-icons">
-                                                                <a href="#" class="action-icon" title="View">
+                                                                <a href="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.booking.edit', $booking->id) : route('booking.edit', $booking->id) }}" class="action-icon" title="View">
                                                                     <i class="fa fa-eye"></i>
                                                                 </a>
                                                             </div>
