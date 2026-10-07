@@ -2028,6 +2028,14 @@ class SupportTicketController extends Controller
 
         $ticket = SupportTicket::findOrFail($id);
 
+        // Get the creator's name for display
+        $creatorName = '';
+        if (auth('admin')->check()) {
+            $creatorName = Auth::guard('admin')->user()->name;
+        } elseif (auth()->check()) {
+            $creatorName = auth()->user()->first_name . ' ' . auth()->user()->last_name;
+        }
+
         // Handle file attachments for internal notes
         $attachmentPaths = [];
         if ($request->hasFile('attachments')) {
@@ -2059,7 +2067,8 @@ class SupportTicketController extends Controller
 
         InternalNote::create([
             'support_ticket_id' => $ticket->id,
-            'user_id' => $user->id,
+            'user_id' => auth('admin')->check() ? Auth::guard('admin')->user()->id : $superAdminId,
+            'creator_name' => $creatorName,
             'note' => $request->note,
             'attachments' => json_encode($attachmentPaths),
         ]);
@@ -2098,19 +2107,34 @@ class SupportTicketController extends Controller
             'attachment_names' => 'nullable|array',
         ]);
 
-        $user = Auth::guard('admin')->user();
+        // Check if user is admin or staff
+        $user = auth('admin')->check() ? Auth::guard('admin')->user() : (auth()->check() ? auth()->user() : null);
+        $isSuperAdmin = RouteHelper::isSuperAdmin();
 
-        // Only superAdmin can update internal notes
-        if (!RouteHelper::isSuperAdmin()) {
+        // Check if this staff user was created by superadmin
+        $superAdmin = Admin::role('SuperAdmin')->first();
+        $superAdminId = $superAdmin ? $superAdmin->id : null;
+        $isSuperAdminCreatedStaff = $superAdmin && $user && $user->created_by == $superAdmin->id;
+
+        // If staff was created by superadmin, give them superadmin privileges
+        if ($isSuperAdminCreatedStaff) {
+            $isSuperAdmin = true;
+        }
+
+        // Only superAdmin and superadmin-created staff can update internal notes
+        if (!$isSuperAdmin) {
             return redirect()->back()
                 ->with('error', 'You are not authorized to update internal notes.');
         }
 
         $ticket = SupportTicket::findOrFail($id);
         $note = InternalNote::findOrFail($request->note_id);
-        
+
+        // Get current user ID for comparison
+        $currentUserId = auth('admin')->check() ? Auth::guard('admin')->user()->id : $superAdminId;
+
         // Check if the note belongs to the current user
-        if ($note->user_id !== $user->id) {
+        if ($note->user_id !== $currentUserId) {
             return redirect()->back()
                 ->with('error', 'You can only edit your own notes.');
         }

@@ -68,7 +68,7 @@
                             <!-- Login Tabs -->
                             <div class="login-tabs">
                                 <div class="login-tab active" data-tab="admin-tab">
-                                    <i class="fa fa-user-shield"></i> Super Admin
+                                    <i class="fa fa-user-secret"></i> Super Admin
                                 </div>
                                 <div class="login-tab" data-tab="customer-tab">
                                     <i class="fa fa-users"></i> Customer

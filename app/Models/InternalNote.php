@@ -14,6 +14,7 @@ class InternalNote extends Model
     protected $fillable = [
         'support_ticket_id',
         'user_id',
+        'creator_name',
         'note',
         'attachments',
     ];

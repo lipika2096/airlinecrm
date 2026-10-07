@@ -570,7 +570,7 @@
                                                 <div class="note-item mb-3 pb-3 border-bottom {{ $index % 2 === 0 ? 'note-light mb-3' : 'note-dark mb-3' }}">
                                                     <div class="note-header d-flex justify-content-between align-items-start">
                                                         <div>
-                                                            <strong>{{ $note->user ? $note->user->name : 'Unknown' }}</strong>
+                                                            <strong>{{ $note->creator_name ?? ($note->user ? $note->user->name : 'Unknown') }}</strong>
                                                             <small class="message-time" style="margin-left: 1rem;">{{ \App\Helpers\TimezoneHelper::format($note->created_at, 'M d, Y h:i A') }}</small>
                                                         </div>
                                                         @if($note->user_id == $currentUserId)
@@ -724,7 +724,7 @@
                                                             $allAttachments[] = [
                                                                 'path' => $path,
                                                                 'name' => $name,
-                                                                'source' => 'Internal Note by ' . ($note->user ? $note->user->name : 'Unknown'),
+                                                                'source' => 'Internal Note by ' . ($note->creator_name ?? ($note->user ? $note->user->name : 'Unknown')),
                                                                 'date' => \App\Helpers\TimezoneHelper::format($note->created_at, 'M d, Y h:i A'),
                                                             ];
                                                         }
@@ -1204,7 +1204,7 @@
                                                             $allAttachments[] = [
                                                                 'path' => $path,
                                                                 'name' => $name,
-                                                                'source' => 'Internal Note by ' . ($note->user ? $note->user->name : 'Unknown'),
+                                                                'source' => 'Internal Note by ' . ($note->creator_name ?? ($note->user ? $note->user->name : 'Unknown')),
                                                                 'date' => \App\Helpers\TimezoneHelper::format($note->created_at, 'M d, Y h:i A'),
                                                             ];
                                                         }
