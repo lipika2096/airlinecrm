@@ -109,7 +109,7 @@
                         <div class="card-body">
                             <form action="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2c-customers.passengers.update', [$customer->id, $passenger->id]) : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2c-customers.passengers.update', [$customer->id, $passenger->id]) : route('staff.b2c-customers.passengers.update', [$customer->id, $passenger->id])) }}" method="POST">
                                 @csrf
-                                @method('PATCH')
+                                @method('PUT')
                                 @if ($errors->any())
                                     <div class="alert alert-danger">
                                         <strong>Whoops!</strong> There were some problems with your input.<br><br>

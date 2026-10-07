@@ -21,7 +21,9 @@ class B2BPartnerDocument extends Model
         'document_type',
         'file_path',
         'created_by',
+        'created_by_type',
         'updated_by',
+        'updated_by_type',
     ];
 
     public function partner()
@@ -31,11 +33,17 @@ class B2BPartnerDocument extends Model
 
     public function createdBy()
     {
+        if ($this->created_by_type === 'staff') {
+            return $this->belongsTo(User::class, 'created_by');
+        }
         return $this->belongsTo(Admin::class, 'created_by');
     }
 
     public function updatedBy()
     {
+        if ($this->updated_by_type === 'staff') {
+            return $this->belongsTo(User::class, 'updated_by');
+        }
         return $this->belongsTo(Admin::class, 'updated_by');
     }
 }

@@ -55,7 +55,9 @@ class B2BPartnerContact extends Model
 
     public function getCreatorNameAttribute()
     {
-        if ($this->created_by_type === 'customer') {
+        if ($this->created_by_type === 'staff') {
+            return $this->createdByUser ? $this->createdByUser->full_name : 'Unknown';
+        } elseif ($this->created_by_type === 'customer') {
             return $this->createdByUser ? $this->createdByUser->name : 'Unknown';
         } else {
             return $this->createdByAdmin ? $this->createdByAdmin->name : 'Unknown';
@@ -64,7 +66,9 @@ class B2BPartnerContact extends Model
 
     public function getUpdaterNameAttribute()
     {
-        if ($this->updated_by_type === 'customer') {
+        if ($this->updated_by_type === 'staff') {
+            return $this->updatedByUser ? $this->updatedByUser->full_name : 'Unknown';
+        } elseif ($this->updated_by_type === 'customer') {
             return $this->updatedByUser ? $this->updatedByUser->name : 'Unknown';
         } else {
             return $this->updatedByAdmin ? $this->updatedByAdmin->name : 'Unknown';

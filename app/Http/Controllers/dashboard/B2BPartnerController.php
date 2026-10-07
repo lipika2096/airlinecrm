@@ -477,6 +477,7 @@ class B2BPartnerController extends Controller
             ]);
 
             $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
+            $userType = auth('admin')->check() ? (auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer') : 'staff';
 
             B2BPartnerContact::create([
                 'b2b_partner_id' => $partnerId,
@@ -486,6 +487,7 @@ class B2BPartnerController extends Controller
                 'email' => $validated['email'],
                 'role' => $validated['role'],
                 'created_by' => $currentUserId,
+                'created_by_type' => $userType,
             ]);
 
             return redirect()->back()->with('success', 'Contact added successfully');
@@ -551,6 +553,7 @@ class B2BPartnerController extends Controller
             ]);
 
             $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
+            $userType = auth('admin')->check() ? (auth('admin')->user()->hasRole('SuperAdmin') ? 'superadmin' : 'customer') : 'staff';
 
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
@@ -565,6 +568,7 @@ class B2BPartnerController extends Controller
                     'document_type' => $validated['document_type'],
                     'file_path' => $filePath,
                     'created_by' => $currentUserId,
+                    'created_by_type' => $userType,
                 ]);
             }
 
