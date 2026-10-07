@@ -177,12 +177,12 @@
                                         @foreach($recentTickets as $ticket)
                                             <tr style="border-bottom: 1px solid #e9ecef;">
                                                 <!-- <td style="padding: 12px; vertical-align: middle;">
-                                                    <a href="{{ route('admin.support-tickets.show', $ticket->id) }}" style="color: #6a1b9a; text-decoration: none; font-weight: 500;">
+                                                    <a href="{{\App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.show', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.show', $ticket->id) : route('customer.support-tickets.show', $ticket->id))}}" style="color: #6a1b9a; text-decoration: none; font-weight: 500;">
                                                         {{ $ticket->id }}
                                                     </a>
                                                 </td> -->
                                                 <td style="padding: 12px; vertical-align: middle;">
-                                                    <a href="{{ route('admin.support-tickets.show', $ticket->id) }}" style="color: #6a1b9a; text-decoration: none; font-weight: 500;">
+                                                    <a href="{{\App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.show', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.show', $ticket->id) : route('customer.support-tickets.show', $ticket->id))}}" style="color: #6a1b9a; text-decoration: none; font-weight: 500;">
                                                         {{ $ticket->ticket_number }}
                                                     </a>
                                                 </td>

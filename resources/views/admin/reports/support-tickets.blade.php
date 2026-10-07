@@ -117,7 +117,7 @@
                             <tbody>
                                 @foreach($tickets as $ticket)
                                 <tr>
-                                    <td><a href="{{ route('admin.support-tickets.show', $ticket->id) }}">{{ $ticket->ticket_number }}</a></td>
+                                    <td><a href="{{\App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.show', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.show', $ticket->id) : route('customer.support-tickets.show', $ticket->id))}}">{{ $ticket->ticket_number }}</a></td>
                                     <td>{{ Str::limit($ticket->subject, 50) }}</td>
                                     <td>{{ $ticket->department }}</td>
                                     <td>

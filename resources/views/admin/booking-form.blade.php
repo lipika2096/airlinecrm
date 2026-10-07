@@ -134,16 +134,12 @@
                 <h4>Booking Details</h4>
 
                 <div class="row form-group">
-                    <div class="col-md-3">
-                        <label class="form-label">Booking No <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="booking_no" value="{{ $bookingNo ?? ($booking->booking_no ?? '') }}" readonly>
-                    </div>
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <label class="form-label">Booking Date <span class="text-danger">*</span></label>
                         <input type="date" class="form-control" name="booking_date" value="{{ isset($booking) && $booking->booking_date ? \Carbon\Carbon::parse($booking->booking_date)->format('Y-m-d') : \Carbon\Carbon::now()->format('Y-m-d') }}" required>
                     </div>
 
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <label class="form-label">Customer Type</label>
                     <select class="form-control" name="customer_type">
                         <option value="" >Select Customer Type</option>
@@ -687,6 +683,11 @@
                         <textarea class="form-control" name="booking_notes" rows="5" placeholder="Add any notes or special instructions for this booking..."></textarea>
                     </div>
 
+                    <div class="form-group mt-3">
+                        <label class="form-label">Booking No <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="booking_no" value="{{ $bookingNo ?? ($booking->booking_no ?? '') }}" readonly>
+                    </div>
+
                     <!-- Tab Save Button -->
                     <div class="mt-3">
                         <button type="button" class="btn btn-save btn-sm tab-save-btn" data-tab="notes">
@@ -994,17 +995,18 @@
             if (selectedCustomerType) selectedCustomerType.value = '';
             if (formCustomerType) formCustomerType.value = '';
 
-            // Clear all form fields except booking_no (auto-generated), booking_date (has default), and responsible fields
+            // Clear all form fields except booking_no, booking_date, and responsible fields
             document.querySelectorAll('input, textarea').forEach(input => {
                 if (input.name !== 'booking_no' && input.name !== 'booking_date' && input.name !== 'b2c_responsible' && input.name !== 'b2b_responsible') {
                     input.value = '';
                 }
             });
 
-            // Set responsible fields and booking_date with values from HTML attributes
+            // Set responsible fields, booking_date, and booking_no with values from HTML attributes
             const b2cResponsible = document.getElementById('b2c_responsible');
             const b2bResponsible = document.getElementById('b2b_responsible');
             const bookingDate = document.querySelector('input[name="booking_date"]');
+            const bookingNo = document.querySelector('input[name="booking_no"]');
             if (b2cResponsible && b2cResponsible.hasAttribute('value')) {
                 b2cResponsible.value = b2cResponsible.getAttribute('value');
             }
@@ -1013,6 +1015,9 @@
             }
             if (bookingDate && bookingDate.hasAttribute('value')) {
                 bookingDate.value = bookingDate.getAttribute('value');
+            }
+            if (bookingNo && bookingNo.hasAttribute('value')) {
+                bookingNo.value = bookingNo.getAttribute('value');
             }
 
             console.log('Cleared form for new booking');

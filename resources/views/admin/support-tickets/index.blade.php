@@ -464,7 +464,7 @@
                                             <!-- <td>{{$ticket->id}}</td> -->
                                             <td><span class="ticket-id-badge">{{ $ticket->ticket_number }}</span></td>
                                             <td>{{ $ticket->company_name ?? 'Superadmin' }}</td>
-                                            <td class="subject-cell" style="max-width: 150px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word; word-break: break-word;"><a href="{{ route('admin.support-tickets.show', $ticket->id) }}" class="ticket-subject-link">{{ Str::limit($ticket->subject, 50) }}</a></td>
+                                            <td class="subject-cell" style="max-width: 150px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word; word-break: break-word;"><a href="{{\App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.support-tickets.show', $ticket->id) : (\App\Helpers\RouteHelper::isStaff() ? route('staff.support-tickets.show', $ticket->id) : route('customer.support-tickets.show', $ticket->id))}}" class="ticket-subject-link">{{ Str::limit($ticket->subject, 50) }}</a></td>
                                             <td>
                                                 @if($ticket->department)
                                                     <span class="department-badge">{{ ucfirst(str_replace('_', ' ', $ticket->department)) }}</span>
