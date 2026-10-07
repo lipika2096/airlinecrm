@@ -212,7 +212,10 @@ class B2BPartnerController extends Controller
         $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
         $userType = RouteHelper::isSuperAdmin() ? 'superadmin' : (RouteHelper::isCustomer() ? 'customer' : 'staff');
 
-        $partner = B2BPartner::with('contacts', 'airlines.airline', 'products', 'documents', 'notes.createdByAdmin', 'notes.createdByUser')->find($id);
+        $partner = B2BPartner::with('contacts', 'airlines.airline', 'products', 'documents')->find($id);
+
+        // Load notes with their creator relationships
+        $partner->load('notes.createdByAdmin', 'notes.createdByUser');
         
         if (!$partner) {
             $routePrefix = RouteHelper::isSuperAdmin() ? 'admin.' : (RouteHelper::isCustomer() ? 'customer.' : 'staff.');

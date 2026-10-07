@@ -28,7 +28,7 @@ class B2BPartnerActivity extends Model
         'new_values' => 'array',
     ];
 
-    protected $with = ['performedByAdmin', 'performedByUser'];
+    protected $appends = ['performed_by_name'];
 
     public function partner()
     {
@@ -45,12 +45,12 @@ class B2BPartnerActivity extends Model
         return $this->belongsTo(User::class, 'performed_by');
     }
 
-    public function getPerformedByAttribute()
+    public function getPerformedByNameAttribute()
     {
         if ($this->performed_by_type === 'customer') {
-            return $this->performedByUser;
+            return $this->performedByUser ? $this->performedByUser->name : 'System';
         } else {
-            return $this->performedByAdmin;
+            return $this->performedByAdmin ? $this->performedByAdmin->name : 'System';
         }
     }
 }

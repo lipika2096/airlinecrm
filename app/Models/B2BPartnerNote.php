@@ -23,7 +23,7 @@ class B2BPartnerNote extends Model
         'updated_by_type',
     ];
 
-    protected $with = ['createdByAdmin', 'createdByUser', 'updatedByAdmin', 'updatedByUser'];
+    protected $appends = ['creator_name', 'updater_name'];
 
     public function partner()
     {
@@ -50,23 +50,21 @@ class B2BPartnerNote extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function getCreatedByAttribute()
+    public function getCreatorNameAttribute()
     {
-        if ($this->created_by_type === 'superadmin' || $this->created_by_type === 'staff') {
-            return $this->createdByAdmin;
-        } elseif ($this->created_by_type === 'customer') {
-            return $this->createdByUser;
+        if ($this->created_by_type === 'customer') {
+            return $this->createdByUser ? $this->createdByUser->name : 'Unknown';
+        } else {
+            return $this->createdByAdmin ? $this->createdByAdmin->name : 'Unknown';
         }
-        return null;
     }
 
-    public function getUpdatedByAttribute()
+    public function getUpdaterNameAttribute()
     {
-        if ($this->updated_by_type === 'superadmin' || $this->updated_by_type === 'staff') {
-            return $this->updatedByAdmin;
-        } elseif ($this->updated_by_type === 'customer') {
-            return $this->updatedByUser;
+        if ($this->updated_by_type === 'customer') {
+            return $this->updatedByUser ? $this->updatedByUser->name : 'Unknown';
+        } else {
+            return $this->updatedByAdmin ? $this->updatedByAdmin->name : 'Unknown';
         }
-        return null;
     }
 }
