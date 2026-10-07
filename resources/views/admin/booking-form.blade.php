@@ -62,6 +62,9 @@
         .summary-item.profit strong {
             color: #28a745;
         }
+        .summary-item.loss strong {
+            color: #dc3545;
+        }
         .btn-group-custom {
             margin-top: 20px;
         }
@@ -387,10 +390,10 @@
                                         <input type="text" class="form-control" name="service_supplier[]" placeholder="Supplier">
                                     </td>
                                     <td>
-                                        <input type="number" class="form-control" name="service_cost[]" placeholder="0.00" step="0.01">
+                                        <input type="number" class="form-control" name="service_cost[]" placeholder="0.00" step="0.01" min="0">
                                     </td>
                                     <td>
-                                        <input type="number" class="form-control" name="service_sell[]" placeholder="0.00" step="0.01">
+                                        <input type="number" class="form-control" name="service_sell[]" placeholder="0.00" step="0.01" min="0">
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-danger btn-sm remove-service">
@@ -415,7 +418,7 @@
                             <span>Total Sell:</span>
                             <strong>€ <span id="totalSell">0</span></strong>
                         </div>
-                        <div class="summary-item profit">
+                        <div class="summary-item profit" id="profitSummary">
                             <span>Profit:</span>
                             <strong>€ <span id="totalProfit">0</span></strong>
                         </div>
@@ -467,7 +470,7 @@
                                         <input type="text" class="form-control" name="passenger_last_name[]" placeholder="Last Name">
                                     </td>
                                     <td>
-                                        <input type="date" class="form-control" name="dob[]">
+                                        <input type="date" class="form-control" name="dob[]" max="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
                                     </td>
                                     <td>
                                         <input type="text" class="form-control" name="nationality[]" placeholder="Nationality">
@@ -1073,6 +1076,9 @@
                         input.dispatchEvent(new Event('input'));
                     }
                 });
+
+                // Calculate totals and set profit/loss color
+                calculateTotals();
             }, 100);
         @endif
 
@@ -1106,10 +1112,10 @@
                 <input type="text" class="form-control" name="service_supplier[]" placeholder="Supplier">
             </td>
             <td>
-                <input type="number" class="form-control" name="service_cost[]" placeholder="0.00" step="0.01">
+                <input type="number" class="form-control" name="service_cost[]" placeholder="0.00" step="0.01" min="0">
             </td>
             <td>
-                <input type="number" class="form-control" name="service_sell[]" placeholder="0.00" step="0.01">
+                <input type="number" class="form-control" name="service_sell[]" placeholder="0.00" step="0.01" min="0">
             </td>
             <td>
                 <button type="button" class="btn btn-danger btn-sm remove-service">
@@ -1153,7 +1159,7 @@
                 <input type="text" class="form-control" name="passenger_last_name[]" placeholder="Last Name">
             </td>
             <td>
-                <input type="date" class="form-control" name="dob[]">
+                <input type="date" class="form-control" name="dob[]" max="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
             </td>
             <td>
                 <input type="text" class="form-control" name="nationality[]" placeholder="Nationality">
@@ -1305,10 +1311,22 @@
         });
         
         const profit = totalSell - totalCost;
-        
+
         document.getElementById('totalCost').textContent = totalCost.toFixed(2);
         document.getElementById('totalSell').textContent = totalSell.toFixed(2);
         document.getElementById('totalProfit').textContent = profit.toFixed(2);
+
+        // Update profit/loss color
+        const profitSummary = document.getElementById('profitSummary');
+        if (profit < 0) {
+            profitSummary.classList.remove('profit');
+            profitSummary.classList.add('loss');
+            profitSummary.querySelector('span').textContent = 'Loss:';
+        } else {
+            profitSummary.classList.remove('loss');
+            profitSummary.classList.add('profit');
+            profitSummary.querySelector('span').textContent = 'Profit:';
+        }
     }
 
     // Listen for changes in cost and sell inputs

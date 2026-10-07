@@ -27,6 +27,9 @@
         .metric-card.profit h3 {
             color: #28a745;
         }
+        .metric-card.loss h3 {
+            color: #dc3545;
+        }
         .metric-card.outstanding h3 {
             color: #dc3545;
         }
@@ -100,7 +103,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="metric-card profit">
+                <div class="metric-card {{ $todayProfit >= 0 ? 'profit' : 'loss' }}">
                     <h5>TODAY'S PROFIT</h5>
                     <h3>€ {{ number_format($todayProfit ?? 0, 2) }}</h3>
                 </div>

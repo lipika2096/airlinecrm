@@ -138,7 +138,7 @@
                                         <strong>€{{ number_format($booking->total_sell, 2) }}</strong>
                                     </td>
                                     <td>
-                                        <span class="text-success">€{{ number_format($booking->profit, 2) }}</span>
+                                        <span class="{{ $booking->profit >= 0 ? 'text-success' : 'text-danger' }}">€{{ number_format($booking->profit, 2) }}</span>
                                     </td>
                                     <td>
                                         <span class="status-badge status-{{ $booking->status ?? 'pending' }}">

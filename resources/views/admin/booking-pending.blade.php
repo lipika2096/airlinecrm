@@ -130,7 +130,7 @@
                                     </td>
                                     <td>${{ number_format($booking->total_cost ?? 0, 2) }}</td>
                                     <td>${{ number_format($booking->total_sell ?? 0, 2) }}</td>
-                                    <td>${{ number_format($booking->profit ?? 0, 2) }}</td>
+                                    <td class="{{ $booking->profit >= 0 ? 'text-success' : 'text-danger' }}">${{ number_format($booking->profit ?? 0, 2) }}</td>
                                     <td>
                                         <span class="status-badge {{ $booking->status == 'pending' ? 'status-pending' : ($booking->status == 'confirmed' ? 'status-confirmed' : 'status-cancelled') }}">
                                             {{ ucfirst($booking->status ?? 'pending') }}

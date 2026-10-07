@@ -259,6 +259,13 @@ class AccountController extends Controller
                 'b2b_language' => 'nullable|string',
                 'b2b_responsible' => 'nullable|string',
                 'b2b_remarks' => 'nullable|string',
+                // Service and passenger validations
+                'service_cost' => 'nullable|array',
+                'service_cost.*' => 'nullable|numeric|min:0',
+                'service_sell' => 'nullable|array',
+                'service_sell.*' => 'nullable|numeric|min:0',
+                'dob' => 'nullable|array',
+                'dob.*' => 'nullable|date|before_or_equal:today',
             ]);
 
             // Use database transaction to ensure atomic booking update
@@ -675,8 +682,15 @@ class AccountController extends Controller
                 'b2b_language' => 'nullable|string',
                 'b2b_responsible' => 'nullable|string',
                 'b2b_remarks' => 'nullable|string',
+                // Service and passenger validations
+                'service_cost' => 'nullable|array',
+                'service_cost.*' => 'nullable|numeric|min:0',
+                'service_sell' => 'nullable|array',
+                'service_sell.*' => 'nullable|numeric|min:0',
+                'dob' => 'nullable|array',
+                'dob.*' => 'nullable|date|before_or_equal:today',
             ]);
-            
+
             // Calculate totals
             $totalCost = 0;
             $totalSell = 0;
