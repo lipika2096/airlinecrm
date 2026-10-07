@@ -8,6 +8,8 @@ use App\Models\Admin;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Mail\PasswordUpdatedMail;
+use Illuminate\Support\Facades\Mail;
 
 
 class ProfileController extends Controller
@@ -42,24 +44,74 @@ class ProfileController extends Controller
      */
     public function updatePassword(Request $request)
     {
-        $user = auth()->guard('admin')->check() ? auth()->guard('admin')->user() : auth()->guard('employee')->user();
-        
-        $request->validate([
-            'current_password' => 'required',
-            'new_password' => 'required|min:8|confirmed',
-        ]);
+        try {
+            \Log::info('Password update attempt started', [
+                'user_id' => auth()->check() ? auth()->id() : null,
+                'guard' => auth()->guard('admin')->check() ? 'admin' : (auth()->check() ? 'web' : 'none')
+            ]);
 
-        // Check if current password matches
-        if (!Hash::check($request->current_password, $user->password)) {
-            return redirect()->back()->with('password_error', 'Current password is incorrect!');
+            // Get the authenticated user based on the guard
+            if (auth()->guard('admin')->check()) {
+                $user = auth()->guard('admin')->user();
+                \Log::info('User authenticated via admin guard', ['user_id' => $user->id]);
+            } elseif (auth()->check()) {
+                $user = auth()->user();
+                \Log::info('User authenticated via web guard', ['user_id' => $user->id]);
+            } else {
+                \Log::error('User not authenticated');
+                return redirect()->back()->with('error', 'User not authenticated!');
+            }
+
+            \Log::info('Request data', [
+                'has_current_password' => isset($request->current_password),
+                'has_new_password' => isset($request->new_password),
+                'has_confirm_password' => isset($request->confirm_password)
+            ]);
+
+            $request->validate([
+                'current_password' => 'required',
+                'new_password' => 'required|min:8',
+            ]);
+
+            \Log::info('Validation passed');
+
+            // Check if current password matches
+            if (!Hash::check($request->current_password, $user->password)) {
+                \Log::error('Current password does not match', ['user_id' => $user->id]);
+                return redirect()->back()->with('error', 'Current password is incorrect!');
+            }
+
+            \Log::info('Current password verified, updating password', ['user_id' => $user->id]);
+
+            // Update password
+            $user->password = Hash::make($request->new_password);
+            if (isset($user->plain_password)) {
+                $user->plain_password = $request->new_password;
+            }
+            $user->save();
+
+            \Log::info('Password updated successfully', ['user_id' => $user->id]);
+
+            // Send password update email
+            try {
+                Mail::to($user->email)->send(new PasswordUpdatedMail($user));
+                \Log::info('Password update email sent successfully', ['user_id' => $user->id, 'email' => $user->email]);
+            } catch (\Exception $e) {
+                \Log::error('Failed to send password update email: ' . $e->getMessage(), [
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]);
+                // Continue even if email fails - password was still updated
+            }
+
+            return redirect()->back()->with('success', 'Password updated successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Failed to update password: ' . $e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->back()->with('error', 'Failed to update password: ' . $e->getMessage());
         }
-
-        // Update password
-        $user->password = Hash::make($request->new_password);
-        $user->plain_password = $request->new_password; // If you store plain password
-        $user->save();
-
-        return redirect()->back()->with('password_success', 'Password updated successfully!');
     }
 
     /**

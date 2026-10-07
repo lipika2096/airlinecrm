@@ -189,6 +189,24 @@ Route::get('/clear-cache', function () {
 
 Route::get('drop-existing',[AccountController::class, 'dropBookingTables']);
 
+
+// Password reset routes
+Route::get('/forgot-password', [PasswordResetController::class, 'showForgotPassword'])->name('password.forgot');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.send-link');
+Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetPassword'])->name('password.reset');
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
+
+// Home route
+Route::get('/', function () {
+    return view('admin.index');
+})->name('admin.login');
+
+Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.post.login');
+Route::post('/customer/login', [AdminController::class, 'staffLogin'])->name('customer.post.login');
+Route::post('/staff/login', [StaffController::class, 'login'])->name('staff.login');
+Route::get('/admin/toggle-status/{id}', [AdminController::class, 'toggleStatus'])->name('admin.toggle.status');
+
+
 Route::name('admin.')->middleware(['admin'])->group(function () {
     Route::get('roles-permissions', [ModuleController::class, 'index'])->name('roles-permissions.index');
     Route::post('modules/update', [ModuleController::class, 'update'])->name('modules.update');
@@ -220,22 +238,6 @@ Route::name('admin.')->middleware(['admin'])->group(function () {
 
 
 });
-
-// Password reset routes
-Route::get('/forgot-password', [PasswordResetController::class, 'showForgotPassword'])->name('password.forgot');
-Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.send-link');
-Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetPassword'])->name('password.reset');
-Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
-
-// Home route
-Route::get('/', function () {
-    return view('admin.index');
-})->name('admin.login');
-
-Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.post.login');
-Route::post('/customer/login', [AdminController::class, 'staffLogin'])->name('customer.post.login');
-Route::post('/staff/login', [StaffController::class, 'login'])->name('staff.login');
-Route::get('/admin/toggle-status/{id}', [AdminController::class, 'toggleStatus'])->name('admin.toggle.status');
 
 // SuperAdmin routes - only accessible by users with superAdmin role
 Route::prefix('superadmin')->name('admin.')->middleware(['admin'])->group(function () {
@@ -1825,6 +1827,11 @@ Route::prefix('staff')->name('staff.')->middleware(['staff'])->group(function ()
             return view('admin.project-view');
         })->name('project-view');
     });
+
+    // Profile routes for staff
+    Route::get('profile', [ProfileController::class, 'employeeProfile'])->name('profile');
+    Route::post('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('profile/timezone', [ProfileController::class, 'updateTimezone'])->name('profile.timezone');
     
     // Account dashboard for staff
     Route::middleware(['module.access:accounts'])->group(function () {

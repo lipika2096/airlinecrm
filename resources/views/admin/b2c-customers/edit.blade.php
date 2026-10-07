@@ -91,6 +91,19 @@
                 color: #ff9b44;
                 font-weight: 500;
             }
+            .invalid-feedback {
+                display: block;
+                color: #dc3545;
+                font-size: 0.875rem;
+                margin-top: 0.25rem;
+            }
+            .is-invalid {
+                border-color: #dc3545 !important;
+            }
+            .is-invalid:focus {
+                border-color: #dc3545 !important;
+                box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
+            }
         </style>
         <!-- Page Content -->
         <div class="content container-fluid">
@@ -117,7 +130,18 @@
                             <form action="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2c-customers.update', $customer->id) : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2c-customers.update', $customer->id) : route('staff.b2c-customers.update', $customer->id)) }}" method="POST">
                                 @csrf
                                 @method('PUT')
-                                
+
+                                @if ($errors->any())
+                                    <div class="alert alert-danger">
+                                        <strong>Whoops!</strong> There were some problems with your input.<br><br>
+                                        <ul>
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+
                                 <!-- Tabs -->
                                 <ul class="nav nav-tabs mb-4" id="customerTabs" role="tablist">
                                     <li class="nav-item">
@@ -135,53 +159,80 @@
                                         <div class="row">
                                             <div class="form-group col-sm-3">
                                                 <label class="form-label">Customer Type</label>
-                                                <select class="form-control" name="customer_type" required>
+                                                <select class="form-control @error('customer_type') is-invalid @enderror" name="customer_type" required>
                                                     <option value="">Select Type</option>
-                                                    <option value="individual" {{ $customer->customer_type == 'individual' ? 'selected' : '' }}>Individual</option>
-                                                    <option value="corporate" {{ $customer->customer_type == 'corporate' ? 'selected' : '' }}>Corporate</option>
+                                                    <option value="individual" {{ old('customer_type', $customer->customer_type) == 'individual' ? 'selected' : '' }}>Individual</option>
+                                                    <option value="corporate" {{ old('customer_type', $customer->customer_type) == 'corporate' ? 'selected' : '' }}>Corporate</option>
                                                 </select>
+                                                @error('customer_type')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-3">
                                                 <label class="form-label">Salutation</label>
-                                                <select class="form-control" name="salutation">
+                                                <select class="form-control @error('salutation') is-invalid @enderror" name="salutation">
                                                     <option value="">Select</option>
-                                                    <option value="Mr" {{ $customer->salutation == 'Mr' ? 'selected' : '' }}>Mr</option>
-                                                    <option value="Mrs" {{ $customer->salutation == 'Mrs' ? 'selected' : '' }}>Mrs</option>
-                                                    <option value="Miss" {{ $customer->salutation == 'Miss' ? 'selected' : '' }}>Miss</option>
-                                                    <option value="Dr" {{ $customer->salutation == 'Dr' ? 'selected' : '' }}>Dr</option>
+                                                    <option value="Mr" {{ old('salutation', $customer->salutation) == 'Mr' ? 'selected' : '' }}>Mr</option>
+                                                    <option value="Mrs" {{ old('salutation', $customer->salutation) == 'Mrs' ? 'selected' : '' }}>Mrs</option>
+                                                    <option value="Miss" {{ old('salutation', $customer->salutation) == 'Miss' ? 'selected' : '' }}>Miss</option>
+                                                    <option value="Dr" {{ old('salutation', $customer->salutation) == 'Dr' ? 'selected' : '' }}>Dr</option>
                                                 </select>
+                                                @error('salutation')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-3">
                                                 <label class="form-label">First Name</label>
-                                                <input class="form-control" name="first_name" type="text" required value="{{ $customer->first_name }}" placeholder="Enter First Name">
+                                                <input class="form-control @error('first_name') is-invalid @enderror" name="first_name" type="text" required value="{{ old('first_name', $customer->first_name) }}" placeholder="Enter First Name">
+                                                @error('first_name')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-3">
                                                 <label class="form-label">Last Name</label>
-                                                <input class="form-control" name="last_name" type="text" required value="{{ $customer->last_name }}" placeholder="Enter Last Name">
+                                                <input class="form-control @error('last_name') is-invalid @enderror" name="last_name" type="text" required value="{{ old('last_name', $customer->last_name) }}" placeholder="Enter Last Name">
+                                                @error('last_name')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-3">
                                                 <label class="form-label">Email</label>
-                                                <input class="form-control" name="email" type="email" required value="{{ $customer->email }}" placeholder="Enter Email">
+                                                <input class="form-control @error('email') is-invalid @enderror" name="email" type="email" required value="{{ old('email', $customer->email) }}" placeholder="Enter Email">
+                                                @error('email')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-3">
                                                 <label class="form-label">Phone</label>
-                                                <input class="form-control" name="phone" type="text" required value="{{ $customer->phone }}" placeholder="Enter Phone Number">
+                                                <input class="form-control @error('phone') is-invalid @enderror" name="phone" type="text" required value="{{ old('phone', $customer->phone) }}" placeholder="Enter Phone Number">
+                                                @error('phone')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-6">
                                                 <label class="form-label">Address</label>
-                                                <textarea class="form-control" name="address" rows="3" placeholder="Enter Address">{{ $customer->address }}</textarea>
+                                                <textarea class="form-control @error('address') is-invalid @enderror" name="address" rows="3" placeholder="Enter Address">{{ old('address', $customer->address) }}</textarea>
+                                                @error('address')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-3">
                                                 <label class="form-label">Country</label>
-                                                <input class="form-control" name="country" type="text" value="{{ $customer->country }}" placeholder="Enter Country">
+                                                <input class="form-control @error('country') is-invalid @enderror" name="country" type="text" value="{{ old('country', $customer->country) }}" placeholder="Enter Country">
+                                                @error('country')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-3">
                                                 <label class="form-label">Status</label>
-                                                <select class="form-control" name="status" required>
-                                                    <option value="active" {{ $customer->status == 'active' ? 'selected' : '' }}>Active</option>
-                                                    <option value="inactive" {{ $customer->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                                                    <option value="blocked" {{ $customer->status == 'blocked' ? 'selected' : '' }}>Blocked</option>
+                                                <select class="form-control @error('status') is-invalid @enderror" name="status" required>
+                                                    <option value="active" {{ old('status', $customer->status) == 'active' ? 'selected' : '' }}>Active</option>
+                                                    <option value="inactive" {{ old('status', $customer->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                                    <option value="blocked" {{ old('status', $customer->status) == 'blocked' ? 'selected' : '' }}>Blocked</option>
                                                 </select>
+                                                @error('status')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                         </div>
                                     </div>
@@ -191,40 +242,55 @@
                                         <div class="row">
                                             <div class="form-group col-sm-4">
                                                 <label class="form-label">Preferred Airline</label>
-                                                <input class="form-control" name="preferred_airline" type="text" value="{{ $customer->preferred_airline }}" placeholder="Enter Preferred Airline">
+                                                <input class="form-control @error('preferred_airline') is-invalid @enderror" name="preferred_airline" type="text" value="{{ old('preferred_airline', $customer->preferred_airline) }}" placeholder="Enter Preferred Airline">
+                                                @error('preferred_airline')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-4">
                                                 <label class="form-label">Preferred Class</label>
-                                                <select class="form-control" name="preferred_class">
+                                                <select class="form-control @error('preferred_class') is-invalid @enderror" name="preferred_class">
                                                     <option value="">Select Class</option>
-                                                    <option value="Economy" {{ $customer->preferred_class == 'Economy' ? 'selected' : '' }}>Economy</option>
-                                                    <option value="Business" {{ $customer->preferred_class == 'Business' ? 'selected' : '' }}>Business</option>
-                                                    <option value="First Class" {{ $customer->preferred_class == 'First Class' ? 'selected' : '' }}>First Class</option>
+                                                    <option value="Economy" {{ old('preferred_class', $customer->preferred_class) == 'Economy' ? 'selected' : '' }}>Economy</option>
+                                                    <option value="Business" {{ old('preferred_class', $customer->preferred_class) == 'Business' ? 'selected' : '' }}>Business</option>
+                                                    <option value="First Class" {{ old('preferred_class', $customer->preferred_class) == 'First Class' ? 'selected' : '' }}>First Class</option>
                                                 </select>
+                                                @error('preferred_class')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-4">
                                                 <label class="form-label">Meal Preference</label>
-                                                <select class="form-control" name="meal_preference">
+                                                <select class="form-control @error('meal_preference') is-invalid @enderror" name="meal_preference">
                                                     <option value="">Select Preference</option>
-                                                    <option value="Standard" {{ $customer->meal_preference == 'Standard' ? 'selected' : '' }}>Standard</option>
-                                                    <option value="Vegetarian" {{ $customer->meal_preference == 'Vegetarian' ? 'selected' : '' }}>Vegetarian</option>
-                                                    <option value="Vegan" {{ $customer->meal_preference == 'Vegan' ? 'selected' : '' }}>Vegan</option>
-                                                    <option value="Kosher" {{ $customer->meal_preference == 'Kosher' ? 'selected' : '' }}>Kosher</option>
-                                                    <option value="Halal" {{ $customer->meal_preference == 'Halal' ? 'selected' : '' }}>Halal</option>
+                                                    <option value="Standard" {{ old('meal_preference', $customer->meal_preference) == 'Standard' ? 'selected' : '' }}>Standard</option>
+                                                    <option value="Vegetarian" {{ old('meal_preference', $customer->meal_preference) == 'Vegetarian' ? 'selected' : '' }}>Vegetarian</option>
+                                                    <option value="Vegan" {{ old('meal_preference', $customer->meal_preference) == 'Vegan' ? 'selected' : '' }}>Vegan</option>
+                                                    <option value="Kosher" {{ old('meal_preference', $customer->meal_preference) == 'Kosher' ? 'selected' : '' }}>Kosher</option>
+                                                    <option value="Halal" {{ old('meal_preference', $customer->meal_preference) == 'Halal' ? 'selected' : '' }}>Halal</option>
                                                 </select>
+                                                @error('meal_preference')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-4">
                                                 <label class="form-label">Seat Preference</label>
-                                                <select class="form-control" name="seat_preference">
+                                                <select class="form-control @error('seat_preference') is-invalid @enderror" name="seat_preference">
                                                     <option value="">Select Preference</option>
-                                                    <option value="Window" {{ $customer->seat_preference == 'Window' ? 'selected' : '' }}>Window</option>
-                                                    <option value="Aisle" {{ $customer->seat_preference == 'Aisle' ? 'selected' : '' }}>Aisle</option>
-                                                    <option value="Middle" {{ $customer->seat_preference == 'Middle' ? 'selected' : '' }}>Middle</option>
+                                                    <option value="Window" {{ old('seat_preference', $customer->seat_preference) == 'Window' ? 'selected' : '' }}>Window</option>
+                                                    <option value="Aisle" {{ old('seat_preference', $customer->seat_preference) == 'Aisle' ? 'selected' : '' }}>Aisle</option>
+                                                    <option value="Middle" {{ old('seat_preference', $customer->seat_preference) == 'Middle' ? 'selected' : '' }}>Middle</option>
                                                 </select>
+                                                @error('seat_preference')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-8">
                                                 <label class="form-label">Special Requests</label>
-                                                <textarea class="form-control" name="special_requests" rows="3" placeholder="Enter any special requests">{{ $customer->special_requests }}</textarea>
+                                                <textarea class="form-control @error('special_requests') is-invalid @enderror" name="special_requests" rows="3" placeholder="Enter any special requests">{{ old('special_requests', $customer->special_requests) }}</textarea>
+                                                @error('special_requests')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                         </div>
                                     </div>

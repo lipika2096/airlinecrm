@@ -73,10 +73,11 @@ class SupportTicketController extends Controller
                           });
                     });
                 })
-                ->when(!$isSuperAdmin && !$isStaff, function ($query) use ($user) {
+                ->when(!$isSuperAdmin && !$isStaff, function ($query) use ($user, $superAdminId) {
                     // For non-SuperAdmin admin users (customers), show:
                     // 1. Tickets created by them
                     // 2. Tickets created by their staff members
+                    // 3. Exclude tickets created by SuperAdmin or staff created by SuperAdmin
                     return $query->where(function($q) use ($user) {
                         $q->where('created_by', $user->id)
                           ->orWhereIn('created_by', function($query) use ($user) {
@@ -84,6 +85,15 @@ class SupportTicketController extends Controller
                               $query->select('users.id')
                                   ->from('users')
                                   ->where('users.created_by', $user->id);
+                          });
+                    })->where(function($q) use ($superAdminId) {
+                        // Exclude tickets created by SuperAdmin directly
+                        $q->where('created_by', '!=', $superAdminId)
+                          ->whereNotIn('created_by', function($query) use ($superAdminId) {
+                              // Exclude tickets created by staff members who were created by SuperAdmin
+                              $query->select('users.id')
+                                  ->from('users')
+                                  ->where('users.created_by', $superAdminId);
                           });
                     });
                 });
@@ -254,6 +264,7 @@ class SupportTicketController extends Controller
                     });
                 } else {
                     // For customers, count tickets created by them or by their staff members
+                    // Exclude tickets created by SuperAdmin or staff created by SuperAdmin
                     $userTickets = SupportTicket::where(function($q) use ($user) {
                         $q->where('created_by', $user->id)
                           ->orWhereIn('created_by', function($query) use ($user) {
@@ -261,6 +272,15 @@ class SupportTicketController extends Controller
                               $query->select('users.id')
                                   ->from('users')
                                   ->where('users.created_by', $user->id);
+                          });
+                    })->where(function($q) use ($superAdmin) {
+                        // Exclude tickets created by SuperAdmin directly
+                        $q->where('created_by', '!=', $superAdmin->id)
+                          ->whereNotIn('created_by', function($query) use ($superAdmin) {
+                              // Exclude tickets created by staff members who were created by SuperAdmin
+                              $query->select('users.id')
+                                  ->from('users')
+                                  ->where('users.created_by', $superAdmin->id);
                           });
                     });
                 }
@@ -323,6 +343,7 @@ class SupportTicketController extends Controller
 
         // Check if this staff user was created by superadmin
         $superAdmin = Admin::role('SuperAdmin')->first();
+        $superAdminId = $superAdmin ? $superAdmin->id : null;
         $isSuperAdminCreatedStaff = $superAdmin && $user && $user->created_by == $superAdmin->id;
 
         // If staff was created by superadmin, give them superadmin privileges
@@ -364,6 +385,7 @@ class SupportTicketController extends Controller
                     });
                 } else {
                     // Customer: show tickets created by them or by their staff members
+                    // Exclude tickets created by SuperAdmin or staff created by SuperAdmin
                     $baseQuery = SupportTicket::where(function($q) use ($user) {
                         $q->where('created_by', $user->id)
                           ->orWhereIn('created_by', function($query) use ($user) {
@@ -371,6 +393,15 @@ class SupportTicketController extends Controller
                               $query->select('users.id')
                                   ->from('users')
                                   ->where('users.created_by', $user->id);
+                          });
+                    })->where(function($q) use ($superAdmin) {
+                        // Exclude tickets created by SuperAdmin directly
+                        $q->where('created_by', '!=', $superAdmin->id)
+                          ->whereNotIn('created_by', function($query) use ($superAdmin) {
+                              // Exclude tickets created by staff members who were created by SuperAdmin
+                              $query->select('users.id')
+                                  ->from('users')
+                                  ->where('users.created_by', $superAdmin->id);
                           });
                     });
                 }
@@ -423,6 +454,7 @@ class SupportTicketController extends Controller
                         ->get();
                 } else {
                     // Customer: show tickets created by them or by their staff members
+                    // Exclude tickets created by SuperAdmin or staff created by SuperAdmin
                     $recentTickets = SupportTicket::where(function($q) use ($user) {
                         $q->where('created_by', $user->id)
                           ->orWhereIn('created_by', function($query) use ($user) {
@@ -430,6 +462,15 @@ class SupportTicketController extends Controller
                               $query->select('users.id')
                                   ->from('users')
                                   ->where('users.created_by', $user->id);
+                          });
+                    })->where(function($q) use ($superAdmin) {
+                        // Exclude tickets created by SuperAdmin directly
+                        $q->where('created_by', '!=', $superAdmin->id)
+                          ->whereNotIn('created_by', function($query) use ($superAdmin) {
+                              // Exclude tickets created by staff members who were created by SuperAdmin
+                              $query->select('users.id')
+                                  ->from('users')
+                                  ->where('users.created_by', $superAdmin->id);
                           });
                     })->with(['creator', 'assignedTo'])
                         ->latest()
@@ -497,10 +538,11 @@ class SupportTicketController extends Controller
                       });
                 });
             })
-            ->when(!$isSuperAdmin && !$isStaff, function ($query) use ($user) {
+            ->when(!$isSuperAdmin && !$isStaff, function ($query) use ($user, $superAdminId) {
                 // For non-SuperAdmin admin users (customers), show:
                 // 1. Tickets created by them
                 // 2. Tickets created by their staff members
+                // 3. Exclude tickets created by SuperAdmin or staff created by SuperAdmin
                 return $query->where(function($q) use ($user) {
                     $q->where('created_by', $user->id)
                       ->orWhereIn('created_by', function($query) use ($user) {
@@ -508,6 +550,15 @@ class SupportTicketController extends Controller
                           $query->select('users.id')
                               ->from('users')
                               ->where('users.created_by', $user->id);
+                      });
+                })->where(function($q) use ($superAdminId) {
+                    // Exclude tickets created by SuperAdmin directly
+                    $q->where('created_by', '!=', $superAdminId)
+                      ->whereNotIn('created_by', function($query) use ($superAdminId) {
+                          // Exclude tickets created by staff members who were created by SuperAdmin
+                          $query->select('users.id')
+                              ->from('users')
+                              ->where('users.created_by', $superAdminId);
                       });
                 });
             });
@@ -686,8 +737,27 @@ class SupportTicketController extends Controller
                       ->orWhere('created_by', $user->id);
                 });
             } else {
-                // For customers, use existing logic
-                $userTickets = SupportTicket::forUser($user->id);
+                // For customers, show tickets created by them or by their staff members
+                // Exclude tickets created by SuperAdmin or staff created by SuperAdmin
+                $superAdmin = Admin::role('SuperAdmin')->first();
+                $userTickets = SupportTicket::where(function($q) use ($user) {
+                    $q->where('created_by', $user->id)
+                      ->orWhereIn('created_by', function($query) use ($user) {
+                          // Include tickets created by staff members created by this customer
+                          $query->select('users.id')
+                              ->from('users')
+                              ->where('users.created_by', $user->id);
+                      });
+                })->where(function($q) use ($superAdmin) {
+                    // Exclude tickets created by SuperAdmin directly
+                    $q->where('created_by', '!=', $superAdmin->id)
+                      ->whereNotIn('created_by', function($query) use ($superAdmin) {
+                          // Exclude tickets created by staff members who were created by SuperAdmin
+                          $query->select('users.id')
+                              ->from('users')
+                              ->where('users.created_by', $superAdmin->id);
+                      });
+                });
             }
             
             $counts = [
@@ -794,6 +864,7 @@ class SupportTicketController extends Controller
 
         // Check if this staff user was created by superadmin
         $superAdmin = Admin::role('SuperAdmin')->first();
+        $superAdminId = $superAdmin ? $superAdmin->id : null;
         $isSuperAdminCreatedStaff = $superAdmin && $user && $user->created_by == $superAdmin->id;
 
         // If staff was created by superadmin, give them superadmin privileges
@@ -1039,6 +1110,7 @@ class SupportTicketController extends Controller
 
         // Check if this staff user was created by superadmin
         $superAdmin = Admin::role('SuperAdmin')->first();
+        $superAdminId = $superAdmin ? $superAdmin->id : null;
         $isSuperAdminCreatedStaff = $superAdmin && $user && $user->created_by == $superAdmin->id;
 
         // If staff was created by superadmin, give them superadmin privileges
@@ -1066,10 +1138,11 @@ class SupportTicketController extends Controller
                       });
                 });
             })
-            ->when(!$isSuperAdmin && !$isStaff, function ($query) use ($user) {
+            ->when(!$isSuperAdmin && !$isStaff, function ($query) use ($user, $superAdminId) {
                 // For non-SuperAdmin admin users (customers), show:
                 // 1. Tickets created by them
                 // 2. Tickets created by their staff members
+                // 3. Exclude tickets created by SuperAdmin or staff created by SuperAdmin
                 return $query->where(function($q) use ($user) {
                     $q->where('created_by', $user->id)
                       ->orWhereIn('created_by', function($query) use ($user) {
@@ -1077,6 +1150,15 @@ class SupportTicketController extends Controller
                           $query->select('users.id')
                               ->from('users')
                               ->where('users.created_by', $user->id);
+                      });
+                })->where(function($q) use ($superAdminId) {
+                    // Exclude tickets created by SuperAdmin directly
+                    $q->where('created_by', '!=', $superAdminId)
+                      ->whereNotIn('created_by', function($query) use ($superAdminId) {
+                          // Exclude tickets created by staff members who were created by SuperAdmin
+                          $query->select('users.id')
+                              ->from('users')
+                              ->where('users.created_by', $superAdminId);
                       });
                 });
             })
@@ -1873,6 +1955,7 @@ class SupportTicketController extends Controller
 
         // Check if this staff user was created by superadmin
         $superAdmin = Admin::role('SuperAdmin')->first();
+        $superAdminId = $superAdmin ? $superAdmin->id : null;
         $isSuperAdminCreatedStaff = $superAdmin && $user && $user->created_by == $superAdmin->id;
 
         // If staff was created by superadmin, give them superadmin privileges
@@ -1924,6 +2007,7 @@ class SupportTicketController extends Controller
 
         // Check if this staff user was created by superadmin
         $superAdmin = Admin::role('SuperAdmin')->first();
+        $superAdminId = $superAdmin ? $superAdmin->id : null;
         $isSuperAdminCreatedStaff = $superAdmin && $user && $user->created_by == $superAdmin->id;
 
         // If staff was created by superadmin, give them superadmin privileges

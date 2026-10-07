@@ -148,6 +148,7 @@ class PasswordResetController extends Controller
                 });
             }
             else{
+                $resetLink = url('/forgot-password');
                 \Mail::raw("Hello {$user->first_name },\n\nYou requested a password reset for your account.\n\nClick the link below to reset your password:\n{$resetLink}\n\nThis link will expire in 60 minutes.\n\nIf you did not request this, please ignore this email.\n\nThank you.", function($message) use ($request) {
                     $message->to($request->email)
                             ->subject('Password Reset Request');

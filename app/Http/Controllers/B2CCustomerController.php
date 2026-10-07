@@ -52,13 +52,13 @@ class B2CCustomerController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $validator = validator($request->all(), [
             'customer_type' => 'required|in:individual,corporate',
             'salutation' => 'nullable|string|max:10',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:b2c_customers,email',
-            'phone' => 'required|string|max:20',
+            'phone' => 'required|string|max:20|regex:/^[0-9+\-\s()]+$/',
             'address' => 'nullable|string',
             'country' => 'nullable|string|max:100',
             'status' => 'required|in:active,inactive,blocked',
@@ -68,7 +68,18 @@ class B2CCustomerController extends Controller
             'meal_preference' => 'nullable|string|max:50',
             'seat_preference' => 'nullable|string|max:50',
             'special_requests' => 'nullable|string',
+        ], [
+            'phone.regex' => 'The phone number must contain only digits, spaces, and valid phone characters (+, -, (, )).',
         ]);
+
+        if ($validator->fails()) {
+            $routePrefix = RouteHelper::isSuperAdmin() ? 'admin.' : (RouteHelper::isCustomer() ? 'customer.' : 'staff.');
+            return redirect()->route($routePrefix . 'b2c-customers.create')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $validated = $validator->validated();
 
         // Determine the current user type and ID
         $currentUserId = null;
@@ -111,13 +122,13 @@ class B2CCustomerController extends Controller
     {
         $customer = B2CCustomer::findOrFail($id);
 
-        $validated = $request->validate([
+        $validator = validator($request->all(), [
             'customer_type' => 'required|in:individual,corporate',
             'salutation' => 'nullable|string|max:10',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:b2c_customers,email,' . $id,
-            'phone' => 'required|string|max:20',
+            'phone' => 'required|string|max:20|regex:/^[0-9+\-\s()]+$/',
             'address' => 'nullable|string',
             'country' => 'nullable|string|max:100',
             'status' => 'required|in:active,inactive,blocked',
@@ -127,7 +138,18 @@ class B2CCustomerController extends Controller
             'meal_preference' => 'nullable|string|max:50',
             'seat_preference' => 'nullable|string|max:50',
             'special_requests' => 'nullable|string',
+        ], [
+            'phone.regex' => 'The phone number must contain only digits, spaces, and valid phone characters (+, -, (, )).',
         ]);
+
+        if ($validator->fails()) {
+            $routePrefix = RouteHelper::isSuperAdmin() ? 'admin.' : (RouteHelper::isCustomer() ? 'customer.' : 'staff.');
+            return redirect()->route($routePrefix . 'b2c-customers.edit', $id)
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $validated = $validator->validated();
 
         // Determine the current user type and ID
         $currentUserId = null;

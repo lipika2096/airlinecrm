@@ -462,7 +462,7 @@
                                             
                                             <div class="mb-3">
                                                 <label class="form-label">Confirm New Password</label>
-                                                <input type="password" class="form-control" name="confirm_password" id="confirmPassword" required minlength="8">
+                                                <input type="password" class="form-control" name="new_password_confirmation" id="confirmPassword" required minlength="8">
                                             </div>
                                             
                                             <div class="d-flex gap-2">

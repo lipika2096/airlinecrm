@@ -91,6 +91,19 @@
                 color: #ff9b44;
                 font-weight: 500;
             }
+            .invalid-feedback {
+                display: block;
+                color: #dc3545;
+                font-size: 0.875rem;
+                margin-top: 0.25rem;
+            }
+            .is-invalid {
+                border-color: #dc3545 !important;
+            }
+            .is-invalid:focus {
+                border-color: #dc3545 !important;
+                box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
+            }
         </style>
         <!-- Page Content -->
         <div class="content container-fluid">
@@ -116,7 +129,18 @@
                         <div class="card-body">
                             <form action="{{ \App\Helpers\RouteHelper::isSuperAdmin() ? route('admin.b2c-customers.store') : (\App\Helpers\RouteHelper::isCustomer() ? route('customer.b2c-customers.store') : route('staff.b2c-customers.store')) }}" method="POST">
                                 @csrf
-                                
+
+                                @if ($errors->any())
+                                    <div class="alert alert-danger">
+                                        <strong>Whoops!</strong> There were some problems with your input.<br><br>
+                                        <ul>
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+
                                 <!-- Tabs -->
                                 <ul class="nav nav-tabs mb-4" id="customerTabs" role="tablist">
                                     <li class="nav-item">
@@ -134,53 +158,80 @@
                                         <div class="row">
                                             <div class="form-group col-sm-3">
                                                 <label class="form-label">Customer Type</label>
-                                                <select class="form-control" name="customer_type" required>
+                                                <select class="form-control @error('customer_type') is-invalid @enderror" name="customer_type" required>
                                                     <option value="">Select Type</option>
-                                                    <option value="individual">Individual</option>
-                                                    <option value="corporate">Corporate</option>
+                                                    <option value="individual" {{ old('customer_type') == 'individual' ? 'selected' : '' }}>Individual</option>
+                                                    <option value="corporate" {{ old('customer_type') == 'corporate' ? 'selected' : '' }}>Corporate</option>
                                                 </select>
+                                                @error('customer_type')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-3">
                                                 <label class="form-label">Salutation</label>
-                                                <select class="form-control" name="salutation">
+                                                <select class="form-control @error('salutation') is-invalid @enderror" name="salutation">
                                                     <option value="">Select</option>
-                                                    <option value="Mr">Mr</option>
-                                                    <option value="Mrs">Mrs</option>
-                                                    <option value="Miss">Miss</option>
-                                                    <option value="Dr">Dr</option>
+                                                    <option value="Mr" {{ old('salutation') == 'Mr' ? 'selected' : '' }}>Mr</option>
+                                                    <option value="Mrs" {{ old('salutation') == 'Mrs' ? 'selected' : '' }}>Mrs</option>
+                                                    <option value="Miss" {{ old('salutation') == 'Miss' ? 'selected' : '' }}>Miss</option>
+                                                    <option value="Dr" {{ old('salutation') == 'Dr' ? 'selected' : '' }}>Dr</option>
                                                 </select>
+                                                @error('salutation')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-3">
                                                 <label class="form-label">First Name</label>
-                                                <input class="form-control" name="first_name" type="text" required placeholder="Enter First Name">
+                                                <input class="form-control @error('first_name') is-invalid @enderror" name="first_name" type="text" required placeholder="Enter First Name" value="{{ old('first_name') }}">
+                                                @error('first_name')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-3">
                                                 <label class="form-label">Last Name</label>
-                                                <input class="form-control" name="last_name" type="text" required placeholder="Enter Last Name">
+                                                <input class="form-control @error('last_name') is-invalid @enderror" name="last_name" type="text" required placeholder="Enter Last Name" value="{{ old('last_name') }}">
+                                                @error('last_name')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-3">
                                                 <label class="form-label">Email</label>
-                                                <input class="form-control" name="email" type="email" required placeholder="Enter Email">
+                                                <input class="form-control @error('email') is-invalid @enderror" name="email" type="email" required placeholder="Enter Email" value="{{ old('email') }}">
+                                                @error('email')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-3">
                                                 <label class="form-label">Phone</label>
-                                                <input class="form-control" name="phone" type="text" required placeholder="Enter Phone Number">
+                                                <input class="form-control @error('phone') is-invalid @enderror" name="phone" type="text" required placeholder="Enter Phone Number" value="{{ old('phone') }}">
+                                                @error('phone')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-6">
                                                 <label class="form-label">Address</label>
-                                                <textarea class="form-control" name="address" rows="3" placeholder="Enter Address"></textarea>
+                                                <textarea class="form-control @error('address') is-invalid @enderror" name="address" rows="3" placeholder="Enter Address">{{ old('address') }}</textarea>
+                                                @error('address')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-3">
                                                 <label class="form-label">Country</label>
-                                                <input class="form-control" name="country" type="text" placeholder="Enter Country">
+                                                <input class="form-control @error('country') is-invalid @enderror" name="country" type="text" placeholder="Enter Country" value="{{ old('country') }}">
+                                                @error('country')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-3">
                                                 <label class="form-label">Status</label>
-                                                <select class="form-control" name="status" required>
-                                                    <option value="active">Active</option>
-                                                    <option value="inactive">Inactive</option>
-                                                    <option value="blocked">Blocked</option>
+                                                <select class="form-control @error('status') is-invalid @enderror" name="status" required>
+                                                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
+                                                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                                    <option value="blocked" {{ old('status') == 'blocked' ? 'selected' : '' }}>Blocked</option>
                                                 </select>
+                                                @error('status')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                         </div>
                                     </div>
@@ -190,40 +241,55 @@
                                         <div class="row">
                                             <div class="form-group col-sm-4">
                                                 <label class="form-label">Preferred Airline</label>
-                                                <input class="form-control" name="preferred_airline" type="text" placeholder="Enter Preferred Airline">
+                                                <input class="form-control @error('preferred_airline') is-invalid @enderror" name="preferred_airline" type="text" placeholder="Enter Preferred Airline" value="{{ old('preferred_airline') }}">
+                                                @error('preferred_airline')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-4">
                                                 <label class="form-label">Preferred Class</label>
-                                                <select class="form-control" name="preferred_class">
+                                                <select class="form-control @error('preferred_class') is-invalid @enderror" name="preferred_class">
                                                     <option value="">Select Class</option>
-                                                    <option value="Economy">Economy</option>
-                                                    <option value="Business">Business</option>
-                                                    <option value="First Class">First Class</option>
+                                                    <option value="Economy" {{ old('preferred_class') == 'Economy' ? 'selected' : '' }}>Economy</option>
+                                                    <option value="Business" {{ old('preferred_class') == 'Business' ? 'selected' : '' }}>Business</option>
+                                                    <option value="First Class" {{ old('preferred_class') == 'First Class' ? 'selected' : '' }}>First Class</option>
                                                 </select>
+                                                @error('preferred_class')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-4">
                                                 <label class="form-label">Meal Preference</label>
-                                                <select class="form-control" name="meal_preference">
+                                                <select class="form-control @error('meal_preference') is-invalid @enderror" name="meal_preference">
                                                     <option value="">Select Preference</option>
-                                                    <option value="Standard">Standard</option>
-                                                    <option value="Vegetarian">Vegetarian</option>
-                                                    <option value="Vegan">Vegan</option>
-                                                    <option value="Kosher">Kosher</option>
-                                                    <option value="Halal">Halal</option>
+                                                    <option value="Standard" {{ old('meal_preference') == 'Standard' ? 'selected' : '' }}>Standard</option>
+                                                    <option value="Vegetarian" {{ old('meal_preference') == 'Vegetarian' ? 'selected' : '' }}>Vegetarian</option>
+                                                    <option value="Vegan" {{ old('meal_preference') == 'Vegan' ? 'selected' : '' }}>Vegan</option>
+                                                    <option value="Kosher" {{ old('meal_preference') == 'Kosher' ? 'selected' : '' }}>Kosher</option>
+                                                    <option value="Halal" {{ old('meal_preference') == 'Halal' ? 'selected' : '' }}>Halal</option>
                                                 </select>
+                                                @error('meal_preference')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-4">
                                                 <label class="form-label">Seat Preference</label>
-                                                <select class="form-control" name="seat_preference">
+                                                <select class="form-control @error('seat_preference') is-invalid @enderror" name="seat_preference">
                                                     <option value="">Select Preference</option>
-                                                    <option value="Window">Window</option>
-                                                    <option value="Aisle">Aisle</option>
-                                                    <option value="Middle">Middle</option>
+                                                    <option value="Window" {{ old('seat_preference') == 'Window' ? 'selected' : '' }}>Window</option>
+                                                    <option value="Aisle" {{ old('seat_preference') == 'Aisle' ? 'selected' : '' }}>Aisle</option>
+                                                    <option value="Middle" {{ old('seat_preference') == 'Middle' ? 'selected' : '' }}>Middle</option>
                                                 </select>
+                                                @error('seat_preference')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="form-group col-sm-8">
                                                 <label class="form-label">Special Requests</label>
-                                                <textarea class="form-control" name="special_requests" rows="3" placeholder="Enter any special requests"></textarea>
+                                                <textarea class="form-control @error('special_requests') is-invalid @enderror" name="special_requests" rows="3" placeholder="Enter any special requests">{{ old('special_requests') }}</textarea>
+                                                @error('special_requests')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                         </div>
                                     </div>
