@@ -119,6 +119,7 @@ class B2BPartnerController extends Controller
                     'description' => 'B2B Partner ' . $partner->partner_name . ' was created',
                     'new_values' => $partner->toArray(),
                     'performed_by' => $currentUserId,
+                    'performed_by_type' => $userType,
                     'ip_address' => $request->ip(),
                     'user_agent' => $request->userAgent(),
                 ]);
@@ -211,7 +212,7 @@ class B2BPartnerController extends Controller
         $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
         $userType = RouteHelper::isSuperAdmin() ? 'superadmin' : (RouteHelper::isCustomer() ? 'customer' : 'staff');
 
-        $partner = B2BPartner::with('contacts', 'airlines.airline', 'products', 'documents', 'notes.createdBy')->find($id);
+        $partner = B2BPartner::with('contacts', 'airlines.airline', 'products', 'documents', 'notes.createdByAdmin', 'notes.createdByUser')->find($id);
         
         if (!$partner) {
             $routePrefix = RouteHelper::isSuperAdmin() ? 'admin.' : (RouteHelper::isCustomer() ? 'customer.' : 'staff.');
@@ -227,7 +228,7 @@ class B2BPartnerController extends Controller
             ->paginate(10);
 
         $activities = B2BPartnerActivity::where('b2b_partner_id', $id)
-            ->with('performedBy')
+            ->with('performedByAdmin', 'performedByUser')
             ->latest()
             ->get();
 
@@ -322,6 +323,7 @@ class B2BPartnerController extends Controller
                     'old_values' => $oldValues,
                     'new_values' => $partner->toArray(),
                     'performed_by' => $currentUserId,
+                    'performed_by_type' => $userType,
                     'ip_address' => $request->ip(),
                     'user_agent' => $request->userAgent(),
                 ]);
@@ -437,141 +439,196 @@ class B2BPartnerController extends Controller
 
     public function storeContact(Request $request, $partnerId)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'designation' => 'required|string|max:255',
-            'phone' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'role' => 'required|in:Primary,Secondary',
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'designation' => 'required|string|max:255',
+                'phone' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'role' => 'required|in:Primary,Secondary',
+            ]);
 
-        $currentUserId = auth('admin')->user()->id ?? auth()->user()->id;
+            $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
 
-        B2BPartnerContact::create([
-            'b2b_partner_id' => $partnerId,
-            'name' => $validated['name'],
-            'designation' => $validated['designation'],
-            'phone' => $validated['phone'],
-            'email' => $validated['email'],
-            'role' => $validated['role'],
-            'created_by' => $currentUserId,
-        ]);
+            B2BPartnerContact::create([
+                'b2b_partner_id' => $partnerId,
+                'name' => $validated['name'],
+                'designation' => $validated['designation'],
+                'phone' => $validated['phone'],
+                'email' => $validated['email'],
+                'role' => $validated['role'],
+                'created_by' => $currentUserId,
+            ]);
 
-        return redirect()->back()->with('success', 'Contact added successfully');
+            return redirect()->back()->with('success', 'Contact added successfully');
+        } catch (\Exception $e) {
+            Log::error('Error adding contact: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'There was an error adding the contact. Please try again.');
+        }
     }
 
     public function updateContact(Request $request, $id)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'designation' => 'required|string|max:255',
-            'phone' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'role' => 'required|in:Primary,Secondary',
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'designation' => 'required|string|max:255',
+                'phone' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'role' => 'required|in:Primary,Secondary',
+            ]);
 
-        $currentUserId = auth('admin')->user()->id ?? auth()->user()->id;
+            $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
 
-        $contact = B2BPartnerContact::find($id);
-        $contact->update([
-            'name' => $validated['name'],
-            'designation' => $validated['designation'],
-            'phone' => $validated['phone'],
-            'email' => $validated['email'],
-            'role' => $validated['role'],
-            'updated_by' => $currentUserId,
-        ]);
+            $contact = B2BPartnerContact::find($id);
+            $contact->update([
+                'name' => $validated['name'],
+                'designation' => $validated['designation'],
+                'phone' => $validated['phone'],
+                'email' => $validated['email'],
+                'role' => $validated['role'],
+                'updated_by' => $currentUserId,
+            ]);
 
-        return redirect()->back()->with('success', 'Contact updated successfully');
+            return redirect()->back()->with('success', 'Contact updated successfully');
+        } catch (\Exception $e) {
+            Log::error('Error updating contact: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'There was an error updating the contact. Please try again.');
+        }
     }
 
     public function deleteContact($id)
     {
-        $contact = B2BPartnerContact::find($id);
-        $contact->delete();
-        return redirect()->back()->with('success', 'Contact deleted successfully');
+        try {
+            $contact = B2BPartnerContact::find($id);
+            if ($contact) {
+                $contact->delete();
+                return redirect()->back()->with('success', 'Contact deleted successfully');
+            }
+            return redirect()->back()->with('error', 'Contact not found');
+        } catch (\Exception $e) {
+            Log::error('Error deleting contact: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'There was an error deleting the contact. Please try again.');
+        }
     }
 
     public function storeDocument(Request $request, $partnerId)
     {
-        $validated = $request->validate([
-            'file' => 'required|file|max:10240',
-            'document_type' => 'required|in:Agreement,TSA,Contract,License,Other',
-        ]);
-
-        $currentUserId = auth('admin')->user()->id ?? auth()->user()->id;
-
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $filePath = $file->storeAs('b2b-documents', $fileName, 'public');
-            $fileExtension = $file->getClientOriginalExtension();
-
-            B2BPartnerDocument::create([
-                'b2b_partner_id' => $partnerId,
-                'file_name' => $fileName,
-                'file_type' => $fileExtension,
-                'document_type' => $validated['document_type'],
-                'file_path' => $filePath,
-                'created_by' => $currentUserId,
+        try {
+            $validated = $request->validate([
+                'file' => 'required|file|max:10240',
+                'document_type' => 'required|in:Agreement,TSA,Contract,License,Other',
             ]);
-        }
 
-        return redirect()->back()->with('success', 'Document uploaded successfully');
+            $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
+
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('b2b-documents', $fileName, 'public');
+                $fileExtension = $file->getClientOriginalExtension();
+
+                B2BPartnerDocument::create([
+                    'b2b_partner_id' => $partnerId,
+                    'file_name' => $fileName,
+                    'file_type' => $fileExtension,
+                    'document_type' => $validated['document_type'],
+                    'file_path' => $filePath,
+                    'created_by' => $currentUserId,
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Document uploaded successfully');
+        } catch (\Exception $e) {
+            Log::error('Error uploading document: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'There was an error uploading the document. Please try again.');
+        }
     }
 
     public function deleteDocument($id)
     {
-        $document = B2BPartnerDocument::find($id);
-        
-        if ($document) {
-            Storage::disk('public')->delete($document->file_path);
-            $document->delete();
-        }
+        try {
+            $document = B2BPartnerDocument::find($id);
 
-        return redirect()->back()->with('success', 'Document deleted successfully');
+            if ($document) {
+                Storage::disk('public')->delete($document->file_path);
+                $document->delete();
+                return redirect()->back()->with('success', 'Document deleted successfully');
+            }
+            return redirect()->back()->with('error', 'Document not found');
+        } catch (\Exception $e) {
+            Log::error('Error deleting document: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'There was an error deleting the document. Please try again.');
+        }
     }
 
     public function storeNote(Request $request, $partnerId)
     {
-        $validated = $request->validate([
-            'note' => 'required|string',
-        ]);
+        try {
+            $validated = $request->validate([
+                'note' => 'required|string',
+            ]);
 
-        $currentUserId = auth('admin')->user()->id ?? auth()->user()->id;
+            $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
+            $userType = RouteHelper::isSuperAdmin() ? 'superadmin' : (RouteHelper::isCustomer() ? 'customer' : 'staff');
 
-        B2BPartnerNote::create([
-            'b2b_partner_id' => $partnerId,
-            'note' => $validated['note'],
-            'created_by' => $currentUserId,
-        ]);
+            B2BPartnerNote::create([
+                'b2b_partner_id' => $partnerId,
+                'note' => $validated['note'],
+                'created_by' => $currentUserId,
+                'created_by_type' => $userType,
+            ]);
 
-        return redirect()->back()->with('success', 'Note added successfully');
+            return redirect()->back()->with('success', 'Note added successfully');
+        } catch (\Exception $e) {
+            Log::error('Error adding note: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'There was an error adding the note. Please try again.');
+        }
     }
 
     public function deleteNote($id)
     {
-        $note = B2BPartnerNote::find($id);
-        $note->delete();
-        return redirect()->back()->with('success', 'Note deleted successfully');
+        try {
+            $note = B2BPartnerNote::find($id);
+            if ($note) {
+                $note->delete();
+                return redirect()->back()->with('success', 'Note deleted successfully');
+            }
+            return redirect()->back()->with('error', 'Note not found');
+        } catch (\Exception $e) {
+            Log::error('Error deleting note: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'There was an error deleting the note. Please try again.');
+        }
     }
 
     public function deleteAirline($id)
     {
-        $airline = B2BPartnerAirline::find($id);
-        if ($airline) {
-            $airline->delete();
+        try {
+            $airline = B2BPartnerAirline::find($id);
+            if ($airline) {
+                $airline->delete();
+                return redirect()->back()->with('success', 'Airline removed successfully');
+            }
+            return redirect()->back()->with('error', 'Airline not found');
+        } catch (\Exception $e) {
+            Log::error('Error deleting airline: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'There was an error removing the airline. Please try again.');
         }
-        return redirect()->back()->with('success', 'Airline removed successfully');
     }
 
     public function deleteProduct($id)
     {
-        $product = B2BPartnerProduct::find($id);
-        if ($product) {
-            $product->delete();
+        try {
+            $product = B2BPartnerProduct::find($id);
+            if ($product) {
+                $product->delete();
+                return redirect()->back()->with('success', 'Product removed successfully');
+            }
+            return redirect()->back()->with('error', 'Product not found');
+        } catch (\Exception $e) {
+            Log::error('Error deleting product: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'There was an error removing the product. Please try again.');
         }
-        return redirect()->back()->with('success', 'Product removed successfully');
     }
 
     public function reports(Request $request)

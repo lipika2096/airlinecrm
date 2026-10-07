@@ -713,7 +713,13 @@
                                                         @forelse ($partner->notes as $note)
                                                             <tr>
                                                                 <td>{{ $note->created_at->format('d M Y H:i') }}</td>
-                                                                <td>{{ $note->createdBy ? $note->createdBy->name : 'Unknown' }}</td>
+                                                                <td>
+                                                                    @if($note->created_by_type === 'customer')
+                                                                        {{ $note->createdByUser ? $note->createdByUser->name : 'Unknown' }}
+                                                                    @else
+                                                                        {{ $note->createdByAdmin ? $note->createdByAdmin->name : 'Unknown' }}
+                                                                    @endif
+                                                                </td>
                                                                 <td>{{ $note->note }}</td>
                                                                 <td>
                                                                     <a href="#" class="action-icon text-danger" onclick="event.preventDefault(); if(confirm('Delete this note?')) { document.getElementById('delete-note-{{ $note->id }}').submit(); }">
@@ -765,7 +771,13 @@
                                                             </span>
                                                         </td>
                                                         <td>{{ $activity->description ?? '-' }}</td>
-                                                        <td>{{ $activity->performedBy ? $activity->performedBy->name : 'System' }}</td>
+                                                        <td>
+                                                            @if($activity->performed_by_type === 'customer')
+                                                                {{ $activity->performedByUser ? $activity->performedByUser->name : 'System' }}
+                                                            @else
+                                                                {{ $activity->performedByAdmin ? $activity->performedByAdmin->name : 'System' }}
+                                                            @endif
+                                                        </td>
                                                     </tr>
                                                 @empty
                                                     <tr>

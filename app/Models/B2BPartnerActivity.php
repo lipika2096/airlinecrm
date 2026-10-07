@@ -18,6 +18,7 @@ class B2BPartnerActivity extends Model
         'old_values',
         'new_values',
         'performed_by',
+        'performed_by_type',
         'ip_address',
         'user_agent',
     ];
@@ -27,13 +28,29 @@ class B2BPartnerActivity extends Model
         'new_values' => 'array',
     ];
 
+    protected $with = ['performedByAdmin', 'performedByUser'];
+
     public function partner()
     {
         return $this->belongsTo(B2BPartner::class, 'b2b_partner_id');
     }
 
-    public function performedBy()
+    public function performedByAdmin()
     {
         return $this->belongsTo(Admin::class, 'performed_by');
+    }
+
+    public function performedByUser()
+    {
+        return $this->belongsTo(User::class, 'performed_by');
+    }
+
+    public function getPerformedByAttribute()
+    {
+        if ($this->performed_by_type === 'customer') {
+            return $this->performedByUser;
+        } else {
+            return $this->performedByAdmin;
+        }
     }
 }
