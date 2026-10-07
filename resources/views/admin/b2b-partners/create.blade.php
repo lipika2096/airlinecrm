@@ -350,20 +350,20 @@
                                                 <div class="row g-3">
                                                     <div class="col-md-4">
                                                         <div class="form-group">
-                                                            <label>Name <span class="text-danger">*</span></label>
-                                                            <input type="text" name="contacts[0][name]" class="form-control" required placeholder="Enter contact name">
+                                                            <label>Name</label>
+                                                            <input type="text" name="contacts[0][name]" class="form-control" placeholder="Enter contact name">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4">
                                                         <div class="form-group">
-                                                            <label>Designation <span class="text-danger">*</span></label>
-                                                            <input type="text" name="contacts[0][designation]" class="form-control" required placeholder="Job title">
+                                                            <label>Designation</label>
+                                                            <input type="text" name="contacts[0][designation]" class="form-control" placeholder="Job title">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4">
                                                         <div class="form-group">
-                                                            <label>Role <span class="text-danger">*</span></label>
-                                                            <select name="contacts[0][role]" class="form-control" required>
+                                                            <label>Role</label>
+                                                            <select name="contacts[0][role]" class="form-control">
                                                                 <option value="Secondary">Secondary</option>
                                                                 <option value="Primary">Primary</option>
                                                             </select>
@@ -371,14 +371,14 @@
                                                     </div>
                                                     <div class="col-md-4">
                                                         <div class="form-group">
-                                                            <label>Phone <span class="text-danger">*</span></label>
-                                                            <input type="text" name="contacts[0][phone]" class="form-control" required placeholder="Phone number">
+                                                            <label>Phone</label>
+                                                            <input type="text" name="contacts[0][phone]" class="form-control" placeholder="Phone number">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4">
                                                         <div class="form-group">
-                                                            <label>Email <span class="text-danger">*</span></label>
-                                                            <input type="email" name="contacts[0][email]" class="form-control" required placeholder="Email address">
+                                                            <label>Email</label>
+                                                            <input type="email" name="contacts[0][email]" class="form-control" placeholder="Email address">
                                                         </div>
                                                     </div>
                                                 </div>

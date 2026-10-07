@@ -19,6 +19,7 @@ use App\Helpers\RouteHelper;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class B2BPartnerController extends Controller
 {
@@ -66,6 +67,7 @@ class B2BPartnerController extends Controller
 
     public function store(Request $request)
     {
+        \DB::beginTransaction();
         try {
             $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
             $userType = RouteHelper::isSuperAdmin() ? 'superadmin' : (RouteHelper::isCustomer() ? 'customer' : 'staff');
@@ -86,9 +88,18 @@ class B2BPartnerController extends Controller
                 'product_responsibility' => 'nullable|string|max:255',
                 'tsa_status' => 'nullable|in:Activated,Deactivated',
                 'custom_product' => 'nullable|string|max:255|required_if:products,other',
+                'contacts' => 'nullable|array',
+                'contacts.*.name' => 'nullable|string|max:255',
+                'contacts.*.designation' => 'required_with:contacts.*.name|string|max:255',
+                'contacts.*.phone' => 'required_with:contacts.*.name|string|max:255',
+                'contacts.*.email' => 'required_with:contacts.*.name|email|max:255',
+                'contacts.*.role' => 'required_with:contacts.*.name|in:Primary,Secondary',
             ]);
 
-            $partnerCode = 'B' . str_pad(B2BPartner::count() + 1, 3, '0', STR_PAD_LEFT);
+            // Get the max partner code and increment
+            $lastPartner = B2BPartner::withTrashed()->orderBy('id', 'desc')->first();
+            $nextId = $lastPartner ? $lastPartner->id + 1 : 1;
+            $partnerCode = 'B' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
 
             $partner = B2BPartner::create([
                 'partner_code' => $partnerCode,
@@ -130,15 +141,21 @@ class B2BPartnerController extends Controller
             if ($request->has('contacts') && is_array($request->contacts)) {
                 foreach ($request->contacts as $contact) {
                     if (!empty($contact['name'])) {
-                        B2BPartnerContact::create([
-                            'b2b_partner_id' => $partner->id,
-                            'name' => $contact['name'],
-                            'designation' => $contact['designation'] ?? null,
-                            'phone' => $contact['phone'] ?? null,
-                            'email' => $contact['email'] ?? null,
-                            'role' => $contact['role'] ?? 'Secondary',
-                            'created_by' => $currentUserId,
-                        ]);
+                        try {
+                            B2BPartnerContact::create([
+                                'b2b_partner_id' => $partner->id,
+                                'name' => $contact['name'],
+                                'designation' => $contact['designation'] ?? null,
+                                'phone' => $contact['phone'] ?? null,
+                                'email' => $contact['email'] ?? null,
+                                'role' => $contact['role'] ?? 'Secondary',
+                                'created_by' => $currentUserId,
+                                'created_by_type' => $userType,
+                            ]);
+                        } catch (\Exception $e) {
+                            Log::error('Error creating contact: ' . $e->getMessage());
+                            throw $e; // Re-throw to trigger transaction rollback
+                        }
                     }
                 }
             }
@@ -197,12 +214,19 @@ class B2BPartnerController extends Controller
                 }
             }
 
+            \DB::commit();
             toastr()->success('B2B Partner added successfully');
             $routePrefix = RouteHelper::isSuperAdmin() ? 'admin.' : (RouteHelper::isCustomer() ? 'customer.' : 'staff.');
             return redirect()->route($routePrefix . 'b2b-partners');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \DB::rollBack();
+            Log::error('Validation error adding B2B partner: ' . $e->getMessage());
+            toastr()->error('Please fix the validation errors and try again.');
+            return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
+            \DB::rollBack();
             Log::error('Error adding B2B partner: ' . $e->getMessage());
-            toastr()->error('There was an error adding the B2B partner. Please try again.');
+            toastr()->error('There was an error adding the B2B partner: ' . $e->getMessage());
             return redirect()->back()->withInput();
         }
     }
@@ -346,6 +370,7 @@ class B2BPartnerController extends Controller
                             'email' => $contact['email'] ?? null,
                             'role' => $contact['role'] ?? 'Secondary',
                             'created_by' => $currentUserId,
+                            'created_by_type' => $userType,
                         ]);
                     }
                 }
@@ -482,6 +507,7 @@ class B2BPartnerController extends Controller
             ]);
 
             $currentUserId = auth('admin')->check() ? auth('admin')->user()->id : (auth()->check() ? auth()->user()->id : null);
+            $userType = RouteHelper::isSuperAdmin() ? 'superadmin' : (RouteHelper::isCustomer() ? 'customer' : 'staff');
 
             $contact = B2BPartnerContact::find($id);
             $contact->update([
@@ -491,6 +517,7 @@ class B2BPartnerController extends Controller
                 'email' => $validated['email'],
                 'role' => $validated['role'],
                 'updated_by' => $currentUserId,
+                'updated_by_type' => $userType,
             ]);
 
             return redirect()->back()->with('success', 'Contact updated successfully');
