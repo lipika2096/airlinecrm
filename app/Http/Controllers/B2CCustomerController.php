@@ -337,7 +337,8 @@ class B2CCustomerController extends Controller
 
         $routePrefix = RouteHelper::isSuperAdmin() ? 'admin.' : (RouteHelper::isCustomer() ? 'customer.' : 'staff.');
         return redirect()->route($routePrefix . 'b2c-customers.show', $customerId)
-            ->with('success', 'Note added successfully.');
+            ->with('success', 'Note added successfully.')
+            ->with('active_tab', 'notes');
     }
 
     public function deleteNote($customerId, $noteId)

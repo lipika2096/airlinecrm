@@ -150,4 +150,15 @@ class User extends Authenticatable
 
         return $modules;
     }
+
+    /**
+     * Get the full name of the user
+     */
+    public function getFullNameAttribute()
+    {
+        if (isset($this->first_name) && isset($this->last_name)) {
+            return trim($this->first_name . ' ' . $this->last_name);
+        }
+        return $this->name ?? '';
+    }
 }

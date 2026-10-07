@@ -347,8 +347,8 @@
                                                         <div>
                                                             <p class="mb-1">{{ $note->note }}</p>
                                                             <small class="text-muted">
-                                                                <i class="fa fa-user me-1"></i> {{ $note->createdBy->name ?? 'System' }}
-                                                                <i class="fa fa-clock ms-2 me-1"></i> {{ $note->created_at->format('d/m/Y H:i') }}
+                                                                <i class="fa fa-user me-1"></i> {{ $note->createdBy ? ($note->created_by_type === 'staff' ? $note->createdBy->full_name : $note->createdBy->name) : 'System' }}
+                                                                <i class="fa fa-clock ms-2 me-1"></i> {{ \App\Helpers\TimezoneHelper::format($note->created_at, 'd/m/Y H:i') }}
                                                             </small>
                                                         </div>
                                                         <a href="#" class="action-icon" data-bs-toggle="modal" data-bs-target="#delete_note{{ $note->id }}" title="Delete">
@@ -384,15 +384,15 @@
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td>{{ $customer->created_at->format('d/m/Y H:i') }}</td>
+                                                    <td>{{ \App\Helpers\TimezoneHelper::format($customer->created_at, 'd/m/Y H:i') }}</td>
                                                     <td>Customer created</td>
-                                                    <td>{{ $customer->createdBy->name ?? 'System' }}</td>
+                                                    <td>{{ $customer->createdBy ? ($customer->created_by_type === 'staff' ? $customer->createdBy->full_name : $customer->createdBy->name) : 'System' }}</td>
                                                 </tr>
                                                 @if ($customer->updated_at != $customer->created_at)
                                                     <tr>
-                                                        <td>{{ $customer->updated_at->format('d/m/Y H:i') }}</td>
+                                                        <td>{{ \App\Helpers\TimezoneHelper::format($customer->updated_at, 'd/m/Y H:i') }}</td>
                                                         <td>Customer updated</td>
-                                                        <td>{{ $customer->updatedBy->name ?? 'System' }}</td>
+                                                        <td>{{ $customer->updatedBy ? ($customer->updated_by_type === 'staff' ? $customer->updatedBy->full_name : $customer->updatedBy->name) : 'System' }}</td>
                                                     </tr>
                                                 @endif
                                             </tbody>
@@ -472,4 +472,28 @@
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Activate the notes tab if specified in session
+            @if(session('active_tab') === 'notes')
+                const notesTab = document.getElementById('notes-tab');
+                if (notesTab) {
+                    // Remove active class from all tabs
+                    document.querySelectorAll('.nav-tabs .nav-link').forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    // Hide all tab panes
+                    document.querySelectorAll('.tab-pane').forEach(pane => {
+                        pane.classList.remove('show', 'active');
+                    });
+                    // Activate notes tab
+                    notesTab.classList.add('active');
+                    const notesPane = document.getElementById('notes');
+                    if (notesPane) {
+                        notesPane.classList.add('show', 'active');
+                    }
+                }
+            @endif
+        });
+    </script>
 @endsection
